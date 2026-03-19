@@ -19,15 +19,25 @@ SMIXAE/
 │   │   ├── __init__.py             # Public exports + SAELens architecture registration
 │   │   └── smixae.py               # Core architecture: SMIXAE model + training classes
 │   ├── analysis/
+│   │   ├── utils.py                 # Shared infrastructure: load_llm, load_sae, collect_hook_activations, encode_sae_batched, Expert
 │   │   ├── generate_probing_data.py # Synthetic probing dataset generation (outputs to datasets/probing/)
 │   │   ├── categorize_all.py        # Expert probing pipeline: load checkpoint, evaluate experts, produce HTML visualizations
-│   │   └── anthropic_newline.py     # Newline-position manifold analysis (TODO: migrate off TransformerLens)
+│   │   └── anthropic_newline.py     # Newline-position manifold analysis
 │   └── cli/
-│       └── cli.py                   # Centralized CLI entry point (smixae command)
+│       ├── cli.py                   # Centralized CLI entry point (smixae command)
+│       └── train.py                 # smixae train subcommand — all training options as CLI flags
 ├── datasets/
-│   ├── probing/                     # Labeled datasets for probing experiments (populated by generate_data.py)
+│   ├── probing/                     # Labeled datasets for probing experiments (populated by generate_probing_data.py)
 │   └── steering/                    # Steering datasets (not yet implemented)
-├── smixae_run.py                    # Training entry point (standalone, not part of the CLI)
+├── experiments/                     # Self-contained experiment scripts (one per run configuration)
+│   └── gemma_2_9b_l11.sh            # Gemma 2-9B layer 11: train → probe → newline
+├── results/                         # All outputs, created at runtime (not committed)
+│   └── {experiment_name}/
+│       ├── model/                   # Final inference-ready SAE (fixed path, used by analysis scripts)
+│       ├── checkpoints/             # Intermediate training checkpoints (run_id subdir, for resume only)
+│       ├── probe/                   # categorize_all HTML outputs
+│       └── newline/                 # anthropic_newline outputs
+├── smixae_run.py                    # Thin shim for PBS / direct invocation — calls smixae train with hardcoded Gemma 2-9B defaults
 ├── run_sae.pbs                      # HPC PBS job submission script
 └── pyproject.toml                   # Dependencies + CLI entry point
 ```
@@ -86,7 +96,20 @@ Exports the four public classes and registers the SMIXAE architecture with SAELe
 
 ### `smixae_run.py`
 
-Training entry point. Configures the SAELens training loop with SMIXAE. Streams `monology/pile-uncopyrighted` via HuggingFace, hooks into `model.layers.11` of Gemma 2-9B, logs to W&B.
+Thin shim for PBS / direct invocation. Injects hardcoded Gemma 2-9B defaults into `sys.argv` and calls `app()` from `src/cli/cli.py`. For full control use `smixae train` directly.
+
+### `src/cli/train.py`
+
+Typer app exposing all `LanguageModelSAERunnerConfig` and `SMIXAETrainingConfig` options as CLI flags, grouped by category (Model, Data, Training, SAE Architecture, Logging). Importing `smixae` at the top registers the architecture with SAELens as a side effect.
+
+### `src/analysis/utils.py`
+
+Shared infrastructure used by all analysis scripts:
+- **`load_llm()`** / **`load_sae()`**: model and checkpoint loading
+- **`collect_hook_activations()`**: HuggingFace `register_forward_hook` pattern; returns one `(batch, seq, d_model)` CPU tensor per batch
+- **`encode_sae_batched()`**: batched SAE encoding; returns `(N, n_experts, d_bottleneck)` float32 tensor
+- **`Expert`**: holds per-expert bottleneck activations and labels; implements `evaluate_fisher()`, `evaluate_manifold()`, `get_plot()`, `get_mean_plot()`
+- **`_strip_prefix()`**: strips `NN_` ordering prefixes from label display strings
 
 ### `src/analysis/categorize_all.py`
 
@@ -98,17 +121,13 @@ The primary analysis script. Loads a trained SMIXAE checkpoint and a labeled dat
 
 Exposed via CLI as the `probe` subcommand group.
 
-### `src/analysis/generate_data.py`
+### `src/analysis/generate_probing_data.py`
 
-Generates template-based synthetic datasets for probing. Each dataset has sentences labeled with a concept (weekdays, hours, temperatures, months, etc.). Output: CSV with `Sentence` and `Label` columns.
-
-**TODO**: Rename to `generate_probing_data.py` and update to write directly to `datasets/probing/`.
+Generates template-based synthetic datasets for probing. Each dataset has sentences labeled with a concept (weekdays, hours, temperatures, months, etc.). Output: CSV with `Sentence` and `Label` columns, written directly to `datasets/probing/`.
 
 ### `src/analysis/anthropic_newline.py`
 
 Analyzes how experts encode distance-since-newline (a continuous position signal). Scores experts using linear and periodic (Fourier) regression on the bottleneck.
-
-**TODO**: Migrate off TransformerLens (see "What to Avoid" below).
 
 ---
 
@@ -158,10 +177,13 @@ The whole point of SMIXAE is that features can be nonlinear manifolds. Don't app
 ## Training Workflow
 
 ```bash
-# On HPC (PBS):
+# Run a full experiment (train → probe → newline):
+bash experiments/gemma_2_9b_l11.sh
+
+# Or via the generic PBS wrapper:
 qsub run_sae.pbs
 
-# Via CLI (full control):
+# Train only, via CLI (full control):
 smixae train \
     --model-name google/gemma-2-9b \
     --hook-name model.layers.11 \
@@ -169,15 +191,31 @@ smixae train \
     --n-experts 4096 \
     --d-in 3584 \
     --d-expert 8 \
-    --k-experts 128
+    --k-experts 128 \
+    --output-path results/my_run/model \
+    --checkpoint-path results/my_run/checkpoints
 
-# Thin shim with hardcoded defaults (used by PBS):
+# Thin shim with hardcoded defaults (called by run_sae.pbs):
 python smixae_run.py
 ```
 
-Training logs to W&B. Checkpoints are saved at intervals (3 checkpoints by default). Checkpoints are not included in this repo and must be pointed to manually in analysis scripts.
+Training logs to W&B. Intermediate checkpoints are saved under `--checkpoint-path` with a `{run_id}/{step}/` subdirectory appended (non-deterministic path, useful for resuming). The final inference-ready model is saved to `--output-path` as a flat directory — no subdirs — making it directly referenceable by downstream analysis scripts.
 
 The `smixae train` command exposes all `LanguageModelSAERunnerConfig` and `SMIXAETrainingConfig` options. Run `smixae train --help` to see all flags grouped by category (Model, Data, Training, SAE Architecture, Logging, etc.). Run-specific args (`--model-name`, `--hook-name`, `--training-tokens`, `--n-experts`, `--d-in`, `--d-expert`, `--k-experts`) are required; all others have sensible defaults. A `--factor` multiplier scales batch size, LR, warm-up, and dead-expert window together.
+
+### Experiment Scripts
+
+Each file in `experiments/` is a self-contained bash script for one run configuration. It chains training → probing → newline analysis, with all outputs consolidated under `results/{experiment_name}/`:
+
+```
+results/{experiment_name}/
+├── model/          # Final SAE (output_path) — used by all downstream scripts
+├── checkpoints/    # Intermediate checkpoints (for resume only)
+├── probe/          # categorize_all HTML outputs
+└── newline/        # anthropic_newline outputs
+```
+
+Add a new experiment by copying an existing script and adjusting the variables at the top.
 
 ---
 
@@ -213,20 +251,26 @@ smixae probe single \
     --label-column Label
 
 # Batch probe all datasets
-smixae probe all-datasets --config datasets.json --checkpoint-path <path>
+smixae probe all-datasets \
+    --checkpoint-path results/my_run/model \
+    --base-model-name google/gemma-2-9b \
+    --hook-point model.layers.11 \
+    --datasets-config datasets/probing/dataset_config.json \
+    --output-dir results/my_run/probe
 
 # Newline-position analysis
-smixae newline main --smixae-path <path/to/checkpoint>
+smixae newline main \
+    --smixae-path results/my_run/model \
+    --model-name google/gemma-2-9b \
+    --hook-name model.layers.11 \
+    --output-path results/my_run/newline
 ```
 
-`smixae_run.py` is intentionally excluded from the CLI — it is a one-off training script run directly or via PBS.
+`smixae_run.py` is a thin shim that calls the CLI with hardcoded Gemma 2-9B defaults — use it via PBS or `python smixae_run.py` for quick invocation without arguments.
 
 ---
 
 ## Known TODOs
 
-- [x] Rename `generate_data.py` → `generate_probing_data.py`
-- [x] Update `generate_probing_data.py` to write output directly to `datasets/probing/`
-- [x] Migrate `anthropic_newline.py` off TransformerLens to HuggingFace pattern
-- [ ] Implement steering experiments (`datasets/steering/`)
+- [ ] Implement steering experiments (`datasets/steering/`) and add `smixae steer` to the CLI and experiment scripts
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
