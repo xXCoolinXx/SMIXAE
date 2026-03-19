@@ -19,7 +19,7 @@ SMIXAE/
 │   │   ├── __init__.py             # Public exports + SAELens architecture registration
 │   │   └── smixae.py               # Core architecture: SMIXAE model + training classes
 │   ├── analysis/
-│   │   ├── generate_data.py         # (TODO: rename → generate_probing_data.py) Synthetic probing dataset generation
+│   │   ├── generate_probing_data.py # Synthetic probing dataset generation (outputs to datasets/probing/)
 │   │   ├── categorize_all.py        # Expert probing pipeline: load checkpoint, evaluate experts, produce HTML visualizations
 │   │   └── anthropic_newline.py     # Newline-position manifold analysis (TODO: migrate off TransformerLens)
 │   └── cli/
@@ -133,7 +133,7 @@ To add a new interpretability metric on experts:
 
 ### Adding New Probing Datasets
 
-Add a new generator function in `generate_data.py` following the existing pattern:
+Add a new generator function in `generate_probing_data.py` following the existing pattern:
 - Define templates (some with `{name}`, all with a concept placeholder)
 - Define concept values
 - Return a de-duplicated, shuffled DataFrame with `Sentence` and `Label` columns
@@ -175,7 +175,8 @@ All analysis commands run through the `smixae` CLI (installed as an editable pac
 
 ```
 smixae
-├── generate-probing-data        # Generate all probing datasets → datasets/probing/
+├── generate-probing-data
+│   └── generate                 # Generate all probing datasets → datasets/probing/
 ├── probe
 │   ├── single                   # Analyze one labeled dataset against a checkpoint
 │   └── all-datasets             # Batch over a JSON config of datasets
@@ -188,7 +189,7 @@ smixae
 pip install -e .
 
 # Generate probing datasets
-smixae generate-probing-data
+smixae generate-probing-data generate
 
 # Probe a single dataset
 smixae probe single \
@@ -211,8 +212,8 @@ smixae newline main --smixae-path <path/to/checkpoint>
 
 ## Known TODOs
 
-- [ ] Rename `generate_data.py` → `generate_probing_data.py`
-- [ ] Update `generate_probing_data.py` to write output directly to `datasets/probing/`
+- [x] Rename `generate_data.py` → `generate_probing_data.py`
+- [x] Update `generate_probing_data.py` to write output directly to `datasets/probing/`
 - [x] Migrate `anthropic_newline.py` off TransformerLens to HuggingFace pattern
 - [ ] Implement steering experiments (`datasets/steering/`)
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty

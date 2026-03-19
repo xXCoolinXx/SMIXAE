@@ -1,7 +1,9 @@
 import itertools
 import random
+from pathlib import Path
 
 import pandas as pd
+import typer
 
 names = [
     "Alice",
@@ -499,35 +501,34 @@ def generate_months(n_samples=1000):
     return _enumerate_unique(templates, months, ("month",), n_samples)
 
 
-def main():
-    df_weekdays = generate_weekdays(1000)
-    df_weekdays.to_csv("weekdays.csv", index=False)
-    print(f"Wrote {len(df_weekdays)} unique weekday samples\n")
+app = typer.Typer()
 
-    df_hours = generate_hours(1500)
-    df_hours.to_csv("hours.csv", index=False)
-    print(f"Wrote {len(df_hours)} unique hour samples\n")
 
-    df_temps = generate_temperatures(1000)
-    df_temps.to_csv("temperatures.csv", index=False)
-    print(f"Wrote {len(df_temps)} unique temperature samples\n")
+@app.command()
+def generate(
+    output_dir: str = typer.Option(
+        "datasets/probing", help="Directory to write CSV files into."
+    ),
+):
+    """Generate all probing datasets and write them to output_dir."""
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
 
-    df_time_units = generate_time_units(1000)
-    df_time_units.to_csv("time_units.csv", index=False)
-    print(f"Wrote {len(df_time_units)} unique time unit samples\n")
+    datasets = [
+        ("weekdays.csv", generate_weekdays(1000)),
+        ("hours.csv", generate_hours(1500)),
+        ("temperatures.csv", generate_temperatures(1000)),
+        ("time_units.csv", generate_time_units(1000)),
+        ("body_parts.csv", generate_body_parts(1000)),
+        ("living_things.csv", generate_living_things(1000)),
+        ("months.csv", generate_months(1000)),
+    ]
 
-    df_body_parts = generate_body_parts(1000)
-    df_body_parts.to_csv("body_parts.csv", index=False)
-    print(f"Wrote {len(df_body_parts)} unique body part samples\n")
-
-    df_living_things = generate_living_things(1000)
-    df_living_things.to_csv("living_things.csv", index=False)
-    print(f"Wrote {len(df_living_things)} unique living things samples\n")
-
-    df_months = generate_months(1000)
-    df_months.to_csv("months.csv", index=False)
-    print(f"Wrote {len(df_months)} unique month samples\n")
+    for filename, df in datasets:
+        path = out / filename
+        df.to_csv(path, index=False)
+        print(f"Wrote {len(df):>5} samples → {path}")
 
 
 if __name__ == "__main__":
-    main()
+    app()
