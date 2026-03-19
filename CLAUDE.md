@@ -161,20 +161,33 @@ The whole point of SMIXAE is that features can be nonlinear manifolds. Don't app
 # On HPC (PBS):
 qsub run_sae.pbs
 
-# Locally:
+# Via CLI (full control):
+smixae train \
+    --model-name google/gemma-2-9b \
+    --hook-name model.layers.11 \
+    --training-tokens 500000000 \
+    --n-experts 4096 \
+    --d-in 3584 \
+    --d-expert 8 \
+    --k-experts 128
+
+# Thin shim with hardcoded defaults (used by PBS):
 python smixae_run.py
 ```
 
 Training logs to W&B. Checkpoints are saved at intervals (3 checkpoints by default). Checkpoints are not included in this repo and must be pointed to manually in analysis scripts.
 
+The `smixae train` command exposes all `LanguageModelSAERunnerConfig` and `SMIXAETrainingConfig` options. Run `smixae train --help` to see all flags grouped by category (Model, Data, Training, SAE Architecture, Logging, etc.). Run-specific args (`--model-name`, `--hook-name`, `--training-tokens`, `--n-experts`, `--d-in`, `--d-expert`, `--k-experts`) are required; all others have sensible defaults. A `--factor` multiplier scales batch size, LR, warm-up, and dead-expert window together.
+
 ---
 
 ## CLI
 
-All analysis commands run through the `smixae` CLI (installed as an editable package via `pip install -e .` or `uv sync`).
+All commands run through the `smixae` CLI (installed as an editable package via `pip install -e .` or `uv sync`).
 
 ```
 smixae
+├── train                        # Train a SMIXAE (all config options exposed as flags)
 ├── generate-probing-data
 │   └── generate                 # Generate all probing datasets → datasets/probing/
 ├── probe

@@ -59,7 +59,14 @@ LOGFILE=$PBS_O_WORKDIR/logs/debug_$(date +%Y%m%d_%H%M%S).log
     # export CUDA_VISIBLE_DEVICES=1 # Hot fix because ASAX doesn't properly change GPU visibility :/
     # Train an SAE
     # /scratch/Collin/envs/sae/bin/python3 context-sae-train.py
-    CUDA_VISIBLE_DEVICES=0 /scratch/Collin/envs/sae/bin/python3 -u smixae_run.py
+    CUDA_VISIBLE_DEVICES=0 /scratch/Collin/envs/sae/bin/smixae train \
+        --model-name google/gemma-2-9b \
+        --hook-name model.layers.11 \
+        --training-tokens 500000000 \
+        --n-experts 4096 \
+        --d-in 3584 \
+        --d-expert 8 \
+        --k-experts 128
     # /scratch/Collin/envs/sae/bin/python3 /scratch/Collin/SAELens/probing_tasks.py  # manifold_visualization_smixae.py #
 
     # /scratch/Collin/envs/sae/bin/python3 manifold_probing/categorize_all.py \
