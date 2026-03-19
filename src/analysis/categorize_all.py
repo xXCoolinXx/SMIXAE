@@ -19,7 +19,7 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 from sae_lens import SAE
-from sae_lens.saes.smixae import SMIXAE
+from smixae import SMIXAE
 
 
 # ======================================================================

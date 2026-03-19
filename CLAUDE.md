@@ -16,17 +16,20 @@ A standard SAE decomposes a model's residual stream into a sparse sum of linear 
 SMIXAE/
 ├── src/
 │   ├── smixae/
+│   │   ├── __init__.py             # Public exports + SAELens architecture registration
 │   │   └── smixae.py               # Core architecture: SMIXAE model + training classes
-│   └── analysis/
-│       ├── generate_data.py         # (TODO: rename → generate_probing_data.py) Synthetic probing dataset generation
-│       ├── categorize_all.py        # Main analysis pipeline: load checkpoint, evaluate experts, produce HTML visualizations
-│       └── anthropic_newline.py     # Newline-position manifold analysis (TODO: migrate off TransformerLens)
+│   ├── analysis/
+│   │   ├── generate_data.py         # (TODO: rename → generate_probing_data.py) Synthetic probing dataset generation
+│   │   ├── categorize_all.py        # Expert probing pipeline: load checkpoint, evaluate experts, produce HTML visualizations
+│   │   └── anthropic_newline.py     # Newline-position manifold analysis (TODO: migrate off TransformerLens)
+│   └── cli/
+│       └── cli.py                   # Centralized CLI entry point (smixae command)
 ├── datasets/
 │   ├── probing/                     # Labeled datasets for probing experiments (populated by generate_data.py)
 │   └── steering/                    # Steering datasets (not yet implemented)
-├── smixae_run.py                    # Training entry point
+├── smixae_run.py                    # Training entry point (standalone, not part of the CLI)
 ├── run_sae.pbs                      # HPC PBS job submission script
-└── pyproject.toml                   # Dependencies
+└── pyproject.toml                   # Dependencies + CLI entry point
 ```
 
 ---
@@ -69,6 +72,10 @@ Experts that haven't fired in `dead_after_n_passes` (default 500) passes are con
 
 ## Key Classes and Files
 
+### `src/smixae/__init__.py`
+
+Exports the four public classes and registers the SMIXAE architecture with SAELens under the name `"smixae"`. Importing `smixae` (e.g. at the top of a script) is sufficient to register the architecture — no manual registration needed.
+
 ### `src/smixae/smixae.py`
 
 - **`SMIXAEConfig`**: Inference-only config dataclass. Parameters: `n_experts`, `d_expert`, `d_bottleneck`, `rescale_acts_by_decoder_norm`.
@@ -89,9 +96,7 @@ The primary analysis script. Loads a trained SMIXAE checkpoint and a labeled dat
 3. Scores experts by Fisher discriminant ratio or manifold continuity
 4. Plots top-N experts as interactive 3D Plotly scatters in an HTML file
 
-**CLI:**
-- `python categorize_all.py single` — analyze one dataset
-- `python categorize_all.py all_datasets` — batch over a JSON config of datasets
+Exposed via CLI as the `probe` subcommand group.
 
 ### `src/analysis/generate_data.py`
 
@@ -164,23 +169,43 @@ Training logs to W&B. Checkpoints are saved at intervals (3 checkpoints by defau
 
 ---
 
-## Analysis Workflow
+## CLI
+
+All analysis commands run through the `smixae` CLI (installed as an editable package via `pip install -e .` or `uv sync`).
+
+```
+smixae
+├── generate-probing-data        # Generate all probing datasets → datasets/probing/
+├── probe
+│   ├── single                   # Analyze one labeled dataset against a checkpoint
+│   └── all-datasets             # Batch over a JSON config of datasets
+└── newline
+    └── main                     # Newline-position manifold analysis
+```
 
 ```bash
-# 1. Generate probing datasets
-python src/analysis/generate_data.py
+# Install the package in editable mode
+pip install -e .
 
-# 2. Analyze a single dataset against a checkpoint
-python src/analysis/categorize_all.py single \
-    --sae-path <path/to/checkpoint> \
-    --dataset-path datasets/probing/<name>.csv \
-    --output output.html
+# Generate probing datasets
+smixae generate-probing-data
 
-# 3. Or batch over multiple datasets
-python src/analysis/categorize_all.py all_datasets \
-    --config datasets.json \
-    --sae-path <path/to/checkpoint>
+# Probe a single dataset
+smixae probe single \
+    --checkpoint-path <path/to/checkpoint> \
+    --base-model-name google/gemma-2-9b \
+    --hook-point model.layers.11 \
+    --dataframe-path datasets/probing/weekdays.csv \
+    --label-column Label
+
+# Batch probe all datasets
+smixae probe all-datasets --config datasets.json --checkpoint-path <path>
+
+# Newline-position analysis
+smixae newline main --smixae-path <path/to/checkpoint>
 ```
+
+`smixae_run.py` is intentionally excluded from the CLI — it is a one-off training script run directly or via PBS.
 
 ---
 

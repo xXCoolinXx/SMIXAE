@@ -35,7 +35,7 @@ from transformer_lens import HookedTransformer
 from transformers import DataCollatorWithPadding
 
 from sae_lens import SAE
-from sae_lens.saes.smixae import SMIXAE  # noqa: F401 — registers architecture
+import smixae  # noqa: F401 — registers SMIXAE architecture with SAELens
 
 # ═══════════════════════ Constants ═══════════════════════════════════════
 
