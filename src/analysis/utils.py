@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import gc
+import re
 from typing import Any, Iterable
 
 import pandas as pd
@@ -150,6 +151,11 @@ def encode_sae_batched(
 
 
 # ── Expert ────────────────────────────────────────────────────────────────────
+
+
+def _strip_prefix(label: str) -> str:
+    """Strip a leading ordering prefix of the form '01_' from a display label."""
+    return re.sub(r"^\d+_", "", label)
 
 
 class Expert:
@@ -354,7 +360,7 @@ class Expert:
 
         if self.labels is not None and label_names is not None:
             label_strs = [
-                label_names.get(int(l.item()), str(l.item())) for l in self.labels
+                _strip_prefix(label_names.get(int(l.item()), str(l.item()))) for l in self.labels
             ]
             label_ids = self.labels.tolist()
             df_dict: dict[str, Any] = {
@@ -388,11 +394,11 @@ class Expert:
                 fig.update_coloraxes(
                     colorbar=dict(
                         tickvals=list(range(n)),
-                        ticktext=[label_names[i] for i in range(n)],
+                        ticktext=[_strip_prefix(label_names[i]) for i in range(n)],
                     )
                 )
             else:
-                sorted_label_names = sorted(label_names.values())
+                sorted_label_names = [_strip_prefix(s) for s in sorted(label_names.values())]
                 fig = px.scatter_3d(
                     df,
                     x="x",
@@ -457,7 +463,7 @@ class Expert:
             xs.append(float(centroid[0]))
             ys.append(float(centroid[1]))
             zs.append(float(centroid[2]))
-            label_strs.append(label_names[c])
+            label_strs.append(_strip_prefix(label_names[c]))
             label_ids.append(c)
             counts.append(int(mask.sum()))
 
@@ -498,11 +504,11 @@ class Expert:
             fig.update_coloraxes(
                 colorbar=dict(
                     tickvals=list(range(n)),
-                    ticktext=[label_names[i] for i in range(n)],
+                    ticktext=[_strip_prefix(label_names[i]) for i in range(n)],
                 )
             )
         else:
-            sorted_label_names = sorted(label_names.values())
+            sorted_label_names = [_strip_prefix(s) for s in sorted(label_names.values())]
             fig = px.scatter_3d(
                 df,
                 x="x",
