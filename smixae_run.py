@@ -1,0 +1,113 @@
+import torch
+
+from sae_lens import (
+    LanguageModelSAERunnerConfig,
+    LanguageModelSAETrainingRunner,
+    LoggingConfig,
+    SMIXAETrainingConfig,
+)
+
+torch.set_float32_matmul_precision("high")
+
+# Silences the graph break warning
+torch._dynamo.config.capture_scalar_outputs = True
+
+# dataset_path = "./pile_long_context"
+source_repo = "monology/pile-uncopyrighted"
+# min_chars = 7000  # Rough proxy for 2048 tokens (approx 3.5 chars/token)
+# n_docs = 100_000
+
+# if Path(dataset_path).exists():
+#     print(f"Dataset already exists at {dataset_path}")  # noqa: T201
+
+#     dataset = datasets.load_from_disk(dataset_path, keep_in_memory=True)
+# else:
+#     print(f"{dataset_path} not found. Streaming and filtering...")  # noqa: T201
+
+#     # Stream the dataset (no massive download)
+#     ds = load_dataset(source_repo, split="train", streaming=True)
+
+#     # Filter
+#     long_docs = ds.filter(lambda x: len(x["text"]) > min_chars).take(n_docs)
+
+#     # Save to disk as raw text (SAELens will handle tokenization)
+#     print("Materializing to disk...")  # noqa: T201
+
+#     def gen():  # type: ignore
+#         yield from long_docs
+
+#     # We reuse the features from the stream to avoid schema inference overhead
+#     dataset = datasets.Dataset.from_generator(gen, features=long_docs.features)
+
+#     dataset.save_to_disk(dataset_path)  # type: ignore
+
+#     print(f"Saved {len(dataset)} documents to {dataset_path}")  # type: ignore # noqa: T201
+
+device = "cuda"
+
+factor = 1  # Use for scaling up and down batch size
+batch_size = 8192 * factor
+total_tokens = 500_000_000
+# total_tokens = 1000 * batch_size
+
+total_training_steps = total_tokens // batch_size
+
+lr_warm_up_steps = 500 // factor
+lr_decay_steps = total_training_steps // 5  # 20% of training
+
+# So many damn parameters
+cfg = LanguageModelSAERunnerConfig(
+    sae=SMIXAETrainingConfig(
+        d_in=3584,  # 2304,  # d_in=768,  # For pythia and gpt2-small,
+        n_experts=4096,  # Good amount of features, compare to Gemma Scope
+        d_expert=8,
+        d_bottleneck=3,
+        d_sae=8 * 4096,  # this parameter is ignored
+        # l0_coefficient=1.0,
+        k_experts=128,
+        aux_loss_coefficient=1
+        / 32,  # 1 / 32, double it because on gemma it doesn't seem to be strong enough to reliably go to 0 over training
+        rescale_acts_by_decoder_norm=True,
+        normalize_activations="expected_average_only_in",
+        dead_after_n_passes=500 // factor,
+        threshold_lr=1e-3,
+    ),
+    # resume_from_checkpoint="/scratch/Collin/SAELens/checkpoints/vcqgm5qo/250003456",  # Remove this later
+    model_name="google/gemma-2-9b",  # "gemma-2-2b",  # "pythia-160m-deduped",  # Use deduped, apparently its more interpretable
+    model_class_name="AutoModelForCausalLM",
+    hook_name="model.layers.11",  # "blocks.8.hook_resid_post",
+    dataset_path=source_repo,
+    is_dataset_tokenized=False,
+    # Training Parameters
+    lr=5e-4 * factor,
+    lr_warm_up_steps=lr_warm_up_steps,
+    lr_decay_steps=lr_decay_steps,
+    train_batch_size_tokens=batch_size,
+    dtype="bfloat16",
+    device=device,
+    context_size=128,
+    disable_concat_sequences=True,
+    training_tokens=total_tokens,
+    n_batches_in_buffer=1024,
+    store_batch_size_prompts=128,
+    n_batches_for_norm_estimate=100,
+    # Wandb
+    logger=LoggingConfig(
+        log_to_wandb=True,
+        wandb_project="SMIXAE on Gemma 2-9B, Batch Top K",
+        wandb_log_frequency=30,
+        eval_every_n_wandb_logs=5000000,
+    ),
+    n_checkpoints=3,
+    checkpoint_path="checkpoints",
+    context_processor=None,
+    # Try compilation, since we have an H100 :)
+    compile_llm=True,
+    compile_sae=True,
+    autocast=True,
+    autocast_lm=True,
+    act_store_device="cpu",  # Move to CPU, we got hella RAM
+    save_final_checkpoint=True,
+)
+
+sparse_autoencoder = LanguageModelSAETrainingRunner(cfg).run()  # type: ignore
