@@ -11,7 +11,6 @@ Scores each expert with four metrics:
 Generates HTML plots showing the top-k experts for EVERY method side by side.
 """
 
-import gc
 import json
 import math
 import os
@@ -31,10 +30,9 @@ from loguru import logger
 from plotly.subplots import make_subplots
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorWithPadding, PreTrainedModel
+from transformers import DataCollatorWithPadding
 
-from sae_lens import SAE
-import smixae  # noqa: F401 — registers SMIXAE architecture with SAELens
+from analysis.utils import collect_hook_activations, encode_sae_batched, flush_gpu, gpu_mem_mb, load_llm, load_sae
 
 # ═══════════════════════ Constants ═══════════════════════════════════════
 
@@ -56,24 +54,6 @@ METHOD_SHORT = {
     "encode_periodic_r2": "per",
     "periodic_gain": "Δper",
 }
-
-
-# ═══════════════════════ Memory ══════════════════════════════════════════
-
-
-def gpu_mem_mb() -> str:
-    if not torch.cuda.is_available():
-        return ""
-    cur = torch.cuda.memory_allocated() / 1e6
-    peak = torch.cuda.max_memory_allocated() / 1e6
-    return f"[GPU {cur:.0f}/{peak:.0f} MB]"
-
-
-def flush_gpu():
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-        torch.cuda.reset_peak_memory_stats()
 
 
 # ═══════════════════════ Helpers ═════════════════════════════════════════
@@ -202,7 +182,7 @@ def make_forward_inputs_with_chars_since_nl(
 
 def collect_hook_hiddens(
     dataset,
-    model: PreTrainedModel,
+    model,
     tokenizer,
     hook_name: str,
     batch_size: int,
@@ -211,9 +191,6 @@ def collect_hook_hiddens(
 ) -> list[torch.Tensor]:
     model.eval()
     device = next(model.parameters()).device
-
-    if tokenizer.pad_token_id is None:
-        tokenizer.pad_token = tokenizer.eos_token
 
     collator = DataCollatorWithPadding(
         tokenizer=tokenizer,
@@ -238,9 +215,7 @@ def collect_hook_hiddens(
             }
             for e in examples
         ]
-        b = collator(feats)
-        b["lengths"] = b["attention_mask"].sum(dim=1, dtype=torch.long)
-        return b
+        return collator(feats)
 
     dl = DataLoader(
         dataset,
@@ -251,65 +226,28 @@ def collect_hook_hiddens(
         pin_memory=(device.type == "cuda"),
     )
 
-    _hook_store: dict[str, torch.Tensor] = {}
+    # Pre-collect DataLoader into lists so collect_hook_activations can iterate them
+    ids_masks: list[tuple[torch.Tensor, torch.Tensor]] = []
+    all_lengths: list[list[int]] = []
+    for batch in tqdm(dl, desc="Batching"):
+        all_lengths.append(batch["attention_mask"].sum(dim=1).tolist())
+        ids_masks.append((batch["input_ids"], batch["attention_mask"]))
 
-    def _hook(_module, _input, output):
-        h = output[0] if isinstance(output, tuple) else output
-        _hook_store["h"] = h.detach().cpu()
-
-    handle = model.get_submodule(hook_name).register_forward_hook(_hook)
+    batch_tensors = collect_hook_activations(
+        model, hook_name, ids_masks, device, desc=f"Hiddens ({hook_name})"
+    )
 
     out: list[torch.Tensor] = []
-    try:
-        with torch.inference_mode():
-            for batch in tqdm(dl, desc=f"Hiddens ({hook_name})"):
-                lengths = batch.pop("lengths").tolist()
-                ids = batch["input_ids"].to(device, non_blocking=True)
-                am = batch["attention_mask"].to(device, non_blocking=True)
-
-                model(input_ids=ids, attention_mask=am)
-                h = _hook_store["h"]
-
-                del ids, am, batch
-                if device.type == "cuda":
-                    torch.cuda.empty_cache()
-
-                for i, L in enumerate(lengths):
-                    if tokenizer.padding_side == "left":
-                        out.append(h[i, -L:].contiguous())
-                    else:
-                        out.append(h[i, :L].contiguous())
-                del h
-    finally:
-        handle.remove()
+    for h, lengths in zip(batch_tensors, all_lengths):
+        for i, L in enumerate(lengths):
+            if tokenizer.padding_side == "left":
+                out.append(h[i, -L:].contiguous())
+            else:
+                out.append(h[i, :L].contiguous())
 
     assert len(out) == len(dataset)
     logger.info(f"Collected {len(out)} samples  {gpu_mem_mb()}")
     return out
-
-
-# ═══════════════════ SMIXAE Encoding ═════════════════════════════════════
-
-
-def extract_expert_bottleneck_acts(
-    sae: SAE,
-    all_hiddens: torch.Tensor,
-    batch_size: int = 4096,
-) -> torch.Tensor:
-    device = next(sae.parameters()).device
-    sae_dtype = next(sae.parameters()).dtype
-    chunks: list[torch.Tensor] = []
-
-    sae.eval()
-    with torch.no_grad():
-        for b_cpu in tqdm(all_hiddens.split(batch_size), desc="SMIXAE encode"):
-            b_gpu = b_cpu.to(device=device, dtype=sae_dtype)
-            chunks.append(sae.encode(b_gpu).float().cpu())
-            del b_gpu
-            if device.type == "cuda":
-                torch.cuda.empty_cache()
-
-    return torch.cat(chunks, dim=0)
 
 
 # ═══════════════════ Regression Scoring ══════════════════════════════════
@@ -893,16 +831,13 @@ def main(
     out_dir = os.path.join(output_path, model_slug, ds_slug)
     os.makedirs(out_dir, exist_ok=True)
 
-    # ── Model via HuggingFace ────────────────────────────────────────────
+    # ── Model ────────────────────────────────────────────────────────────
     dtype = (
         torch.float32
         if any(k in model_name for k in ("gpt2", "pythia"))
         else torch.bfloat16
     )
-    logger.info(f"Loading {model_name}  {gpu_mem_mb()}")
-    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype)
-    model = model.to(device).eval()
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model, tokenizer = load_llm(model_name, str(device), dtype=dtype)
     logger.info(
         f"Loaded ({model.config.num_hidden_layers} layers, "
         f"max_pos={model.config.max_position_embeddings})  {gpu_mem_mb()}"
@@ -915,8 +850,6 @@ def main(
     logger.info(f"Hook: {hook_name}  (layer={extract_layer_from_hook(hook_name)})")
 
     tokenizer.padding_side = "left" if "Qwen3" in model_name else "right"
-    if tokenizer.pad_token_id is None:
-        tokenizer.pad_token = tokenizer.eos_token
     assert 0 < max_seq_len <= model.config.max_position_embeddings
 
     # ── Dataset ──────────────────────────────────────────────────────────
@@ -981,16 +914,14 @@ def main(
     # ══════════════════════════════════════════════════════════════════════
     # PHASE 2: SMIXAE encode → CPU, then FREE
     # ══════════════════════════════════════════════════════════════════════
-    logger.info(f"Loading SMIXAE from {smixae_path}  {gpu_mem_mb()}")
-    sae = SAE.load_from_disk(path=smixae_path, device=str(device))
-    sae.eval()
+    sae = load_sae(smixae_path, str(device))
     logger.info(
         f"SMIXAE: {sae.cfg.n_experts} experts, "
         f"d_expert={sae.cfg.d_expert}, d_bottleneck={sae.cfg.d_bottleneck}  "
         f"{gpu_mem_mb()}"
     )
 
-    expert_acts = extract_expert_bottleneck_acts(sae, all_hiddens, sae_batch_size)
+    expert_acts = encode_sae_batched(sae, all_hiddens, sae_batch_size, desc="SMIXAE encode")
     logger.info(f"Expert activations: {expert_acts.shape}  {gpu_mem_mb()}")
 
     threshold = float(sae.threshold.item())
