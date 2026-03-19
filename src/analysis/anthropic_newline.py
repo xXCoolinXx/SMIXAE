@@ -31,8 +31,7 @@ from loguru import logger
 from plotly.subplots import make_subplots
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from transformer_lens import HookedTransformer
-from transformers import DataCollatorWithPadding
+from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorWithPadding, PreTrainedModel
 
 from sae_lens import SAE
 import smixae  # noqa: F401 — registers SMIXAE architecture with SAELens
@@ -81,7 +80,7 @@ def flush_gpu():
 
 
 def extract_layer_from_hook(hook_name: str) -> int | None:
-    m = re.search(r"blocks\.(\d+)\.", hook_name)
+    m = re.search(r"\.(\d+)(?:\.|$)", hook_name)
     return int(m.group(1)) if m else None
 
 
@@ -203,7 +202,7 @@ def make_forward_inputs_with_chars_since_nl(
 
 def collect_hook_hiddens(
     dataset,
-    model: HookedTransformer,
+    model: PreTrainedModel,
     tokenizer,
     hook_name: str,
     batch_size: int,
@@ -212,8 +211,6 @@ def collect_hook_hiddens(
 ) -> list[torch.Tensor]:
     model.eval()
     device = next(model.parameters()).device
-    hook_layer = extract_layer_from_hook(hook_name)
-    stop_at = hook_layer + 1 if hook_layer is not None else None
 
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -254,33 +251,37 @@ def collect_hook_hiddens(
         pin_memory=(device.type == "cuda"),
     )
 
+    _hook_store: dict[str, torch.Tensor] = {}
+
+    def _hook(_module, _input, output):
+        h = output[0] if isinstance(output, tuple) else output
+        _hook_store["h"] = h.detach().cpu()
+
+    handle = model.get_submodule(hook_name).register_forward_hook(_hook)
+
     out: list[torch.Tensor] = []
-    with torch.inference_mode():
-        for batch in tqdm(dl, desc=f"Hiddens ({hook_name})"):
-            lengths = batch.pop("lengths").tolist()
-            ids = batch["input_ids"].to(device, non_blocking=True)
-            am = batch["attention_mask"].to(device, non_blocking=True)
+    try:
+        with torch.inference_mode():
+            for batch in tqdm(dl, desc=f"Hiddens ({hook_name})"):
+                lengths = batch.pop("lengths").tolist()
+                ids = batch["input_ids"].to(device, non_blocking=True)
+                am = batch["attention_mask"].to(device, non_blocking=True)
 
-            _, cache = model.run_with_cache(
-                ids,
-                attention_mask=am,
-                names_filter=hook_name,
-                stop_at_layer=stop_at,
-                prepend_bos=False,
-                return_type=None,
-            )
-            h = cache[hook_name].detach().cpu()
+                model(input_ids=ids, attention_mask=am)
+                h = _hook_store["h"]
 
-            del cache, ids, am, batch
-            if device.type == "cuda":
-                torch.cuda.empty_cache()
+                del ids, am, batch
+                if device.type == "cuda":
+                    torch.cuda.empty_cache()
 
-            for i, L in enumerate(lengths):
-                if tokenizer.padding_side == "left":
-                    out.append(h[i, -L:].contiguous())
-                else:
-                    out.append(h[i, :L].contiguous())
-            del h
+                for i, L in enumerate(lengths):
+                    if tokenizer.padding_side == "left":
+                        out.append(h[i, -L:].contiguous())
+                    else:
+                        out.append(h[i, :L].contiguous())
+                del h
+    finally:
+        handle.remove()
 
     assert len(out) == len(dataset)
     logger.info(f"Collected {len(out)} samples  {gpu_mem_mb()}")
@@ -866,7 +867,7 @@ def main(
     use_chat: bool = typer.Option(False),
     # SMIXAE
     smixae_path: str = typer.Option(..., help="SMIXAE checkpoint dir."),
-    hook_name: str = typer.Option("blocks.20.hook_resid_post"),
+    hook_name: str = typer.Option("model.layers.20"),
     sae_batch_size: int = typer.Option(4096),
     # Scoring
     n_harmonics: int = typer.Option(3, help="Fourier harmonics for periodic scoring."),
@@ -892,34 +893,31 @@ def main(
     out_dir = os.path.join(output_path, model_slug, ds_slug)
     os.makedirs(out_dir, exist_ok=True)
 
-    # ── Model via TransformerLens ────────────────────────────────────────
+    # ── Model via HuggingFace ────────────────────────────────────────────
     dtype = (
         torch.float32
         if any(k in model_name for k in ("gpt2", "pythia"))
         else torch.bfloat16
     )
-    logger.info(f"Loading {model_name} via TransformerLens  {gpu_mem_mb()}")
-    model = HookedTransformer.from_pretrained(
-        model_name,
-        dtype=dtype,
-        device=str(device),
-    )
-    model.eval()
+    logger.info(f"Loading {model_name}  {gpu_mem_mb()}")
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype)
+    model = model.to(device).eval()
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
     logger.info(
-        f"Loaded ({model.cfg.n_layers} layers, n_ctx={model.cfg.n_ctx})  {gpu_mem_mb()}"
+        f"Loaded ({model.config.num_hidden_layers} layers, "
+        f"max_pos={model.config.max_position_embeddings})  {gpu_mem_mb()}"
     )
 
-    if hook_name not in model.hook_dict:
-        resid = sorted(h for h in model.hook_dict if "resid" in h)[:20]
-        raise typer.BadParameter(f"Unknown hook '{hook_name}'. Residual hooks: {resid}")
+    try:
+        model.get_submodule(hook_name)
+    except AttributeError:
+        raise typer.BadParameter(f"Unknown submodule '{hook_name}' in {model_name}.")
     logger.info(f"Hook: {hook_name}  (layer={extract_layer_from_hook(hook_name)})")
 
-    tokenizer = model.tokenizer
-    assert tokenizer is not None
     tokenizer.padding_side = "left" if "Qwen3" in model_name else "right"
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
-    assert 0 < max_seq_len <= model.cfg.n_ctx
+    assert 0 < max_seq_len <= model.config.max_position_embeddings
 
     # ── Dataset ──────────────────────────────────────────────────────────
     logger.info(

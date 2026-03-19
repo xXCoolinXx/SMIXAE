@@ -147,7 +147,7 @@ Add a new generator function in `generate_data.py` following the existing patter
 
 **Always use SAELens / HuggingFace `transformers` for model loading and activation collection.** TransformerLens is significantly slower and is not needed — `categorize_all.py` and `smixae_run.py` both demonstrate the correct approach.
 
-`anthropic_newline.py` still uses TransformerLens (`from transformer_lens import HookedTransformer`) and needs to be migrated to the SAELens pattern.
+All scripts now use HuggingFace for model loading. No TransformerLens usage remains in the codebase.
 
 ### Do NOT assume features are linear
 
@@ -213,6 +213,6 @@ smixae newline main --smixae-path <path/to/checkpoint>
 
 - [ ] Rename `generate_data.py` → `generate_probing_data.py`
 - [ ] Update `generate_probing_data.py` to write output directly to `datasets/probing/`
-- [ ] Migrate `anthropic_newline.py` off TransformerLens to SAELens/HuggingFace pattern
+- [x] Migrate `anthropic_newline.py` off TransformerLens to HuggingFace pattern
 - [ ] Implement steering experiments (`datasets/steering/`)
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
