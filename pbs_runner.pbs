@@ -1,0 +1,30 @@
+#!/bin/bash
+# Generic PBS job runner. Submit via submit_pbs.sh, not directly.
+# The SCRIPT variable must be set via qsub -v SCRIPT=<name>.sh
+
+#PBS -q gpu
+#PBS -l walltime=04:00:00
+#PBS -o job_output.log
+#PBS -e job_error.log
+
+echo "Job started on $(hostname) at $(date)"
+cd $PBS_O_WORKDIR
+mkdir -p logs
+
+LOGFILE=$PBS_O_WORKDIR/logs/debug_$(date +%Y%m%d_%H%M%S).log
+
+# Ensure uv is loaded properly
+if [ -f "$HOME/.bashrc.local" ]; then
+    source "$HOME/.bashrc.local"
+fi
+
+REPO_ROOT="$PBS_O_WORKDIR"
+source "$REPO_ROOT/.venv/bin/activate"
+source "$REPO_ROOT/pbs_common.sh"
+
+{
+    nvidia-smi
+    bash "$SCRIPT" 
+} 2>&1 | tee $LOGFILE
+
+echo "Job finished at $(date)"
