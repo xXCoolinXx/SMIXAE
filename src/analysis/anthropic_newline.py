@@ -95,14 +95,8 @@ def make_line_wrapper(line_length: int):
 
 def assert_chars_since_nl_map(line_length: int):
     def _fn(batch):
-        bad = [
-            (i, m)
-            for i, seq in enumerate(batch["chars_since_nl"])
-            if (m := max(seq, default=0)) > line_length
-        ]
-        assert not bad, (
-            f"chars_since_nl > {line_length} in {len(bad)} seqs; first={bad[0]}"
-        )
+        bad = [(i, m) for i, seq in enumerate(batch["chars_since_nl"]) if (m := max(seq, default=0)) > line_length]
+        assert not bad, f"chars_since_nl > {line_length} in {len(bad)} seqs; first={bad[0]}"
         return batch
 
     return _fn
@@ -202,15 +196,9 @@ def collect_hook_hiddens(
     def collate_fn(examples):
         feats = [
             {
-                "input_ids": (
-                    e["input_ids"].tolist()
-                    if torch.is_tensor(e["input_ids"])
-                    else e["input_ids"]
-                ),
+                "input_ids": (e["input_ids"].tolist() if torch.is_tensor(e["input_ids"]) else e["input_ids"]),
                 "attention_mask": (
-                    e["attention_mask"].tolist()
-                    if torch.is_tensor(e["attention_mask"])
-                    else e["attention_mask"]
+                    e["attention_mask"].tolist() if torch.is_tensor(e["attention_mask"]) else e["attention_mask"]
                 ),
             }
             for e in examples
@@ -233,9 +221,7 @@ def collect_hook_hiddens(
         all_lengths.append(batch["attention_mask"].sum(dim=1).tolist())
         ids_masks.append((batch["input_ids"], batch["attention_mask"]))
 
-    batch_tensors = collect_hook_activations(
-        model, hook_name, ids_masks, device, desc=f"Hiddens ({hook_name})"
-    )
+    batch_tensors = collect_hook_activations(model, hook_name, ids_masks, device, desc=f"Hiddens ({hook_name})")
 
     out: list[torch.Tensor] = []
     for h, lengths in zip(batch_tensors, all_lengths):
@@ -310,9 +296,7 @@ def compute_expert_scores(
         y_target = chars.view(1, N, 1).expand(nc, -1, -1)  # (nc, N, 1)
         beta = torch.linalg.lstsq(X_dec.permute(1, 0, 2), y_target).solution
         y_hat = (X_dec.permute(1, 0, 2) @ beta).squeeze(-1)  # (nc, N)
-        dec_r2[start:end] = (
-            1 - ((chars.unsqueeze(0) - y_hat) ** 2).sum(1) / ss_tot_chars
-        )
+        dec_r2[start:end] = 1 - ((chars.unsqueeze(0) - y_hat) ** 2).sum(1) / ss_tot_chars
 
         # Per-dim Pearson correlation
         acts_c = acts_chunk - acts_chunk.mean(dim=0, keepdim=True)
@@ -623,8 +607,7 @@ def plot_multi_method_class_means(
                         marker=mk,
                         showlegend=False,
                         hovertemplate=(
-                            "b0:%{x:.3f}<br>b1:%{y:.3f}<br>b2:%{z:.3f}<br>"
-                            "chars:%{marker.color:.0f}<extra></extra>"
+                            "b0:%{x:.3f}<br>b1:%{y:.3f}<br>b2:%{z:.3f}<br>chars:%{marker.color:.0f}<extra></extra>"
                         ),
                     ),
                     row=row,
@@ -768,9 +751,7 @@ def plot_expert_dim_analysis(
         fig.update_yaxes(title_text=f"dim {j}", row=1, col=c)
 
     # Build summary line for title
-    method_scores = "  ".join(
-        f"{METHOD_SHORT[m]}={scores_row.get(m, 0):.4f}" for m in VALID_RANK_BY
-    )
+    method_scores = "  ".join(f"{METHOD_SHORT[m]}={scores_row.get(m, 0):.4f}" for m in VALID_RANK_BY)
     fig.update_layout(
         title=f"Expert {expert_id} — Per-Dim Analysis  ({method_scores})",
         height=400,
@@ -812,9 +793,7 @@ def main(
     # Visualisation
     plot_top_k: int = typer.Option(10, help="Top-k experts to plot per method."),
     plot_max_points: int = typer.Option(50_000),
-    dim_analysis_top_n: int = typer.Option(
-        3, help="Generate dim analysis for top N experts per method."
-    ),
+    dim_analysis_top_n: int = typer.Option(3, help="Generate dim analysis for top N experts per method."),
     # Misc
     seed: int = typer.Option(42),
 ) -> None:
@@ -832,11 +811,7 @@ def main(
     os.makedirs(out_dir, exist_ok=True)
 
     # ── Model ────────────────────────────────────────────────────────────
-    dtype = (
-        torch.float32
-        if any(k in model_name for k in ("gpt2", "pythia"))
-        else torch.bfloat16
-    )
+    dtype = torch.float32 if any(k in model_name for k in ("gpt2", "pythia")) else torch.bfloat16
     model, tokenizer = load_llm(model_name, str(device), dtype=dtype)
     logger.info(
         f"Loaded ({model.config.num_hidden_layers} layers, "
@@ -853,13 +828,9 @@ def main(
     assert 0 < max_seq_len <= model.config.max_position_embeddings
 
     # ── Dataset ──────────────────────────────────────────────────────────
-    logger.info(
-        f"Streaming {dataset_name} (filter: len>{line_length * min_lines}, no \\n)"
-    )
+    logger.info(f"Streaming {dataset_name} (filter: len>{line_length * min_lines}, no \\n)")
     stream = load_dataset(dataset_name, split="train", streaming=True)
-    stream = stream.filter(
-        lambda x: len(x["text"]) > line_length * min_lines and "\n" not in x["text"]
-    )
+    stream = stream.filter(lambda x: len(x["text"]) > line_length * min_lines and "\n" not in x["text"])
     dataset = Dataset.from_generator(lambda: islice(stream, num_samples))
     logger.info(f"Materialised {len(dataset)} samples")
 
@@ -871,9 +842,7 @@ def main(
     )
     dataset = dataset.with_format(
         "torch",
-        columns=[
-            c for c in dataset.column_names if c in ("input_ids", "attention_mask")
-        ],
+        columns=[c for c in dataset.column_names if c in ("input_ids", "attention_mask")],
         output_all_columns=True,
     )
     dataset = dataset.map(
@@ -897,9 +866,7 @@ def main(
     )
 
     all_hiddens = torch.cat(hiddens_list, dim=0)
-    all_labels = torch.cat(
-        [torch.as_tensor(c, dtype=torch.long) for c in dataset["chars_since_nl"]]
-    )
+    all_labels = torch.cat([torch.as_tensor(c, dtype=torch.long) for c in dataset["chars_since_nl"]])
     assert all_hiddens.shape[0] == all_labels.shape[0]
 
     keep = all_labels > 0
@@ -947,10 +914,7 @@ def main(
     display_cols = ["expert_id"] + VALID_RANK_BY
     for method in VALID_RANK_BY:
         ranked = scores_df.sort_values(method, ascending=False)
-        logger.info(
-            f"\nTop-10 by {method}:\n"
-            f"{ranked[display_cols].head(10).to_string(index=False)}"
-        )
+        logger.info(f"\nTop-10 by {method}:\n{ranked[display_cols].head(10).to_string(index=False)}")
 
     # Class stats (original fine-grained labels)
     class_means, firing_rates, class_labels_arr = compute_expert_class_stats(
@@ -980,14 +944,11 @@ def main(
     top_expert_ids: set[int] = set()
     for method in VALID_RANK_BY:
         top_expert_ids.update(
-            scores_df.sort_values(method, ascending=False)
-            .head(dim_analysis_top_n)["expert_id"]
-            .values.tolist()
+            scores_df.sort_values(method, ascending=False).head(dim_analysis_top_n)["expert_id"].values.tolist()
         )
 
     logger.info(
-        f"Generating dim analysis for {len(top_expert_ids)} unique experts "
-        f"(top-{dim_analysis_top_n} per method)"
+        f"Generating dim analysis for {len(top_expert_ids)} unique experts (top-{dim_analysis_top_n} per method)"
     )
     for eid in sorted(top_expert_ids):
         row = scores_df[scores_df["expert_id"] == eid].iloc[0]

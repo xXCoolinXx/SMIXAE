@@ -1,7 +1,7 @@
 import typer
 
-from analysis.categorize_all import app as probe
 from analysis.anthropic_newline import app as newline
+from analysis.categorize_all import app as probe
 from analysis.generate_probing_data import app as generate_probing_data
 from analysis.generate_steering_data import app as generate_steering_data
 from analysis.steer import app as steer

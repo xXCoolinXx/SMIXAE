@@ -12,6 +12,8 @@ Writes prompt CSVs to datasets/steering/:
       Columns: Prompt, Current_Hour, Start_Hour, Expected_Hours
       One row per (curr_hour, delta) where delta = 1 … max_delta.
 """
+
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -19,39 +21,79 @@ import typer
 
 # Canonical 24-hour ordering — index determines the ordering prefix in probing labels.
 HOURS = [
-    "1AM", "2AM", "3AM", "4AM", "5AM", "6AM",
-    "7AM", "8AM", "9AM", "10AM", "11AM", "12PM",
-    "1PM", "2PM", "3PM", "4PM", "5PM", "6PM",
-    "7PM", "8PM", "9PM", "10PM", "11PM", "12AM",
+    "1AM",
+    "2AM",
+    "3AM",
+    "4AM",
+    "5AM",
+    "6AM",
+    "7AM",
+    "8AM",
+    "9AM",
+    "10AM",
+    "11AM",
+    "12PM",
+    "1PM",
+    "2PM",
+    "3PM",
+    "4PM",
+    "5PM",
+    "6PM",
+    "7PM",
+    "8PM",
+    "9PM",
+    "10PM",
+    "11PM",
+    "12AM",
 ]
+
+_FRIENDS = ["Alex", "Sam", "Jordan", "Taylor", "Morgan"]
 
 app = typer.Typer()
 
 
+def fmt_hour(h: str) -> str:
+    """Convert short hour string to clock format: '1AM' → '1:00AM', '12PM' → '12:00PM'."""
+    return re.sub(r"(AM|PM)$", r":00\1", h)
+
+
 def generate_hours_current_time() -> pd.DataFrame:
-    """Task 1: all (src_hour, tgt_hour) pairs — 24 × 23 = 552 rows."""
+    """Task 1: all (src_hour, tgt_hour) pairs — 24 × 23 = 552 rows.
+
+    Prompt: "You glance at the clock and find it is X:00YM. Your friend Z asks
+    you for the time, and you respond, saying it is"
+    """
     rows = []
+    i = 0
     for src in HOURS:
         for tgt in HOURS:
             if src == tgt:
                 continue
+            friend = _FRIENDS[i % len(_FRIENDS)]
             rows.append(
                 dict(
-                    Prompt=f"Right now it is {src}. What time is it?",
+                    Prompt=(
+                        f"You glance at the clock and find it is {fmt_hour(src)}. "
+                        f"Your friend {friend} asks you for the time, "
+                        f"and you respond, saying it is"
+                    ),
                     Source_Hour=src,
                     Target_Hour=tgt,
+                    Friend=friend,
                 )
             )
+            i += 1
     return pd.DataFrame(rows)
 
 
 def generate_hours_elapsed_time(max_delta: int = 12) -> pd.DataFrame:
     """Task 2: (curr_hour, start_hour) pairs for delta = 1 … max_delta.
 
-    The baseline answer is always ``delta`` hours.
-    The steered target shifts the perceived current time by +delta, so the
-    model's answer should become 0 (or some other value depending on the
-    steering direction).
+    Prompt: "You check your phone, and see that the current time is X:00YM.
+    You realize that, since Z:00WM, the amount of hours that has passed is"
+
+    The baseline answer is always ``delta`` hours. Steering shifts the
+    perceived current time by +delta hours.
 
     Args:
         max_delta: Maximum elapsed-time delta to generate (default 12 hours).
@@ -65,8 +107,9 @@ def generate_hours_elapsed_time(max_delta: int = 12) -> pd.DataFrame:
             rows.append(
                 dict(
                     Prompt=(
-                        f"Right now it is {curr}. "
-                        f"How much time has it been since {start}?"
+                        f"You check your phone, and see that the current time is "
+                        f"{fmt_hour(curr)}. You realize that, since {fmt_hour(start)}, "
+                        f"the amount of hours that has passed is"
                     ),
                     Current_Hour=curr,
                     Start_Hour=start,
@@ -78,12 +121,8 @@ def generate_hours_elapsed_time(max_delta: int = 12) -> pd.DataFrame:
 
 @app.command()
 def generate(
-    output_dir: str = typer.Option(
-        "datasets/steering", help="Directory to write CSV files into."
-    ),
-    max_delta: int = typer.Option(
-        12, help="Maximum elapsed-time delta for Task 2 (hours)."
-    ),
+    output_dir: str = typer.Option("datasets/steering", help="Directory to write CSV files into."),
+    max_delta: int = typer.Option(12, help="Maximum elapsed-time delta for Task 2 (hours)."),
 ):
     """Generate all steering prompt datasets and write them to output_dir."""
     out = Path(output_dir)

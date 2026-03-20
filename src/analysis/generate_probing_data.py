@@ -506,9 +506,7 @@ app = typer.Typer()
 
 @app.command()
 def generate(
-    output_dir: str = typer.Option(
-        "datasets/probing", help="Directory to write CSV files into."
-    ),
+    output_dir: str = typer.Option("datasets/probing", help="Directory to write CSV files into."),
 ):
     """Generate all probing datasets and write them to output_dir."""
     out = Path(output_dir)

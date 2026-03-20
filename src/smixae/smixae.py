@@ -2,10 +2,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 import torch
-from torch import nn
-from transformer_lens.hook_points import HookPoint
-from typing_extensions import override
-
 from sae_lens.saes.batchtopk_sae import BatchTopK
 from sae_lens.saes.sae import (
     SAE,
@@ -16,6 +12,9 @@ from sae_lens.saes.sae import (
     TrainStepInput,
     TrainStepOutput,
 )
+from torch import nn
+from transformer_lens.hook_points import HookPoint
+from typing_extensions import override
 
 
 @dataclass
@@ -92,15 +91,11 @@ class SMIXAE(SAE[SMIXAEConfig]):
         """
         Encode the input tensor into the feature space.
         """
-        _, _, hidden_pre_bottleneck = smixae_encode(
-            self, x
-        )  # (batch, n_experts, d_bottleneck)
+        _, _, hidden_pre_bottleneck = smixae_encode(self, x)  # (batch, n_experts, d_bottleneck)
 
         bottleneck_mask = hidden_pre_bottleneck.norm(dim=-1) > self.threshold  # type: ignore # (batch, n_experts) mask
 
-        return hidden_pre_bottleneck * bottleneck_mask.unsqueeze(
-            -1
-        )  # Apply mask per bottleneck
+        return hidden_pre_bottleneck * bottleneck_mask.unsqueeze(-1)  # Apply mask per bottleneck
 
     def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
         """
@@ -116,7 +111,7 @@ class SMIXAE(SAE[SMIXAEConfig]):
         return self.reshape_fn_out(sae_out_pre, self.d_head)
 
     def get_activation_fn(self) -> Callable[[torch.Tensor], torch.Tensor]:
-        # use leaky relu to avoid dead relus at the latent level, neg slop is small enough to avoid impacting expert norm
+        # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
 
     @property
@@ -148,7 +143,8 @@ class SMIXAETrainingConfig(TrainingSAEConfig):
     rescale_acts_by_decoder_norm: bool = True
 
     threshold_lr: float = 0.1
-    dead_after_n_passes: int = 1000  # If an expert hasn't fired for 1k passes, it has sadly passed away and we give it emergency aux loss to resucitate
+    # experts inactive for this many passes receive emergency auxiliary loss to recover them
+    dead_after_n_passes: int = 1000
 
     @override
     @classmethod
@@ -199,9 +195,7 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
             ),
         )
 
-        self.cfg.apply_b_dec_to_input = (
-            False  # True  # True  # Remove bias term - destroys structure
-        )
+        self.cfg.apply_b_dec_to_input = False  # True  # True  # Remove bias term - destroys structure
         # self.b_dec.requires_grad_(False)
 
     def initialize_weights(self) -> None:
@@ -212,14 +206,10 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
     def get_coefficients(self) -> dict[str, TrainCoefficientConfig | float]:
         return {}
 
-    def encode_with_hidden_pre(
-        self, x: torch.Tensor
-    ) -> tuple[torch.Tensor, torch.Tensor]:
+    def encode_with_hidden_pre(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         h_latent, hidden_pre_latent, hidden_pre_bottleneck = smixae_encode(self, x)
 
-        batch_norm_mask = (
-            self.batchtopk(hidden_pre_bottleneck.norm(dim=-1)) > 0
-        )  # (batch_size, n_experts)
+        batch_norm_mask = self.batchtopk(hidden_pre_bottleneck.norm(dim=-1)) > 0  # (batch_size, n_experts)
 
         # Stash
         self.hidden_pre_bottleneck = hidden_pre_bottleneck
@@ -305,29 +295,20 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
 
         metrics = {}
 
-        metrics["experts_above_1e-3_L2"] = (
-            (self.h_bottleneck.norm(dim=-1) > 1e-3).float().sum(dim=-1).mean()
-        )
+        metrics["experts_above_1e-3_L2"] = (self.h_bottleneck.norm(dim=-1) > 1e-3).float().sum(dim=-1).mean()
 
-        metrics["experts_above_1e-1_L2"] = (
-            (self.h_bottleneck.norm(dim=-1) > 1e-1).float().sum(dim=-1).mean()
-        )
+        metrics["experts_above_1e-1_L2"] = (self.h_bottleneck.norm(dim=-1) > 1e-1).float().sum(dim=-1).mean()
 
         post_act_norms = self.h_bottleneck.norm(dim=-1)
 
         metrics["expert_norm_mean"] = post_act_norms[post_act_norms > 0].mean()
 
-        metrics["dead_experts"] = (
-            (self.n_passes_since_fired > self.cfg.dead_after_n_passes).sum().item()
-        )
+        metrics["dead_experts"] = (self.n_passes_since_fired > self.cfg.dead_after_n_passes).sum().item()
 
         # Track this during training to make sure the threshold is working properly - woops
         metrics["act_threshold"] = self.threshold
         metrics["experts_above_threshold"] = (
-            (self.hidden_pre_bottleneck.norm(dim=-1) > self.threshold)
-            .float()
-            .sum(dim=-1)
-            .mean()
+            (self.hidden_pre_bottleneck.norm(dim=-1) > self.threshold).float().sum(dim=-1).mean()
         )
 
         # This is needed if we use something other than ReLU to avoid dead neurons - eg LeakyReLU or Swish
@@ -423,7 +404,7 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         return torch.linalg.matrix_norm(W_eff, ord="fro", dim=(-2, -1))
 
     def get_activation_fn(self) -> Callable[[torch.Tensor], torch.Tensor]:
-        # use leaky relu to avoid dead relus at the latent level, neg slop is small enough to avoid impacting expert norm
+        # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
 
 
@@ -472,17 +453,13 @@ def _init_weights_smixae(
     nn.init.kaiming_uniform_(sae.W_latent_dec)
 
 
-def smixae_encode(
-    sae: SMIXAE | SMIXAETraining, x: torch.Tensor
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+def smixae_encode(sae: SMIXAE | SMIXAETraining, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     sae_in = sae.process_sae_in(x)
 
     # Standard forward
     hidden_pre_latent = sae_in @ sae.W_enc + sae.b_enc
     h_latent = sae.activation_fn(hidden_pre_latent)
-    h_latent_unflattened = h_latent.unflatten(
-        -1, (sae.cfg.n_experts, sae.cfg.d_expert)
-    )  # Unflatten
+    h_latent_unflattened = h_latent.unflatten(-1, (sae.cfg.n_experts, sae.cfg.d_expert))  # Unflatten
 
     # Bottleneck
     hidden_pre_bottleneck = (
@@ -491,8 +468,6 @@ def smixae_encode(
     )  # (batch_size, n_experts, d_bottelneck)
 
     if sae.cfg.rescale_acts_by_decoder_norm:
-        hidden_pre_bottleneck = (
-            hidden_pre_bottleneck * sae.effective_decoder_norm.unsqueeze(-1)
-        )
+        hidden_pre_bottleneck = hidden_pre_bottleneck * sae.effective_decoder_norm.unsqueeze(-1)
 
     return h_latent, hidden_pre_latent, hidden_pre_bottleneck

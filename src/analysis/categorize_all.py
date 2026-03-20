@@ -13,8 +13,8 @@ from tqdm import tqdm
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
-from smixae import SMIXAE
 from analysis.utils import collect_activations, get_sae_activations, load_llm, load_sae
+from smixae import SMIXAE
 
 
 # ======================================================================
@@ -103,25 +103,16 @@ def build_dataset_html(
         scatter_id = f"scatter_{idx}"
         active_cls = " active" if idx == 0 else ""
 
-        tab_buttons.append(
-            f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">'
-            f"{tab_label}</button>"
-        )
+        tab_buttons.append(f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">{tab_label}</button>')
 
         plot_divs = f'<div class="plot-box" id="{scatter_id}"></div>'
         if mean_fig is not None:
             mean_id = f"mean_{idx}"
             plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
-            figures_json_parts.append(
-                f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}'
-            )
+            figures_json_parts.append(f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}')
 
-        tab_panes.append(
-            f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>'
-        )
-        figures_json_parts.append(
-            f'"{scatter_id}": {pio.to_json(scatter_fig, engine="json")}'
-        )
+        tab_panes.append(f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>')
+        figures_json_parts.append(f'"{scatter_id}": {pio.to_json(scatter_fig, engine="json")}')
 
     html = _HTML_TEMPLATE.format(
         title=dataset_title,
@@ -166,20 +157,18 @@ def run_pipeline(
     print(f"{'=' * 60}")
 
     # ── 1. Collect LLM activations ────────────────────────────────────
-    llm_acts, str_tokens, labels, label_names, last_token_positions, n_classes = (
-        collect_activations(
-            model=model,
-            tokenizer=tokenizer,
-            hook_name=hook_point,
-            max_length=input_sequence_length,
-            n_input_samples=n_input_samples,
-            device=device,
-            llm_batch_size=llm_batch_size,
-            dataset_name=dataset_name,
-            dataframe_path=cfg.dataframe_path or None,
-            text_column=cfg.text_column,
-            label_column=cfg.label_column,
-        )
+    llm_acts, str_tokens, labels, label_names, last_token_positions, n_classes = collect_activations(
+        model=model,
+        tokenizer=tokenizer,
+        hook_name=hook_point,
+        max_length=input_sequence_length,
+        n_input_samples=n_input_samples,
+        device=device,
+        llm_batch_size=llm_batch_size,
+        dataset_name=dataset_name,
+        dataframe_path=cfg.dataframe_path or None,
+        text_column=cfg.text_column,
+        label_column=cfg.label_column,
     )
 
     is_labelled = labels is not None
@@ -218,16 +207,9 @@ def run_pipeline(
     # ── 4. Sort ───────────────────────────────────────────────────────
     effective_sort_by = sort_by
     if sort_by == "auto":
-        effective_sort_by = (
-            ("adjusted_fisher" if adjusted_fisher else "fisher")
-            if is_labelled
-            else "continuity"
-        )
+        effective_sort_by = ("adjusted_fisher" if adjusted_fisher else "fisher") if is_labelled else "continuity"
 
-    print(
-        f"Sorting by {effective_sort_by} "
-        f"({'ascending' if sort_ascending else 'descending'})…"
-    )
+    print(f"Sorting by {effective_sort_by} ({'ascending' if sort_ascending else 'descending'})…")
     experts.sort(
         key=lambda e: e.sort_key(effective_sort_by),
         reverse=not sort_ascending,
@@ -271,9 +253,7 @@ def run_pipeline(
             color_scale=cfg.effective_color_scale,
             continuous_color=cfg.effective_continuous_color,
         )
-        tab_label = (
-            f"#{i + 1} E{expert.expert_id} ({effective_sort_by}={score_val:.3f})"
-        )
+        tab_label = f"#{i + 1} E{expert.expert_id} ({effective_sort_by}={score_val:.3f})"
         expert_entries.append((tab_label, scatter_fig, mean_fig))
 
     html_str = build_dataset_html(expert_entries, f"{subdir} — Expert Analysis")
@@ -298,22 +278,14 @@ _SHARED_OPTIONS = dict(
     sort_ascending=typer.Option(False, help="Sort ascending instead of descending."),
     n_input_samples=typer.Option(1000, help="Number of input texts to sample"),
     input_sequence_length=typer.Option(128, help="Input sequence length"),
-    context_window_display=typer.Option(
-        10, help="Number of surrounding tokens to display"
-    ),
-    n_interesting_experts_to_plot=typer.Option(
-        50, help="Number of top experts to plot"
-    ),
+    context_window_display=typer.Option(10, help="Number of surrounding tokens to display"),
+    n_interesting_experts_to_plot=typer.Option(50, help="Number of top experts to plot"),
     device=typer.Option("cuda", help="Device to load models on"),
     llm_batch_size=typer.Option(16, help="Batch size for base LLM inference"),
     sae_batch_size=typer.Option(2048, help="Batch size for SAE inference"),
     k_neighbors=typer.Option(10, help="Number of neighbors for continuity"),
-    active_threshold=typer.Option(
-        1e-5, help="L2 norm threshold to consider an expert active"
-    ),
-    min_points=typer.Option(
-        100, help="Minimum active tokens required to evaluate an expert"
-    ),
+    active_threshold=typer.Option(1e-5, help="L2 norm threshold to consider an expert active"),
+    min_points=typer.Option(100, help="Minimum active tokens required to evaluate an expert"),
     max_points=typer.Option(1000, help="Max active tokens per expert (0 = no cap)"),
     adjusted_fisher=typer.Option(
         False,
@@ -327,16 +299,10 @@ _SHARED_OPTIONS = dict(
 def single(
     checkpoint_path: str = typer.Option(..., help="Path to your checkpoint"),
     base_model_name: str = typer.Option(..., help="Model to load"),
-    hook_point: str = typer.Option(
-        ..., help="The hook point where your SAE was trained"
-    ),
+    hook_point: str = typer.Option(..., help="The hook point where your SAE was trained"),
     # ── data source ──
-    dataset_name: str | None = typer.Option(
-        None, help="HF dataset to stream (unlabelled)"
-    ),
-    dataframe_path: str | None = typer.Option(
-        None, help="Path to a CSV / Parquet / JSON(L) file"
-    ),
+    dataset_name: str | None = typer.Option(None, help="HF dataset to stream (unlabelled)"),
+    dataframe_path: str | None = typer.Option(None, help="Path to a CSV / Parquet / JSON(L) file"),
     text_column: str = typer.Option("text", help="Column containing text"),
     label_column: str | None = typer.Option(None, help="Column containing labels"),
     # ── sorting ──
@@ -344,31 +310,19 @@ def single(
         "auto",
         help="Metric to sort by: 'fisher', 'adjusted_fisher', 'continuity', or 'auto'.",
     ),
-    sort_ascending: bool = typer.Option(
-        False, help="Sort ascending instead of descending."
-    ),
+    sort_ascending: bool = typer.Option(False, help="Sort ascending instead of descending."),
     # ── general ──
     n_input_samples: int = typer.Option(1000, help="Number of input texts to sample"),
     input_sequence_length: int = typer.Option(128, help="Input sequence length"),
-    context_window_display: int = typer.Option(
-        10, help="Number of surrounding tokens to display"
-    ),
-    n_interesting_experts_to_plot: int = typer.Option(
-        50, help="Number of top experts to plot"
-    ),
+    context_window_display: int = typer.Option(10, help="Number of surrounding tokens to display"),
+    n_interesting_experts_to_plot: int = typer.Option(50, help="Number of top experts to plot"),
     device: str = typer.Option("cuda", help="Device to load models on"),
     llm_batch_size: int = typer.Option(16, help="Batch size for base LLM inference"),
     sae_batch_size: int = typer.Option(2048, help="Batch size for SAE inference"),
     k_neighbors: int = typer.Option(10, help="Number of neighbors for continuity"),
-    active_threshold: float = typer.Option(
-        1e-5, help="L2 norm threshold to consider an expert active"
-    ),
-    min_points: int = typer.Option(
-        100, help="Minimum active tokens required to evaluate an expert"
-    ),
-    max_points: int = typer.Option(
-        1000, help="Max active tokens per expert (0 = no cap)"
-    ),
+    active_threshold: float = typer.Option(1e-5, help="L2 norm threshold to consider an expert active"),
+    min_points: int = typer.Option(100, help="Minimum active tokens required to evaluate an expert"),
+    max_points: int = typer.Option(1000, help="Max active tokens per expert (0 = no cap)"),
     adjusted_fisher: bool = typer.Option(
         False,
         help="Sort by Fisher × (n_classes_present / n_classes) to penalise low class coverage",
@@ -377,12 +331,8 @@ def single(
         False,
         help="Color points by continuous label ordinal rather than discrete categories",
     ),
-    color_scale: str = typer.Option(
-        "Plasma", help="Plotly continuous colorscale name (e.g. Plasma, Viridis, RdBu)"
-    ),
-    output_dir: str = typer.Option(
-        "expert_plots", help="Base directory to save the HTML plots"
-    ),
+    color_scale: str = typer.Option("Plasma", help="Plotly continuous colorscale name (e.g. Plasma, Viridis, RdBu)"),
+    output_dir: str = typer.Option("expert_plots", help="Base directory to save the HTML plots"),
 ):
     if dataset_name is None and dataframe_path is None:
         dataset_name = "monology/pile-uncopyrighted"
@@ -440,9 +390,7 @@ def single(
 def all_datasets(
     checkpoint_path: str = typer.Option(..., help="Path to your checkpoint"),
     base_model_name: str = typer.Option(..., help="Model to load"),
-    hook_point: str = typer.Option(
-        ..., help="The hook point where your SAE was trained"
-    ),
+    hook_point: str = typer.Option(..., help="The hook point where your SAE was trained"),
     datasets_config: str = typer.Option(
         ...,
         help=(
@@ -456,38 +404,24 @@ def all_datasets(
         "auto",
         help="Metric to sort by: 'fisher', 'adjusted_fisher', 'continuity', or 'auto'.",
     ),
-    sort_ascending: bool = typer.Option(
-        False, help="Sort ascending instead of descending."
-    ),
+    sort_ascending: bool = typer.Option(False, help="Sort ascending instead of descending."),
     # ── general ──
     n_input_samples: int = typer.Option(1000, help="Number of input texts to sample"),
     input_sequence_length: int = typer.Option(128, help="Input sequence length"),
-    context_window_display: int = typer.Option(
-        10, help="Number of surrounding tokens to display"
-    ),
-    n_interesting_experts_to_plot: int = typer.Option(
-        50, help="Number of top experts to plot"
-    ),
+    context_window_display: int = typer.Option(10, help="Number of surrounding tokens to display"),
+    n_interesting_experts_to_plot: int = typer.Option(50, help="Number of top experts to plot"),
     device: str = typer.Option("cuda", help="Device to load models on"),
     llm_batch_size: int = typer.Option(16, help="Batch size for base LLM inference"),
     sae_batch_size: int = typer.Option(2048, help="Batch size for SAE inference"),
     k_neighbors: int = typer.Option(10, help="Number of neighbors for continuity"),
-    active_threshold: float = typer.Option(
-        1e-5, help="L2 norm threshold to consider an expert active"
-    ),
-    min_points: int = typer.Option(
-        100, help="Minimum active tokens required to evaluate an expert"
-    ),
-    max_points: int = typer.Option(
-        1000, help="Max active tokens per expert (0 = no cap)"
-    ),
+    active_threshold: float = typer.Option(1e-5, help="L2 norm threshold to consider an expert active"),
+    min_points: int = typer.Option(100, help="Minimum active tokens required to evaluate an expert"),
+    max_points: int = typer.Option(1000, help="Max active tokens per expert (0 = no cap)"),
     adjusted_fisher: bool = typer.Option(
         False,
         help="Sort by Fisher × (n_classes_present / n_classes) to penalise low class coverage",
     ),
-    output_dir: str = typer.Option(
-        "expert_plots", help="Base directory to save the HTML plots"
-    ),
+    output_dir: str = typer.Option("expert_plots", help="Base directory to save the HTML plots"),
     continuity_dataset: str = typer.Option(
         "monology/pile-uncopyrighted",
         help="HuggingFace dataset to stream for the unlabelled continuity pass",

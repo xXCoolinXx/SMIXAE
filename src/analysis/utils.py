@@ -1,4 +1,5 @@
 """Shared utilities for SMIXAE analysis scripts."""
+
 from __future__ import annotations
 
 import gc
@@ -7,19 +8,19 @@ from pathlib import Path
 from typing import Any, Iterable
 
 import pandas as pd
-from datasets import load_dataset
 import plotly.express as px
 import torch
 import torch.nn.functional as F
+from datasets import load_dataset
 from loguru import logger
 from plotly.graph_objects import Figure
 from sae_lens import SAE
-from smixae import SMIXAE
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
+from smixae import SMIXAE
 
 # ── GPU memory ────────────────────────────────────────────────────────────────
 
@@ -172,11 +173,7 @@ class Expert:
         n_classes: int = 0,
     ):
         self.expert_activations = expert_activations[active_mask].float().cpu()
-        self.llm_activations = (
-            llm_activations[active_mask].float().cpu()
-            if llm_activations is not None
-            else None
-        )
+        self.llm_activations = llm_activations[active_mask].float().cpu() if llm_activations is not None else None
         self.labels = labels[active_mask].long().cpu() if labels is not None else None
         self.seq_positions = seq_positions
         self.n_classes = n_classes
@@ -203,11 +200,7 @@ class Expert:
 
     @property
     def adjusted_fisher_score(self) -> float | None:
-        if (
-            self.fisher_score is None
-            or self.n_unique_labels is None
-            or self.n_classes == 0
-        ):
+        if self.fisher_score is None or self.n_unique_labels is None or self.n_classes == 0:
             return None
         return self.fisher_score * (self.n_unique_labels / self.n_classes)
 
@@ -218,20 +211,14 @@ class Expert:
             "continuity": self.mean_continuity,
         }
         if sort_by not in mapping:
-            raise ValueError(
-                f"Unknown sort_by: {sort_by}. Options: {', '.join(mapping.keys())}"
-            )
+            raise ValueError(f"Unknown sort_by: {sort_by}. Options: {', '.join(mapping.keys())}")
         v = mapping[sort_by]
         return v if v is not None else float("-inf")
 
     # ── continuity (unlabelled) ───────────────────────────────────────
-    def evaluate_manifold(
-        self, k_neighbors: int = 10, device: str = "cuda"
-    ) -> torch.Tensor:
+    def evaluate_manifold(self, k_neighbors: int = 10, device: str = "cuda") -> torch.Tensor:
         if self.llm_activations is None:
-            raise ValueError(
-                "evaluate_manifold requires llm_activations, which was not provided."
-            )
+            raise ValueError("evaluate_manifold requires llm_activations, which was not provided.")
         expert_acts_gpu = self.expert_activations.to(device)
         llm_acts_gpu = self.llm_activations.to(device)
 
@@ -308,9 +295,7 @@ class Expert:
         return self.fisher_score
 
     # ── context windows ───────────────────────────────────────────────
-    def get_context_windows(
-        self, str_tokens: list[list[str]], context_window: int = 10
-    ) -> list[str]:
+    def get_context_windows(self, str_tokens: list[list[str]], context_window: int = 10) -> list[str]:
         contexts = []
         for batch_idx, seq_idx in self.active_indices:
             seq = str_tokens[batch_idx]
@@ -361,9 +346,7 @@ class Expert:
             cont_list = self.local_continuity_scores.numpy().tolist()
 
         if self.labels is not None and label_names is not None:
-            label_strs = [
-                _strip_prefix(label_names.get(int(l.item()), str(l.item()))) for l in self.labels
-            ]
+            label_strs = [_strip_prefix(label_names.get(int(lbl.item()), str(lbl.item()))) for lbl in self.labels]
             label_ids = self.labels.tolist()
             df_dict: dict[str, Any] = {
                 "x": pts[:, 0].tolist(),
@@ -415,11 +398,7 @@ class Expert:
                 fig.update_layout(showlegend=True)
         else:
             color_col = "Continuity"
-            color_vals: list[float] = (
-                cont_list
-                if self.local_continuity_scores is not None
-                else [0.0] * pts.shape[0]
-            )
+            color_vals: list[float] = cont_list if self.local_continuity_scores is not None else [0.0] * pts.shape[0]
 
             df_dict = {
                 "x": pts[:, 0].tolist(),
@@ -607,13 +586,11 @@ def collect_activations(
     n_classes: int = 0
 
     if raw_labels is not None and len(raw_labels) > 0:
-        unique = sorted({str(l) for l in raw_labels})
+        unique = sorted({str(lbl) for lbl in raw_labels})
         n_classes = len(unique)
-        label_to_id = {l: i for i, l in enumerate(unique)}
-        label_names = {i: l for l, i in label_to_id.items()}
-        label_ids = torch.tensor(
-            [label_to_id[str(l)] for l in raw_labels], dtype=torch.long
-        )
+        label_to_id = {lbl: i for i, lbl in enumerate(unique)}
+        label_names = {i: lbl for lbl, i in label_to_id.items()}
+        label_ids = torch.tensor([label_to_id[str(lbl)] for lbl in raw_labels], dtype=torch.long)
         print(
             f"Found {n_classes} unique labels (sorted → ordinal ids): "
             f"{', '.join(unique[:10])}{'…' if n_classes > 10 else ''}"
@@ -639,9 +616,7 @@ def collect_activations(
     pad_token_id = tokenizer.pad_token_id
     non_pad_mask = tokenized != pad_token_id
     col_indices = torch.arange(S).unsqueeze(0).expand(B, S)
-    last_token_positions = (
-        col_indices.masked_fill(~non_pad_mask, -1).max(dim=1).values
-    ).clamp(min=0)
+    last_token_positions = (col_indices.masked_fill(~non_pad_mask, -1).max(dim=1).values).clamp(min=0)
 
     print(
         f"Last non-pad positions — min: {last_token_positions.min().item()}, "
@@ -651,16 +626,12 @@ def collect_activations(
     )
 
     batches = (
-        (tokenized[i : i + llm_batch_size], attention_mask[i : i + llm_batch_size])
-        for i in range(0, B, llm_batch_size)
+        (tokenized[i : i + llm_batch_size], attention_mask[i : i + llm_batch_size]) for i in range(0, B, llm_batch_size)
     )
     all_acts = collect_hook_activations(model, hook_name, batches, device)
     activations = torch.cat(all_acts, dim=0)
     del all_acts
-    str_tokens: list[list[str]] = [
-        list(tokenizer.convert_ids_to_tokens(tokenized[i].tolist()) or [])
-        for i in range(B)
-    ]
+    str_tokens: list[list[str]] = [list(tokenizer.convert_ids_to_tokens(tokenized[i].tolist()) or []) for i in range(B)]
 
     return (
         activations,
@@ -717,8 +688,7 @@ def get_sae_activations(
             labels = labels.gather(1, label_idx)
         S = 1
         print(
-            f"last_token_only=True → gathered last non-pad token per sequence "
-            f"({B * S_full} → {B} tokens through SAE)"
+            f"last_token_only=True → gathered last non-pad token per sequence ({B * S_full} → {B} tokens through SAE)"
         )
     else:
         S = S_full
@@ -726,9 +696,7 @@ def get_sae_activations(
     activations_flat = activations.reshape(B * S, D)
 
     sae_activations_cat = encode_sae_batched(sae, activations_flat, sae_batch_size)
-    sae_activations_cat = sae_activations_cat.view(
-        B, S, sae_activations_cat.shape[1], sae_activations_cat.shape[2]
-    )
+    sae_activations_cat = sae_activations_cat.view(B, S, sae_activations_cat.shape[1], sae_activations_cat.shape[2])
 
     experts: list[Expert] = []
     n_experts = sae_activations_cat.shape[-2]

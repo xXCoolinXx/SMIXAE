@@ -23,9 +23,13 @@ def train(
     hook_name: str = typer.Option(..., help="Hook point for activation collection.", rich_help_panel="Model"),
     training_tokens: int = typer.Option(..., help="Total number of training tokens.", rich_help_panel="Training"),
     n_experts: int = typer.Option(..., help="Number of experts.", rich_help_panel="SAE Architecture"),
-    d_in: int = typer.Option(..., help="Input dimensionality (d_model of the LLM).", rich_help_panel="SAE Architecture"),
+    d_in: int = typer.Option(
+        ..., help="Input dimensionality (d_model of the LLM).", rich_help_panel="SAE Architecture"
+    ),
     d_expert: int = typer.Option(..., help="Dimensionality of each expert.", rich_help_panel="SAE Architecture"),
-    k_experts: int = typer.Option(..., help="Active experts per forward pass (BatchTopK).", rich_help_panel="SAE Architecture"),
+    k_experts: int = typer.Option(
+        ..., help="Active experts per forward pass (BatchTopK).", rich_help_panel="SAE Architecture"
+    ),
     # ------------------------------------------------------------------ #
     # Convenience multiplier                                              #
     # ------------------------------------------------------------------ #
@@ -41,35 +45,77 @@ def train(
     # ------------------------------------------------------------------ #
     # SAE architecture                                                    #
     # ------------------------------------------------------------------ #
-    d_bottleneck: int = typer.Option(3, help="Bottleneck dimensionality (3 for 3D visualization).", rich_help_panel="SAE Architecture"),
-    aux_loss_coefficient: float = typer.Option(1 / 32, help="Auxiliary loss coefficient for dead-expert recovery.", rich_help_panel="SAE Architecture"),
-    rescale_acts_by_decoder_norm: bool = typer.Option(True, help="Rescale bottleneck activations by decoder norm.", rich_help_panel="SAE Architecture"),
-    threshold_lr: float = typer.Option(1e-3, help="Learning rate for the inference threshold update.", rich_help_panel="SAE Architecture"),
-    dead_after_n_passes: Optional[int] = typer.Option(None, help="Passes without firing before an expert is considered dead. Defaults to 500 // factor.", rich_help_panel="SAE Architecture"),
-    normalize_activations: str = typer.Option("expected_average_only_in", help="Activation normalization mode: none | expected_average_only_in | layer_norm.", rich_help_panel="SAE Architecture"),
-    decoder_init_norm: Optional[float] = typer.Option(0.1, help="Initial decoder weight norm.", rich_help_panel="SAE Architecture"),
+    d_bottleneck: int = typer.Option(
+        3, help="Bottleneck dimensionality (3 for 3D visualization).", rich_help_panel="SAE Architecture"
+    ),
+    aux_loss_coefficient: float = typer.Option(
+        1 / 32, help="Auxiliary loss coefficient for dead-expert recovery.", rich_help_panel="SAE Architecture"
+    ),
+    rescale_acts_by_decoder_norm: bool = typer.Option(
+        True, help="Rescale bottleneck activations by decoder norm.", rich_help_panel="SAE Architecture"
+    ),
+    threshold_lr: float = typer.Option(
+        1e-3, help="Learning rate for the inference threshold update.", rich_help_panel="SAE Architecture"
+    ),
+    dead_after_n_passes: Optional[int] = typer.Option(
+        None,
+        help="Passes without firing before an expert is considered dead. Defaults to 500 // factor.",
+        rich_help_panel="SAE Architecture",
+    ),
+    normalize_activations: str = typer.Option(
+        "expected_average_only_in",
+        help="Activation normalization mode: none | expected_average_only_in | layer_norm.",
+        rich_help_panel="SAE Architecture",
+    ),
+    decoder_init_norm: Optional[float] = typer.Option(
+        0.1, help="Initial decoder weight norm.", rich_help_panel="SAE Architecture"
+    ),
     # ------------------------------------------------------------------ #
     # Training                                                            #
     # ------------------------------------------------------------------ #
-    train_batch_size_tokens: Optional[int] = typer.Option(None, help="Token batch size. Defaults to 8192 * factor.", rich_help_panel="Training"),
-    lr: Optional[float] = typer.Option(None, help="Learning rate. Defaults to 5e-4 * factor.", rich_help_panel="Training"),
-    lr_warm_up_steps: Optional[int] = typer.Option(None, help="LR warm-up steps. Defaults to 500 // factor.", rich_help_panel="Training"),
-    lr_decay_steps: Optional[int] = typer.Option(None, help="LR decay steps. Defaults to 20% of total training steps.", rich_help_panel="Training"),
-    lr_scheduler_name: str = typer.Option("constant", help="LR scheduler: constant | cosine | linear.", rich_help_panel="Training"),
-    lr_end: Optional[float] = typer.Option(None, help="Final LR (used with cosine/linear schedulers).", rich_help_panel="Training"),
+    train_batch_size_tokens: Optional[int] = typer.Option(
+        None, help="Token batch size. Defaults to 8192 * factor.", rich_help_panel="Training"
+    ),
+    lr: Optional[float] = typer.Option(
+        None, help="Learning rate. Defaults to 5e-4 * factor.", rich_help_panel="Training"
+    ),
+    lr_warm_up_steps: Optional[int] = typer.Option(
+        None, help="LR warm-up steps. Defaults to 500 // factor.", rich_help_panel="Training"
+    ),
+    lr_decay_steps: Optional[int] = typer.Option(
+        None, help="LR decay steps. Defaults to 20% of total training steps.", rich_help_panel="Training"
+    ),
+    lr_scheduler_name: str = typer.Option(
+        "constant", help="LR scheduler: constant | cosine | linear.", rich_help_panel="Training"
+    ),
+    lr_end: Optional[float] = typer.Option(
+        None, help="Final LR (used with cosine/linear schedulers).", rich_help_panel="Training"
+    ),
     n_restart_cycles: int = typer.Option(1, help="Number of cosine-restart cycles.", rich_help_panel="Training"),
     adam_beta1: float = typer.Option(0.9, help="Adam β₁.", rich_help_panel="Training"),
     adam_beta2: float = typer.Option(0.999, help="Adam β₂.", rich_help_panel="Training"),
-    dead_feature_window: int = typer.Option(1000, help="Window size for dead-feature detection (SAELens).", rich_help_panel="Training"),
-    feature_sampling_window: int = typer.Option(2000, help="Feature-sampling window (SAELens).", rich_help_panel="Training"),
-    dead_feature_threshold: float = typer.Option(1e-8, help="Activation frequency below which a feature is dead.", rich_help_panel="Training"),
+    dead_feature_window: int = typer.Option(
+        1000, help="Window size for dead-feature detection (SAELens).", rich_help_panel="Training"
+    ),
+    feature_sampling_window: int = typer.Option(
+        2000, help="Feature-sampling window (SAELens).", rich_help_panel="Training"
+    ),
+    dead_feature_threshold: float = typer.Option(
+        1e-8, help="Activation frequency below which a feature is dead.", rich_help_panel="Training"
+    ),
     seed: int = typer.Option(42, help="Random seed.", rich_help_panel="Training"),
-    resume_from_checkpoint: Optional[str] = typer.Option(None, help="Path to a checkpoint to resume training from.", rich_help_panel="Training"),
+    resume_from_checkpoint: Optional[str] = typer.Option(
+        None, help="Path to a checkpoint to resume training from.", rich_help_panel="Training"
+    ),
     # ------------------------------------------------------------------ #
     # Model / device                                                      #
     # ------------------------------------------------------------------ #
-    model_class_name: str = typer.Option("AutoModelForCausalLM", help="Model class used by SAELens.", rich_help_panel="Model"),
-    hook_head_index: Optional[int] = typer.Option(None, help="Attention head index (None for residual-stream hooks).", rich_help_panel="Model"),
+    model_class_name: str = typer.Option(
+        "AutoModelForCausalLM", help="Model class used by SAELens.", rich_help_panel="Model"
+    ),
+    hook_head_index: Optional[int] = typer.Option(
+        None, help="Attention head index (None for residual-stream hooks).", rich_help_panel="Model"
+    ),
     device: str = typer.Option("cuda", help="Torch device for training.", rich_help_panel="Model"),
     act_store_device: str = typer.Option("cpu", help="Device for the activation store.", rich_help_panel="Model"),
     dtype: str = typer.Option("bfloat16", help="Training dtype.", rich_help_panel="Model"),
@@ -77,47 +123,79 @@ def train(
     autocast_lm: bool = typer.Option(True, help="Use torch autocast for the LLM.", rich_help_panel="Model"),
     compile_llm: bool = typer.Option(True, help="torch.compile the LLM.", rich_help_panel="Model"),
     compile_sae: bool = typer.Option(True, help="torch.compile the SAE.", rich_help_panel="Model"),
-    llm_compilation_mode: Optional[str] = typer.Option(None, help="Compilation mode for the LLM (None = default).", rich_help_panel="Model"),
-    sae_compilation_mode: Optional[str] = typer.Option(None, help="Compilation mode for the SAE (None = default).", rich_help_panel="Model"),
+    llm_compilation_mode: Optional[str] = typer.Option(
+        None, help="Compilation mode for the LLM (None = default).", rich_help_panel="Model"
+    ),
+    sae_compilation_mode: Optional[str] = typer.Option(
+        None, help="Compilation mode for the SAE (None = default).", rich_help_panel="Model"
+    ),
     prepend_bos: bool = typer.Option(True, help="Prepend BOS token.", rich_help_panel="Model"),
     # ------------------------------------------------------------------ #
     # Data                                                                #
     # ------------------------------------------------------------------ #
-    dataset_path: str = typer.Option("monology/pile-uncopyrighted", help="HuggingFace dataset path.", rich_help_panel="Data"),
-    is_dataset_tokenized: bool = typer.Option(False, help="Whether the dataset is pre-tokenized.", rich_help_panel="Data"),
+    dataset_path: str = typer.Option(
+        "monology/pile-uncopyrighted", help="HuggingFace dataset path.", rich_help_panel="Data"
+    ),
+    is_dataset_tokenized: bool = typer.Option(
+        False, help="Whether the dataset is pre-tokenized.", rich_help_panel="Data"
+    ),
     context_size: int = typer.Option(128, help="Context size in tokens.", rich_help_panel="Data"),
     n_batches_in_buffer: int = typer.Option(1024, help="Activation buffer size in batches.", rich_help_panel="Data"),
-    store_batch_size_prompts: int = typer.Option(128, help="Prompt batch size for the activation store.", rich_help_panel="Data"),
-    n_batches_for_norm_estimate: int = typer.Option(100, help="Batches used to estimate activation norms.", rich_help_panel="Data"),
-    disable_concat_sequences: bool = typer.Option(True, help="Disable sequence concatenation in the store.", rich_help_panel="Data"),
-    dataset_trust_remote_code: bool = typer.Option(True, help="Trust remote code when loading the dataset.", rich_help_panel="Data"),
+    store_batch_size_prompts: int = typer.Option(
+        128, help="Prompt batch size for the activation store.", rich_help_panel="Data"
+    ),
+    n_batches_for_norm_estimate: int = typer.Option(
+        100, help="Batches used to estimate activation norms.", rich_help_panel="Data"
+    ),
+    disable_concat_sequences: bool = typer.Option(
+        True, help="Disable sequence concatenation in the store.", rich_help_panel="Data"
+    ),
+    dataset_trust_remote_code: bool = typer.Option(
+        True, help="Trust remote code when loading the dataset.", rich_help_panel="Data"
+    ),
     streaming: bool = typer.Option(True, help="Stream the dataset.", rich_help_panel="Data"),
     use_chat_formatting: bool = typer.Option(False, help="Apply chat formatting to prompts.", rich_help_panel="Data"),
     # ------------------------------------------------------------------ #
     # Eval                                                                #
     # ------------------------------------------------------------------ #
     n_eval_batches: int = typer.Option(10, help="Number of batches for evaluation.", rich_help_panel="Eval"),
-    eval_batch_size_prompts: Optional[int] = typer.Option(None, help="Prompt batch size for evaluation (None = same as store).", rich_help_panel="Eval"),
+    eval_batch_size_prompts: Optional[int] = typer.Option(
+        None, help="Prompt batch size for evaluation (None = same as store).", rich_help_panel="Eval"
+    ),
     # ------------------------------------------------------------------ #
     # Checkpointing                                                       #
     # ------------------------------------------------------------------ #
-    checkpoint_path: str = typer.Option("checkpoints", help="Directory for checkpoint output.", rich_help_panel="Checkpointing"),
+    checkpoint_path: str = typer.Option(
+        "checkpoints", help="Directory for checkpoint output.", rich_help_panel="Checkpointing"
+    ),
     n_checkpoints: int = typer.Option(3, help="Number of intermediate checkpoints.", rich_help_panel="Checkpointing"),
-    save_final_checkpoint: bool = typer.Option(True, help="Save an additional checkpoint at end of training.", rich_help_panel="Checkpointing"),
-    output_path: str = typer.Option("output", help="Output directory for other artifacts.", rich_help_panel="Checkpointing"),
+    save_final_checkpoint: bool = typer.Option(
+        True, help="Save an additional checkpoint at end of training.", rich_help_panel="Checkpointing"
+    ),
+    output_path: str = typer.Option(
+        "output", help="Output directory for other artifacts.", rich_help_panel="Checkpointing"
+    ),
     verbose: bool = typer.Option(True, help="Verbose SAELens runner output.", rich_help_panel="Checkpointing"),
     # ------------------------------------------------------------------ #
     # Logging (W&B)                                                       #
     # ------------------------------------------------------------------ #
     log_to_wandb: bool = typer.Option(True, help="Log to Weights & Biases.", rich_help_panel="Logging"),
-    wandb_project: str = typer.Option("SMIXAE on Gemma 2-9B, Batch Top K", help="W&B project name.", rich_help_panel="Logging"),
+    wandb_project: str = typer.Option(
+        "SMIXAE on Gemma 2-9B, Batch Top K", help="W&B project name.", rich_help_panel="Logging"
+    ),
     wandb_id: Optional[str] = typer.Option(None, help="W&B run ID (for resuming).", rich_help_panel="Logging"),
     run_name: Optional[str] = typer.Option(None, help="W&B run name.", rich_help_panel="Logging"),
     wandb_entity: Optional[str] = typer.Option(None, help="W&B entity/team.", rich_help_panel="Logging"),
     wandb_log_frequency: int = typer.Option(30, help="Log every N training steps.", rich_help_panel="Logging"),
-    eval_every_n_wandb_logs: int = typer.Option(5_000_000, help="Run evals every N W&B logs.", rich_help_panel="Logging"),
-    log_activations_store_to_wandb: bool = typer.Option(False, help="Log activation store stats to W&B.", rich_help_panel="Logging"),
-    log_optimizer_state_to_wandb: bool = typer.Option(False, help="Log optimizer state to W&B.", rich_help_panel="Logging"),
+    eval_every_n_wandb_logs: int = typer.Option(
+        5_000_000, help="Run evals every N W&B logs.", rich_help_panel="Logging"
+    ),
+    log_activations_store_to_wandb: bool = typer.Option(
+        False, help="Log activation store stats to W&B.", rich_help_panel="Logging"
+    ),
+    log_optimizer_state_to_wandb: bool = typer.Option(
+        False, help="Log optimizer state to W&B.", rich_help_panel="Logging"
+    ),
     log_weights_to_wandb: bool = typer.Option(True, help="Log model weights to W&B.", rich_help_panel="Logging"),
 ) -> None:
     """Train a SMIXAE on a language model using SAELens."""
