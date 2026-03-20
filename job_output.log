@@ -1,4 +1,0 @@
-Job started on asax006 at Fri Mar 20 14:58:26 CDT 2026
-/var/spool/pbs/mom_priv/jobs/33423.asax-pbs1.SC: line 27: nvidia-smi: command not found
-scripts/pretokenize_gemma2.sh: line 4: smixae: command not found
-Job finished at Fri Mar 20 14:58:26 CDT 2026
