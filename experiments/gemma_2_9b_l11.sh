@@ -44,10 +44,11 @@ smixae newline main \
     --output-path "${RESULTS_DIR}/newline"
 
 # --------------------------------------------------------------------------- #
-# 4. Steering (TODO: uncomment when implemented)                                #
+# 4. Steering                                                                   #
 # --------------------------------------------------------------------------- #
-# smixae steer \
-#     --checkpoint-path "${RESULTS_DIR}/model" \
-#     --model-name "${MODEL}" \
-#     --hook-name "${HOOK}" \
-#     --output-dir "${RESULTS_DIR}/steer"
+smixae steer main \
+    --checkpoint-path "${RESULTS_DIR}/model" \
+    --base-model-name "${MODEL}" \
+    --hook-point "${HOOK}" \
+    --hours-dataset "datasets/probing/hours.csv" \
+    --output-dir "${RESULTS_DIR}/steer"

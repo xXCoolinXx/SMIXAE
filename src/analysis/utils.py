@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import gc
 import re
+from pathlib import Path
 from typing import Any, Iterable
 
 import pandas as pd
+from datasets import load_dataset
 import plotly.express as px
 import torch
 import torch.nn.functional as F
@@ -536,3 +538,226 @@ class Expert:
             textposition="top center",
         )
         return fig
+
+
+# ── Shared activation pipeline ────────────────────────────────────────────────
+
+
+def collect_activations(
+    model: PreTrainedModel,
+    tokenizer: PreTrainedTokenizerBase,
+    hook_name: str,
+    max_length: int,
+    n_input_samples: int,
+    device: str,
+    llm_batch_size: int,
+    dataset_name: str | None = None,
+    dataframe_path: str | None = None,
+    text_column: str = "text",
+    label_column: str | None = None,
+) -> tuple[
+    torch.Tensor,
+    list[list[str]],
+    torch.Tensor | None,
+    dict[int, str] | None,
+    torch.Tensor,
+    int,
+]:
+    """Load texts + labels, tokenize, collect LLM residual-stream activations.
+
+    Returns:
+        activations:          ``(B, S, d_model)`` CPU tensor
+        str_tokens:           list of token-string lists, one per sequence
+        labels_tensor:        ``(B, S)`` long tensor of class ids, or ``None``
+        label_names:          ``dict[int, str]`` id→label mapping, or ``None``
+        last_token_positions: ``(B,)`` long tensor — last non-pad position per sequence
+        n_classes:            number of unique labels (0 if unlabelled)
+    """
+    texts: list[str] = []
+    raw_labels: list[str | int] | None = [] if label_column else None
+
+    if dataframe_path is not None:
+        print(f"Loading data from {dataframe_path}")
+        ext = Path(dataframe_path).suffix.lower()
+        if ext == ".csv":
+            df = pd.read_csv(dataframe_path)
+        elif ext in (".parquet", ".pq"):
+            df = pd.read_parquet(dataframe_path)
+        elif ext in (".json", ".jsonl"):
+            df = pd.read_json(dataframe_path, lines=(ext == ".jsonl"))
+        else:
+            raise ValueError(f"Unsupported file extension: {ext}")
+        texts = df[text_column].tolist()[:n_input_samples]
+        if raw_labels is not None:
+            raw_labels = df[label_column].tolist()[:n_input_samples]  # type: ignore[index]
+    elif dataset_name is not None:
+        print(f"Streaming {dataset_name}")
+        dataset = load_dataset(dataset_name, streaming=True, split="train")
+        for i, sample in enumerate(dataset):
+            if i == n_input_samples:
+                break
+            texts.append(sample[text_column])
+            if raw_labels is not None:
+                raw_labels.append(sample[label_column])  # type: ignore[index]
+    else:
+        raise ValueError("Provide either dataset_name or dataframe_path.")
+
+    labels_tensor: torch.Tensor | None = None
+    label_names: dict[int, str] | None = None
+    n_classes: int = 0
+
+    if raw_labels is not None and len(raw_labels) > 0:
+        unique = sorted({str(l) for l in raw_labels})
+        n_classes = len(unique)
+        label_to_id = {l: i for i, l in enumerate(unique)}
+        label_names = {i: l for l, i in label_to_id.items()}
+        label_ids = torch.tensor(
+            [label_to_id[str(l)] for l in raw_labels], dtype=torch.long
+        )
+        print(
+            f"Found {n_classes} unique labels (sorted → ordinal ids): "
+            f"{', '.join(unique[:10])}{'…' if n_classes > 10 else ''}"
+        )
+    else:
+        label_ids = None
+
+    print("Collecting activations...")
+    enc = tokenizer(
+        texts,
+        truncation=True,
+        max_length=max_length,
+        padding=True,
+        return_tensors="pt",
+    )
+    tokenized = enc["input_ids"]  # (B, S)
+    attention_mask = enc["attention_mask"]  # (B, S)
+    B, S = tokenized.shape
+
+    if label_ids is not None:
+        labels_tensor = label_ids[:B].unsqueeze(1).expand(B, S).clone()
+
+    pad_token_id = tokenizer.pad_token_id
+    non_pad_mask = tokenized != pad_token_id
+    col_indices = torch.arange(S).unsqueeze(0).expand(B, S)
+    last_token_positions = (
+        col_indices.masked_fill(~non_pad_mask, -1).max(dim=1).values
+    ).clamp(min=0)
+
+    print(
+        f"Last non-pad positions — min: {last_token_positions.min().item()}, "
+        f"max: {last_token_positions.max().item()}, "
+        f"mean: {last_token_positions.float().mean().item():.1f} "
+        f"(seq length {S})"
+    )
+
+    batches = (
+        (tokenized[i : i + llm_batch_size], attention_mask[i : i + llm_batch_size])
+        for i in range(0, B, llm_batch_size)
+    )
+    all_acts = collect_hook_activations(model, hook_name, batches, device)
+    activations = torch.cat(all_acts, dim=0)
+    del all_acts
+    str_tokens: list[list[str]] = [
+        list(tokenizer.convert_ids_to_tokens(tokenized[i].tolist()) or [])
+        for i in range(B)
+    ]
+
+    return (
+        activations,
+        str_tokens,
+        labels_tensor,
+        label_names,
+        last_token_positions,
+        n_classes,
+    )
+
+
+def get_sae_activations(
+    sae: SMIXAE,
+    device: str,
+    activations: torch.Tensor,
+    sae_batch_size: int,
+    active_threshold: float = 1e-5,
+    min_points: int = 100,
+    max_points: int = 1000,
+    labels: torch.Tensor | None = None,
+    last_token_only: bool = False,
+    last_token_positions: torch.Tensor | None = None,
+    n_classes: int = 0,
+) -> list[Expert]:
+    """Encode LLM activations through SMIXAE and return a list of active ``Expert`` objects.
+
+    Args:
+        sae:                  Trained SMIXAE model.
+        device:               Device for SAE inference.
+        activations:          ``(B, S, d_model)`` CPU tensor from ``collect_activations``.
+        sae_batch_size:       Tokens per SAE forward pass.
+        active_threshold:     L2 norm threshold to consider an expert active.
+        min_points:           Skip experts with fewer active tokens than this.
+        max_points:           Randomly downsample experts exceeding this count (0 = no cap).
+        labels:               ``(B, S)`` long tensor of class ids, or ``None``.
+        last_token_only:      If True, only encode the last non-pad token per sequence.
+        last_token_positions: Required when ``last_token_only=True``.
+        n_classes:            Total number of label classes (passed through to ``Expert``).
+
+    Returns:
+        List of ``Expert`` objects for all experts that meet the activity threshold.
+    """
+    B, S_full, D = activations.shape
+
+    seq_positions: torch.Tensor | None = None
+    if last_token_only:
+        if last_token_positions is None:
+            raise ValueError("last_token_only=True but no last_token_positions provided.")
+        seq_positions = last_token_positions
+        gather_idx = last_token_positions.unsqueeze(1).unsqueeze(2).expand(B, 1, D)
+        activations = activations.gather(1, gather_idx)
+        if labels is not None:
+            label_idx = last_token_positions.unsqueeze(1)
+            labels = labels.gather(1, label_idx)
+        S = 1
+        print(
+            f"last_token_only=True → gathered last non-pad token per sequence "
+            f"({B * S_full} → {B} tokens through SAE)"
+        )
+    else:
+        S = S_full
+
+    activations_flat = activations.reshape(B * S, D)
+
+    sae_activations_cat = encode_sae_batched(sae, activations_flat, sae_batch_size)
+    sae_activations_cat = sae_activations_cat.view(
+        B, S, sae_activations_cat.shape[1], sae_activations_cat.shape[2]
+    )
+
+    experts: list[Expert] = []
+    n_experts = sae_activations_cat.shape[-2]
+
+    for i in tqdm(range(n_experts), desc="Building experts"):
+        expert_pts = sae_activations_cat[..., i, :]
+        active_mask = torch.norm(expert_pts, p=2, dim=-1) > active_threshold
+        n_active = int(active_mask.sum().item())
+
+        if n_active < min_points:
+            continue
+        if max_points and n_active > max_points:
+            active_indices = active_mask.nonzero(as_tuple=False)
+            perm = torch.randperm(n_active)[:max_points]
+            chosen = active_indices[perm]
+            sampled_mask = torch.zeros_like(active_mask, dtype=torch.bool)
+            sampled_mask[chosen[:, 0], chosen[:, 1]] = True
+            active_mask = sampled_mask
+
+        expert = Expert(
+            active_mask,
+            i,
+            activations,
+            expert_pts,
+            labels=labels,
+            seq_positions=seq_positions,
+            n_classes=n_classes,
+        )
+        experts.append(expert)
+
+    del sae_activations_cat
+    return experts

@@ -21,14 +21,16 @@ SMIXAE/
 │   ├── analysis/
 │   │   ├── utils.py                 # Shared infrastructure: load_llm, load_sae, collect_hook_activations, encode_sae_batched, Expert
 │   │   ├── generate_probing_data.py # Synthetic probing dataset generation (outputs to datasets/probing/)
+│   │   ├── generate_steering_data.py # Steering prompt dataset generation (outputs to datasets/steering/)
 │   │   ├── categorize_all.py        # Expert probing pipeline: load checkpoint, evaluate experts, produce HTML visualizations
-│   │   └── anthropic_newline.py     # Newline-position manifold analysis
+│   │   ├── anthropic_newline.py     # Newline-position manifold analysis
+│   │   └── steer.py                 # Steering experiments: coordinate substitution via top Fisher expert
 │   └── cli/
 │       ├── cli.py                   # Centralized CLI entry point (smixae command)
 │       └── train.py                 # smixae train subcommand — all training options as CLI flags
 ├── datasets/
 │   ├── probing/                     # Labeled datasets for probing experiments (populated by generate_probing_data.py)
-│   └── steering/                    # Steering datasets (not yet implemented)
+│   └── steering/                    # Steering prompt datasets (populated by generate_steering_data.py)
 ├── experiments/                     # Self-contained experiment scripts (one per run configuration)
 │   └── gemma_2_9b_l11.sh            # Gemma 2-9B layer 11: train → probe → newline
 ├── results/                         # All outputs, created at runtime (not committed)
@@ -108,6 +110,8 @@ Shared infrastructure used by all analysis scripts:
 - **`load_llm()`** / **`load_sae()`**: model and checkpoint loading
 - **`collect_hook_activations()`**: HuggingFace `register_forward_hook` pattern; returns one `(batch, seq, d_model)` CPU tensor per batch
 - **`encode_sae_batched()`**: batched SAE encoding; returns `(N, n_experts, d_bottleneck)` float32 tensor
+- **`collect_activations()`**: end-to-end data loading + tokenization + LLM activation collection; returns `(activations, str_tokens, labels, label_names, last_token_positions, n_classes)`
+- **`get_sae_activations()`**: encodes LLM activations through SMIXAE, builds and returns a list of `Expert` objects filtered by activity threshold
 - **`Expert`**: holds per-expert bottleneck activations and labels; implements `evaluate_fisher()`, `evaluate_manifold()`, `get_plot()`, `get_mean_plot()`
 - **`_strip_prefix()`**: strips `NN_` ordering prefixes from label display strings
 
@@ -128,6 +132,15 @@ Generates template-based synthetic datasets for probing. Each dataset has senten
 ### `src/analysis/anthropic_newline.py`
 
 Analyzes how experts encode distance-since-newline (a continuous position signal). Scores experts using linear and periodic (Fourier) regression on the bottleneck.
+
+### `src/analysis/steer.py`
+
+Causal intervention script using **coordinate substitution**: for a target expert, subtracts its current contribution to the residual stream and adds the decoded mean bottleneck for a target class. Two tasks:
+
+- **Task 1 (current time)**: `"Right now it is {src_hour}. What time is it?"` — steers the perceived current time.
+- **Task 2 (elapsed time)**: `"Right now it is {curr_hour}. How much time has it been since {start_hour}?"` — steers the current-time representation by `+target_delta_hours`, changing the perceived elapsed time.
+
+Expert discovery reuses `collect_activations()` + `get_sae_activations()` from `utils.py`. Output: `steering_results.csv` with columns `task`, `expert_id`, `src_hour`, `tgt_hour`, `start_hour`, `prompt`, `baseline_output`, `steered_output`. Exposed via CLI as `smixae steer main`.
 
 ---
 
@@ -228,11 +241,15 @@ smixae
 ├── train                        # Train a SMIXAE (all config options exposed as flags)
 ├── generate-probing-data
 │   └── generate                 # Generate all probing datasets → datasets/probing/
+├── generate-steering-data
+│   └── generate                 # Generate steering prompt datasets → datasets/steering/
 ├── probe
 │   ├── single                   # Analyze one labeled dataset against a checkpoint
 │   └── all-datasets             # Batch over a JSON config of datasets
-└── newline
-    └── main                     # Newline-position manifold analysis
+├── newline
+│   └── main                     # Newline-position manifold analysis
+└── steer
+    └── main                     # Steering experiments (coordinate substitution)
 ```
 
 ```bash
@@ -241,6 +258,9 @@ pip install -e .
 
 # Generate probing datasets
 smixae generate-probing-data generate
+
+# Generate steering datasets
+smixae generate-steering-data generate
 
 # Probe a single dataset
 smixae probe single \
@@ -264,6 +284,13 @@ smixae newline main \
     --model-name google/gemma-2-9b \
     --hook-name model.layers.11 \
     --output-path results/my_run/newline
+
+# Steering experiments
+smixae steer main \
+    --checkpoint-path results/my_run/model \
+    --base-model-name google/gemma-2-9b \
+    --hook-point model.layers.11 \
+    --output-dir results/my_run/steer
 ```
 
 `smixae_run.py` is a thin shim that calls the CLI with hardcoded Gemma 2-9B defaults — use it via PBS or `python smixae_run.py` for quick invocation without arguments.
@@ -272,5 +299,5 @@ smixae newline main \
 
 ## Known TODOs
 
-- [ ] Implement steering experiments (`datasets/steering/`) and add `smixae steer` to the CLI and experiment scripts
+- [ ] Refine Task 2 (elapsed-time steering) — the exact intervention point (current vs start time token) and evaluation metric are still being determined
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
