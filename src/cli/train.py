@@ -148,7 +148,7 @@ def train(
         100, help="Batches used to estimate activation norms.", rich_help_panel="Data"
     ),
     disable_concat_sequences: bool = typer.Option(
-        True, help="Disable sequence concatenation in the store.", rich_help_panel="Data"
+        False, help="Disable sequence concatenation in the store.", rich_help_panel="Data"
     ),
     dataset_trust_remote_code: bool = typer.Option(
         True, help="Trust remote code when loading the dataset.", rich_help_panel="Data"

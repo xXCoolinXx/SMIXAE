@@ -12,3 +12,5 @@ wheels/
 # Logs
 logs/*
 *.log
+
+datasets/tokenized/*
