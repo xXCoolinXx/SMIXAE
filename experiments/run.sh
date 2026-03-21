@@ -8,12 +8,13 @@
 #   --d-in            D_IN   Residual stream dimension for the model
 #
 # Optional flags (defaults shown):
-#   --training-tokens  500000000
-#   --n-experts        4096
-#   --d-expert         8
-#   --k-experts        128
-#   --datasets-config  datasets/probing/dataset_config.json
-#   --hours-dataset    datasets/probing/hours.csv
+#   --training-tokens    500000000
+#   --n-experts          4096
+#   --d-expert           8
+#   --k-experts          128
+#   --datasets-config    datasets/probing/dataset_config.json
+#   --hours-dataset      datasets/probing/hours.csv
+#   --tokenized-dataset  (unset — streams raw dataset if omitted)
 #
 # Usage:
 #   bash experiments/run.sh \
@@ -31,6 +32,7 @@ D_EXPERT=8
 K_EXPERTS=128
 DATASETS_CONFIG="datasets/probing/dataset_config.json"
 HOURS_DATASET="datasets/probing/hours.csv"
+TOKENIZED_DATASET=""
 
 # ── Parse flags ──────────────────────────────────────────────────────────── #
 while [[ $# -gt 0 ]]; do
@@ -43,8 +45,9 @@ while [[ $# -gt 0 ]]; do
         --n-experts)       N_EXPERTS="$2";       shift 2 ;;
         --d-expert)        D_EXPERT="$2";        shift 2 ;;
         --k-experts)       K_EXPERTS="$2";       shift 2 ;;
-        --datasets-config) DATASETS_CONFIG="$2"; shift 2 ;;
-        --hours-dataset)   HOURS_DATASET="$2";   shift 2 ;;
+        --datasets-config)    DATASETS_CONFIG="$2";    shift 2 ;;
+        --hours-dataset)      HOURS_DATASET="$2";      shift 2 ;;
+        --tokenized-dataset)  TOKENIZED_DATASET="$2";  shift 2 ;;
         *) echo "Unknown flag: $1" >&2; exit 1 ;;
     esac
 done
@@ -60,6 +63,12 @@ RESULTS_DIR="results/${EXPERIMENT_NAME}"
 # --------------------------------------------------------------------------- #
 # 1. Train                                                                      #
 # --------------------------------------------------------------------------- #
+if [[ -n "${TOKENIZED_DATASET}" ]]; then
+    DATASET_FLAGS="--dataset-path ${TOKENIZED_DATASET} --is-dataset-tokenized --no-streaming"
+else
+    DATASET_FLAGS=""
+fi
+
 smixae train \
     --model-name "${MODEL}" \
     --hook-name "${HOOK}" \
@@ -69,7 +78,8 @@ smixae train \
     --d-expert "${D_EXPERT}" \
     --k-experts "${K_EXPERTS}" \
     --output-path "${RESULTS_DIR}/model" \
-    --checkpoint-path "${RESULTS_DIR}/checkpoints"
+    --checkpoint-path "${RESULTS_DIR}/checkpoints" \
+    ${DATASET_FLAGS}
 
 # --------------------------------------------------------------------------- #
 # 2. Probe all datasets                                                         #

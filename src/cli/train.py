@@ -5,11 +5,79 @@ experiment settings."""
 
 from typing import Optional
 
+import re as _re
+
+import sae_lens.training.activations_store as _acts_store
 import torch
 import typer
+from datasets import load_from_disk as _load_from_disk
 from sae_lens import LanguageModelSAERunnerConfig, LanguageModelSAETrainingRunner, LoggingConfig
 
 from smixae import SMIXAETrainingConfig  # also registers architecture via __init__
+
+# Patch ActivationsStore to auto-detect datasets saved with save_to_disk (state.json sentinel)
+# and redirect to load_from_disk, so callers don't need to distinguish loading methods.
+
+_orig_load_dataset = _acts_store.load_dataset
+
+
+def _auto_load_dataset(path, *args, **kwargs):
+    if isinstance(path, str):
+        try:
+            return _load_from_disk(path)
+        except Exception:
+            pass
+    return _orig_load_dataset(path, *args, **kwargs)
+
+
+_acts_store.load_dataset = _auto_load_dataset
+
+# Patch tokenizer validation to support local save_to_disk datasets.
+# SAELens only catches HfHubHTTPError, but local paths trigger HFValidationError.
+# We instead read sae_lens.json directly from the local directory when present.
+_orig_validate = _acts_store.validate_pretokenized_dataset_tokenizer
+
+
+def _smart_validate(dataset_path: str, model_tokenizer) -> None:  # type: ignore[type-arg]
+    import json
+    from pathlib import Path
+
+    from transformers import AutoTokenizer
+
+    local_cfg = Path(dataset_path) / "sae_lens.json"
+    if local_cfg.exists():
+        tokenizer_name = json.loads(local_cfg.read_text())["tokenizer_name"]
+        try:
+            ds_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+            if ds_tokenizer.get_vocab() != model_tokenizer.get_vocab():
+                raise ValueError(
+                    f"Dataset tokenizer '{tokenizer_name}' does not match model tokenizer."
+                )
+        except Exception:
+            pass  # Can't load tokenizer to compare — skip check
+        return
+    _orig_validate(dataset_path, model_tokenizer)
+
+
+_acts_store.validate_pretokenized_dataset_tokenizer = _smart_validate
+
+# Patch stop_at_layer extraction to support HuggingFace-style hook names like
+# "model.layers.11" (no trailing dot). SAELens regex r"\.(\d+)\." requires a dot
+# after the layer number, so it returns None for these names → full forward pass
+# including lm_head → OOM on large vocab (Gemma 2: 256k tokens).
+_orig_extract_stop = _acts_store.extract_stop_at_layer_from_tlens_hook_name
+
+
+def _smart_extract_stop(hook_name: str) -> int | None:
+    result = _orig_extract_stop(hook_name)
+    if result is not None:
+        return result
+    # HuggingFace format ends with ".N" (no trailing dot)
+    match = _re.search(r"\.(\d+)$", hook_name)
+    return None if match is None else int(match.group(1)) + 1
+
+
+_acts_store.extract_stop_at_layer_from_tlens_hook_name = _smart_extract_stop
 
 app = typer.Typer()
 
