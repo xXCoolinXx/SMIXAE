@@ -28,6 +28,7 @@ class DatasetConfig:
     color_scale: str | None = None  # None = discrete categorical colors
     continuous_color: bool = False
     output_subdir: str | None = None
+    color_map: dict[str, str] | None = None  # label → CSS color for 1:1 color schemes
 
     @property
     def effective_continuous_color(self) -> bool:
@@ -247,11 +248,13 @@ def run_pipeline(
             label_names=label_names,
             continuous_color=cfg.effective_continuous_color,
             color_scale=cfg.effective_color_scale,
+            color_map=cfg.color_map,
         )
         mean_fig = expert.get_mean_plot(
             label_names=label_names,
             color_scale=cfg.effective_color_scale,
             continuous_color=cfg.effective_continuous_color,
+            color_map=cfg.color_map,
         )
         tab_label = f"#{i + 1} E{expert.expert_id} ({effective_sort_by}={score_val:.3f})"
         expert_entries.append((tab_label, scatter_fig, mean_fig))

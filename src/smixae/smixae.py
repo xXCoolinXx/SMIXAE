@@ -356,7 +356,7 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
 
         # Heuristic: use half of active experts as k_aux
         k_aux = (
-            self.cfg.k_experts  # // 2
+            self.cfg.k_experts // 2
         )  # - using half in this architecture leads to aux loss failing to recover dead latents
         # This is not ideal but not something I want to fix right now
 

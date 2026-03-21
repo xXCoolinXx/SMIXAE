@@ -441,6 +441,66 @@ def generate_living_things(n_samples=1000):
     return _enumerate_unique(templates, organisms, ("organism",), n_samples)
 
 
+def generate_colors(n_samples=1000):
+    # Ordered by hue (rainbow order), then achromatics
+    colors = [
+        "red",
+        "orange",
+        "yellow",
+        "green",
+        "blue",
+        "purple",
+        "pink",
+        "brown",
+        "white",
+        "gray",
+        "black",
+    ]
+
+    templates = [
+        "{name} labeled the sample vial with {color} tape",
+        "The indicator solution turned {color} when the reaction completed",
+        "The safety manual requires {color} markings on biohazard containers",
+        "{name} noted the precipitate had a faint {color} tint",
+        "The reference standard is packaged in a {color} box",
+        "The culture medium appeared {color} after incubation",
+        "{name} selected the {color} filter for the fluorescence measurement",
+        "The tissue stain produced a {color} result under the microscope",
+        "The warning light on the centrifuge turned {color}",
+        "{name} marked the control wells with {color} ink",
+        "The LED indicator on the freezer is {color}",
+        "The chromatography band migrated as a {color} stripe",
+        "{name} wrapped the light-sensitive sample in {color} foil",
+        "The pH strip changed to {color} at the measured reading",
+        "The reagent bottle cap is color-coded {color}",
+        "{name} highlighted the outliers in {color} on the chart",
+        "The colony appeared {color} on the selective agar plate",
+        "Dye uptake rendered the cell membrane {color}",
+        "{name} distinguished the treatment group with {color} tags",
+        "The thermal imaging showed {color} regions near the heat source",
+        "The coating on the electrode is {color}",
+        "{name} described the precipitate as {color} and crystalline",
+        "The hazard placard uses a {color} background for this chemical class",
+        "Under UV light the compound fluoresced {color}",
+        "The calibration bead suspension is {color}",
+        "{name} sorted the slides into {color} trays by condition",
+        "The western blot band appeared {color} against the membrane",
+        "The litmus paper turned {color} in the acidic solution",
+        "{name} noted the fungal colony was {color} at its center",
+        "The signal trace on the oscilloscope was displayed in {color}",
+    ]
+
+    n_with_name = sum(1 for t in templates if "{name}" in t)
+    n_without = len(templates) - n_with_name
+    max_unique = n_with_name * len(names) * len(colors) + n_without * len(colors)
+    print(
+        f"Colors: {len(templates)} templates × {len(names)} names × "
+        f"{len(colors)} colors → {max_unique} max unique sentences"
+    )
+
+    return _enumerate_unique(templates, colors, ("color",), n_samples)
+
+
 def generate_months(n_samples=1000):
     months = [
         "January",
@@ -520,6 +580,7 @@ def generate(
         ("body_parts.csv", generate_body_parts(1000)),
         ("living_things.csv", generate_living_things(1000)),
         ("months.csv", generate_months(1000)),
+        ("colors.csv", generate_colors(1000)),
     ]
 
     for filename, df in datasets:

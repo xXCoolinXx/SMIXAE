@@ -331,6 +331,7 @@ class Expert:
         label_names: dict[int, str] | None = None,
         continuous_color: bool = False,
         color_scale: str = "Plasma",
+        color_map: dict[str, str] | None = None,
     ) -> Figure:
         # Lazy-evaluate continuity
         if self.local_continuity_scores is None:
@@ -391,6 +392,7 @@ class Expert:
                     z="z",
                     color="Label",
                     category_orders={"Label": sorted_label_names},
+                    color_discrete_map=color_map,
                     hover_data=hover_extra,
                     title=self._make_title(),
                     opacity=0.8,
@@ -430,6 +432,7 @@ class Expert:
         label_names: dict[int, str] | None = None,
         color_scale: str = "Plasma",
         continuous_color: bool = False,
+        color_map: dict[str, str] | None = None,
     ) -> Figure | None:
         if self.labels is None or label_names is None:
             return None
@@ -497,6 +500,7 @@ class Expert:
                 z="z",
                 color="Label",
                 category_orders={"Label": sorted_label_names},
+                color_discrete_map=color_map,
                 size="Count",
                 size_max=30,
                 text="Label",
