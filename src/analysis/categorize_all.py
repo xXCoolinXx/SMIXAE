@@ -229,6 +229,8 @@ def run_pipeline(
             f"Rank {i + 1:02d}",
             f"Expert {expert.expert_id:4d}",
         ]
+        if expert.mean_latent_l0 is not None:
+            parts.append(f"L0: {expert.mean_latent_l0:.1f}")
         if expert.n_unique_labels is not None:
             parts.append(f"Labels: {expert.n_unique_labels}/{n_classes}")
         if expert.fisher_score is not None:
@@ -256,7 +258,8 @@ def run_pipeline(
             continuous_color=cfg.effective_continuous_color,
             color_map=cfg.color_map,
         )
-        tab_label = f"#{i + 1} E{expert.expert_id} ({effective_sort_by}={score_val:.3f})"
+        l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
+        tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"
         expert_entries.append((tab_label, scatter_fig, mean_fig))
 
     html_str = build_dataset_html(expert_entries, f"{subdir} — Expert Analysis")

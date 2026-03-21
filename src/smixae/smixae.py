@@ -97,6 +97,20 @@ class SMIXAE(SAE[SMIXAEConfig]):
 
         return hidden_pre_bottleneck * bottleneck_mask.unsqueeze(-1)  # Apply mask per bottleneck
 
+    def encode_with_latents(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        Encode the input tensor, returning both the masked bottleneck activations and
+        the pre-bottleneck latent activations (post-LeakyReLU, shape ``(batch, n_experts * d_expert)``).
+
+        Returns:
+            bottleneck:  ``(batch, n_experts, d_bottleneck)`` — same as ``encode()``.
+            h_latent:    ``(batch, n_experts * d_expert)`` — latent activations before bottleneck projection.
+        """
+        h_latent, _, hidden_pre_bottleneck = smixae_encode(self, x)
+        bottleneck_mask = hidden_pre_bottleneck.norm(dim=-1) > self.threshold  # type: ignore
+        bottleneck = hidden_pre_bottleneck * bottleneck_mask.unsqueeze(-1)
+        return bottleneck, h_latent
+
     def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
         """
         Decode the feature activations back to the input space.
@@ -357,8 +371,7 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         # Heuristic: use half of active experts as k_aux
         k_aux = (
             self.cfg.k_experts // 2
-        )  # - using half in this architecture leads to aux loss failing to recover dead latents
-        # This is not ideal but not something I want to fix right now
+        )  # This is actually fine, just need to increase the aux loss coefficient
 
         scale = min(num_dead / k_aux, 1.0)
         k_aux = min(k_aux, num_dead)

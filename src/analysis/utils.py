@@ -21,6 +21,7 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 from smixae import SMIXAE
+from smixae.smixae import smixae_encode as _smixae_encode
 
 # ── GPU memory ────────────────────────────────────────────────────────────────
 
@@ -127,30 +128,45 @@ def encode_sae_batched(
     hiddens: torch.Tensor,
     batch_size: int = 4096,
     desc: str = "SAE encode",
-) -> torch.Tensor:
+    return_latent_l0: bool = False,
+) -> torch.Tensor | tuple[torch.Tensor, float]:
     """Encode a flat ``(N, d_model)`` tensor through the SAE in batches.
 
     Args:
-        sae:        SMIXAE model (on any device).
-        hiddens:    ``(N, d_model)`` CPU tensor of LLM hidden states.
-        batch_size: Number of tokens per SAE forward pass.
-        desc:       tqdm description string.
+        sae:              SMIXAE model (on any device).
+        hiddens:          ``(N, d_model)`` CPU tensor of LLM hidden states.
+        batch_size:       Number of tokens per SAE forward pass.
+        desc:             tqdm description string.
+        return_latent_l0: If True, also return the mean number of pre-bottleneck
+                          latent dimensions (per token) that are strictly > 0.
 
     Returns:
-        ``(N, n_experts, d_bottleneck)`` CPU float32 tensor.
+        ``(N, n_experts, d_bottleneck)`` CPU float32 tensor, or a tuple of that
+        tensor and the mean latent L0 (float) when ``return_latent_l0=True``.
     """
     device = next(sae.parameters()).device
     sae_dtype = next(sae.parameters()).dtype
     chunks: list[torch.Tensor] = []
+    l0_total: float = 0.0
+    n_tokens: int = 0
     sae.eval()
     with torch.no_grad():
         for b in tqdm(hiddens.split(batch_size), desc=desc):
             b = b.to(device=device, dtype=sae_dtype)
-            chunks.append(sae.encode(b).float().cpu())
+            if return_latent_l0:
+                bottleneck, h_latent = sae.encode_with_latents(b)
+                chunks.append(bottleneck.float().cpu())
+                l0_total += float((h_latent > 0).sum(dim=-1).float().sum().item())
+                n_tokens += b.shape[0]
+            else:
+                chunks.append(sae.encode(b).float().cpu())
             del b
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-    return torch.cat(chunks, dim=0)
+    result = torch.cat(chunks, dim=0)
+    if return_latent_l0:
+        return result, l0_total / n_tokens if n_tokens > 0 else 0.0
+    return result
 
 
 # ── Expert ────────────────────────────────────────────────────────────────────
@@ -171,6 +187,7 @@ class Expert:
         labels: torch.Tensor | None = None,
         seq_positions: torch.Tensor | None = None,
         n_classes: int = 0,
+        mean_latent_l0: float | None = None,
     ):
         self.expert_activations = expert_activations[active_mask].float().cpu()
         self.llm_activations = llm_activations[active_mask].float().cpu() if llm_activations is not None else None
@@ -180,6 +197,7 @@ class Expert:
 
         self.expert_id = expert_id
         self.active_indices = active_mask.nonzero().cpu().tolist()
+        self.mean_latent_l0 = mean_latent_l0
 
         # Metrics
         self.local_continuity_scores: torch.Tensor | None = None
@@ -312,6 +330,8 @@ class Expert:
     # ── plotting ──────────────────────────────────────────────────────
     def _make_title(self) -> str:
         parts = [f"Expert {self.expert_id}  (n={self.expert_activations.shape[0]}"]
+        if self.mean_latent_l0 is not None:
+            parts.append(f"L0={self.mean_latent_l0:.1f}")
         if self.n_unique_labels is not None:
             parts.append(f"labels={self.n_unique_labels}")
         if self.fisher_score is not None:
@@ -699,8 +719,9 @@ def get_sae_activations(
 
     activations_flat = activations.reshape(B * S, D)
 
-    sae_activations_cat = encode_sae_batched(sae, activations_flat, sae_batch_size)
+    sae_activations_cat, mean_latent_l0 = encode_sae_batched(sae, activations_flat, sae_batch_size, return_latent_l0=True)  # type: ignore[misc]
     sae_activations_cat = sae_activations_cat.view(B, S, sae_activations_cat.shape[1], sae_activations_cat.shape[2])
+    print(f"Mean latent L0 (pre-bottleneck dims > 0 per token): {mean_latent_l0:.2f}")
 
     experts: list[Expert] = []
     n_experts = sae_activations_cat.shape[-2]
@@ -728,6 +749,7 @@ def get_sae_activations(
             labels=labels,
             seq_positions=seq_positions,
             n_classes=n_classes,
+            mean_latent_l0=mean_latent_l0,
         )
         experts.append(expert)
 
