@@ -16,3 +16,4 @@ logs/*
 datasets/tokenized/*
 .ruff_cache
 wandb
+results
