@@ -1,0 +1,1001 @@
+Sentence,Label
+Alice wrapped the light-sensitive sample in foil that was white,08_white
+Under UV light the compound fluoresced brown,07_brown
+"At its center, Dr. Patel noted the fungal colony was black",10_black
+"At its center, Dr. Patel noted the fungal colony was brown",07_brown
+Dr. Okafor distinguished the treatment group using tags that were green,03_green
+The coating on the electrode is brown,07_brown
+the postdoc wrapped the light-sensitive sample in foil that was yellow,02_yellow
+the supervisor labeled the sample vial with tape coded green,03_green
+the nurse noted the precipitate had a faint tint of yellow,02_yellow
+The signal trace on the oscilloscope was displayed in green,03_green
+Dr. Rossi selected the filter for the fluorescence measurement that was red,00_red
+Prof. Kim sorted the slides by condition into trays that were brown,07_brown
+the postdoc noted the precipitate had a faint tint of pink,06_pink
+"At its center, Maria noted the fungal colony was blue",04_blue
+Fatima selected the filter for the fluorescence measurement that was gray,09_gray
+Charlie wrapped the light-sensitive sample in foil that was purple,05_purple
+Yuki highlighted the chart outliers in brown,07_brown
+Under UV light the compound fluoresced blue,04_blue
+Elena sorted the slides by condition into trays that were orange,01_orange
+Yuki highlighted the chart outliers in blue,04_blue
+Charlie marked the control wells with ink that was black,10_black
+Dr. Patel sorted the slides by condition into trays that were black,10_black
+the coordinator distinguished the treatment group using tags that were gray,09_gray
+Yuki described the crystalline precipitate as black,10_black
+the analyst highlighted the chart outliers in green,03_green
+"In the acidic solution, the litmus paper turned blue",04_blue
+Prof. Kim wrapped the light-sensitive sample in foil that was black,10_black
+The calibration bead suspension is white,08_white
+The hazard placard background for this chemical class is purple,05_purple
+Elena noted the precipitate had a faint tint of orange,01_orange
+Prof. Wang labeled the sample vial with tape coded red,00_red
+the PI described the crystalline precipitate as brown,07_brown
+the intern wrapped the light-sensitive sample in foil that was yellow,02_yellow
+Prof. Wang distinguished the treatment group using tags that were orange,01_orange
+Fatima wrapped the light-sensitive sample in foil that was green,03_green
+the analyst labeled the sample vial with tape coded pink,06_pink
+Elena wrapped the light-sensitive sample in foil that was purple,05_purple
+The safety manual requires biohazard container markings to be orange,01_orange
+Omar sorted the slides by condition into trays that were black,10_black
+Prof. Wang distinguished the treatment group using tags that were brown,07_brown
+the nurse wrapped the light-sensitive sample in foil that was orange,01_orange
+the technician highlighted the chart outliers in gray,09_gray
+"At its center, Amara noted the fungal colony was brown",07_brown
+"On the selective agar plate, the colony appeared pink",06_pink
+Liam labeled the sample vial with tape coded pink,06_pink
+Maria labeled the sample vial with tape coded black,10_black
+Dr. Smith described the crystalline precipitate as gray,09_gray
+"At its center, Prof. Kim noted the fungal colony was brown",07_brown
+the postdoc selected the filter for the fluorescence measurement that was purple,05_purple
+The reference standard is packaged in a box that is yellow,02_yellow
+Elena noted the precipitate had a faint tint of black,10_black
+Dye uptake rendered the cell membrane white,08_white
+"In the acidic solution, the litmus paper turned purple",05_purple
+the PI described the crystalline precipitate as purple,05_purple
+James marked the control wells with ink that was brown,07_brown
+the coordinator highlighted the chart outliers in pink,06_pink
+Maria distinguished the treatment group using tags that were pink,06_pink
+Raj wrapped the light-sensitive sample in foil that was red,00_red
+"At its center, Omar noted the fungal colony was black",10_black
+Omar selected the filter for the fluorescence measurement that was yellow,02_yellow
+"On the selective agar plate, the colony appeared purple",05_purple
+The warning light on the centrifuge turned brown,07_brown
+the analyst labeled the sample vial with tape coded orange,01_orange
+Maria labeled the sample vial with tape coded blue,04_blue
+the nurse wrapped the light-sensitive sample in foil that was green,03_green
+Dr. Smith distinguished the treatment group using tags that were brown,07_brown
+Dr. Rossi sorted the slides by condition into trays that were purple,05_purple
+Prof. Wang highlighted the chart outliers in brown,07_brown
+"At its center, the coordinator noted the fungal colony was blue",04_blue
+Amara labeled the sample vial with tape coded gray,09_gray
+Sarah selected the filter for the fluorescence measurement that was black,10_black
+"At its center, Yuki noted the fungal colony was blue",04_blue
+Elena selected the filter for the fluorescence measurement that was pink,06_pink
+Charlie wrapped the light-sensitive sample in foil that was white,08_white
+Prof. Müller marked the control wells with ink that was brown,07_brown
+The reagent bottle cap is color-coded orange,01_orange
+The signal trace on the oscilloscope was displayed in purple,05_purple
+the PI distinguished the treatment group using tags that were red,00_red
+the technician selected the filter for the fluorescence measurement that was brown,07_brown
+James noted the precipitate had a faint tint of gray,09_gray
+the coordinator labeled the sample vial with tape coded pink,06_pink
+the intern selected the filter for the fluorescence measurement that was purple,05_purple
+Yuki selected the filter for the fluorescence measurement that was orange,01_orange
+Maria sorted the slides by condition into trays that were black,10_black
+"In the acidic solution, the litmus paper turned gray",09_gray
+Prof. Müller distinguished the treatment group using tags that were red,00_red
+James described the crystalline precipitate as white,08_white
+the nurse described the crystalline precipitate as brown,07_brown
+the nurse distinguished the treatment group using tags that were pink,06_pink
+the analyst distinguished the treatment group using tags that were pink,06_pink
+The reference standard is packaged in a box that is black,10_black
+the analyst wrapped the light-sensitive sample in foil that was white,08_white
+"Near the heat source, the thermal imaging regions were gray",09_gray
+the nurse sorted the slides by condition into trays that were white,08_white
+James wrapped the light-sensitive sample in foil that was orange,01_orange
+James described the crystalline precipitate as purple,05_purple
+the intern marked the control wells with ink that was yellow,02_yellow
+Dye uptake rendered the cell membrane gray,09_gray
+Kevin distinguished the treatment group using tags that were blue,04_blue
+Kevin labeled the sample vial with tape coded yellow,02_yellow
+The safety manual requires biohazard container markings to be blue,04_blue
+"At its center, Bob noted the fungal colony was red",00_red
+Alice marked the control wells with ink that was pink,06_pink
+Elena sorted the slides by condition into trays that were purple,05_purple
+Dr. Smith highlighted the chart outliers in red,00_red
+Fatima selected the filter for the fluorescence measurement that was purple,05_purple
+Yuki distinguished the treatment group using tags that were pink,06_pink
+the coordinator labeled the sample vial with tape coded brown,07_brown
+Kevin selected the filter for the fluorescence measurement that was green,03_green
+Maria described the crystalline precipitate as orange,01_orange
+Omar highlighted the chart outliers in green,03_green
+Prof. Wang distinguished the treatment group using tags that were purple,05_purple
+the coordinator described the crystalline precipitate as blue,04_blue
+"After incubation, the culture medium appeared blue",04_blue
+Dr. Smith sorted the slides by condition into trays that were pink,06_pink
+Alice selected the filter for the fluorescence measurement that was black,10_black
+Alice noted the precipitate had a faint tint of black,10_black
+Elena sorted the slides by condition into trays that were green,03_green
+Prof. Wang labeled the sample vial with tape coded orange,01_orange
+the analyst noted the precipitate had a faint tint of black,10_black
+the nurse wrapped the light-sensitive sample in foil that was red,00_red
+Dr. Okafor labeled the sample vial with tape coded green,03_green
+Raj noted the precipitate had a faint tint of red,00_red
+the technician labeled the sample vial with tape coded white,08_white
+Prof. Müller sorted the slides by condition into trays that were red,00_red
+Dr. Rossi noted the precipitate had a faint tint of white,08_white
+Sarah wrapped the light-sensitive sample in foil that was gray,09_gray
+Prof. Wang sorted the slides by condition into trays that were blue,04_blue
+Liam wrapped the light-sensitive sample in foil that was white,08_white
+Prof. Müller highlighted the chart outliers in brown,07_brown
+"At its center, the intern noted the fungal colony was orange",01_orange
+The reagent bottle cap is color-coded black,10_black
+"After incubation, the culture medium appeared brown",07_brown
+Prof. Müller described the crystalline precipitate as pink,06_pink
+Dr. Rossi distinguished the treatment group using tags that were yellow,02_yellow
+Dr. Okafor selected the filter for the fluorescence measurement that was green,03_green
+"On the selective agar plate, the colony appeared blue",04_blue
+the intern noted the precipitate had a faint tint of black,10_black
+Amara noted the precipitate had a faint tint of purple,05_purple
+Maria noted the precipitate had a faint tint of brown,07_brown
+James described the crystalline precipitate as gray,09_gray
+The chromatography band migrated as a stripe that appeared gray,09_gray
+Maria distinguished the treatment group using tags that were white,08_white
+Amara marked the control wells with ink that was green,03_green
+Prof. Wang wrapped the light-sensitive sample in foil that was white,08_white
+Dr. Chen described the crystalline precipitate as yellow,02_yellow
+the nurse described the crystalline precipitate as black,10_black
+The calibration bead suspension is blue,04_blue
+Charlie highlighted the chart outliers in green,03_green
+Dr. Rossi highlighted the chart outliers in black,10_black
+Dr. Okafor described the crystalline precipitate as gray,09_gray
+the technician noted the precipitate had a faint tint of green,03_green
+Prof. Kim labeled the sample vial with tape coded green,03_green
+the intern sorted the slides by condition into trays that were orange,01_orange
+Maria highlighted the chart outliers in pink,06_pink
+Charlie sorted the slides by condition into trays that were gray,09_gray
+The reference standard is packaged in a box that is green,03_green
+the PI highlighted the chart outliers in brown,07_brown
+Charlie noted the precipitate had a faint tint of brown,07_brown
+Bob marked the control wells with ink that was red,00_red
+the intern described the crystalline precipitate as brown,07_brown
+the technician noted the precipitate had a faint tint of brown,07_brown
+the coordinator distinguished the treatment group using tags that were black,10_black
+Dr. Chen distinguished the treatment group using tags that were red,00_red
+Dr. Smith described the crystalline precipitate as purple,05_purple
+Sarah selected the filter for the fluorescence measurement that was yellow,02_yellow
+"At its center, Charlie noted the fungal colony was gray",09_gray
+The coating on the electrode is white,08_white
+Fatima described the crystalline precipitate as gray,09_gray
+Amara wrapped the light-sensitive sample in foil that was purple,05_purple
+the supervisor highlighted the chart outliers in yellow,02_yellow
+the PI labeled the sample vial with tape coded white,08_white
+Sarah noted the precipitate had a faint tint of gray,09_gray
+Dye uptake rendered the cell membrane yellow,02_yellow
+"At its center, Fatima noted the fungal colony was purple",05_purple
+Dr. Rossi labeled the sample vial with tape coded white,08_white
+Dr. Rossi highlighted the chart outliers in pink,06_pink
+Maria wrapped the light-sensitive sample in foil that was purple,05_purple
+Omar labeled the sample vial with tape coded blue,04_blue
+The reagent bottle cap is color-coded green,03_green
+Alice marked the control wells with ink that was yellow,02_yellow
+Dr. Patel wrapped the light-sensitive sample in foil that was red,00_red
+the coordinator highlighted the chart outliers in green,03_green
+"At its center, Fatima noted the fungal colony was white",08_white
+Prof. Kim wrapped the light-sensitive sample in foil that was blue,04_blue
+the PI described the crystalline precipitate as orange,01_orange
+the supervisor labeled the sample vial with tape coded purple,05_purple
+"At its center, Maria noted the fungal colony was green",03_green
+"Under the microscope, the tissue stain result was white",08_white
+Dye uptake rendered the cell membrane blue,04_blue
+the PI described the crystalline precipitate as green,03_green
+the technician noted the precipitate had a faint tint of white,08_white
+Raj sorted the slides by condition into trays that were purple,05_purple
+the nurse distinguished the treatment group using tags that were white,08_white
+Omar distinguished the treatment group using tags that were blue,04_blue
+"Against the membrane, the western blot band appeared brown",07_brown
+The coating on the electrode is purple,05_purple
+Bob sorted the slides by condition into trays that were yellow,02_yellow
+Prof. Müller highlighted the chart outliers in gray,09_gray
+"In the acidic solution, the litmus paper turned yellow",02_yellow
+the postdoc noted the precipitate had a faint tint of white,08_white
+Prof. Kim labeled the sample vial with tape coded orange,01_orange
+Sarah marked the control wells with ink that was white,08_white
+Maria noted the precipitate had a faint tint of orange,01_orange
+Dr. Patel wrapped the light-sensitive sample in foil that was brown,07_brown
+the nurse described the crystalline precipitate as white,08_white
+Fatima wrapped the light-sensitive sample in foil that was red,00_red
+Raj described the crystalline precipitate as blue,04_blue
+James sorted the slides by condition into trays that were purple,05_purple
+James distinguished the treatment group using tags that were brown,07_brown
+the nurse highlighted the chart outliers in blue,04_blue
+Omar labeled the sample vial with tape coded white,08_white
+Prof. Kim labeled the sample vial with tape coded purple,05_purple
+Liam highlighted the chart outliers in blue,04_blue
+Raj noted the precipitate had a faint tint of green,03_green
+Alice sorted the slides by condition into trays that were yellow,02_yellow
+Kevin noted the precipitate had a faint tint of red,00_red
+Fatima labeled the sample vial with tape coded white,08_white
+Dr. Chen highlighted the chart outliers in purple,05_purple
+Maria distinguished the treatment group using tags that were purple,05_purple
+"At its center, Elena noted the fungal colony was blue",04_blue
+Elena wrapped the light-sensitive sample in foil that was white,08_white
+The coating on the electrode is gray,09_gray
+Elena distinguished the treatment group using tags that were blue,04_blue
+"Under the microscope, the tissue stain result was blue",04_blue
+The coating on the electrode is orange,01_orange
+"When the reaction completed, the indicator solution turned blue",04_blue
+Under UV light the compound fluoresced orange,01_orange
+The reagent bottle cap is color-coded purple,05_purple
+Bob distinguished the treatment group using tags that were black,10_black
+the coordinator distinguished the treatment group using tags that were white,08_white
+Amara described the crystalline precipitate as yellow,02_yellow
+Kevin highlighted the chart outliers in gray,09_gray
+Dr. Rossi highlighted the chart outliers in yellow,02_yellow
+Dye uptake rendered the cell membrane orange,01_orange
+The hazard placard background for this chemical class is blue,04_blue
+the postdoc described the crystalline precipitate as pink,06_pink
+Kevin selected the filter for the fluorescence measurement that was orange,01_orange
+The safety manual requires biohazard container markings to be yellow,02_yellow
+Under UV light the compound fluoresced purple,05_purple
+"After incubation, the culture medium appeared yellow",02_yellow
+Dr. Rossi sorted the slides by condition into trays that were orange,01_orange
+the technician wrapped the light-sensitive sample in foil that was red,00_red
+The signal trace on the oscilloscope was displayed in pink,06_pink
+The hazard placard background for this chemical class is pink,06_pink
+the supervisor selected the filter for the fluorescence measurement that was pink,06_pink
+the intern marked the control wells with ink that was brown,07_brown
+Prof. Wang labeled the sample vial with tape coded yellow,02_yellow
+Raj described the crystalline precipitate as white,08_white
+Dr. Rossi marked the control wells with ink that was white,08_white
+"At its center, Sarah noted the fungal colony was purple",05_purple
+Alice selected the filter for the fluorescence measurement that was purple,05_purple
+Charlie highlighted the chart outliers in black,10_black
+the analyst highlighted the chart outliers in purple,05_purple
+"After incubation, the culture medium appeared gray",09_gray
+"When the reaction completed, the indicator solution turned black",10_black
+Kevin described the crystalline precipitate as yellow,02_yellow
+"At its center, the intern noted the fungal colony was blue",04_blue
+the nurse labeled the sample vial with tape coded pink,06_pink
+the coordinator highlighted the chart outliers in purple,05_purple
+Dr. Chen selected the filter for the fluorescence measurement that was brown,07_brown
+"After incubation, the culture medium appeared black",10_black
+"At its center, the analyst noted the fungal colony was blue",04_blue
+Yuki marked the control wells with ink that was gray,09_gray
+Dr. Okafor distinguished the treatment group using tags that were red,00_red
+The reference standard is packaged in a box that is brown,07_brown
+Dr. Smith noted the precipitate had a faint tint of brown,07_brown
+Dr. Okafor highlighted the chart outliers in brown,07_brown
+"After incubation, the culture medium appeared green",03_green
+the postdoc sorted the slides by condition into trays that were gray,09_gray
+Dr. Smith selected the filter for the fluorescence measurement that was yellow,02_yellow
+Under UV light the compound fluoresced pink,06_pink
+Dr. Okafor highlighted the chart outliers in red,00_red
+Prof. Kim sorted the slides by condition into trays that were blue,04_blue
+the intern labeled the sample vial with tape coded white,08_white
+"On the selective agar plate, the colony appeared yellow",02_yellow
+the coordinator sorted the slides by condition into trays that were green,03_green
+Dr. Rossi highlighted the chart outliers in brown,07_brown
+the coordinator labeled the sample vial with tape coded purple,05_purple
+the PI distinguished the treatment group using tags that were gray,09_gray
+"At its center, Prof. Kim noted the fungal colony was white",08_white
+the intern described the crystalline precipitate as black,10_black
+Maria described the crystalline precipitate as gray,09_gray
+the technician described the crystalline precipitate as purple,05_purple
+Amara selected the filter for the fluorescence measurement that was white,08_white
+Prof. Müller noted the precipitate had a faint tint of black,10_black
+The calibration bead suspension is orange,01_orange
+the postdoc highlighted the chart outliers in orange,01_orange
+Dr. Okafor selected the filter for the fluorescence measurement that was gray,09_gray
+Alice selected the filter for the fluorescence measurement that was white,08_white
+Bob sorted the slides by condition into trays that were gray,09_gray
+The warning light on the centrifuge turned yellow,02_yellow
+The reference standard is packaged in a box that is white,08_white
+the nurse selected the filter for the fluorescence measurement that was brown,07_brown
+The coating on the electrode is green,03_green
+Amara labeled the sample vial with tape coded red,00_red
+Dr. Rossi wrapped the light-sensitive sample in foil that was gray,09_gray
+Prof. Kim selected the filter for the fluorescence measurement that was black,10_black
+"After incubation, the culture medium appeared purple",05_purple
+"At its center, the coordinator noted the fungal colony was green",03_green
+Omar sorted the slides by condition into trays that were blue,04_blue
+Charlie selected the filter for the fluorescence measurement that was blue,04_blue
+The chromatography band migrated as a stripe that appeared blue,04_blue
+Dr. Rossi described the crystalline precipitate as red,00_red
+the coordinator noted the precipitate had a faint tint of blue,04_blue
+Sarah described the crystalline precipitate as gray,09_gray
+Bob distinguished the treatment group using tags that were yellow,02_yellow
+Dr. Chen distinguished the treatment group using tags that were gray,09_gray
+Dr. Smith distinguished the treatment group using tags that were orange,01_orange
+Dr. Smith sorted the slides by condition into trays that were purple,05_purple
+Raj wrapped the light-sensitive sample in foil that was yellow,02_yellow
+Liam wrapped the light-sensitive sample in foil that was pink,06_pink
+Dr. Rossi selected the filter for the fluorescence measurement that was green,03_green
+Prof. Kim distinguished the treatment group using tags that were orange,01_orange
+Alice selected the filter for the fluorescence measurement that was brown,07_brown
+Raj marked the control wells with ink that was blue,04_blue
+Bob distinguished the treatment group using tags that were purple,05_purple
+the supervisor distinguished the treatment group using tags that were green,03_green
+Fatima highlighted the chart outliers in blue,04_blue
+Dr. Patel noted the precipitate had a faint tint of orange,01_orange
+Sarah marked the control wells with ink that was gray,09_gray
+Prof. Müller noted the precipitate had a faint tint of white,08_white
+The LED indicator on the freezer is white,08_white
+Dr. Chen marked the control wells with ink that was purple,05_purple
+Raj described the crystalline precipitate as gray,09_gray
+"At its center, Kevin noted the fungal colony was purple",05_purple
+the PI labeled the sample vial with tape coded orange,01_orange
+the nurse described the crystalline precipitate as red,00_red
+"At its center, the intern noted the fungal colony was green",03_green
+Amara labeled the sample vial with tape coded brown,07_brown
+the analyst marked the control wells with ink that was yellow,02_yellow
+Omar labeled the sample vial with tape coded red,00_red
+Alice sorted the slides by condition into trays that were gray,09_gray
+Alice sorted the slides by condition into trays that were red,00_red
+The safety manual requires biohazard container markings to be purple,05_purple
+The coating on the electrode is yellow,02_yellow
+"At its center, Fatima noted the fungal colony was pink",06_pink
+Maria wrapped the light-sensitive sample in foil that was green,03_green
+Dr. Patel marked the control wells with ink that was black,10_black
+The coating on the electrode is red,00_red
+"At the measured reading, the pH strip changed to pink",06_pink
+"At its center, Maria noted the fungal colony was black",10_black
+Alice highlighted the chart outliers in green,03_green
+Dr. Patel described the crystalline precipitate as orange,01_orange
+Dr. Chen noted the precipitate had a faint tint of white,08_white
+the technician noted the precipitate had a faint tint of black,10_black
+the supervisor wrapped the light-sensitive sample in foil that was red,00_red
+The reference standard is packaged in a box that is purple,05_purple
+Dr. Smith labeled the sample vial with tape coded red,00_red
+Alice marked the control wells with ink that was white,08_white
+"At its center, Dr. Patel noted the fungal colony was purple",05_purple
+"Near the heat source, the thermal imaging regions were purple",05_purple
+"When the reaction completed, the indicator solution turned brown",07_brown
+Bob sorted the slides by condition into trays that were white,08_white
+Raj labeled the sample vial with tape coded black,10_black
+The chromatography band migrated as a stripe that appeared pink,06_pink
+Raj marked the control wells with ink that was gray,09_gray
+Liam highlighted the chart outliers in black,10_black
+Kevin wrapped the light-sensitive sample in foil that was pink,06_pink
+"At its center, Sarah noted the fungal colony was blue",04_blue
+Raj distinguished the treatment group using tags that were orange,01_orange
+"On the selective agar plate, the colony appeared red",00_red
+Raj sorted the slides by condition into trays that were green,03_green
+The safety manual requires biohazard container markings to be green,03_green
+Dr. Rossi described the crystalline precipitate as purple,05_purple
+James distinguished the treatment group using tags that were blue,04_blue
+Prof. Kim selected the filter for the fluorescence measurement that was orange,01_orange
+Dr. Chen selected the filter for the fluorescence measurement that was purple,05_purple
+the postdoc highlighted the chart outliers in pink,06_pink
+the coordinator wrapped the light-sensitive sample in foil that was brown,07_brown
+Maria selected the filter for the fluorescence measurement that was orange,01_orange
+Elena selected the filter for the fluorescence measurement that was white,08_white
+The hazard placard background for this chemical class is gray,09_gray
+the postdoc described the crystalline precipitate as green,03_green
+"At its center, Liam noted the fungal colony was black",10_black
+the technician noted the precipitate had a faint tint of gray,09_gray
+"When the reaction completed, the indicator solution turned pink",06_pink
+Elena highlighted the chart outliers in red,00_red
+the supervisor distinguished the treatment group using tags that were brown,07_brown
+"At its center, Kevin noted the fungal colony was white",08_white
+Prof. Kim wrapped the light-sensitive sample in foil that was brown,07_brown
+"At its center, Yuki noted the fungal colony was brown",07_brown
+James highlighted the chart outliers in yellow,02_yellow
+the analyst sorted the slides by condition into trays that were white,08_white
+the coordinator labeled the sample vial with tape coded black,10_black
+Dr. Rossi sorted the slides by condition into trays that were yellow,02_yellow
+the intern marked the control wells with ink that was red,00_red
+Charlie wrapped the light-sensitive sample in foil that was gray,09_gray
+"At its center, Alice noted the fungal colony was gray",09_gray
+"Near the heat source, the thermal imaging regions were white",08_white
+the coordinator noted the precipitate had a faint tint of yellow,02_yellow
+Maria highlighted the chart outliers in orange,01_orange
+the postdoc marked the control wells with ink that was orange,01_orange
+the postdoc selected the filter for the fluorescence measurement that was yellow,02_yellow
+Dr. Patel selected the filter for the fluorescence measurement that was white,08_white
+Prof. Wang marked the control wells with ink that was white,08_white
+The LED indicator on the freezer is orange,01_orange
+the PI highlighted the chart outliers in purple,05_purple
+Omar distinguished the treatment group using tags that were red,00_red
+The LED indicator on the freezer is pink,06_pink
+"At its center, Omar noted the fungal colony was brown",07_brown
+Prof. Kim selected the filter for the fluorescence measurement that was green,03_green
+Maria sorted the slides by condition into trays that were white,08_white
+Prof. Wang wrapped the light-sensitive sample in foil that was green,03_green
+the analyst described the crystalline precipitate as white,08_white
+the postdoc marked the control wells with ink that was gray,09_gray
+Dr. Patel described the crystalline precipitate as green,03_green
+"When the reaction completed, the indicator solution turned purple",05_purple
+the supervisor marked the control wells with ink that was orange,01_orange
+Charlie sorted the slides by condition into trays that were pink,06_pink
+Charlie noted the precipitate had a faint tint of red,00_red
+Prof. Müller labeled the sample vial with tape coded pink,06_pink
+"Against the membrane, the western blot band appeared blue",04_blue
+Dye uptake rendered the cell membrane brown,07_brown
+the technician marked the control wells with ink that was yellow,02_yellow
+Bob noted the precipitate had a faint tint of black,10_black
+the coordinator selected the filter for the fluorescence measurement that was black,10_black
+"In the acidic solution, the litmus paper turned white",08_white
+Elena highlighted the chart outliers in orange,01_orange
+Omar distinguished the treatment group using tags that were purple,05_purple
+the technician labeled the sample vial with tape coded yellow,02_yellow
+Bob labeled the sample vial with tape coded black,10_black
+Omar marked the control wells with ink that was blue,04_blue
+the postdoc selected the filter for the fluorescence measurement that was red,00_red
+Bob selected the filter for the fluorescence measurement that was orange,01_orange
+The reference standard is packaged in a box that is blue,04_blue
+the technician wrapped the light-sensitive sample in foil that was pink,06_pink
+Alice labeled the sample vial with tape coded orange,01_orange
+Kevin highlighted the chart outliers in yellow,02_yellow
+the supervisor marked the control wells with ink that was blue,04_blue
+Dr. Rossi selected the filter for the fluorescence measurement that was black,10_black
+The calibration bead suspension is green,03_green
+the nurse labeled the sample vial with tape coded white,08_white
+"Against the membrane, the western blot band appeared gray",09_gray
+The hazard placard background for this chemical class is brown,07_brown
+Amara described the crystalline precipitate as red,00_red
+The hazard placard background for this chemical class is yellow,02_yellow
+Dr. Patel marked the control wells with ink that was blue,04_blue
+the coordinator marked the control wells with ink that was blue,04_blue
+"At its center, Prof. Müller noted the fungal colony was green",03_green
+Sarah wrapped the light-sensitive sample in foil that was orange,01_orange
+James marked the control wells with ink that was orange,01_orange
+Fatima wrapped the light-sensitive sample in foil that was brown,07_brown
+The signal trace on the oscilloscope was displayed in black,10_black
+Liam distinguished the treatment group using tags that were pink,06_pink
+Raj described the crystalline precipitate as orange,01_orange
+Prof. Müller described the crystalline precipitate as black,10_black
+Under UV light the compound fluoresced gray,09_gray
+Liam wrapped the light-sensitive sample in foil that was black,10_black
+the postdoc marked the control wells with ink that was green,03_green
+Under UV light the compound fluoresced black,10_black
+Bob highlighted the chart outliers in yellow,02_yellow
+the intern highlighted the chart outliers in purple,05_purple
+Amara selected the filter for the fluorescence measurement that was gray,09_gray
+Liam described the crystalline precipitate as brown,07_brown
+Prof. Kim labeled the sample vial with tape coded yellow,02_yellow
+"At its center, Kevin noted the fungal colony was brown",07_brown
+The reagent bottle cap is color-coded red,00_red
+the intern distinguished the treatment group using tags that were gray,09_gray
+the nurse noted the precipitate had a faint tint of red,00_red
+"At its center, Prof. Wang noted the fungal colony was green",03_green
+The coating on the electrode is black,10_black
+Dr. Smith labeled the sample vial with tape coded black,10_black
+Amara labeled the sample vial with tape coded white,08_white
+The hazard placard background for this chemical class is red,00_red
+the technician marked the control wells with ink that was purple,05_purple
+James wrapped the light-sensitive sample in foil that was gray,09_gray
+Liam noted the precipitate had a faint tint of white,08_white
+Charlie distinguished the treatment group using tags that were orange,01_orange
+Prof. Müller marked the control wells with ink that was yellow,02_yellow
+"At the measured reading, the pH strip changed to blue",04_blue
+Prof. Müller selected the filter for the fluorescence measurement that was purple,05_purple
+"At its center, the analyst noted the fungal colony was yellow",02_yellow
+Dr. Smith marked the control wells with ink that was pink,06_pink
+Elena described the crystalline precipitate as blue,04_blue
+Charlie highlighted the chart outliers in white,08_white
+"At its center, Dr. Smith noted the fungal colony was white",08_white
+James labeled the sample vial with tape coded purple,05_purple
+Maria selected the filter for the fluorescence measurement that was pink,06_pink
+Fatima sorted the slides by condition into trays that were brown,07_brown
+Elena distinguished the treatment group using tags that were yellow,02_yellow
+"At its center, Kevin noted the fungal colony was orange",01_orange
+Omar described the crystalline precipitate as white,08_white
+the supervisor sorted the slides by condition into trays that were pink,06_pink
+The safety manual requires biohazard container markings to be black,10_black
+Prof. Wang sorted the slides by condition into trays that were pink,06_pink
+The warning light on the centrifuge turned green,03_green
+"At its center, Prof. Wang noted the fungal colony was black",10_black
+The warning light on the centrifuge turned blue,04_blue
+The signal trace on the oscilloscope was displayed in white,08_white
+The warning light on the centrifuge turned white,08_white
+Prof. Kim described the crystalline precipitate as gray,09_gray
+the nurse described the crystalline precipitate as purple,05_purple
+"At its center, Dr. Chen noted the fungal colony was pink",06_pink
+Kevin described the crystalline precipitate as red,00_red
+"At its center, Dr. Patel noted the fungal colony was green",03_green
+Omar highlighted the chart outliers in orange,01_orange
+The warning light on the centrifuge turned orange,01_orange
+Raj described the crystalline precipitate as green,03_green
+Amara described the crystalline precipitate as blue,04_blue
+the intern described the crystalline precipitate as blue,04_blue
+the supervisor noted the precipitate had a faint tint of pink,06_pink
+Amara distinguished the treatment group using tags that were green,03_green
+Dye uptake rendered the cell membrane black,10_black
+"Against the membrane, the western blot band appeared yellow",02_yellow
+the coordinator sorted the slides by condition into trays that were blue,04_blue
+Omar wrapped the light-sensitive sample in foil that was purple,05_purple
+Prof. Kim labeled the sample vial with tape coded pink,06_pink
+the analyst labeled the sample vial with tape coded gray,09_gray
+Alice selected the filter for the fluorescence measurement that was green,03_green
+Amara labeled the sample vial with tape coded pink,06_pink
+the coordinator noted the precipitate had a faint tint of black,10_black
+"On the selective agar plate, the colony appeared orange",01_orange
+the coordinator described the crystalline precipitate as yellow,02_yellow
+Yuki distinguished the treatment group using tags that were orange,01_orange
+the PI labeled the sample vial with tape coded pink,06_pink
+"Near the heat source, the thermal imaging regions were black",10_black
+"After incubation, the culture medium appeared white",08_white
+Raj described the crystalline precipitate as brown,07_brown
+the intern selected the filter for the fluorescence measurement that was black,10_black
+Omar marked the control wells with ink that was gray,09_gray
+"Against the membrane, the western blot band appeared pink",06_pink
+Raj selected the filter for the fluorescence measurement that was brown,07_brown
+Dr. Smith described the crystalline precipitate as white,08_white
+"At the measured reading, the pH strip changed to black",10_black
+the supervisor highlighted the chart outliers in red,00_red
+The calibration bead suspension is gray,09_gray
+"When the reaction completed, the indicator solution turned yellow",02_yellow
+Dr. Rossi highlighted the chart outliers in gray,09_gray
+The reference standard is packaged in a box that is gray,09_gray
+the analyst marked the control wells with ink that was white,08_white
+The LED indicator on the freezer is purple,05_purple
+the PI distinguished the treatment group using tags that were brown,07_brown
+Elena highlighted the chart outliers in pink,06_pink
+"On the selective agar plate, the colony appeared black",10_black
+Dr. Patel noted the precipitate had a faint tint of yellow,02_yellow
+Omar labeled the sample vial with tape coded brown,07_brown
+Elena marked the control wells with ink that was brown,07_brown
+the coordinator selected the filter for the fluorescence measurement that was green,03_green
+"At its center, the nurse noted the fungal colony was blue",04_blue
+Dr. Patel noted the precipitate had a faint tint of green,03_green
+Alice distinguished the treatment group using tags that were purple,05_purple
+Sarah highlighted the chart outliers in pink,06_pink
+Omar distinguished the treatment group using tags that were green,03_green
+The LED indicator on the freezer is blue,04_blue
+Fatima marked the control wells with ink that was pink,06_pink
+Alice marked the control wells with ink that was purple,05_purple
+James wrapped the light-sensitive sample in foil that was blue,04_blue
+Elena labeled the sample vial with tape coded pink,06_pink
+Liam selected the filter for the fluorescence measurement that was brown,07_brown
+the intern labeled the sample vial with tape coded orange,01_orange
+Bob described the crystalline precipitate as black,10_black
+Prof. Kim labeled the sample vial with tape coded black,10_black
+Prof. Kim wrapped the light-sensitive sample in foil that was red,00_red
+Dr. Rossi selected the filter for the fluorescence measurement that was orange,01_orange
+Prof. Kim marked the control wells with ink that was gray,09_gray
+Fatima marked the control wells with ink that was yellow,02_yellow
+Bob selected the filter for the fluorescence measurement that was gray,09_gray
+the PI highlighted the chart outliers in blue,04_blue
+Dr. Chen marked the control wells with ink that was white,08_white
+"Near the heat source, the thermal imaging regions were brown",07_brown
+the coordinator noted the precipitate had a faint tint of purple,05_purple
+Prof. Wang labeled the sample vial with tape coded purple,05_purple
+"At the measured reading, the pH strip changed to gray",09_gray
+"On the selective agar plate, the colony appeared white",08_white
+Raj sorted the slides by condition into trays that were white,08_white
+Kevin marked the control wells with ink that was yellow,02_yellow
+Prof. Kim wrapped the light-sensitive sample in foil that was yellow,02_yellow
+the supervisor labeled the sample vial with tape coded pink,06_pink
+Alice distinguished the treatment group using tags that were brown,07_brown
+the technician highlighted the chart outliers in white,08_white
+"At the measured reading, the pH strip changed to orange",01_orange
+Prof. Wang highlighted the chart outliers in purple,05_purple
+"Under the microscope, the tissue stain result was yellow",02_yellow
+the analyst selected the filter for the fluorescence measurement that was blue,04_blue
+the coordinator labeled the sample vial with tape coded orange,01_orange
+Sarah noted the precipitate had a faint tint of yellow,02_yellow
+"When the reaction completed, the indicator solution turned gray",09_gray
+the postdoc wrapped the light-sensitive sample in foil that was purple,05_purple
+Prof. Kim selected the filter for the fluorescence measurement that was yellow,02_yellow
+The reagent bottle cap is color-coded white,08_white
+The safety manual requires biohazard container markings to be gray,09_gray
+Dr. Chen described the crystalline precipitate as green,03_green
+Dr. Okafor highlighted the chart outliers in pink,06_pink
+Yuki distinguished the treatment group using tags that were gray,09_gray
+"Against the membrane, the western blot band appeared orange",01_orange
+Dr. Rossi noted the precipitate had a faint tint of green,03_green
+the PI sorted the slides by condition into trays that were gray,09_gray
+"Under the microscope, the tissue stain result was orange",01_orange
+Dr. Chen labeled the sample vial with tape coded white,08_white
+The warning light on the centrifuge turned black,10_black
+Dr. Patel highlighted the chart outliers in black,10_black
+The coating on the electrode is pink,06_pink
+Prof. Müller wrapped the light-sensitive sample in foil that was orange,01_orange
+"At its center, the technician noted the fungal colony was yellow",02_yellow
+Dr. Chen described the crystalline precipitate as purple,05_purple
+"When the reaction completed, the indicator solution turned green",03_green
+Prof. Müller marked the control wells with ink that was orange,01_orange
+The signal trace on the oscilloscope was displayed in blue,04_blue
+The LED indicator on the freezer is black,10_black
+the nurse distinguished the treatment group using tags that were brown,07_brown
+Prof. Wang noted the precipitate had a faint tint of blue,04_blue
+the supervisor noted the precipitate had a faint tint of green,03_green
+Maria labeled the sample vial with tape coded yellow,02_yellow
+"At its center, Dr. Okafor noted the fungal colony was yellow",02_yellow
+the PI wrapped the light-sensitive sample in foil that was black,10_black
+Charlie wrapped the light-sensitive sample in foil that was brown,07_brown
+"At its center, the intern noted the fungal colony was yellow",02_yellow
+Kevin labeled the sample vial with tape coded orange,01_orange
+Prof. Wang selected the filter for the fluorescence measurement that was blue,04_blue
+The chromatography band migrated as a stripe that appeared orange,01_orange
+Dr. Okafor selected the filter for the fluorescence measurement that was orange,01_orange
+Sarah distinguished the treatment group using tags that were pink,06_pink
+"At its center, Prof. Wang noted the fungal colony was orange",01_orange
+Maria sorted the slides by condition into trays that were brown,07_brown
+Omar noted the precipitate had a faint tint of gray,09_gray
+Under UV light the compound fluoresced green,03_green
+"After incubation, the culture medium appeared pink",06_pink
+Bob wrapped the light-sensitive sample in foil that was black,10_black
+Elena distinguished the treatment group using tags that were orange,01_orange
+Raj sorted the slides by condition into trays that were black,10_black
+The safety manual requires biohazard container markings to be pink,06_pink
+the nurse selected the filter for the fluorescence measurement that was orange,01_orange
+Dr. Patel selected the filter for the fluorescence measurement that was brown,07_brown
+the analyst highlighted the chart outliers in white,08_white
+Omar sorted the slides by condition into trays that were green,03_green
+Maria wrapped the light-sensitive sample in foil that was white,08_white
+Kevin described the crystalline precipitate as white,08_white
+"On the selective agar plate, the colony appeared green",03_green
+Prof. Müller labeled the sample vial with tape coded black,10_black
+"Near the heat source, the thermal imaging regions were pink",06_pink
+Omar selected the filter for the fluorescence measurement that was blue,04_blue
+Dr. Patel distinguished the treatment group using tags that were pink,06_pink
+Yuki highlighted the chart outliers in purple,05_purple
+Dr. Okafor highlighted the chart outliers in purple,05_purple
+the postdoc distinguished the treatment group using tags that were yellow,02_yellow
+Charlie selected the filter for the fluorescence measurement that was yellow,02_yellow
+the analyst sorted the slides by condition into trays that were red,00_red
+The signal trace on the oscilloscope was displayed in red,00_red
+Liam sorted the slides by condition into trays that were blue,04_blue
+Prof. Müller described the crystalline precipitate as orange,01_orange
+Amara distinguished the treatment group using tags that were brown,07_brown
+James described the crystalline precipitate as brown,07_brown
+Dr. Smith selected the filter for the fluorescence measurement that was purple,05_purple
+The signal trace on the oscilloscope was displayed in brown,07_brown
+"At the measured reading, the pH strip changed to white",08_white
+James marked the control wells with ink that was pink,06_pink
+The signal trace on the oscilloscope was displayed in orange,01_orange
+the PI selected the filter for the fluorescence measurement that was blue,04_blue
+the analyst noted the precipitate had a faint tint of purple,05_purple
+Dr. Okafor wrapped the light-sensitive sample in foil that was gray,09_gray
+the nurse labeled the sample vial with tape coded brown,07_brown
+"At the measured reading, the pH strip changed to green",03_green
+"Against the membrane, the western blot band appeared green",03_green
+Fatima described the crystalline precipitate as purple,05_purple
+Kevin selected the filter for the fluorescence measurement that was gray,09_gray
+the nurse labeled the sample vial with tape coded gray,09_gray
+Dr. Okafor selected the filter for the fluorescence measurement that was yellow,02_yellow
+the supervisor noted the precipitate had a faint tint of purple,05_purple
+the intern labeled the sample vial with tape coded pink,06_pink
+Charlie highlighted the chart outliers in yellow,02_yellow
+the intern wrapped the light-sensitive sample in foil that was purple,05_purple
+James distinguished the treatment group using tags that were black,10_black
+Dr. Okafor described the crystalline precipitate as purple,05_purple
+"In the acidic solution, the litmus paper turned pink",06_pink
+Under UV light the compound fluoresced yellow,02_yellow
+Dr. Okafor distinguished the treatment group using tags that were yellow,02_yellow
+Dr. Okafor described the crystalline precipitate as pink,06_pink
+"At its center, the analyst noted the fungal colony was red",00_red
+Elena labeled the sample vial with tape coded brown,07_brown
+Yuki sorted the slides by condition into trays that were gray,09_gray
+"At the measured reading, the pH strip changed to yellow",02_yellow
+Dr. Rossi noted the precipitate had a faint tint of black,10_black
+Elena distinguished the treatment group using tags that were green,03_green
+"Against the membrane, the western blot band appeared white",08_white
+Dr. Chen distinguished the treatment group using tags that were black,10_black
+Elena sorted the slides by condition into trays that were white,08_white
+"At its center, Omar noted the fungal colony was gray",09_gray
+Sarah distinguished the treatment group using tags that were brown,07_brown
+the PI sorted the slides by condition into trays that were orange,01_orange
+Dr. Patel labeled the sample vial with tape coded blue,04_blue
+The safety manual requires biohazard container markings to be red,00_red
+the intern distinguished the treatment group using tags that were purple,05_purple
+the nurse wrapped the light-sensitive sample in foil that was yellow,02_yellow
+Kevin marked the control wells with ink that was green,03_green
+The chromatography band migrated as a stripe that appeared red,00_red
+the technician labeled the sample vial with tape coded orange,01_orange
+The reagent bottle cap is color-coded yellow,02_yellow
+the postdoc highlighted the chart outliers in blue,04_blue
+"At its center, Elena noted the fungal colony was pink",06_pink
+"At its center, Bob noted the fungal colony was black",10_black
+Kevin distinguished the treatment group using tags that were green,03_green
+Dr. Rossi described the crystalline precipitate as blue,04_blue
+"Against the membrane, the western blot band appeared red",00_red
+the analyst marked the control wells with ink that was black,10_black
+Charlie selected the filter for the fluorescence measurement that was gray,09_gray
+Prof. Kim marked the control wells with ink that was white,08_white
+The chromatography band migrated as a stripe that appeared white,08_white
+"At its center, the technician noted the fungal colony was black",10_black
+the postdoc highlighted the chart outliers in gray,09_gray
+The hazard placard background for this chemical class is white,08_white
+The hazard placard background for this chemical class is black,10_black
+Liam labeled the sample vial with tape coded yellow,02_yellow
+"At its center, Raj noted the fungal colony was green",03_green
+the technician sorted the slides by condition into trays that were gray,09_gray
+the technician noted the precipitate had a faint tint of pink,06_pink
+the intern selected the filter for the fluorescence measurement that was white,08_white
+The warning light on the centrifuge turned pink,06_pink
+Maria noted the precipitate had a faint tint of gray,09_gray
+"Against the membrane, the western blot band appeared purple",05_purple
+Amara sorted the slides by condition into trays that were brown,07_brown
+the analyst noted the precipitate had a faint tint of orange,01_orange
+the PI described the crystalline precipitate as yellow,02_yellow
+"Near the heat source, the thermal imaging regions were green",03_green
+The warning light on the centrifuge turned gray,09_gray
+"At the measured reading, the pH strip changed to purple",05_purple
+Sarah described the crystalline precipitate as blue,04_blue
+the technician sorted the slides by condition into trays that were green,03_green
+Dr. Rossi labeled the sample vial with tape coded pink,06_pink
+Bob selected the filter for the fluorescence measurement that was white,08_white
+the supervisor selected the filter for the fluorescence measurement that was yellow,02_yellow
+"At its center, the postdoc noted the fungal colony was green",03_green
+Kevin wrapped the light-sensitive sample in foil that was blue,04_blue
+James highlighted the chart outliers in pink,06_pink
+Liam selected the filter for the fluorescence measurement that was pink,06_pink
+James distinguished the treatment group using tags that were green,03_green
+Prof. Kim wrapped the light-sensitive sample in foil that was white,08_white
+Dr. Chen described the crystalline precipitate as blue,04_blue
+Kevin sorted the slides by condition into trays that were pink,06_pink
+Dr. Chen highlighted the chart outliers in green,03_green
+Prof. Müller wrapped the light-sensitive sample in foil that was blue,04_blue
+Raj labeled the sample vial with tape coded blue,04_blue
+the analyst wrapped the light-sensitive sample in foil that was green,03_green
+"At its center, Elena noted the fungal colony was orange",01_orange
+"At its center, the postdoc noted the fungal colony was purple",05_purple
+"After incubation, the culture medium appeared red",00_red
+"Near the heat source, the thermal imaging regions were yellow",02_yellow
+Prof. Müller sorted the slides by condition into trays that were purple,05_purple
+Charlie marked the control wells with ink that was yellow,02_yellow
+"Under the microscope, the tissue stain result was red",00_red
+"At its center, Amara noted the fungal colony was red",00_red
+the supervisor marked the control wells with ink that was pink,06_pink
+"In the acidic solution, the litmus paper turned black",10_black
+The LED indicator on the freezer is brown,07_brown
+Charlie distinguished the treatment group using tags that were green,03_green
+Omar wrapped the light-sensitive sample in foil that was yellow,02_yellow
+The warning light on the centrifuge turned red,00_red
+The chromatography band migrated as a stripe that appeared yellow,02_yellow
+the supervisor distinguished the treatment group using tags that were pink,06_pink
+Prof. Wang described the crystalline precipitate as red,00_red
+the supervisor wrapped the light-sensitive sample in foil that was purple,05_purple
+Charlie distinguished the treatment group using tags that were yellow,02_yellow
+Maria noted the precipitate had a faint tint of blue,04_blue
+James sorted the slides by condition into trays that were brown,07_brown
+"At its center, Dr. Chen noted the fungal colony was gray",09_gray
+The reference standard is packaged in a box that is orange,01_orange
+"In the acidic solution, the litmus paper turned brown",07_brown
+Amara sorted the slides by condition into trays that were white,08_white
+the analyst marked the control wells with ink that was purple,05_purple
+Yuki highlighted the chart outliers in yellow,02_yellow
+James wrapped the light-sensitive sample in foil that was red,00_red
+The chromatography band migrated as a stripe that appeared purple,05_purple
+Dr. Okafor sorted the slides by condition into trays that were orange,01_orange
+The LED indicator on the freezer is red,00_red
+James noted the precipitate had a faint tint of purple,05_purple
+Raj sorted the slides by condition into trays that were brown,07_brown
+The LED indicator on the freezer is green,03_green
+Liam sorted the slides by condition into trays that were orange,01_orange
+The signal trace on the oscilloscope was displayed in gray,09_gray
+the supervisor selected the filter for the fluorescence measurement that was orange,01_orange
+the postdoc distinguished the treatment group using tags that were brown,07_brown
+Dr. Smith labeled the sample vial with tape coded green,03_green
+The hazard placard background for this chemical class is green,03_green
+the postdoc described the crystalline precipitate as yellow,02_yellow
+The calibration bead suspension is pink,06_pink
+the PI noted the precipitate had a faint tint of yellow,02_yellow
+"At the measured reading, the pH strip changed to red",00_red
+Prof. Wang noted the precipitate had a faint tint of yellow,02_yellow
+the supervisor wrapped the light-sensitive sample in foil that was blue,04_blue
+the coordinator marked the control wells with ink that was yellow,02_yellow
+"At its center, Prof. Kim noted the fungal colony was red",00_red
+Maria described the crystalline precipitate as black,10_black
+Maria marked the control wells with ink that was blue,04_blue
+"At its center, Charlie noted the fungal colony was white",08_white
+Prof. Wang noted the precipitate had a faint tint of black,10_black
+"On the selective agar plate, the colony appeared brown",07_brown
+Bob highlighted the chart outliers in pink,06_pink
+"Under the microscope, the tissue stain result was purple",05_purple
+the intern marked the control wells with ink that was green,03_green
+"At its center, the technician noted the fungal colony was red",00_red
+Dr. Smith wrapped the light-sensitive sample in foil that was orange,01_orange
+"At its center, Raj noted the fungal colony was orange",01_orange
+the technician highlighted the chart outliers in green,03_green
+The LED indicator on the freezer is gray,09_gray
+Dr. Chen sorted the slides by condition into trays that were green,03_green
+Raj highlighted the chart outliers in green,03_green
+The reference standard is packaged in a box that is red,00_red
+"At its center, the postdoc noted the fungal colony was yellow",02_yellow
+Dye uptake rendered the cell membrane red,00_red
+Bob wrapped the light-sensitive sample in foil that was red,00_red
+The reagent bottle cap is color-coded gray,09_gray
+Sarah wrapped the light-sensitive sample in foil that was yellow,02_yellow
+"At its center, Charlie noted the fungal colony was brown",07_brown
+the supervisor labeled the sample vial with tape coded red,00_red
+the intern distinguished the treatment group using tags that were yellow,02_yellow
+the technician highlighted the chart outliers in black,10_black
+the postdoc highlighted the chart outliers in brown,07_brown
+Prof. Wang distinguished the treatment group using tags that were blue,04_blue
+Liam marked the control wells with ink that was brown,07_brown
+Yuki noted the precipitate had a faint tint of yellow,02_yellow
+Kevin labeled the sample vial with tape coded green,03_green
+Omar selected the filter for the fluorescence measurement that was white,08_white
+Prof. Müller highlighted the chart outliers in pink,06_pink
+Maria noted the precipitate had a faint tint of yellow,02_yellow
+The signal trace on the oscilloscope was displayed in yellow,02_yellow
+"At its center, Prof. Müller noted the fungal colony was blue",04_blue
+Dye uptake rendered the cell membrane green,03_green
+the postdoc noted the precipitate had a faint tint of red,00_red
+"At its center, Sarah noted the fungal colony was black",10_black
+"Near the heat source, the thermal imaging regions were blue",04_blue
+Charlie described the crystalline precipitate as blue,04_blue
+Alice noted the precipitate had a faint tint of white,08_white
+"In the acidic solution, the litmus paper turned orange",01_orange
+the coordinator selected the filter for the fluorescence measurement that was red,00_red
+Dr. Patel highlighted the chart outliers in white,08_white
+Charlie noted the precipitate had a faint tint of purple,05_purple
+The chromatography band migrated as a stripe that appeared green,03_green
+Dr. Smith distinguished the treatment group using tags that were yellow,02_yellow
+Prof. Müller marked the control wells with ink that was gray,09_gray
+the supervisor wrapped the light-sensitive sample in foil that was orange,01_orange
+"At its center, the PI noted the fungal colony was black",10_black
+Elena wrapped the light-sensitive sample in foil that was red,00_red
+"Near the heat source, the thermal imaging regions were red",00_red
+Alice distinguished the treatment group using tags that were red,00_red
+Omar distinguished the treatment group using tags that were white,08_white
+"At its center, Omar noted the fungal colony was purple",05_purple
+the coordinator selected the filter for the fluorescence measurement that was gray,09_gray
+Maria wrapped the light-sensitive sample in foil that was brown,07_brown
+"At its center, Charlie noted the fungal colony was green",03_green
+"Under the microscope, the tissue stain result was brown",07_brown
+"Under the microscope, the tissue stain result was black",10_black
+James labeled the sample vial with tape coded yellow,02_yellow
+Yuki distinguished the treatment group using tags that were purple,05_purple
+Amara distinguished the treatment group using tags that were yellow,02_yellow
+Liam marked the control wells with ink that was green,03_green
+Dr. Smith highlighted the chart outliers in orange,01_orange
+the intern noted the precipitate had a faint tint of yellow,02_yellow
+Yuki selected the filter for the fluorescence measurement that was yellow,02_yellow
+the technician marked the control wells with ink that was blue,04_blue
+Charlie sorted the slides by condition into trays that were purple,05_purple
+Maria highlighted the chart outliers in white,08_white
+Dr. Chen highlighted the chart outliers in pink,06_pink
+Under UV light the compound fluoresced white,08_white
+The reagent bottle cap is color-coded pink,06_pink
+Elena distinguished the treatment group using tags that were brown,07_brown
+Dr. Chen labeled the sample vial with tape coded purple,05_purple
+The calibration bead suspension is brown,07_brown
+Omar distinguished the treatment group using tags that were yellow,02_yellow
+Dr. Smith distinguished the treatment group using tags that were blue,04_blue
+James wrapped the light-sensitive sample in foil that was purple,05_purple
+Dr. Patel sorted the slides by condition into trays that were red,00_red
+Prof. Kim selected the filter for the fluorescence measurement that was brown,07_brown
+Dr. Chen selected the filter for the fluorescence measurement that was green,03_green
+"At its center, Liam noted the fungal colony was gray",09_gray
+Dr. Patel marked the control wells with ink that was green,03_green
+Prof. Wang distinguished the treatment group using tags that were gray,09_gray
+Dr. Okafor described the crystalline precipitate as orange,01_orange
+Dr. Okafor sorted the slides by condition into trays that were pink,06_pink
+Prof. Kim sorted the slides by condition into trays that were white,08_white
+"At its center, James noted the fungal colony was blue",04_blue
+Amara described the crystalline precipitate as brown,07_brown
+Dr. Smith wrapped the light-sensitive sample in foil that was purple,05_purple
+Under UV light the compound fluoresced red,00_red
+Prof. Wang highlighted the chart outliers in pink,06_pink
+James sorted the slides by condition into trays that were black,10_black
+Yuki sorted the slides by condition into trays that were brown,07_brown
+Yuki noted the precipitate had a faint tint of purple,05_purple
+Raj distinguished the treatment group using tags that were pink,06_pink
+the PI noted the precipitate had a faint tint of purple,05_purple
+Prof. Kim distinguished the treatment group using tags that were brown,07_brown
+Liam noted the precipitate had a faint tint of orange,01_orange
+Dr. Okafor wrapped the light-sensitive sample in foil that was green,03_green
+Kevin distinguished the treatment group using tags that were brown,07_brown
+Sarah labeled the sample vial with tape coded orange,01_orange
+"Under the microscope, the tissue stain result was gray",09_gray
+Dr. Rossi selected the filter for the fluorescence measurement that was blue,04_blue
+Dr. Rossi marked the control wells with ink that was gray,09_gray
+"Near the heat source, the thermal imaging regions were orange",01_orange
+the intern wrapped the light-sensitive sample in foil that was brown,07_brown
+Bob selected the filter for the fluorescence measurement that was yellow,02_yellow
+The chromatography band migrated as a stripe that appeared black,10_black
+Omar noted the precipitate had a faint tint of pink,06_pink
+Prof. Wang sorted the slides by condition into trays that were black,10_black
+"When the reaction completed, the indicator solution turned white",08_white
+Elena sorted the slides by condition into trays that were blue,04_blue
+Prof. Müller noted the precipitate had a faint tint of red,00_red
+Dr. Chen described the crystalline precipitate as white,08_white
+"At its center, Sarah noted the fungal colony was pink",06_pink
+the supervisor selected the filter for the fluorescence measurement that was gray,09_gray
+Prof. Kim marked the control wells with ink that was pink,06_pink
+the nurse highlighted the chart outliers in pink,06_pink
+"At its center, the coordinator noted the fungal colony was gray",09_gray
+Kevin labeled the sample vial with tape coded purple,05_purple
+the intern labeled the sample vial with tape coded yellow,02_yellow
+"At its center, Dr. Patel noted the fungal colony was pink",06_pink
+the supervisor labeled the sample vial with tape coded blue,04_blue
+the technician marked the control wells with ink that was white,08_white
+the intern highlighted the chart outliers in gray,09_gray
+James labeled the sample vial with tape coded white,08_white
+Fatima highlighted the chart outliers in brown,07_brown
+the PI noted the precipitate had a faint tint of black,10_black
+Kevin sorted the slides by condition into trays that were yellow,02_yellow
+Maria described the crystalline precipitate as red,00_red
+James noted the precipitate had a faint tint of green,03_green
+Charlie marked the control wells with ink that was purple,05_purple
+Dr. Smith noted the precipitate had a faint tint of red,00_red
+"Under the microscope, the tissue stain result was green",03_green
+Prof. Wang described the crystalline precipitate as pink,06_pink
+Amara described the crystalline precipitate as gray,09_gray
+The warning light on the centrifuge turned purple,05_purple
+Sarah noted the precipitate had a faint tint of blue,04_blue
+"At the measured reading, the pH strip changed to brown",07_brown
+"When the reaction completed, the indicator solution turned red",00_red
+The calibration bead suspension is red,00_red
+Prof. Kim sorted the slides by condition into trays that were pink,06_pink
+Omar wrapped the light-sensitive sample in foil that was white,08_white
+The chromatography band migrated as a stripe that appeared brown,07_brown
+The safety manual requires biohazard container markings to be brown,07_brown
+Dr. Smith labeled the sample vial with tape coded brown,07_brown
+Amara marked the control wells with ink that was brown,07_brown
+the intern wrapped the light-sensitive sample in foil that was blue,04_blue
+The hazard placard background for this chemical class is orange,01_orange
+"Against the membrane, the western blot band appeared black",10_black
+Prof. Kim noted the precipitate had a faint tint of white,08_white
+the nurse wrapped the light-sensitive sample in foil that was brown,07_brown
+Yuki wrapped the light-sensitive sample in foil that was brown,07_brown
+The calibration bead suspension is purple,05_purple
+Omar distinguished the treatment group using tags that were brown,07_brown
+The reagent bottle cap is color-coded brown,07_brown
+the technician sorted the slides by condition into trays that were pink,06_pink
+the coordinator selected the filter for the fluorescence measurement that was purple,05_purple
+Kevin sorted the slides by condition into trays that were gray,09_gray
+Sarah selected the filter for the fluorescence measurement that was pink,06_pink
+Yuki selected the filter for the fluorescence measurement that was white,08_white
+Amara wrapped the light-sensitive sample in foil that was pink,06_pink
+Prof. Wang distinguished the treatment group using tags that were black,10_black
+the technician distinguished the treatment group using tags that were purple,05_purple
+the intern sorted the slides by condition into trays that were red,00_red
+"Under the microscope, the tissue stain result was pink",06_pink
+Dr. Okafor distinguished the treatment group using tags that were purple,05_purple
+the nurse labeled the sample vial with tape coded red,00_red
+Alice highlighted the chart outliers in yellow,02_yellow
+the PI wrapped the light-sensitive sample in foil that was gray,09_gray
+the supervisor selected the filter for the fluorescence measurement that was green,03_green
+Prof. Müller selected the filter for the fluorescence measurement that was green,03_green
+Sarah marked the control wells with ink that was pink,06_pink
+Alice labeled the sample vial with tape coded purple,05_purple
+The reference standard is packaged in a box that is pink,06_pink
+James described the crystalline precipitate as red,00_red
+the supervisor sorted the slides by condition into trays that were yellow,02_yellow
+the coordinator noted the precipitate had a faint tint of green,03_green
+Alice distinguished the treatment group using tags that were white,08_white
+Raj distinguished the treatment group using tags that were blue,04_blue
+Omar described the crystalline precipitate as orange,01_orange
+Charlie noted the precipitate had a faint tint of orange,01_orange
+the supervisor marked the control wells with ink that was yellow,02_yellow
+"At its center, Dr. Patel noted the fungal colony was white",08_white
+"When the reaction completed, the indicator solution turned orange",01_orange
+the analyst sorted the slides by condition into trays that were brown,07_brown
+The safety manual requires biohazard container markings to be white,08_white
+Dr. Rossi described the crystalline precipitate as orange,01_orange
+Maria distinguished the treatment group using tags that were gray,09_gray
+Dr. Chen sorted the slides by condition into trays that were black,10_black
+Dr. Chen highlighted the chart outliers in gray,09_gray
+Prof. Müller marked the control wells with ink that was black,10_black
+"On the selective agar plate, the colony appeared gray",09_gray
+the PI distinguished the treatment group using tags that were yellow,02_yellow
+Alice selected the filter for the fluorescence measurement that was pink,06_pink
+Sarah selected the filter for the fluorescence measurement that was red,00_red
+Charlie labeled the sample vial with tape coded red,00_red
+the intern highlighted the chart outliers in green,03_green
+"In the acidic solution, the litmus paper turned red",00_red
+"In the acidic solution, the litmus paper turned green",03_green
+The coating on the electrode is blue,04_blue
+The LED indicator on the freezer is yellow,02_yellow
+Dr. Smith marked the control wells with ink that was black,10_black
+Sarah highlighted the chart outliers in red,00_red
+Dr. Chen wrapped the light-sensitive sample in foil that was green,03_green
+Kevin highlighted the chart outliers in green,03_green
+The calibration bead suspension is black,10_black
+the postdoc selected the filter for the fluorescence measurement that was brown,07_brown
+The reagent bottle cap is color-coded blue,04_blue
+Fatima labeled the sample vial with tape coded orange,01_orange
+Raj noted the precipitate had a faint tint of white,08_white
+Dye uptake rendered the cell membrane pink,06_pink
+Dr. Smith labeled the sample vial with tape coded purple,05_purple
+Dye uptake rendered the cell membrane purple,05_purple
+The calibration bead suspension is yellow,02_yellow
+Yuki labeled the sample vial with tape coded green,03_green
+"After incubation, the culture medium appeared orange",01_orange
