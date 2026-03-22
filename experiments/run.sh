@@ -28,7 +28,7 @@ set -euo pipefail
 # ── Defaults ─────────────────────────────────────────────────────────────── #
 TRAINING_TOKENS=500000000
 N_EXPERTS=4096
-D_EXPERT=8
+D_EXPERT=12
 K_EXPERTS=128
 DATASETS_CONFIG="datasets/probing/dataset_config.json"
 HOURS_DATASET="datasets/probing/hours.csv"

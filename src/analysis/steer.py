@@ -87,21 +87,23 @@ def steering_hook(
     hook_point: str,
     sae,
     expert_id: int,
-    tgt_mean: torch.Tensor,
+    tgt_means: torch.Tensor,
     device: str,
 ) -> Generator[None, None, None]:
     """Context manager that installs a coordinate-substitution hook on ``hook_point``.
 
+    ``tgt_means`` is ``(batch, d_bottleneck)`` — one target per prompt in the batch.
+
     At every forward pass the hook:
     1. Encodes the last-sequence-position activation through the SAE.
     2. Subtracts the expert's current contribution.
-    3. Adds the decoded target class mean for that expert.
+    3. Adds the decoded per-item target class mean for that expert.
 
     The hook is removed on context exit.
     """
     sae_device = next(sae.parameters()).device
     sae_dtype = next(sae.parameters()).dtype
-    tgt = tgt_mean.to(device=sae_device, dtype=sae_dtype)
+    tgt = tgt_means.to(device=sae_device, dtype=sae_dtype)  # (batch, d_bottleneck)
 
     def _hook(_module, _input, output):
         x = output[0] if isinstance(output, tuple) else output  # (batch, seq, d_model)
@@ -112,7 +114,7 @@ def steering_hook(
             contrib = decode_single_expert(sae, z, expert_id)  # (batch, d_model)
 
             z_tgt = torch.zeros_like(z)
-            z_tgt[:, expert_id, :] = tgt.unsqueeze(0).expand(z.shape[0], -1)
+            z_tgt[:, expert_id, :] = tgt  # (batch, d_bottleneck) — per-item targets
             tgt_contrib = decode_single_expert(sae, z_tgt, expert_id)  # (batch, d_model)
 
         x_steered = x_last.squeeze(1) - contrib + tgt_contrib
@@ -150,8 +152,12 @@ def hour_plus_delta(hour_str: str, delta: int, hour_map: dict[str, int]) -> str 
 # ── Generation helpers ────────────────────────────────────────────────────────
 
 
-def generate_text(model, tokenizer, prompt: str, max_new_tokens: int, device: str) -> str:
-    enc = tokenizer(prompt, return_tensors="pt").to(device)
+def generate_text_batch(
+    model, tokenizer, prompts: list[str], max_new_tokens: int, device: str
+) -> list[str]:
+    """Batched generation. Tokenizer must have padding_side='left'."""
+    enc = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True).to(device)
+    input_len = enc["input_ids"].shape[1]
     with torch.no_grad():
         out = model.generate(
             **enc,
@@ -159,9 +165,7 @@ def generate_text(model, tokenizer, prompt: str, max_new_tokens: int, device: st
             do_sample=False,
             pad_token_id=tokenizer.eos_token_id,
         )
-    # Decode only the newly generated tokens
-    new_ids = out[0, enc["input_ids"].shape[1] :]
-    return tokenizer.decode(new_ids, skip_special_tokens=True)
+    return [tokenizer.decode(out[i, input_len:], skip_special_tokens=True) for i in range(len(prompts))]
 
 
 # ── Regex scoring ─────────────────────────────────────────────────────────────
@@ -232,6 +236,7 @@ def main(
     device: str = typer.Option("cuda", help="Device"),
     llm_batch_size: int = typer.Option(16, help="Batch size for probing LLM forward pass"),
     sae_batch_size: int = typer.Option(2048, help="Batch size for SAE encoding"),
+    gen_batch_size: int = typer.Option(32, help="Batch size for text generation"),
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold for expert activity"),
     min_points: int = typer.Option(50, help="Minimum active tokens to keep an expert"),
 ):
@@ -292,7 +297,42 @@ def main(
     df2 = pd.read_csv(task2_dataset)
     sae_device = next(sae.parameters()).device
 
-    # ── 3. Steering loop ──────────────────────────────────────────────
+    # ── 3. Pre-filter rows and pre-generate baselines ─────────────────
+    # Baselines don't depend on the expert — generate once, reuse for all.
+    t1_rows: list[dict] = []
+    for _, row in df1.iterrows():
+        tgt_id = hour_map.get(row["Target_Hour"])
+        if tgt_id is not None:
+            t1_rows.append(dict(
+                src_hour=row["Source_Hour"], tgt_hour=row["Target_Hour"],
+                tgt_id=tgt_id, prompt=row["Prompt"],
+            ))
+
+    t2_rows: list[dict] = []
+    for _, row in df2.iterrows():
+        tgt_hour = hour_plus_delta(row["Current_Hour"], target_delta_hours, hour_map)
+        tgt_id = hour_map.get(tgt_hour) if tgt_hour else None
+        if tgt_id is not None:
+            t2_rows.append(dict(
+                src_hour=row["Current_Hour"], tgt_hour=tgt_hour, tgt_id=tgt_id,
+                start_hour=row["Start_Hour"], expected_hours=row["Expected_Hours"],
+                prompt=row["Prompt"],
+            ))
+
+    # Switch to left-padding for generation
+    tokenizer.padding_side = "left"
+
+    def _gen_chunked(prompts: list[str]) -> list[str]:
+        out = []
+        for i in tqdm(range(0, len(prompts), gen_batch_size), desc="  batches"):
+            out.extend(generate_text_batch(model, tokenizer, prompts[i : i + gen_batch_size], generate_tokens, device))
+        return out
+
+    print(f"\nPre-generating baselines ({len(t1_rows)} Task 1 + {len(t2_rows)} Task 2)…")
+    t1_baselines = _gen_chunked([r["prompt"] for r in t1_rows])
+    t2_baselines = _gen_chunked([r["prompt"] for r in t2_rows])
+
+    # ── 4. Steering loop (batched per expert) ─────────────────────────
     records: list[dict] = []
 
     for expert in top_experts:
@@ -300,68 +340,45 @@ def main(
         print(f"\n── Expert {expert.expert_id} ──")
 
         # ── Task 1: Current time ──────────────────────────────────────
-        print(f"Task 1: {len(df1)} prompts from {task1_dataset}")
-        for _, row in tqdm(df1.iterrows(), total=len(df1), desc="  Task 1"):
-            src_hour = row["Source_Hour"]
-            tgt_hour = row["Target_Hour"]
-            tgt_id = hour_map.get(tgt_hour)
-            if tgt_id is None or tgt_id not in class_means:
-                continue
+        t1_valid = [(i, r) for i, r in enumerate(t1_rows) if r["tgt_id"] in class_means]
+        t1_tgt_means = torch.stack([class_means[r["tgt_id"]] for _, r in t1_valid]).to(device=sae_device)
 
-            prompt = row["Prompt"]
-            baseline = generate_text(model, tokenizer, prompt, generate_tokens, device)
+        print(f"Task 1: {len(t1_valid)} prompts (batched, gen_batch_size={gen_batch_size})")
+        t1_steered: list[str] = []
+        for chunk_start in tqdm(range(0, len(t1_valid), gen_batch_size), desc="  Task 1"):
+            chunk = t1_valid[chunk_start : chunk_start + gen_batch_size]
+            chunk_tgt = t1_tgt_means[chunk_start : chunk_start + gen_batch_size]
+            prompts = [r["prompt"] for _, r in chunk]
+            with steering_hook(model, hook_point, sae, expert.expert_id, chunk_tgt, device):
+                t1_steered.extend(generate_text_batch(model, tokenizer, prompts, generate_tokens, device))
 
-            tgt_mean = class_means[tgt_id].to(device=sae_device)
-            with steering_hook(model, hook_point, sae, expert.expert_id, tgt_mean, device):
-                steered = generate_text(model, tokenizer, prompt, generate_tokens, device)
-
-            records.append(
-                dict(
-                    task="current_time",
-                    expert_id=expert.expert_id,
-                    fisher=expert.fisher_score,
-                    src_hour=src_hour,
-                    tgt_hour=tgt_hour,
-                    start_hour=None,
-                    prompt=prompt,
-                    baseline_output=baseline,
-                    steered_output=steered,
-                )
-            )
+        for (i, r), steered in zip(t1_valid, t1_steered):
+            records.append(dict(
+                task="current_time", expert_id=expert.expert_id, fisher=expert.fisher_score,
+                src_hour=r["src_hour"], tgt_hour=r["tgt_hour"], start_hour=None,
+                prompt=r["prompt"], baseline_output=t1_baselines[i], steered_output=steered,
+            ))
 
         # ── Task 2: Elapsed time ──────────────────────────────────────
-        # For each row the steering target is Current_Hour + target_delta_hours.
-        print(f"Task 2: {len(df2)} prompts from {task2_dataset} (delta={target_delta_hours}h)")
-        for _, row in tqdm(df2.iterrows(), total=len(df2), desc="  Task 2"):
-            curr_hour = row["Current_Hour"]
-            tgt_hour = hour_plus_delta(curr_hour, target_delta_hours, hour_map)
-            if tgt_hour is None:
-                continue
-            tgt_id = hour_map.get(tgt_hour)
-            if tgt_id is None or tgt_id not in class_means:
-                continue
+        t2_valid = [(i, r) for i, r in enumerate(t2_rows) if r["tgt_id"] in class_means]
+        t2_tgt_means = torch.stack([class_means[r["tgt_id"]] for _, r in t2_valid]).to(device=sae_device)
 
-            prompt = row["Prompt"]
-            baseline = generate_text(model, tokenizer, prompt, generate_tokens, device)
+        print(f"Task 2: {len(t2_valid)} prompts (delta={target_delta_hours}h)")
+        t2_steered: list[str] = []
+        for chunk_start in tqdm(range(0, len(t2_valid), gen_batch_size), desc="  Task 2"):
+            chunk = t2_valid[chunk_start : chunk_start + gen_batch_size]
+            chunk_tgt = t2_tgt_means[chunk_start : chunk_start + gen_batch_size]
+            prompts = [r["prompt"] for _, r in chunk]
+            with steering_hook(model, hook_point, sae, expert.expert_id, chunk_tgt, device):
+                t2_steered.extend(generate_text_batch(model, tokenizer, prompts, generate_tokens, device))
 
-            tgt_mean = class_means[tgt_id].to(device=sae_device)
-            with steering_hook(model, hook_point, sae, expert.expert_id, tgt_mean, device):
-                steered = generate_text(model, tokenizer, prompt, generate_tokens, device)
-
-            records.append(
-                dict(
-                    task="elapsed_time",
-                    expert_id=expert.expert_id,
-                    fisher=expert.fisher_score,
-                    src_hour=curr_hour,
-                    tgt_hour=tgt_hour,
-                    start_hour=row["Start_Hour"],
-                    expected_hours=row["Expected_Hours"],
-                    prompt=prompt,
-                    baseline_output=baseline,
-                    steered_output=steered,
-                )
-            )
+        for (i, r), steered in zip(t2_valid, t2_steered):
+            records.append(dict(
+                task="elapsed_time", expert_id=expert.expert_id, fisher=expert.fisher_score,
+                src_hour=r["src_hour"], tgt_hour=r["tgt_hour"], start_hour=r["start_hour"],
+                expected_hours=r["expected_hours"], prompt=r["prompt"],
+                baseline_output=t2_baselines[i], steered_output=steered,
+            ))
 
     # ── 4. Save results ───────────────────────────────────────────────
     out_path = os.path.join(output_dir, "steering_results.csv")
