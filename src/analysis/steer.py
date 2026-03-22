@@ -24,6 +24,7 @@ Steering mechanism (coordinate substitution):
 from __future__ import annotations
 
 import os
+import re
 from contextlib import contextmanager
 from typing import Generator
 
@@ -163,6 +164,46 @@ def generate_text(model, tokenizer, prompt: str, max_new_tokens: int, device: st
     return tokenizer.decode(new_ids, skip_special_tokens=True)
 
 
+# ── Regex scoring ─────────────────────────────────────────────────────────────
+
+# Matches "3PM", "11AM", "3:00 PM", "11:00am", etc.
+_TIME_RE = re.compile(r"\b(\d{1,2})(?::\d{2})?\s*([AaPp][Mm])\b")
+# Matches the first integer in the output (for elapsed hours)
+_NUM_RE = re.compile(r"\b(\d+)\b")
+
+
+def _extract_time(text: str) -> str | None:
+    """Return normalized hour string (e.g. '3PM') from model output, or None."""
+    m = _TIME_RE.search(text)
+    if m:
+        return f"{int(m.group(1))}{m.group(2).upper()}"
+    return None
+
+
+def _extract_number(text: str) -> int | None:
+    """Return first integer found in text, or None."""
+    m = _NUM_RE.search(text)
+    return int(m.group(1)) if m else None
+
+
+def _score_record(record: dict) -> dict:
+    """Return scoring fields for a single steering record."""
+    if record["task"] == "current_time":
+        tgt = record["tgt_hour"]
+        bp = _extract_time(record["baseline_output"])
+        sp = _extract_time(record["steered_output"])
+    else:
+        tgt = record.get("expected_hours")
+        bp = _extract_number(record["baseline_output"])
+        sp = _extract_number(record["steered_output"])
+    return dict(
+        baseline_pred=bp,
+        steered_pred=sp,
+        baseline_correct=(bp == tgt) if bp is not None else False,
+        steered_correct=(sp == tgt) if sp is not None else False,
+    )
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 
@@ -184,7 +225,7 @@ def main(
         help="Steering prompt CSV for Task 2 (elapsed time)",
     ),
     output_dir: str = typer.Option("steer_results", help="Output directory"),
-    n_top_experts: int = typer.Option(1, help="Number of top Fisher experts to steer with"),
+    n_top_experts: int = typer.Option(10, help="Number of top Fisher experts to steer with"),
     n_probing_samples: int = typer.Option(1000, help="Number of samples for the expert-discovery probing pass"),
     target_delta_hours: int = typer.Option(1, help="Task 2: hours to add to Current_Hour to get the steering target"),
     generate_tokens: int = typer.Option(20, help="Max new tokens to generate per prompt"),
@@ -327,6 +368,17 @@ def main(
     df = pd.DataFrame(records)
     df.to_csv(out_path, index=False)
     print(f"\nSaved {len(df)} rows → {out_path}")
+
+    # ── 5. Per-expert score files ──────────────────────────────────────
+    scores_dir = os.path.join(output_dir, "scores")
+    os.makedirs(scores_dir, exist_ok=True)
+    score_cols = ["task", "src_hour", "tgt_hour", "start_hour", "expected_hours", "prompt"]
+    for expert_id, group in df.groupby("expert_id"):
+        scored_rows = [dict(row[score_cols]) | _score_record(dict(row)) for _, row in group.iterrows()]
+        score_df = pd.DataFrame(scored_rows)
+        score_path = os.path.join(scores_dir, f"expert_{expert_id}.csv")
+        score_df.to_csv(score_path, index=False)
+    print(f"Saved per-expert scores ({len(top_experts)} files) → {scores_dir}/")
 
 
 if __name__ == "__main__":
