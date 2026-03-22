@@ -69,38 +69,37 @@ else
     DATASET_FLAGS=""
 fi
 
-# TODO: UNCOMMENT THIS FOR NEW SCRIPTS!!! 
-# smixae train \
-#     --model-name "${MODEL}" \
-#     --hook-name "${HOOK}" \
-#     --training-tokens "${TRAINING_TOKENS}" \
-#     --n-experts "${N_EXPERTS}" \
-#     --d-in "${D_IN}" \
-#     --d-expert "${D_EXPERT}" \
-#     --k-experts "${K_EXPERTS}" \
-#     --output-path "${RESULTS_DIR}/model" \
-#     --checkpoint-path "${RESULTS_DIR}/checkpoints" \
-#     ${DATASET_FLAGS}
+smixae train \
+    --model-name "${MODEL}" \
+    --hook-name "${HOOK}" \
+    --training-tokens "${TRAINING_TOKENS}" \
+    --n-experts "${N_EXPERTS}" \
+    --d-in "${D_IN}" \
+    --d-expert "${D_EXPERT}" \
+    --k-experts "${K_EXPERTS}" \
+    --output-path "${RESULTS_DIR}/model" \
+    --checkpoint-path "${RESULTS_DIR}/checkpoints" \
+    ${DATASET_FLAGS}
+
+--------------------------------------------------------------------------- #
+2. Probe all datasets                                                         #
+Final model is at the fixed output_path — no glob needed.                    #
+--------------------------------------------------------------------------- #
+smixae probe all-datasets \
+    --checkpoint-path "${RESULTS_DIR}/model" \
+    --base-model-name "${MODEL}" \
+    --hook-point "${HOOK}" \
+    --datasets-config "${DATASETS_CONFIG}" \
+    --output-dir "${RESULTS_DIR}/probe"
 
 # --------------------------------------------------------------------------- #
-# 2. Probe all datasets                                                         #
-# Final model is at the fixed output_path — no glob needed.                    #
+# 3. Newline-position manifold analysis                                         #
 # --------------------------------------------------------------------------- #
-# smixae probe all-datasets \
-#     --checkpoint-path "${RESULTS_DIR}/model" \
-#     --base-model-name "${MODEL}" \
-#     --hook-point "${HOOK}" \
-#     --datasets-config "${DATASETS_CONFIG}" \
-#     --output-dir "${RESULTS_DIR}/probe"
-
-# # --------------------------------------------------------------------------- #
-# # 3. Newline-position manifold analysis                                         #
-# # --------------------------------------------------------------------------- #
-# smixae newline main \
-#     --smixae-path "${RESULTS_DIR}/model" \
-#     --model-name "${MODEL}" \
-#     --hook-name "${HOOK}" \
-#     --output-path "${RESULTS_DIR}/newline"
+smixae newline main \
+    --smixae-path "${RESULTS_DIR}/model" \
+    --model-name "${MODEL}" \
+    --hook-name "${HOOK}" \
+    --output-path "${RESULTS_DIR}/newline"
 
 # --------------------------------------------------------------------------- #
 # 4. Steering                                                                   #
