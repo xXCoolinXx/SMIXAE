@@ -375,13 +375,12 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         scale = min(num_dead / k_aux, 1.0)
         k_aux = min(k_aux, num_dead)
 
-        # Select top-k_aux dead experts by bottleneck norm
-        expert_norms = z_pre_mask.norm(dim=-1)  # (batch, n_experts)
-        dead_norms = torch.where(dead_expert_mask[None], expert_norms, -torch.inf)
-        topk = dead_norms.topk(k_aux, dim=-1, sorted=False)
+        # Select top-k_aux dead experts by masked cos_sim
+        dead_cs = torch.where(dead_expert_mask[None], self.cos_sims, -torch.inf)
+        topk = dead_cs.topk(k_aux, dim=-1, sorted=False)
 
         # Build sparse z with only selected dead experts
-        aux_mask = torch.zeros_like(expert_norms)
+        aux_mask = torch.zeros_like(self.cos_sims)
         aux_mask.scatter_(1, topk.indices, 1.0)
         z_aux = z_pre_mask * aux_mask.unsqueeze(-1)  # (batch, n_experts, d_bottleneck)
 
