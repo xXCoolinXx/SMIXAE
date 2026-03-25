@@ -13,7 +13,7 @@ import typer
 from datasets import load_from_disk as _load_from_disk
 from sae_lens import LanguageModelSAERunnerConfig, LanguageModelSAETrainingRunner, LoggingConfig
 
-from smixae import SMIXAETrainingConfig  # also registers architecture via __init__
+from smixae import SMIXAETrainingConfig, AffineSMIXAETrainingConfig  # also registers architecture via __init__
 
 # Patch ActivationsStore to auto-detect datasets saved with save_to_disk (state.json sentinel)
 # and redirect to load_from_disk, so callers don't need to distinguish loading methods.
@@ -265,6 +265,7 @@ def train(
         False, help="Log optimizer state to W&B.", rich_help_panel="Logging"
     ),
     log_weights_to_wandb: bool = typer.Option(True, help="Log model weights to W&B.", rich_help_panel="Logging"),
+    use_affine_smixae : bool = typer.Option(False, "Whether to use affine smixae, defaults false")
 ) -> None:
     """Train a SMIXAE on a language model using SAELens."""
     torch.set_float32_matmul_precision("high")
@@ -278,8 +279,9 @@ def train(
     actual_lr_decay_steps = lr_decay_steps if lr_decay_steps is not None else total_training_steps // 5
     actual_dead_after_n_passes = dead_after_n_passes if dead_after_n_passes is not None else 500 // factor
 
+    config_type = SMIXAETrainingConfig if not use_affine_smixae else AffineSMIXAETrainingConfig
     cfg = LanguageModelSAERunnerConfig(
-        sae=SMIXAETrainingConfig(
+        sae=config_type(
             d_in=d_in,
             d_sae=d_expert * n_experts,  # derived; overridden in SMIXAETraining.__init__
             n_experts=n_experts,

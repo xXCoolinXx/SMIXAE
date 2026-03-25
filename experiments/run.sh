@@ -28,7 +28,7 @@ set -euo pipefail
 # ── Defaults ─────────────────────────────────────────────────────────────── #
 TRAINING_TOKENS=500000000
 N_EXPERTS=4096
-D_EXPERT=12
+D_EXPERT=16
 K_EXPERTS=128
 DATASETS_CONFIG="datasets/probing/dataset_config.json"
 HOURS_DATASET="datasets/probing/hours.csv"
@@ -79,12 +79,13 @@ smixae train \
     --k-experts "${K_EXPERTS}" \
     --output-path "${RESULTS_DIR}/model" \
     --checkpoint-path "${RESULTS_DIR}/checkpoints" \
+    --use-affine-smixae \
     ${DATASET_FLAGS}
 
---------------------------------------------------------------------------- #
-2. Probe all datasets                                                         #
-Final model is at the fixed output_path — no glob needed.                    #
---------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+# 2. Probe all datasets                                                         #
+# Final model is at the fixed output_path — no glob needed.                    #
+# --------------------------------------------------------------------------- #
 smixae probe all-datasets \
     --checkpoint-path "${RESULTS_DIR}/model" \
     --base-model-name "${MODEL}" \
