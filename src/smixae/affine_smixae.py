@@ -382,7 +382,7 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         # Build sparse z with only selected dead experts
         aux_mask = torch.zeros_like(self.cos_sims)
         aux_mask.scatter_(1, topk.indices, 1.0)
-        z_aux = z_pre_mask * aux_mask.unsqueeze(-1)  # (batch, n_experts, d_bottleneck)
+        z_aux = z_pre_mask * (aux_mask * self.cos_sims).unsqueeze(-1)  # (batch, n_experts, d_bottleneck)
 
         # Decode through full expert pipeline
         recons = self.decode(z_aux)
