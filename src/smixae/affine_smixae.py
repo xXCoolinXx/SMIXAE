@@ -224,13 +224,11 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
     def encode_with_hidden_pre(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         h_latent, hidden_pre_latent, hidden_pre_bottleneck, bottleneck, mask, cos_sims = affine_smixae_encode(self, x)
 
-        batch_norm_mask = self.batchtopk(hidden_pre_bottleneck.norm(dim=-1)) > 0  # (batch_size, n_experts)
-
         # Stash
         self.hidden_pre_bottleneck = hidden_pre_bottleneck
         self.h_bottleneck = bottleneck
         self.mask = mask
-        self.cos_sim = cos_sims
+        self.cos_sims = cos_sims
 
         self.hook_sae_acts_pre(hidden_pre_latent)
         self.hook_sae_acts_post(h_latent)
@@ -312,9 +310,7 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
 
         metrics = {}
 
-        metrics["experts_above_1e-3_L2"] = (self.h_bottleneck.norm(dim=-1) > 1e-3).float().sum(dim=-1).mean()
-
-        metrics["experts_above_1e-1_L2"] = (self.h_bottleneck.norm(dim=-1) > 1e-1).float().sum(dim=-1).mean()
+        metrics["experts_above_1e-3"] = (self.h_bottleneck.norm(dim=-1) > 1e-3).float().sum(dim=-1).mean()
 
         post_act_norms = self.h_bottleneck.norm(dim=-1)
 
@@ -325,7 +321,7 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         # Track this during training to make sure the threshold is working properly - woops
         metrics["act_threshold"] = self.threshold
         metrics["experts_above_threshold"] = (
-            (self.hidden_pre_bottleneck.norm(dim=-1) > self.threshold).float().sum(dim=-1).mean()
+            (self.cos_sims > self.threshold).float().sum(dim=-1).mean()
         )
 
         # This is needed if we use something other than ReLU to avoid dead neurons - eg LeakyReLU or Swish

@@ -3,10 +3,11 @@ SMIXAETrainingConfig options. Run-specific args (model, hook, architecture
 scale, token budget) are required; all others default to the standard
 experiment settings."""
 
-from typing import Optional
+from typing import Annotated, Optional
 
 import re as _re
 
+import click
 import sae_lens.training.activations_store as _acts_store
 import torch
 import typer
@@ -265,7 +266,7 @@ def train(
         False, help="Log optimizer state to W&B.", rich_help_panel="Logging"
     ),
     log_weights_to_wandb: bool = typer.Option(True, help="Log model weights to W&B.", rich_help_panel="Logging"),
-    use_affine_smixae : bool = typer.Option(False, "Whether to use affine smixae, defaults false")
+    use_affine_smixae : str = typer.Option("false", help="Whether to use affine smixae or not, defaults false (bool)", rich_help_panel="Model"),
 ) -> None:
     """Train a SMIXAE on a language model using SAELens."""
     torch.set_float32_matmul_precision("high")
@@ -279,7 +280,7 @@ def train(
     actual_lr_decay_steps = lr_decay_steps if lr_decay_steps is not None else total_training_steps // 5
     actual_dead_after_n_passes = dead_after_n_passes if dead_after_n_passes is not None else 500 // factor
 
-    config_type = SMIXAETrainingConfig if not use_affine_smixae else AffineSMIXAETrainingConfig
+    config_type = SMIXAETrainingConfig if not use_affine_smixae.lower() == 'true' else AffineSMIXAETrainingConfig
     cfg = LanguageModelSAERunnerConfig(
         sae=config_type(
             d_in=d_in,

@@ -33,6 +33,7 @@ K_EXPERTS=128
 DATASETS_CONFIG="datasets/probing/dataset_config.json"
 HOURS_DATASET="datasets/probing/hours.csv"
 TOKENIZED_DATASET=""
+USE_AFFINE_SMIXAE=false
 
 # ── Parse flags ──────────────────────────────────────────────────────────── #
 while [[ $# -gt 0 ]]; do
@@ -48,6 +49,7 @@ while [[ $# -gt 0 ]]; do
         --datasets-config)    DATASETS_CONFIG="$2";    shift 2 ;;
         --hours-dataset)      HOURS_DATASET="$2";      shift 2 ;;
         --tokenized-dataset)  TOKENIZED_DATASET="$2";  shift 2 ;;
+        --use-affine-smixae) USE_AFFINE_SMIXAE="$2";   shift 2 ;; 
         *) echo "Unknown flag: $1" >&2; exit 1 ;;
     esac
 done
@@ -79,7 +81,7 @@ smixae train \
     --k-experts "${K_EXPERTS}" \
     --output-path "${RESULTS_DIR}/model" \
     --checkpoint-path "${RESULTS_DIR}/checkpoints" \
-    --use-affine-smixae \
+    --use-affine-smixae "${USE_AFFINE_SMIXAE}" \
     ${DATASET_FLAGS}
 
 # --------------------------------------------------------------------------- #
