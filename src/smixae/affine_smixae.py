@@ -96,7 +96,7 @@ class AffineSMIXAE(SAE[AffineSMIXAEConfig]):
         _, _, _, bottleneck, _, _ = affine_smixae_encode(self, x)  # (batch, n_experts, d_bottleneck)
 
         return bottleneck
-    
+
     # def encode_with_latents(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     #     """
     #     Encode the input tensor, returning both the masked bottleneck activations and
@@ -483,7 +483,7 @@ def affine_smixae_encode(sae: AffineSMIXAE | AffineSMIXAETraining, x: torch.Tens
     sae_in = sae.process_sae_in(x) # (batch_size, d_in)
 
     # Compute cosine similarities
-    x_norm = F.normalize(x, p=2, dim=-1) 
+    x_norm = F.normalize(x, p=2, dim=-1)
     d_norm = F.normalize(sae.W_directions, p=2, dim=-1) # (n_experts, d_in)
 
     cosine_similarities = x_norm @ d_norm.T # (batch_size, n_experts)

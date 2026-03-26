@@ -3,18 +3,16 @@ SMIXAETrainingConfig options. Run-specific args (model, hook, architecture
 scale, token budget) are required; all others default to the standard
 experiment settings."""
 
-from typing import Annotated, Optional
-
 import re as _re
+from typing import Optional
 
-import click
 import sae_lens.training.activations_store as _acts_store
 import torch
 import typer
 from datasets import load_from_disk as _load_from_disk
 from sae_lens import LanguageModelSAERunnerConfig, LanguageModelSAETrainingRunner, LoggingConfig
 
-from smixae import SMIXAETrainingConfig, AffineSMIXAETrainingConfig  # also registers architecture via __init__
+from smixae import AffineSMIXAETrainingConfig, SMIXAETrainingConfig  # also registers architecture via __init__
 
 # Patch ActivationsStore to auto-detect datasets saved with save_to_disk (state.json sentinel)
 # and redirect to load_from_disk, so callers don't need to distinguish loading methods.

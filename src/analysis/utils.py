@@ -21,7 +21,6 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 from smixae import SMIXAE
-from smixae.smixae import smixae_encode as _smixae_encode
 
 # ── GPU memory ────────────────────────────────────────────────────────────────
 
