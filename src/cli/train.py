@@ -278,7 +278,7 @@ def train(
     total_training_steps = training_tokens // actual_batch_size
     actual_lr_warm_up_steps = lr_warm_up_steps if lr_warm_up_steps is not None else 500 // factor
     actual_lr_decay_steps = lr_decay_steps if lr_decay_steps is not None else total_training_steps // 5
-    actual_dead_after_n_passes = dead_after_n_passes if dead_after_n_passes is not None else 500 // factor
+    actual_dead_after_n_passes = dead_after_n_passes if dead_after_n_passes is not None else 1000 // factor
 
     config_type = SMIXAETrainingConfig if not use_affine_smixae.lower() == 'true' else AffineSMIXAETrainingConfig
     cfg = LanguageModelSAERunnerConfig(

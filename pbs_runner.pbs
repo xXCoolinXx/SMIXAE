@@ -3,7 +3,7 @@
 # The SCRIPT variable must be set via qsub -v SCRIPT=<name>.sh
 
 #PBS -q gpu
-#PBS -l walltime=10:00:00
+#PBS -l walltime=15:00:00
 #PBS -o job_output.log
 #PBS -e job_error.log
 
