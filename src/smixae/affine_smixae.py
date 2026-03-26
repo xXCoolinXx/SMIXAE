@@ -366,6 +366,9 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
             return sae_out.new_tensor(0.0)
 
         residual = (sae_in - sae_out).detach()
+        resid_normed = F.normalize(residual, p=2, dim=-1)
+        W_dir_normed = F.normalize(self.W_directions, p=2, dim=-1)
+        sims = (resid_normed @ W_dir_normed.T).float()
 
         # Heuristic: use half of active experts as k_aux
         k_aux = (
@@ -388,7 +391,10 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         recons = self.decode(z_aux)
 
         auxk_loss = (recons - residual).pow(2).sum(dim=-1).mean()
-        return self.cfg.aux_loss_coefficient * scale * auxk_loss
+
+        steering_loss = (aux_mask * (1.0 - sims)).sum() / aux_mask.sum().clamp(1.0)
+
+        return self.cfg.aux_loss_coefficient * scale * (auxk_loss + steering_loss)
 
     @torch.no_grad()
     def update_threshold(self, norms_topk: torch.Tensor) -> None:
