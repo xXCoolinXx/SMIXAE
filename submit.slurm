@@ -5,8 +5,8 @@
 #   sbatch experiments/submit.slurm <experiment_script> [extra args...]
 #
 # Examples:
-#   sbatch experiments/submit.slurm experiments/gemma_2_9b_l11_newline.sh
-#   sbatch experiments/submit.slurm experiments/gemma_2_9b_l20_general.sh
+#   sbatch submit.slurm experiments/gemma_2_9b_l11_newline.sh
+#   sbatch submit.slurm experiments/gemma_2_9b_l20_general.sh
 #
 #   Override SLURM resources at submission time:
 #   sbatch --time=20:00:00 --mem=32G experiments/submit.slurm experiments/gemma_2_9b_l11_newline.sh
@@ -46,8 +46,14 @@ echo "Running experiment: ${EXPERIMENT_SCRIPT}"
 cd "${SLURM_SUBMIT_DIR}"
 mkdir -p logs/slurm
 
-source "${SLURM_SUBMIT_DIR}/.venv/bin/activate"
 module add compilers/gcc/11.1.0
+
+export CC=gcc
+export CXX=g++
+
+export LD_LIBRARY_PATH=/share/apps/gcc/11.1.0/lib64:$LD_LIBRARY_PATH
+
+source "${SLURM_SUBMIT_DIR}/.venv/bin/activate"
 
 export HF_HOME=/scratch/ctfrancel/.cache/huggingface
 export WANDB_API_KEY=$(cat $SLURM_SUBMIT_DIR/.wandb_key) 
