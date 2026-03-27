@@ -49,14 +49,17 @@ mkdir -p logs/slurm
 source "${SLURM_SUBMIT_DIR}/.venv/bin/activate"
 module add compilers/gcc/11.1.0
 
-export HF_HOME=/scratch/Collin/.cache/huggingface
-export WANDB_API_KEY=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
+export HF_HOME=/scratch/ctfrancel/.cache/huggingface
+export WANDB_API_KEY=$(cat $SLURM_SUBMIT_DIR/.wandb_key) 
+export HF_TOKEN=$(cat /home/ctfrancel/.cache/huggingface/token)
 
 # ── Run experiment ───────────────────────────────────────────────────────── #
-LOGFILE="${SLURM_SUBMIT_DIR}/logs/slurm/debug_${SLURM_JOB_ID}_$(date +%Y%m%d_%H%M%S).log"
+LOGFILE="${SLURM_SUBMIT_DIR}/logs/debug_${SLURM_JOB_ID}_$(date +%Y%m%d_%H%M%S).log"
 
 {
-    nvidia-smi
+    if [[ -n "${SLURM_JOB_GPUS:-}" ]]; then
+        nvidia-smi
+    fi
 
     bash "${EXPERIMENT_SCRIPT}" "$@"
 } 2>&1 | tee "${LOGFILE}"
