@@ -483,7 +483,7 @@ class Expert:
                 pts, cont_arr.astype(np.float32),
                 colorscale="Viridis",
                 colorbar_title="Continuity",
-                scatter_alpha=0.8,
+                scatter_alpha=0.2,
                 title=self._make_title(),
             )
             fig.data[0].update(hovertext=contexts, hoverinfo="text")

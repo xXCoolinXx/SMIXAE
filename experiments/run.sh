@@ -93,7 +93,8 @@ smixae probe all-datasets \
     --base-model-name "${MODEL}" \
     --hook-point "${HOOK}" \
     --datasets-config "${DATASETS_CONFIG}" \
-    --output-dir "${RESULTS_DIR}/probe"
+    --output-dir "${RESULTS_DIR}/probe" \
+    --min-points 750 
 
 # --------------------------------------------------------------------------- #
 # 3. Newline-position manifold analysis                                         #
