@@ -176,7 +176,7 @@ def build_color_map(
 def compute_label_offsets(
     mean_xyz: np.ndarray,
     display_labels: list,
-    base_r: float = 45,
+    base_r: float = 80,
     fig_w: int = 1100,
     fig_h: int = 850,
 ) -> np.ndarray:
@@ -185,15 +185,15 @@ def compute_label_offsets(
     using adjustText.
 
     Projects mean_xyz onto the x-z plane (matching Plotly's default camera),
-    normalizes to [0,1] space, runs adjustText, then converts back to pixel
-    offsets relative to each point.
+    normalizes to [0,1] space, places initial positions radially away from the
+    global centroid, then runs adjustText to resolve overlaps.
 
     Parameters
     ----------
     mean_xyz       : (K, 3) array of class mean positions in data space.
-    display_labels : list of K label strings (used for text sizing in layout).
-    base_r         : initial radial offset (pixels) before adjustText runs.
-    fig_w, fig_h   : figure dimensions used for pixel↔normalized conversion.
+    display_labels : list of K label strings.
+    base_r         : initial radial offset in pixels before adjustText runs.
+    fig_w, fig_h   : figure dimensions for pixel↔normalized conversion.
 
     Returns
     -------
@@ -205,6 +205,8 @@ def compute_label_offsets(
     import matplotlib.pyplot as plt
 
     n = len(mean_xyz)
+    if n == 0:
+        return np.empty((0, 2))
 
     # Project to 2-D: x vs z matches Plotly's default eye=(1.5, -1.3, 0.8)
     pts = mean_xyz[:, [0, 2]].astype(float)
@@ -460,7 +462,7 @@ def add_label_annotations(
     names: Dict[Any, str],
     label_font_size: int = 10,
     label_bg: str = "rgba(255,255,255,0.88)",
-    label_offset_base_r: float = 45,
+    label_offset_base_r: float = 80,
     fig_w: int = 1100,
     fig_h: int = 850,
 ) -> go.Figure:
@@ -480,7 +482,7 @@ def add_label_annotations(
         annotations.append(dict(
             x=mean_xyz[i, 0], y=mean_xyz[i, 1], z=mean_xyz[i, 2],
             text=f"<b>{names[c]}</b>",
-            font=dict(size=label_font_size, color=_darken_rgb(rgb)),
+            font=dict(size=label_font_size, color="black"),
             bgcolor=label_bg,
             bordercolor=_border_rgba(rgb),
             borderwidth=1, borderpad=3,
@@ -631,7 +633,7 @@ def plot_3d_scatter(
     label_names: Optional[Union[Dict, List, Sequence]] = None,
     # ── color ────────────────────────────────────────────────────────────────
     colorscale: Optional[Union[str, list, dict]] = None,
-    scatter_alpha: float = 0.6,
+    scatter_alpha: float = 0.8,
     mean_alpha: float = 1.0,
     # ── markers ──────────────────────────────────────────────────────────────
     scatter_size: float = 3,
@@ -644,7 +646,7 @@ def plot_3d_scatter(
     show_labels: bool = True,
     label_font_size: int = 10,
     label_bg: str = "rgba(255,255,255,0.88)",
-    label_offset_base_r: float = 45,
+    label_offset_base_r: float = 80,
     # ── origin marker ────────────────────────────────────────────────────────
     show_origin: bool = True,
     # ── colorbar (for continuous / ordinal scales) ────────────────────────────

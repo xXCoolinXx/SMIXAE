@@ -88,12 +88,12 @@ fi
 # 2. Probe all datasets                                                         #
 # Final model is at the fixed output_path — no glob needed.                    #
 # --------------------------------------------------------------------------- #
-# smixae probe all-datasets \
-#     --checkpoint-path "${RESULTS_DIR}/model" \
-#     --base-model-name "${MODEL}" \
-#     --hook-point "${HOOK}" \
-#     --datasets-config "${DATASETS_CONFIG}" \
-#     --output-dir "${RESULTS_DIR}/probe"
+smixae probe all-datasets \
+    --checkpoint-path "${RESULTS_DIR}/model" \
+    --base-model-name "${MODEL}" \
+    --hook-point "${HOOK}" \
+    --datasets-config "${DATASETS_CONFIG}" \
+    --output-dir "${RESULTS_DIR}/probe"
 
 # --------------------------------------------------------------------------- #
 # 3. Newline-position manifold analysis                                         #
@@ -106,12 +106,12 @@ smixae newline main \
     --output-path "${RESULTS_DIR}/newline_150" \
     --line-length 150
 
-# smixae newline main \
-#     --smixae-path "${RESULTS_DIR}/model" \
-#     --model-name "${MODEL}" \
-#     --hook-name "${HOOK}" \
-#     --output-path "${RESULTS_DIR}/newline_80" \
-#     --line-length 80
+smixae newline main \
+    --smixae-path "${RESULTS_DIR}/model" \
+    --model-name "${MODEL}" \
+    --hook-name "${HOOK}" \
+    --output-path "${RESULTS_DIR}/newline_80" \
+    --line-length 80
 
 # --------------------------------------------------------------------------- #
 # 4. Steering                                                                   #
