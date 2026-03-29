@@ -193,19 +193,30 @@ def _extract_number(text: str) -> int | None:
 def _score_record(record: dict) -> dict:
     """Return scoring fields for a single steering record."""
     if record["task"] == "current_time":
+        # Baseline should say the source hour; steered output should say the target hour.
+        src = record["src_hour"]
         tgt = record["tgt_hour"]
         bp = _extract_time(record["baseline_output"])
         sp = _extract_time(record["steered_output"])
+        return dict(
+            baseline_pred=bp,
+            steered_pred=sp,
+            baseline_correct=(bp == src) if bp is not None else False,
+            steered_correct=(sp == tgt) if sp is not None else False,
+        )
     else:
-        tgt = record.get("expected_hours")
+        # Baseline: should output expected_hours (unsteered elapsed time).
+        # Steered: should output steered_expected_hours (elapsed time after shifting current hour).
+        baseline_tgt = record.get("expected_hours")
+        steered_tgt = record.get("steered_expected_hours")
         bp = _extract_number(record["baseline_output"])
         sp = _extract_number(record["steered_output"])
-    return dict(
-        baseline_pred=bp,
-        steered_pred=sp,
-        baseline_correct=(bp == tgt) if bp is not None else False,
-        steered_correct=(sp == tgt) if sp is not None else False,
-    )
+        return dict(
+            baseline_pred=bp,
+            steered_pred=sp,
+            baseline_correct=(bp == baseline_tgt) if bp is not None else False,
+            steered_correct=(sp == steered_tgt) if sp is not None else False,
+        )
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
@@ -312,10 +323,14 @@ def main(
     for _, row in df2.iterrows():
         tgt_hour = hour_plus_delta(row["Current_Hour"], target_delta_hours, hour_map)
         tgt_id = hour_map.get(tgt_hour) if tgt_hour else None
-        if tgt_id is not None:
+        expected = int(row["Expected_Hours"])
+        steered_expected = expected + target_delta_hours
+        # Skip rows where steering produces the same answer as baseline (no measurable effect).
+        if tgt_id is not None and steered_expected != expected:
             t2_rows.append(dict(
                 src_hour=row["Current_Hour"], tgt_hour=tgt_hour, tgt_id=tgt_id,
-                start_hour=row["Start_Hour"], expected_hours=row["Expected_Hours"],
+                start_hour=row["Start_Hour"], expected_hours=expected,
+                steered_expected_hours=steered_expected,
                 prompt=row["Prompt"],
             ))
 
@@ -376,26 +391,46 @@ def main(
             records.append(dict(
                 task="elapsed_time", expert_id=expert.expert_id, fisher=expert.fisher_score,
                 src_hour=r["src_hour"], tgt_hour=r["tgt_hour"], start_hour=r["start_hour"],
-                expected_hours=r["expected_hours"], prompt=r["prompt"],
+                expected_hours=r["expected_hours"],
+                steered_expected_hours=r["steered_expected_hours"],
+                prompt=r["prompt"],
                 baseline_output=t2_baselines[i], steered_output=steered,
             ))
 
-    # ── 4. Save results ───────────────────────────────────────────────
-    out_path = os.path.join(output_dir, "steering_results.csv")
+    # ── 4. Score all records and save per-expert detail files ────────
     df = pd.DataFrame(records)
-    df.to_csv(out_path, index=False)
-    print(f"\nSaved {len(df)} rows → {out_path}")
-
-    # ── 5. Per-expert score files ──────────────────────────────────────
     scores_dir = os.path.join(output_dir, "scores")
     os.makedirs(scores_dir, exist_ok=True)
-    score_cols = ["task", "src_hour", "tgt_hour", "start_hour", "expected_hours", "prompt"]
+    score_cols = ["task", "src_hour", "tgt_hour", "start_hour", "expected_hours", "steered_expected_hours", "prompt"]
     for expert_id, group in df.groupby("expert_id"):
         scored_rows = [dict(row[score_cols]) | _score_record(dict(row)) for _, row in group.iterrows()]
         score_df = pd.DataFrame(scored_rows)
         score_path = os.path.join(scores_dir, f"expert_{expert_id}.csv")
         score_df.to_csv(score_path, index=False)
-    print(f"Saved per-expert scores ({len(top_experts)} files) → {scores_dir}/")
+    print(f"Saved per-expert detail scores ({len(top_experts)} files) → {scores_dir}/")
+
+    # ── 5. Summary report: one row per (expert, task) ─────────────────
+    summary_rows = []
+    for expert_id, group in df.groupby("expert_id"):
+        fisher = group["fisher"].iloc[0]
+        for task, tgroup in group.groupby("task"):
+            scored = [_score_record(dict(row)) for _, row in tgroup.iterrows()]
+            n = len(scored)
+            baseline_acc = sum(r["baseline_correct"] for r in scored) / n if n else 0.0
+            steered_acc = sum(r["steered_correct"] for r in scored) / n if n else 0.0
+            summary_rows.append(dict(
+                expert_id=expert_id,
+                fisher=fisher,
+                task=task,
+                n_prompts=n,
+                baseline_accuracy=round(baseline_acc, 4),
+                steered_accuracy=round(steered_acc, 4),
+                delta_accuracy=round(steered_acc - baseline_acc, 4),
+            ))
+    summary_df = pd.DataFrame(summary_rows).sort_values(["task", "fisher"], ascending=[True, False])
+    summary_path = os.path.join(output_dir, "summary.csv")
+    summary_df.to_csv(summary_path, index=False)
+    print(f"Saved summary ({len(summary_df)} rows) → {summary_path}")
 
 
 if __name__ == "__main__":

@@ -9,14 +9,11 @@
   {"dataframe_path": "colors.csv",       "color_map": {
     "red":    "red",
     "orange": "orange",
-    "yellow": "yellow",
-    "green":  "green",
-    "blue":   "blue",
-    "purple": "purple",
-    "pink":   "hotpink",
-    "brown":  "saddlebrown",
-    "white":  "whitesmoke",
-    "gray":   "gray",
-    "black":  "black"
+    "yellow": "#e6c800",
+    "green":  "#00b300",
+    "blue":   "#1a6fcc",
+    "indigo": "#4b0082",
+    "violet": "#8f00ff",
+    "pink":   "#ff69b4"
   }}
 ]

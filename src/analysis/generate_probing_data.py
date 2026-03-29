@@ -442,19 +442,16 @@ def generate_living_things(n_samples=1000):
 
 
 def generate_colors(n_samples=1000):
-    # Ordered by hue (rainbow order), then achromatics
+    # Rainbow order (ROYGBIV + pink/violet)
     colors = [
         "red",
         "orange",
         "yellow",
         "green",
         "blue",
-        "purple",
+        "indigo",
+        "violet",
         "pink",
-        "brown",
-        "white",
-        "gray",
-        "black",
     ]
 
     templates = [
