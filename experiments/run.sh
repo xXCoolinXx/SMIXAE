@@ -71,18 +71,18 @@ else
     DATASET_FLAGS=""
 fi
 
-smixae train \
-    --model-name "${MODEL}" \
-    --hook-name "${HOOK}" \
-    --training-tokens "${TRAINING_TOKENS}" \
-    --n-experts "${N_EXPERTS}" \
-    --d-in "${D_IN}" \
-    --d-expert "${D_EXPERT}" \
-    --k-experts "${K_EXPERTS}" \
-    --output-path "${RESULTS_DIR}/model" \
-    --checkpoint-path "${RESULTS_DIR}/checkpoints" \
-    --use-affine-smixae "${USE_AFFINE_SMIXAE}" \
-    ${DATASET_FLAGS}
+# smixae train \
+#     --model-name "${MODEL}" \
+#     --hook-name "${HOOK}" \
+#     --training-tokens "${TRAINING_TOKENS}" \
+#     --n-experts "${N_EXPERTS}" \
+#     --d-in "${D_IN}" \
+#     --d-expert "${D_EXPERT}" \
+#     --k-experts "${K_EXPERTS}" \
+#     --output-path "${RESULTS_DIR}/model" \
+#     --checkpoint-path "${RESULTS_DIR}/checkpoints" \
+#     --use-affine-smixae "${USE_AFFINE_SMIXAE}" \
+#     ${DATASET_FLAGS}
 
 # --------------------------------------------------------------------------- #
 # 2. Probe all datasets                                                         #
@@ -98,18 +98,27 @@ smixae probe all-datasets \
 # --------------------------------------------------------------------------- #
 # 3. Newline-position manifold analysis                                         #
 # --------------------------------------------------------------------------- #
+
 smixae newline main \
     --smixae-path "${RESULTS_DIR}/model" \
     --model-name "${MODEL}" \
     --hook-name "${HOOK}" \
-    --output-path "${RESULTS_DIR}/newline"
+    --output-path "${RESULTS_DIR}/newline_80" \
+    --line-length 150
+
+smixae newline main \
+    --smixae-path "${RESULTS_DIR}/model" \
+    --model-name "${MODEL}" \
+    --hook-name "${HOOK}" \
+    --output-path "${RESULTS_DIR}/newline_80" \
+    --line-length 80
 
 # --------------------------------------------------------------------------- #
 # 4. Steering                                                                   #
 # --------------------------------------------------------------------------- #
-smixae steer main \
-    --checkpoint-path "${RESULTS_DIR}/model" \
-    --base-model-name "${MODEL}" \
-    --hook-point "${HOOK}" \
-    --hours-dataset "${HOURS_DATASET}" \
-    --output-dir "${RESULTS_DIR}/steer"
+# smixae steer main \
+#     --checkpoint-path "${RESULTS_DIR}/model" \
+#     --base-model-name "${MODEL}" \
+#     --hook-point "${HOOK}" \
+#     --hours-dataset "${HOURS_DATASET}" \
+#     --output-dir "${RESULTS_DIR}/steer"
