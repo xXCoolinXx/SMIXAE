@@ -692,7 +692,7 @@ def plot_3d_scatter(
     mean_alpha: float = 1.0,
     # ── markers ──────────────────────────────────────────────────────────────
     scatter_size: float = 1,
-    mean_size: float = 6,
+    mean_size: float = 5,
     mean_marker_line_width: float = 1,
     # ── mean line ────────────────────────────────────────────────────────────
     connect_means: bool = False,
@@ -834,12 +834,12 @@ def plot_3d_scatter(
                 tick_increment=colorbar_tick_increment,
             )
             _max_label_chars = max((len(str(names.get(c, c))) for c in classes), default=6)
-            right_margin = 40 + _max_label_chars * 9
+            right_margin = max(200, 60 + _max_label_chars * 10)
             legend_kwargs["showlegend"] = False
         else:
             add_discrete_legend(fig, classes, cmap, names)
             _max_label_chars = max((len(str(names.get(c, c))) for c in classes), default=6)
-            right_margin = 40 + _max_label_chars * 9
+            right_margin = max(160, 40 + _max_label_chars * 9)
             legend_kwargs["showlegend"] = True
             legend_kwargs["legend"] = dict(
                 x=1.02, y=0.5, xanchor="left", yanchor="middle",
