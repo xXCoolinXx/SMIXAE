@@ -55,6 +55,7 @@ from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 import numpy as np
 import plotly.graph_objects as go
 import plotly.colors as pc
+from matplotlib.colors import to_rgb as _mpl_to_rgb
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -62,9 +63,15 @@ import plotly.colors as pc
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _normalize_to_rgb(color: str) -> str:
-    """Normalize any Plotly-native color string to canonical 'rgb(R,G,B)' form."""
-    normalized, _ = pc.convert_colors_to_same_type([color], colortype="rgb")
-    return normalized[0]
+    """Normalize any color string (named CSS, hex, rgb(...), rgba(...)) to 'rgb(R,G,B)'."""
+    if color.startswith("rgb("):
+        return color
+    if color.startswith("rgba("):
+        parts = color[5:-1].split(",")
+        return f"rgb({parts[0].strip()},{parts[1].strip()},{parts[2].strip()})"
+    # handles named CSS colors, hex strings, etc.
+    r, g, b = _mpl_to_rgb(color)
+    return f"rgb({int(round(r * 255))},{int(round(g * 255))},{int(round(b * 255))})"
 
 
 def _rgb_from_floats(r: float, g: float, b: float) -> str:
@@ -87,12 +94,14 @@ def rgb_with_alpha(rgb_str: str, alpha: float) -> str:
     str  'rgba(R,G,B,alpha)'
     """
     if not rgb_str.startswith("rgb("):
-        raise ValueError(f"Expected 'rgb(...)' string, got {rgb_str!r}")
+        rgb_str = _normalize_to_rgb(rgb_str)
     return f"rgba({rgb_str[4:-1]},{alpha:.3f})"
 
 
 def _darken_rgb(rgb_str: str, factor: float = 0.55) -> str:
     """Return a darkened version of an 'rgb(R,G,B)' string (for font legibility)."""
+    if not rgb_str.startswith("rgb("):
+        rgb_str = _normalize_to_rgb(rgb_str)
     vals = [int(v) for v in rgb_str[4:-1].split(",")]
     return f"rgb({int(vals[0]*factor)},{int(vals[1]*factor)},{int(vals[2]*factor)})"
 

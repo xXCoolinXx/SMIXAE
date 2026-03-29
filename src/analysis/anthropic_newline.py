@@ -499,7 +499,8 @@ def plot_expert_dim_analysis(
         fig.update_yaxes(title_text=f"dim {j}", row=1, col=c)
 
     # Build summary line for title
-    method_scores = "  ".join(f"{METHOD_SHORT[m]}={scores_row.get(m, 0):.4f}" for m in VALID_RANK_BY)
+    _SHORT = {"decode_r2": "dec", "encode_linear_r2": "lin", "encode_periodic_r2": "per", "periodic_gain": "Δper"}
+    method_scores = "  ".join(f"{_SHORT.get(m, m)}={scores_row.get(m, 0):.4f}" for m in VALID_RANK_BY)
     fig.update_layout(
         title=f"Expert {expert_id} — Per-Dim Analysis  ({method_scores})",
         height=400,
