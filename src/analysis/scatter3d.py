@@ -12,6 +12,7 @@ Label layout
     compute_label_offsets(mean_xyz, display_labels, ...)  → np.ndarray (N,2)
 
 Figure building (composable — each returns the modified fig)
+    add_continuous_scatter_trace(fig, xyz, values, colorscale, ...)
     add_scatter_trace(fig, xyz, labels, cmap, ...)
     add_mean_trace(fig, mean_xyz, classes, cmap, names, ...)
     add_label_annotations(fig, mean_xyz, classes, cmap, names, ...)
@@ -265,20 +266,91 @@ def add_scatter_trace(
     cmap: Dict[Any, str],
     scatter_alpha: float = 0.5,
     scatter_size: float = 3,
+    hovertext: Optional[List[str]] = None,
 ) -> go.Figure:
     """
     Add the raw point-cloud trace to fig.
 
     Each point is colored by its class using cmap, with scatter_alpha applied.
     Returns fig for chaining.
+
+    Parameters
+    ----------
+    hovertext : list of per-point hover strings, or None to use (x,y,z) coordinates.
     """
     point_colors = [rgb_with_alpha(cmap[lbl], scatter_alpha) for lbl in labels]
-    hover = [f"({x:.2f}, {y:.2f}, {z:.2f})" for x, y, z in zip(xyz[:,0], xyz[:,1], xyz[:,2])]
+    if hovertext is None:
+        hovertext = [f"({x:.2f}, {y:.2f}, {z:.2f})" for x, y, z in zip(xyz[:,0], xyz[:,1], xyz[:,2])]
     fig.add_trace(go.Scatter3d(
         x=xyz[:, 0], y=xyz[:, 1], z=xyz[:, 2],
         mode="markers",
         marker=dict(size=scatter_size, color=point_colors, line=dict(width=0)),
-        hovertext=hover,
+        hovertext=hovertext,
+        hoverinfo="text",
+        showlegend=False,
+        name="scatter",
+    ))
+    return fig
+
+
+def add_continuous_scatter_trace(
+    fig: go.Figure,
+    xyz: np.ndarray,
+    values: np.ndarray,
+    colorscale: str = "Viridis",
+    scatter_alpha: float = 0.8,
+    scatter_size: float = 3,
+    hovertext: Optional[List[str]] = None,
+    colorbar_title: str = "",
+    colorbar_thickness: int = 20,
+    colorbar_len: float = 0.75,
+    colorbar_x: float = 1.02,
+) -> go.Figure:
+    """
+    Add a scatter trace colored by continuous float values.
+
+    Bypasses the class-label color machinery — color is applied directly from
+    the ``values`` array via a Plotly colorscale, with a built-in colorbar.
+
+    Parameters
+    ----------
+    values   : (N,) float array used as continuous color signal.
+    colorscale : named Plotly colorscale string (default "Viridis").
+    hovertext  : per-point hover strings; defaults to (x,y,z) coordinates.
+
+    Returns
+    -------
+    fig for chaining.
+    """
+    if hovertext is None:
+        hovertext = [
+            f"({x:.2f}, {y:.2f}, {z:.2f})"
+            for x, y, z in zip(xyz[:, 0], xyz[:, 1], xyz[:, 2])
+        ]
+    fig.add_trace(go.Scatter3d(
+        x=xyz[:, 0], y=xyz[:, 1], z=xyz[:, 2],
+        mode="markers",
+        marker=dict(
+            size=scatter_size,
+            color=values,
+            colorscale=colorscale,
+            opacity=scatter_alpha,
+            showscale=True,
+            colorbar=dict(
+                title=dict(text=colorbar_title, side="right"),
+                thickness=colorbar_thickness,
+                len=colorbar_len,
+                x=colorbar_x,
+                outlinewidth=1,
+                outlinecolor="black",
+                ticks="outside",
+                ticklen=6,
+                tickwidth=1,
+                tickcolor="black",
+            ),
+            line=dict(width=0),
+        ),
+        hovertext=hovertext,
         hoverinfo="text",
         showlegend=False,
         name="scatter",
@@ -586,7 +658,11 @@ def plot_3d_scatter(
     Parameters
     ----------
     xyz            : (N, 3) array of point coordinates.
-    labels         : (N,) array of class labels (any hashable type).
+    labels         : (N,) array of class labels (any hashable type), OR a
+                     float array for continuous-value coloring.  When a float
+                     array is passed the class-label machinery (means,
+                     annotations, colorbar dummy trace) is bypassed;
+                     ``add_continuous_scatter_trace`` is used instead.
     label_names    : dict or list mapping labels to display strings.
     colorscale     : see module docstring for accepted formats.
     scatter_alpha  : opacity of individual scatter points (default 0.7).
@@ -625,6 +701,42 @@ def plot_3d_scatter(
     if labels.shape[0] != xyz.shape[0]:
         raise ValueError("len(labels) must equal len(xyz)")
 
+    if camera_eye is None:
+        camera_eye = dict(x=1.5, y=-1.3, z=0.8)
+    dtick = axis_dtick or {}
+
+    _layout_kwargs = dict(
+        title=dict(text=title, x=0.5) if title else None,
+        scene=dict(
+            xaxis=_make_axis("x", dtick.get("x")),
+            yaxis=_make_axis("y", dtick.get("y")),
+            zaxis=_make_axis("z", dtick.get("z")),
+            aspectmode="data",
+            camera=dict(eye=camera_eye, up=dict(x=0, y=0, z=1)),
+        ),
+        width=width, height=height,
+        paper_bgcolor="white",
+    )
+
+    # ── continuous float labels: bypass class machinery ───────────────────────
+    if np.issubdtype(labels.dtype, np.floating):
+        _cs = colorscale if isinstance(colorscale, str) and colorscale not in ("auto", "hsv") else "Viridis"
+        fig = go.Figure()
+        add_continuous_scatter_trace(
+            fig, xyz, labels,
+            colorscale=_cs,
+            scatter_alpha=scatter_alpha,
+            scatter_size=scatter_size,
+            colorbar_title=colorbar_title,
+        )
+        if show_origin:
+            add_origin_marker(fig)
+        fig.update_layout(**_layout_kwargs, margin=dict(l=0, r=80, t=40 if title else 10, b=0))
+        if show:
+            fig.show()
+        return fig
+
+    # ── class-based path (integer / string / hashable labels) ────────────────
     classes = sorted(set(labels.tolist()), key=lambda v: (str(type(v)), v))
 
     # ── display names ────────────────────────────────────────────────────────
@@ -650,10 +762,6 @@ def plot_3d_scatter(
     )
 
     # ── build figure ─────────────────────────────────────────────────────────
-    if camera_eye is None:
-        camera_eye = dict(x=1.5, y=-1.3, z=0.8)
-    dtick = axis_dtick or {}
-
     fig = go.Figure()
     add_scatter_trace(fig, xyz, labels, cmap, scatter_alpha, scatter_size)
     add_mean_trace(fig, mean_xyz, classes, cmap, names, mean_alpha, mean_size, mean_marker_line_width)
@@ -684,19 +792,7 @@ def plot_3d_scatter(
         )
 
     right_margin = 80 if _want_colorbar else 0
-    fig.update_layout(
-        title=dict(text=title, x=0.5) if title else None,
-        scene=dict(
-            xaxis=_make_axis("x", dtick.get("x")),
-            yaxis=_make_axis("y", dtick.get("y")),
-            zaxis=_make_axis("z", dtick.get("z")),
-            aspectmode="data",
-            camera=dict(eye=camera_eye, up=dict(x=0, y=0, z=1)),
-        ),
-        width=width, height=height,
-        margin=dict(l=0, r=right_margin, t=40 if title else 10, b=0),
-        paper_bgcolor="white",
-    )
+    fig.update_layout(**_layout_kwargs, margin=dict(l=0, r=right_margin, t=40 if title else 10, b=0))
 
     if show:
         fig.show()

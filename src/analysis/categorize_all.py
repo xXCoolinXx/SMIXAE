@@ -4,8 +4,6 @@ import os
 from pathlib import Path
 from typing import Any
 
-import plotly.io as pio
-import plotly.offline as pyo
 import torch
 import typer
 from plotly.graph_objects import Figure
@@ -13,7 +11,7 @@ from tqdm import tqdm
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
-from analysis.utils import collect_activations, get_sae_activations, load_llm, load_sae
+from analysis.utils import build_dataset_html, collect_activations, get_sae_activations, load_llm, load_sae
 from smixae import SMIXAE
 
 
@@ -38,90 +36,6 @@ class DatasetConfig:
     @property
     def effective_color_scale(self) -> str:
         return self.color_scale if self.color_scale is not None else "Plasma"
-
-
-# ======================================================================
-# HTML output helpers
-# ======================================================================
-_HTML_TEMPLATE = """\
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{title}</title>
-  <script>__PLOTLYJS__</script>
-  <style>
-    body {{ font-family: sans-serif; margin: 8px; }}
-    .tab-strip {{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }}
-    .tab-btn {{ padding:4px 10px; cursor:pointer; border:1px solid #aaa;
-                border-radius:3px; background:#f0f0f0; font-size:13px; }}
-    .tab-btn.active {{ background:#333; color:#fff; }}
-    .tab-pane {{ display:none; flex-direction:column; gap:8px; }}
-    .tab-pane.active {{ display:flex; }}
-    .plot-box {{ width:100%; height:650px; }}
-  </style>
-</head>
-<body>
-  <h2>{title}</h2>
-  <div class="tab-strip">{tab_buttons}</div>
-  {tab_panes}
-  <script>
-    const FIGURES = {{{figures_json}}};
-    const rendered = new Set();
-    function renderTab(idx) {{
-      document.querySelectorAll('.tab-pane').forEach((pane, i) => {{
-        if (i !== idx) return;
-        pane.querySelectorAll('.plot-box').forEach(box => {{
-          if (!rendered.has(box.id)) {{
-            Plotly.newPlot(box.id, FIGURES[box.id].data, FIGURES[box.id].layout, {{responsive: true}});
-            rendered.add(box.id);
-          }} else {{
-            Plotly.Plots.resize(box);
-          }}
-        }});
-      }});
-    }}
-    function switchTab(idx) {{
-      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-      document.querySelectorAll('.tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
-      renderTab(idx);
-    }}
-    renderTab(0);
-  </script>
-</body>
-</html>"""
-
-
-def build_dataset_html(
-    expert_entries: list[tuple[str, Figure, Figure | None]],
-    dataset_title: str,
-) -> str:
-    tab_buttons: list[str] = []
-    tab_panes: list[str] = []
-    figures_json_parts: list[str] = []
-
-    for idx, (tab_label, scatter_fig, mean_fig) in enumerate(expert_entries):
-        scatter_id = f"scatter_{idx}"
-        active_cls = " active" if idx == 0 else ""
-
-        tab_buttons.append(f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">{tab_label}</button>')
-
-        plot_divs = f'<div class="plot-box" id="{scatter_id}"></div>'
-        if mean_fig is not None:
-            mean_id = f"mean_{idx}"
-            plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
-            figures_json_parts.append(f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}')
-
-        tab_panes.append(f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>')
-        figures_json_parts.append(f'"{scatter_id}": {pio.to_json(scatter_fig, engine="json")}')
-
-    html = _HTML_TEMPLATE.format(
-        title=dataset_title,
-        tab_buttons="\n    ".join(tab_buttons),
-        tab_panes="\n  ".join(tab_panes),
-        figures_json=",\n    ".join(figures_json_parts),
-    )
-    return html.replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
 
 
 # ======================================================================
@@ -251,12 +165,14 @@ def run_pipeline(
             continuous_color=cfg.effective_continuous_color,
             color_scale=cfg.effective_color_scale,
             color_map=cfg.color_map,
+            show_colorbar=False,
         )
         mean_fig = expert.get_mean_plot(
             label_names=label_names,
             color_scale=cfg.effective_color_scale,
             continuous_color=cfg.effective_continuous_color,
             color_map=cfg.color_map,
+            show_colorbar=False,
         )
         l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
         tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"

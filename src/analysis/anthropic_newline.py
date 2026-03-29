@@ -8,11 +8,10 @@ Scores each expert with four metrics:
   • encode_periodic_r2: mean R² of  bottleneck_dim ~ linear(chars) + Fourier(chars)
   • periodic_gain:      encode_periodic_r2 − encode_linear_r2
 
-Generates HTML plots showing the top-k experts for EVERY method side by side.
+Generates a tabbed HTML of top experts ranked by periodic_gain.
 """
 
 import json
-import math
 import os
 import re
 import textwrap
@@ -32,7 +31,8 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import DataCollatorWithPadding
 
-from analysis.utils import collect_hook_activations, encode_sae_batched, flush_gpu, gpu_mem_mb, load_llm, load_sae
+from analysis.scatter3d import plot_3d_scatter
+from analysis.utils import build_dataset_html, collect_hook_activations, encode_sae_batched, flush_gpu, gpu_mem_mb, load_llm, load_sae
 
 # ═══════════════════════ Constants ═══════════════════════════════════════
 
@@ -42,18 +42,6 @@ VALID_RANK_BY = [
     "encode_periodic_r2",
     "periodic_gain",
 ]
-METHOD_LABELS = {
-    "decode_r2": "Decode R²",
-    "encode_linear_r2": "Linear R²",
-    "encode_periodic_r2": "Periodic R²",
-    "periodic_gain": "Periodic Δ",
-}
-METHOD_SHORT = {
-    "decode_r2": "dec",
-    "encode_linear_r2": "lin",
-    "encode_periodic_r2": "per",
-    "periodic_gain": "Δper",
-}
 
 
 # ═══════════════════════ Helpers ═════════════════════════════════════════
@@ -62,13 +50,6 @@ METHOD_SHORT = {
 def extract_layer_from_hook(hook_name: str) -> int | None:
     m = re.search(r"\.(\d+)(?:\.|$)", hook_name)
     return int(m.group(1)) if m else None
-
-
-def _grid_layout(n_methods: int, top_k: int, max_cols: int = 5):
-    """Returns (total_rows, ncols, rows_per_method)."""
-    ncols = min(top_k, max_cols)
-    rows_per = max(math.ceil(top_k / ncols), 1) if ncols > 0 else 1
-    return rows_per * n_methods, ncols, rows_per
 
 
 # ═══════════════════════ Data Pipeline ═══════════════════════════════════
@@ -340,306 +321,73 @@ def compute_expert_class_stats(
 # ═══════════════════════ Visualisation ═══════════════════════════════════
 
 
-def _build_multi_method_grid(
-    scores_df: pd.DataFrame,
-    top_k: int,
-    use_3d: bool,
-    max_cols: int = 5,
-):
-    """
-    Build subplot grid and collect per-method expert lists.
-
-    Returns (fig, total_rows, ncols, rows_per, method_eids, titles).
-    """
-    methods = VALID_RANK_BY
-    actual_k = min(top_k, len(scores_df))
-    total_rows, ncols, rows_per = _grid_layout(len(methods), actual_k, max_cols)
-
-    titles: list[str] = []
-    method_eids: dict[str, list[int]] = {}
-
-    for method in methods:
-        ranked = scores_df.sort_values(method, ascending=False).head(actual_k)
-        eids: list[int] = []
-        for _, row in ranked.iterrows():
-            eid = int(row["expert_id"])
-            val = float(row[method])
-            eids.append(eid)
-            titles.append(f"{METHOD_SHORT[method]}: E{eid} ({val:.3f})")
-        # Pad remaining cells in this method's row-block
-        titles.extend([""] * (rows_per * ncols - len(eids)))
-        method_eids[method] = eids
-
-    spec_type = "scene" if use_3d else "xy"
-    specs = [[{"type": spec_type} for _ in range(ncols)] for _ in range(total_rows)]
-
-    fig = make_subplots(
-        rows=total_rows,
-        cols=ncols,
-        subplot_titles=titles,
-        specs=specs,
-        horizontal_spacing=0.02,
-        vertical_spacing=0.025,
-    )
-
-    return fig, total_rows, ncols, rows_per, method_eids
-
-
-def _add_method_annotations(fig, methods, rows_per, total_rows):
-    """Add rotated method labels on the left margin."""
-    for m_i, method in enumerate(methods):
-        y = 1.0 - (m_i * rows_per + rows_per / 2) / total_rows
-        fig.add_annotation(
-            text=f"<b>{METHOD_LABELS[method]}</b>",
-            xref="paper",
-            yref="paper",
-            x=-0.05,
-            y=y,
-            showarrow=False,
-            font=dict(size=12),
-            textangle=-90,
-        )
-
-
-def _update_3d_scene(fig, flat_idx: int):
-    """Configure a 3D scene by its flat (0-based) grid index."""
-    scene_key = "scene" if flat_idx == 0 else f"scene{flat_idx + 1}"
-    fig.update_layout(
-        **{
-            scene_key: dict(
-                aspectmode="data",
-                xaxis=dict(showbackground=False, showticklabels=False, title=""),
-                yaxis=dict(showbackground=False, showticklabels=False, title=""),
-                zaxis=dict(showbackground=False, showticklabels=False, title=""),
-                camera=dict(eye=dict(x=1.5, y=1.5, z=1.0)),
-            )
-        }
-    )
-
-
-def plot_multi_method_scatter(
+def plot_newline_experts_html(
     expert_acts: torch.Tensor,
     labels: torch.Tensor,
+    class_means: np.ndarray,
+    class_labels_arr: np.ndarray,
     scores_df: pd.DataFrame,
     top_k: int = 10,
     max_points: int = 50_000,
-    output_path: str = "scatter.html",
-) -> go.Figure:
-    """One scatter subplot per top expert, arranged by method (one row-group each)."""
+    output_path: str = "top_experts.html",
+) -> None:
+    """
+    Build a tabbed HTML of top experts ranked by periodic_gain.
+
+    Each tab shows two plots side-by-side:
+      • scatter  — raw bottleneck activations colored by chars_since_nl
+      • means    — class-mean trajectory, connected in order
+    """
     if len(scores_df) == 0:
-        logger.warning("No experts to plot (scatter)")
-        return go.Figure()
+        logger.warning("No experts to plot")
+        return
 
-    methods = VALID_RANK_BY
-    N, _, d = expert_acts.shape
-    use_3d = d >= 3
-    actual_k = min(top_k, len(scores_df))
+    N = expert_acts.shape[0]
+    ranked = scores_df.sort_values("periodic_gain", ascending=False).head(top_k)
 
-    fig, total_rows, ncols, rows_per, method_eids = _build_multi_method_grid(
-        scores_df,
-        actual_k,
-        use_3d,
-    )
-
-    # Reduce points for large grids
-    n_subplots = len(methods) * actual_k
-    adj_points = min(max_points, N)
-    if n_subplots > 10:
-        adj_points = max(adj_points * 10 // n_subplots, 2000)
-
-    if adj_points < N:
-        idx = np.sort(np.random.default_rng(0).choice(N, adj_points, replace=False))
+    if max_points < N:
+        idx = np.sort(np.random.default_rng(0).choice(N, max_points, replace=False))
     else:
         idx = np.arange(N)
 
-    labels_np = labels[idx].numpy().astype(np.float32)
-    vmin, vmax = float(labels_np.min()), float(labels_np.max())
+    labels_sub = labels[idx].numpy().astype(np.int32)
 
-    colorbar_placed = False
+    expert_entries = []
+    for _, row in ranked.iterrows():
+        eid = int(row["expert_id"])
+        val = float(row["periodic_gain"])
 
-    for m_i, method in enumerate(methods):
-        eids = method_eids[method]
-        for pi, eid in enumerate(eids):
-            row = m_i * rows_per + pi // ncols + 1
-            col = pi % ncols + 1
-            flat = (row - 1) * ncols + (col - 1)
-            is_last = m_i == len(methods) - 1 and pi == len(eids) - 1
+        scatter_fig = plot_3d_scatter(
+            expert_acts[idx, eid, :].numpy(),
+            labels_sub,
+            colorscale="Viridis",
+            show_labels=False,
+            show_colorbar=True,
+            colorbar_title="chars since \\n",
+            connect_means=True,
+            scatter_alpha=0.4,
+            colorbar_tick_increment=20,
+            title=f"Expert {eid}  (\u0394per={val:.4f})",
+        )
+        mean_fig = plot_3d_scatter(
+            class_means[:, eid, :],
+            class_labels_arr,
+            colorscale="Viridis",
+            show_labels=False,
+            show_colorbar=True,
+            colorbar_title="chars since \\n",
+            connect_means=True,
+            scatter_alpha=0.0,
+            colorbar_tick_increment=20,
+            title=f"Expert {eid}  (\u0394per={val:.4f}) [class means]",
+        )
+        tab_label = f"E{eid}  \u0394per={val:.4f}"
+        expert_entries.append((tab_label, scatter_fig, mean_fig))
 
-            acts_e = expert_acts[idx, eid].numpy()
-            mk = dict(
-                color=labels_np,
-                colorscale="Viridis",
-                cmin=vmin,
-                cmax=vmax,
-                size=1.0,
-                opacity=0.4,
-                showscale=(is_last and not colorbar_placed),
-            )
-            if is_last and not colorbar_placed:
-                mk["colorbar"] = dict(
-                    title="chars<br>since \\n",
-                    len=0.12,
-                    thickness=10,
-                    x=1.02,
-                )
-                colorbar_placed = True
-
-            if use_3d:
-                fig.add_trace(
-                    go.Scatter3d(
-                        x=acts_e[:, 0],
-                        y=acts_e[:, 1],
-                        z=acts_e[:, 2],
-                        mode="markers",
-                        marker=mk,
-                        showlegend=False,
-                        hoverinfo="skip",
-                    ),
-                    row=row,
-                    col=col,
-                )
-                _update_3d_scene(fig, flat)
-            else:
-                fig.add_trace(
-                    go.Scattergl(
-                        x=acts_e[:, 0],
-                        y=acts_e[:, 1] if d >= 2 else np.zeros(len(acts_e)),
-                        mode="markers",
-                        marker=mk,
-                        showlegend=False,
-                    ),
-                    row=row,
-                    col=col,
-                )
-
-    _add_method_annotations(fig, methods, rows_per, total_rows)
-
-    fig.update_layout(
-        title="Top Experts by All Scoring Methods — Bottleneck Scatter",
-        height=280 * total_rows + 80,
-        width=280 * ncols + 140,
-        template="plotly_white",
-        margin=dict(l=70, r=80, t=60, b=20),
-    )
-    fig.write_html(output_path, include_plotlyjs="cdn")
-    logger.info(f"Saved multi-method scatter → {output_path}")
-    return fig
-
-
-def plot_multi_method_class_means(
-    class_means: np.ndarray,  # (n_classes, n_experts, d)
-    class_labels: np.ndarray,  # (n_classes,)
-    scores_df: pd.DataFrame,
-    top_k: int = 10,
-    output_path: str = "class_means.html",
-) -> go.Figure:
-    """Class-mean trajectory per expert, arranged by method."""
-    if len(scores_df) == 0:
-        logger.warning("No experts to plot (class means)")
-        return go.Figure()
-
-    methods = VALID_RANK_BY
-    n_classes, _, d = class_means.shape
-    use_3d = d >= 3
-    actual_k = min(top_k, len(scores_df))
-
-    fig, total_rows, ncols, rows_per, method_eids = _build_multi_method_grid(
-        scores_df,
-        actual_k,
-        use_3d,
-    )
-
-    lf = class_labels.astype(np.float32)
-    vmin, vmax = float(lf.min()), float(lf.max())
-
-    colorbar_placed = False
-
-    for m_i, method in enumerate(methods):
-        eids = method_eids[method]
-        for pi, eid in enumerate(eids):
-            row = m_i * rows_per + pi // ncols + 1
-            col = pi % ncols + 1
-            flat = (row - 1) * ncols + (col - 1)
-            is_last = m_i == len(methods) - 1 and pi == len(eids) - 1
-
-            m = class_means[:, eid, :]
-            mk = dict(
-                color=lf,
-                colorscale="Viridis",
-                cmin=vmin,
-                cmax=vmax,
-                size=2.0,
-                opacity=0.9,
-                line=dict(width=0.3, color="black"),
-                showscale=(is_last and not colorbar_placed),
-            )
-            if is_last and not colorbar_placed:
-                mk["colorbar"] = dict(
-                    title="chars<br>since \\n",
-                    len=0.12,
-                    thickness=10,
-                    x=1.02,
-                )
-                colorbar_placed = True
-
-            if use_3d:
-                # Connecting line
-                fig.add_trace(
-                    go.Scatter3d(
-                        x=m[:, 0],
-                        y=m[:, 1],
-                        z=m[:, 2],
-                        mode="lines",
-                        line=dict(color="rgba(100,100,100,0.3)", width=1),
-                        showlegend=False,
-                        hoverinfo="skip",
-                    ),
-                    row=row,
-                    col=col,
-                )
-                # Markers
-                fig.add_trace(
-                    go.Scatter3d(
-                        x=m[:, 0],
-                        y=m[:, 1],
-                        z=m[:, 2],
-                        mode="markers",
-                        marker=mk,
-                        showlegend=False,
-                        hovertemplate=(
-                            "b0:%{x:.3f}<br>b1:%{y:.3f}<br>b2:%{z:.3f}<br>chars:%{marker.color:.0f}<extra></extra>"
-                        ),
-                    ),
-                    row=row,
-                    col=col,
-                )
-                _update_3d_scene(fig, flat)
-            else:
-                fig.add_trace(
-                    go.Scattergl(
-                        x=m[:, 0],
-                        y=m[:, 1] if d >= 2 else np.zeros(n_classes),
-                        mode="markers+lines",
-                        marker=mk,
-                        line=dict(color="rgba(100,100,100,0.3)", width=1),
-                        showlegend=False,
-                    ),
-                    row=row,
-                    col=col,
-                )
-
-    _add_method_annotations(fig, methods, rows_per, total_rows)
-
-    fig.update_layout(
-        title="Top Experts by All Methods — Class Mean Trajectories",
-        height=300 * total_rows + 80,
-        width=280 * ncols + 140,
-        template="plotly_white",
-        margin=dict(l=70, r=80, t=60, b=20),
-    )
-    fig.write_html(output_path, include_plotlyjs="cdn")
-    logger.info(f"Saved multi-method class means → {output_path}")
-    return fig
+    html_str = build_dataset_html(expert_entries, "Newline Position — Expert Analysis (periodic_gain)")
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html_str)
+    logger.info(f"Saved top experts HTML → {output_path}")
 
 
 def plot_expert_dim_analysis(
@@ -923,32 +671,25 @@ def main(
         threshold=threshold,
     )
 
-    # ── Multi-method plots ───────────────────────────────────────────────
-    plot_multi_method_scatter(
+    # ── Top experts HTML (ranked by periodic_gain) ───────────────────────
+    plot_newline_experts_html(
         expert_acts,
         all_labels,
-        scores_df,
-        top_k=plot_top_k,
-        max_points=plot_max_points,
-        output_path=os.path.join(out_dir, "top_experts_scatter.html"),
-    )
-    plot_multi_method_class_means(
         class_means,
         class_labels_arr,
         scores_df,
         top_k=plot_top_k,
-        output_path=os.path.join(out_dir, "top_experts_class_means.html"),
+        max_points=plot_max_points,
+        output_path=os.path.join(out_dir, "top_experts.html"),
     )
 
-    # ── Dim analysis for unique top experts across all methods ────────────
-    top_expert_ids: set[int] = set()
-    for method in VALID_RANK_BY:
-        top_expert_ids.update(
-            scores_df.sort_values(method, ascending=False).head(dim_analysis_top_n)["expert_id"].values.tolist()
-        )
+    # ── Dim analysis for top experts by periodic_gain ────────────────────
+    top_expert_ids = set(
+        scores_df.sort_values("periodic_gain", ascending=False).head(dim_analysis_top_n)["expert_id"].values.tolist()
+    )
 
     logger.info(
-        f"Generating dim analysis for {len(top_expert_ids)} unique experts (top-{dim_analysis_top_n} per method)"
+        f"Generating dim analysis for {len(top_expert_ids)} experts (top-{dim_analysis_top_n} by periodic_gain)"
     )
     for eid in sorted(top_expert_ids):
         row = scores_df[scores_df["expert_id"] == eid].iloc[0]

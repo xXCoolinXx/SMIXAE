@@ -7,12 +7,15 @@ import re
 from pathlib import Path
 from typing import Any, Iterable
 
+import numpy as np
+
 import pandas as pd
-import plotly.express as px
 import torch
 import torch.nn.functional as F
 from datasets import load_dataset
 from loguru import logger
+import plotly.io as pio
+import plotly.offline as pyo
 from plotly.graph_objects import Figure
 from sae_lens import SAE
 from tqdm import tqdm
@@ -21,6 +24,90 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 from smixae import SMIXAE
+from analysis.scatter3d import plot_3d_scatter
+
+# ── Tabbed HTML builder ───────────────────────────────────────────────────────
+
+_HTML_TEMPLATE = """\
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{title}</title>
+  <script>__PLOTLYJS__</script>
+  <style>
+    body {{ font-family: sans-serif; margin: 8px; }}
+    .tab-strip {{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }}
+    .tab-btn {{ padding:4px 10px; cursor:pointer; border:1px solid #aaa;
+                border-radius:3px; background:#f0f0f0; font-size:13px; }}
+    .tab-btn.active {{ background:#333; color:#fff; }}
+    .tab-pane {{ display:none; flex-direction:column; gap:8px; }}
+    .tab-pane.active {{ display:flex; }}
+    .plot-box {{ width:100%; height:650px; }}
+  </style>
+</head>
+<body>
+  <h2>{title}</h2>
+  <div class="tab-strip">{tab_buttons}</div>
+  {tab_panes}
+  <script>
+    const FIGURES = {{{figures_json}}};
+    const rendered = new Set();
+    function renderTab(idx) {{
+      document.querySelectorAll('.tab-pane').forEach((pane, i) => {{
+        if (i !== idx) return;
+        pane.querySelectorAll('.plot-box').forEach(box => {{
+          if (!rendered.has(box.id)) {{
+            Plotly.newPlot(box.id, FIGURES[box.id].data, FIGURES[box.id].layout, {{responsive: true}});
+            rendered.add(box.id);
+          }} else {{
+            Plotly.Plots.resize(box);
+          }}
+        }});
+      }});
+    }}
+    function switchTab(idx) {{
+      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+      document.querySelectorAll('.tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
+      renderTab(idx);
+    }}
+    renderTab(0);
+  </script>
+</body>
+</html>"""
+
+
+def build_dataset_html(
+    expert_entries: list[tuple[str, Figure, Figure | None]],
+    dataset_title: str,
+) -> str:
+    tab_buttons: list[str] = []
+    tab_panes: list[str] = []
+    figures_json_parts: list[str] = []
+
+    for idx, (tab_label, scatter_fig, mean_fig) in enumerate(expert_entries):
+        scatter_id = f"scatter_{idx}"
+        active_cls = " active" if idx == 0 else ""
+
+        tab_buttons.append(f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">{tab_label}</button>')
+
+        plot_divs = f'<div class="plot-box" id="{scatter_id}"></div>'
+        if mean_fig is not None:
+            mean_id = f"mean_{idx}"
+            plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
+            figures_json_parts.append(f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}')
+
+        tab_panes.append(f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>')
+        figures_json_parts.append(f'"{scatter_id}": {pio.to_json(scatter_fig, engine="json")}')
+
+    html = _HTML_TEMPLATE.format(
+        title=dataset_title,
+        tab_buttons="\n    ".join(tab_buttons),
+        tab_panes="\n  ".join(tab_panes),
+        figures_json=",\n    ".join(figures_json_parts),
+    )
+    return html.replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
+
 
 # ── GPU memory ────────────────────────────────────────────────────────────────
 
@@ -351,6 +438,8 @@ class Expert:
         continuous_color: bool = False,
         color_scale: str = "Plasma",
         color_map: dict[str, str] | None = None,
+        show_labels: bool | None = None,
+        show_colorbar: bool | None = None,
     ) -> Figure:
         # Lazy-evaluate continuity
         if self.local_continuity_scores is None:
@@ -359,91 +448,50 @@ class Expert:
         contexts = self.get_context_windows(str_tokens, context_window=context_window)
         pts = self.expert_activations.numpy()
 
-        hover_extra: dict[str, list[float] | bool] = {"Context": True}
-
-        cont_list: list[float] = []
-        if self.local_continuity_scores is not None:
-            cont_list = self.local_continuity_scores.numpy().tolist()
-
         if self.labels is not None and label_names is not None:
-            label_strs = [_strip_prefix(label_names.get(int(lbl.item()), str(lbl.item()))) for lbl in self.labels]
-            label_ids = self.labels.tolist()
-            df_dict: dict[str, Any] = {
-                "x": pts[:, 0].tolist(),
-                "y": pts[:, 1].tolist(),
-                "z": pts[:, 2].tolist(),
-                "Label": label_strs,
-                "LabelId": label_ids,
-                "Context": contexts,
-            }
-            if self.local_continuity_scores is not None:
-                df_dict["Continuity"] = cont_list
-                hover_extra["Continuity"] = True
-            hover_extra.update({"x": False, "y": False, "z": False, "LabelId": False})
+            int_labels = self.labels.numpy()
+            lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
 
-            df = pd.DataFrame(df_dict)
-            if continuous_color:
-                hover_extra["Label"] = True
-                fig = px.scatter_3d(
-                    df,
-                    x="x",
-                    y="y",
-                    z="z",
-                    color="LabelId",
-                    color_continuous_scale=color_scale,
-                    hover_data=hover_extra,
-                    title=self._make_title(),
-                    opacity=0.8,
-                )
-                n = len(label_names)
-                fig.update_coloraxes(
-                    colorbar=dict(
-                        tickvals=list(range(n)),
-                        ticktext=[_strip_prefix(label_names[i]) for i in range(n)],
-                    )
-                )
-            else:
-                sorted_label_names = [_strip_prefix(s) for s in sorted(label_names.values())]
-                fig = px.scatter_3d(
-                    df,
-                    x="x",
-                    y="y",
-                    z="z",
-                    color="Label",
-                    category_orders={"Label": sorted_label_names},
-                    color_discrete_map=color_map,
-                    hover_data=hover_extra,
-                    title=self._make_title(),
-                    opacity=0.8,
-                )
-                fig.update_layout(showlegend=True)
-        else:
-            color_col = "Continuity"
-            color_vals: list[float] = cont_list if self.local_continuity_scores is not None else [0.0] * pts.shape[0]
+            # Convert color_map {display_str: color} → {int_id: color} for scatter3d
+            cscale: Any = None
+            if color_map:
+                candidate = {
+                    i: color_map[_strip_prefix(label_names[i])]
+                    for i in label_names
+                    if _strip_prefix(label_names[i]) in color_map
+                }
+                if len(candidate) == len(set(int_labels.tolist())):
+                    cscale = candidate
 
-            df_dict = {
-                "x": pts[:, 0].tolist(),
-                "y": pts[:, 1].tolist(),
-                "z": pts[:, 2].tolist(),
-                color_col: color_vals,
-                "Context": contexts,
-            }
-            hover_extra.update({"x": False, "y": False, "z": False})
-
-            df = pd.DataFrame(df_dict)
-            fig = px.scatter_3d(
-                df,
-                x="x",
-                y="y",
-                z="z",
-                color=color_col,
-                color_continuous_scale="Viridis",
-                hover_data=hover_extra,
+            _show_labels = show_labels if show_labels is not None else (not continuous_color)
+            _show_colorbar = show_colorbar if show_colorbar is not None else continuous_color
+            fig = plot_3d_scatter(
+                pts, int_labels,
+                label_names=lnames,
+                colorscale=color_scale if continuous_color else cscale,
+                show_labels=_show_labels,
+                show_colorbar=_show_colorbar,
+                connect_means=continuous_color,
                 title=self._make_title(),
-                opacity=0.8,
             )
+            # Inject per-token context windows into the scatter trace hover
+            fig.data[0].update(hovertext=contexts, hoverinfo="text")
+        else:
+            # Unlabeled: color by per-point continuity score via float-label path
+            cont_arr = (
+                self.local_continuity_scores.numpy()
+                if self.local_continuity_scores is not None
+                else np.zeros(pts.shape[0], dtype=np.float32)
+            )
+            fig = plot_3d_scatter(
+                pts, cont_arr.astype(np.float32),
+                colorscale="Viridis",
+                colorbar_title="Continuity",
+                scatter_alpha=0.8,
+                title=self._make_title(),
+            )
+            fig.data[0].update(hovertext=contexts, hoverinfo="text")
 
-        fig.update_traces(marker=dict(size=4))
         return fig
 
     def get_mean_plot(
@@ -452,94 +500,39 @@ class Expert:
         color_scale: str = "Plasma",
         continuous_color: bool = False,
         color_map: dict[str, str] | None = None,
+        show_labels: bool | None = None,
+        show_colorbar: bool | None = None,
     ) -> Figure | None:
         if self.labels is None or label_names is None:
             return None
 
         pts = self.expert_activations.numpy()
-        xs, ys, zs, label_strs, label_ids, counts = [], [], [], [], [], []
-        for c in range(self.n_classes):
-            mask = (self.labels == c).numpy()
-            if not mask.any():
-                continue
-            centroid = pts[mask].mean(axis=0)
-            xs.append(float(centroid[0]))
-            ys.append(float(centroid[1]))
-            zs.append(float(centroid[2]))
-            label_strs.append(_strip_prefix(label_names[c]))
-            label_ids.append(c)
-            counts.append(int(mask.sum()))
+        int_labels = self.labels.numpy()
+        lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
 
-        df = pd.DataFrame(
-            {
-                "x": xs,
-                "y": ys,
-                "z": zs,
-                "Label": label_strs,
-                "LabelId": label_ids,
-                "Count": counts,
+        # Convert color_map {display_str: color} → {int_id: color} for scatter3d
+        cscale: Any = None
+        if color_map:
+            candidate = {
+                i: color_map[_strip_prefix(label_names[i])]
+                for i in label_names
+                if _strip_prefix(label_names[i]) in color_map
             }
-        )
+            if len(candidate) == len(set(int_labels.tolist())):
+                cscale = candidate
 
-        if continuous_color:
-            fig = px.scatter_3d(
-                df,
-                x="x",
-                y="y",
-                z="z",
-                color="LabelId",
-                color_continuous_scale=color_scale,
-                size="Count",
-                size_max=30,
-                text="Label",
-                hover_data={
-                    "x": False,
-                    "y": False,
-                    "z": False,
-                    "Label": True,
-                    "Count": True,
-                    "LabelId": False,
-                },
-                title=self._make_title() + " [class means]",
-                opacity=0.9,
-            )
-            n = len(label_names)
-            fig.update_coloraxes(
-                colorbar=dict(
-                    tickvals=list(range(n)),
-                    ticktext=[_strip_prefix(label_names[i]) for i in range(n)],
-                )
-            )
-        else:
-            sorted_label_names = [_strip_prefix(s) for s in sorted(label_names.values())]
-            fig = px.scatter_3d(
-                df,
-                x="x",
-                y="y",
-                z="z",
-                color="Label",
-                category_orders={"Label": sorted_label_names},
-                color_discrete_map=color_map,
-                size="Count",
-                size_max=30,
-                text="Label",
-                hover_data={
-                    "x": False,
-                    "y": False,
-                    "z": False,
-                    "Label": True,
-                    "Count": True,
-                },
-                title=self._make_title() + " [class means]",
-                opacity=0.9,
-            )
-            fig.update_layout(showlegend=True)
-
-        fig.update_traces(
-            marker=dict(line=dict(width=1, color="DarkSlateGrey")),
-            textposition="top center",
+        _show_labels = show_labels if show_labels is not None else (not continuous_color)
+        _show_colorbar = show_colorbar if show_colorbar is not None else continuous_color
+        return plot_3d_scatter(
+            pts, int_labels,
+            label_names=lnames,
+            colorscale=color_scale if continuous_color else cscale,
+            show_labels=_show_labels,
+            show_colorbar=_show_colorbar,
+            scatter_alpha=0.0,
+            connect_means=continuous_color,
+            title=self._make_title() + " [class means]",
         )
-        return fig
 
 
 # ── Shared activation pipeline ────────────────────────────────────────────────
