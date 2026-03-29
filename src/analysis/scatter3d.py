@@ -688,10 +688,10 @@ def plot_3d_scatter(
     label_names: Optional[Union[Dict, List, Sequence]] = None,
     # ── color ────────────────────────────────────────────────────────────────
     colorscale: Optional[Union[str, list, dict]] = None,
-    scatter_alpha: float = 0.2,
+    scatter_alpha: float = 1.0,
     mean_alpha: float = 1.0,
     # ── markers ──────────────────────────────────────────────────────────────
-    scatter_size: float = 3,
+    scatter_size: float = 1,
     mean_size: float = 6,
     mean_marker_line_width: float = 1,
     # ── mean line ────────────────────────────────────────────────────────────
