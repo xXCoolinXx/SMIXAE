@@ -38,13 +38,14 @@ dict[label, color]   Explicit per-label color mapping
 
 All user-supplied color strings must be Plotly-native (hex, "rgb(...)", CSS names).
 
-Colorbar
---------
-Pass ``show_colorbar=True`` (or leave as ``"auto"`` with ``show_labels=False``
-and a named colorscale) to display a vertical gradient bar on the right side
-instead of per-class annotations.  The bar is annotated with the start and end
-label values.  This is designed for continuous/ordinal label spaces (e.g. 150
-integer steps) where per-label annotations would be illegible.
+Legend
+------
+``plot_3d_scatter`` auto-selects the legend type based on colorscale:
+- Named colorscale (e.g. "Viridis", "HSV") → vertical colorbar with class-name
+  tick labels at each class position.
+- HSV / dict / list colorscale → discrete colored marker entries in a Plotly
+  legend panel.
+Pass ``show_legend=False`` to suppress entirely.
 """
 
 from __future__ import annotations
@@ -173,27 +174,45 @@ def build_color_map(
 #  LABEL LAYOUT  (adjustText)
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _camera_project(pts: np.ndarray, eye: np.ndarray) -> np.ndarray:
+    """Orthographic projection of (N, 3) points onto the screen plane for a
+    Plotly camera at ``eye`` looking at the origin with world-up = (0, 0, 1).
+
+    Returns (N, 2) screen coordinates in the same unit system as ``pts``.
+    """
+    fwd = -eye / np.linalg.norm(eye)           # camera → origin
+    world_up = np.array([0.0, 0.0, 1.0])
+    right = np.cross(fwd, world_up)
+    right /= np.linalg.norm(right)
+    up = np.cross(right, fwd)
+    up /= np.linalg.norm(up)
+    return pts @ np.column_stack([right, up])   # (N, 2)
+
+
 def compute_label_offsets(
     mean_xyz: np.ndarray,
     display_labels: list,
-    base_r: float = 80,
+    base_r: float = 120,
     fig_w: int = 1100,
     fig_h: int = 850,
+    camera_eye: tuple = (1.5, -1.3, 0.8),
 ) -> np.ndarray:
     """
     Compute non-overlapping (ax, ay) pixel offsets for Plotly 3-D annotations
     using adjustText.
 
-    Projects mean_xyz onto the x-z plane (matching Plotly's default camera),
-    normalizes to [0,1] space, places initial positions radially away from the
-    global centroid, then runs adjustText to resolve overlaps.
+    Projects mean_xyz using the actual camera orthographic projection (so the
+    2-D layout matches what appears on screen), normalizes to [0,1] space,
+    places initial positions radially from the centroid, then runs adjustText
+    with strong forces to resolve overlaps.
 
     Parameters
     ----------
-    mean_xyz       : (K, 3) array of class mean positions in data space.
+    mean_xyz   : (K, 3) array of class mean positions in data space.
     display_labels : list of K label strings.
-    base_r         : initial radial offset in pixels before adjustText runs.
-    fig_w, fig_h   : figure dimensions for pixel↔normalized conversion.
+    base_r     : initial radial offset in pixels before adjustText runs.
+    fig_w, fig_h : figure dimensions for pixel↔normalized conversion.
+    camera_eye : Plotly camera eye tuple (x, y, z); must match the figure.
 
     Returns
     -------
@@ -208,8 +227,10 @@ def compute_label_offsets(
     if n == 0:
         return np.empty((0, 2))
 
-    # Project to 2-D: x vs z matches Plotly's default eye=(1.5, -1.3, 0.8)
-    pts = mean_xyz[:, [0, 2]].astype(float)
+    # Project using the actual camera orientation so the 2-D layout
+    # matches what Plotly renders on screen.
+    eye = np.asarray(camera_eye, dtype=float)
+    pts = _camera_project(mean_xyz.astype(float), eye)
 
     # Normalize to [0.05, 0.95]
     lo, hi = pts.min(0), pts.max(0)
@@ -234,7 +255,14 @@ def compute_label_offsets(
         ax.text(init_n[i, 0], init_n[i, 1], display_labels[i], fontsize=8)
         for i in range(n)
     ]
-    adjust_text(texts, x=pts_n[:, 0], y=pts_n[:, 1], ax=ax)
+    adjust_text(
+        texts,
+        x=pts_n[:, 0], y=pts_n[:, 1],
+        ax=ax,
+        force_text=(0.8, 0.8),
+        force_points=(0.5, 0.5),
+        expand=(2.5, 2.5),
+    )
     fig.canvas.draw()
 
     # Normalized offset → pixels; flip y (mpl y↑, Plotly ay screen y↓)
@@ -462,25 +490,32 @@ def add_label_annotations(
     names: Dict[Any, str],
     label_font_size: int = 10,
     label_bg: str = "rgba(255,255,255,0.88)",
-    label_offset_base_r: float = 80,
+    label_offset_base_r: float = 120,
     fig_w: int = 1100,
     fig_h: int = 850,
+    camera_eye: tuple = (1.5, -1.3, 0.8),
+    label_every_n: int = 1,
 ) -> go.Figure:
     """
     Compute adjustText-based offsets and attach 3-D annotations to fig.scene.
     Returns fig for chaining.
     """
-    display_labels = [names[c] for c in classes]
+    # Subsample classes if label_every_n > 1 (reduces clutter for dense sets).
+    labeled_classes = classes[::label_every_n]
+    labeled_xyz = mean_xyz[::label_every_n]
+
+    display_labels = [names[c] for c in labeled_classes]
     offsets = compute_label_offsets(
-        mean_xyz, display_labels,
+        labeled_xyz, display_labels,
         base_r=label_offset_base_r, fig_w=fig_w, fig_h=fig_h,
+        camera_eye=camera_eye,
     )
 
     annotations = []
-    for i, c in enumerate(classes):
+    for i, c in enumerate(labeled_classes):
         rgb = cmap[c]
         annotations.append(dict(
-            x=mean_xyz[i, 0], y=mean_xyz[i, 1], z=mean_xyz[i, 2],
+            x=labeled_xyz[i, 0], y=labeled_xyz[i, 1], z=labeled_xyz[i, 2],
             text=f"<b>{names[c]}</b>",
             font=dict(size=label_font_size, color="black"),
             bgcolor=label_bg,
@@ -538,10 +573,33 @@ def add_origin_marker(
     return fig
 
 
+def add_discrete_legend(
+    fig: go.Figure,
+    classes: list,
+    cmap: Dict[Any, str],
+    names: Dict[Any, str],
+    marker_size: float = 8,
+) -> go.Figure:
+    """
+    Add one invisible marker trace per class to populate Plotly's 2-D legend.
+    Returns fig for chaining.
+    """
+    for c in classes:
+        fig.add_trace(go.Scatter3d(
+            x=[None], y=[None], z=[None],
+            mode="markers",
+            marker=dict(size=marker_size, color=cmap[c], line=dict(width=0)),
+            name=names[c],
+            showlegend=True,
+        ))
+    return fig
+
+
 def add_colorbar_trace(
     fig: go.Figure,
     classes: list,
     colorscale_name: str,
+    names: Optional[Dict] = None,
     label_range: Optional[tuple] = None,
     colorbar_title: str = "",
     colorbar_thickness: int = 20,
@@ -554,41 +612,38 @@ def add_colorbar_trace(
 
     Parameters
     ----------
-    classes          : sorted list of class labels (used for numeric range).
+    classes          : sorted list of class labels.
     colorscale_name  : named Plotly colorscale string, e.g. "Plasma".
-    label_range      : (start_label, end_label) strings shown at the endpoints.
-                       Only used when tick_increment is None. Defaults to
-                       (str(classes[0]), str(classes[-1])).
+    names            : when provided, tick every class with its display name
+                       (overrides label_range and tick_increment).
+    label_range      : (start_label, end_label) for endpoint-only ticks.
     colorbar_title   : optional title text above the colorbar.
-    tick_increment   : numeric spacing between tick marks (default 20).
-                       Ticks are placed at multiples of tick_increment within
-                       [lo, hi], always including the endpoints.
-                       Pass None to show only the two endpoints.
+    tick_increment   : numeric tick spacing; ignored when ``names`` is given.
     colorbar_thickness, colorbar_len, colorbar_x : colorbar geometry.
-
-    Returns
-    -------
-    fig for chaining.
     """
-    lo = float(classes[0]) if not isinstance(classes[0], str) else 0.0
-    hi = float(classes[-1]) if not isinstance(classes[-1], str) else float(len(classes) - 1)
-
-    if tick_increment is not None and tick_increment > 0:
-        # Build ticks at multiples of tick_increment, always include endpoints
-        first_tick = np.ceil(lo / tick_increment) * tick_increment
-        tickvals = list(np.arange(first_tick, hi + 1e-9, tick_increment))
-        # Always include lo; drop hi unless it falls exactly on the increment
-        if lo not in tickvals:
-            tickvals = [lo] + tickvals
-        tickvals = sorted(set(tickvals))
-        ticktext = [str(int(v)) if v == int(v) else f"{v:.2f}" for v in tickvals]
+    n = len(classes)
+    if names is not None:
+        # One tick per class, labeled with display names.
+        lo, hi = 0.0, float(n - 1)
+        tickvals = list(range(n))
+        ticktext = [str(names.get(c, c)) for c in classes]
     else:
-        start_label, end_label = (
-            label_range if label_range is not None
-            else (str(classes[0]), str(classes[-1]))
-        )
-        tickvals = [lo, hi]
-        ticktext = [start_label, end_label]
+        lo = float(classes[0]) if not isinstance(classes[0], str) else 0.0
+        hi = float(classes[-1]) if not isinstance(classes[-1], str) else float(n - 1)
+        if tick_increment is not None and tick_increment > 0:
+            first_tick = np.ceil(lo / tick_increment) * tick_increment
+            tickvals = list(np.arange(first_tick, hi + 1e-9, tick_increment))
+            if lo not in tickvals:
+                tickvals = [lo] + tickvals
+            tickvals = sorted(set(tickvals))
+            ticktext = [str(int(v)) if v == int(v) else f"{v:.2f}" for v in tickvals]
+        else:
+            start_label, end_label = (
+                label_range if label_range is not None
+                else (str(classes[0]), str(classes[-1]))
+            )
+            tickvals = [lo, hi]
+            ticktext = [start_label, end_label]
 
     fig.add_trace(go.Scatter3d(
         x=[None, None], y=[None, None], z=[None, None],
@@ -633,7 +688,7 @@ def plot_3d_scatter(
     label_names: Optional[Union[Dict, List, Sequence]] = None,
     # ── color ────────────────────────────────────────────────────────────────
     colorscale: Optional[Union[str, list, dict]] = None,
-    scatter_alpha: float = 0.8,
+    scatter_alpha: float = 0.2,
     mean_alpha: float = 1.0,
     # ── markers ──────────────────────────────────────────────────────────────
     scatter_size: float = 3,
@@ -642,18 +697,12 @@ def plot_3d_scatter(
     # ── mean line ────────────────────────────────────────────────────────────
     connect_means: bool = False,
     mean_line_width: float = 3,
-    # ── annotations ──────────────────────────────────────────────────────────
-    show_labels: bool = True,
-    label_font_size: int = 10,
-    label_bg: str = "rgba(255,255,255,0.88)",
-    label_offset_base_r: float = 80,
+    # ── legend ───────────────────────────────────────────────────────────────
+    show_legend: bool = True,
+    colorbar_title: str = "",
+    colorbar_tick_increment: Optional[float] = 20,
     # ── origin marker ────────────────────────────────────────────────────────
     show_origin: bool = True,
-    # ── colorbar (for continuous / ordinal scales) ────────────────────────────
-    show_colorbar: Union[bool, Literal["auto"]] = "auto",
-    colorbar_title: str = "",
-    colorbar_label_range: Optional[tuple] = None,
-    colorbar_tick_increment: Optional[float] = 20,
     # ── layout ───────────────────────────────────────────────────────────────
     width: int = 1100,
     height: int = 850,
@@ -684,15 +733,11 @@ def plot_3d_scatter(
     connect_means  : if True, draw a line connecting adjacent means in sorted
                      class order (no wraparound).
     mean_line_width: stroke width in pixels (default 3).
-    show_labels    : draw per-class annotation labels (default True).
-    label_*        : annotation styling / layout parameters.
-    show_colorbar  : True  — always show colorbar
-                     False — never show
-                     "auto" (default) — show when show_labels=False and
-                     colorscale is a named Plotly string (i.e. continuous).
+    show_legend    : if True (default), auto-select legend type: named colorscale
+                     → colorbar with class-name ticks; otherwise → discrete
+                     colored marker entries.
     colorbar_title : optional title shown above the colorbar.
-    colorbar_label_range : (start_str, end_str) tick labels at colorbar
-                     endpoints. Defaults to str(min_class), str(max_class).
+    colorbar_tick_increment : spacing between colorbar tick labels (default 20).
     width, height  : figure pixel dimensions.
     camera_eye     : Plotly camera dict, e.g. dict(x=1.5, y=-1.3, z=0.8).
     axis_dtick     : dict with optional keys "x", "y", "z" for axis tick spacing.
@@ -765,14 +810,9 @@ def plot_3d_scatter(
     # ── class means ──────────────────────────────────────────────────────────
     mean_xyz = np.array([xyz[labels == c].mean(axis=0) for c in classes])
 
-    # ── decide whether to draw colorbar ──────────────────────────────────────
-    _colorscale_is_named = isinstance(colorscale, str) and colorscale not in ("auto", "hsv")
-    _want_colorbar = (
-        show_colorbar is True
-        or (show_colorbar == "auto" and not show_labels and _colorscale_is_named)
-    )
-
     # ── build figure ─────────────────────────────────────────────────────────
+    _colorscale_is_named = isinstance(colorscale, str) and colorscale not in ("auto", "hsv")
+
     fig = go.Figure()
     add_scatter_trace(fig, xyz, labels, cmap, scatter_alpha, scatter_size)
     add_mean_trace(fig, mean_xyz, classes, cmap, names, mean_alpha, mean_size, mean_marker_line_width)
@@ -780,30 +820,39 @@ def plot_3d_scatter(
         add_origin_marker(fig)
 
     if connect_means and len(classes) > 1:
-        add_mean_line_trace(
-            fig, mean_xyz, classes, cmap,
-            line_width=mean_line_width,
-        )
+        add_mean_line_trace(fig, mean_xyz, classes, cmap, line_width=mean_line_width)
 
-    if show_labels and len(classes) > 1:
-        add_label_annotations(
-            fig, mean_xyz, classes, cmap, names,
-            label_font_size=label_font_size,
-            label_bg=label_bg,
-            label_offset_base_r=label_offset_base_r,
-            fig_w=width, fig_h=height,
-        )
+    # ── legend: colorbar for named scales, discrete markers otherwise ─────────
+    right_margin = 0
+    legend_kwargs: dict = {}
+    if show_legend:
+        if _colorscale_is_named:
+            add_colorbar_trace(
+                fig, classes, colorscale,
+                names=names,
+                colorbar_title=colorbar_title,
+                tick_increment=colorbar_tick_increment,
+            )
+            _max_label_chars = max((len(str(names.get(c, c))) for c in classes), default=6)
+            right_margin = 40 + _max_label_chars * 9
+            legend_kwargs["showlegend"] = False
+        else:
+            add_discrete_legend(fig, classes, cmap, names)
+            _max_label_chars = max((len(str(names.get(c, c))) for c in classes), default=6)
+            right_margin = 40 + _max_label_chars * 9
+            legend_kwargs["showlegend"] = True
+            legend_kwargs["legend"] = dict(
+                x=1.02, y=0.5, xanchor="left", yanchor="middle",
+                bgcolor="rgba(255,255,255,0.88)",
+                bordercolor="rgba(0,0,0,0.15)",
+                borderwidth=1,
+            )
 
-    if _want_colorbar:
-        add_colorbar_trace(
-            fig, classes, colorscale,
-            label_range=colorbar_label_range,
-            colorbar_title=colorbar_title,
-            tick_increment=colorbar_tick_increment,
-        )
-
-    right_margin = 80 if _want_colorbar else 0
-    fig.update_layout(**_layout_kwargs, margin=dict(l=0, r=right_margin, t=40 if title else 10, b=0))
+    fig.update_layout(
+        **_layout_kwargs,
+        **legend_kwargs,
+        margin=dict(l=0, r=right_margin, t=40 if title else 10, b=0),
+    )
 
     if show:
         fig.show()
@@ -942,15 +991,12 @@ def demo(which: str = "hour") -> go.Figure:
         )
 
     elif which == "continuous":
-        # 150-class ring: labels are dense enough that per-class annotations
-        # are illegible — use colorbar instead; connect means to show the path.
+        # 150-class ring: named colorscale → colorbar with class-name ticks auto-selected.
         xyz, labs = make_continuous_ring(n_classes=150)
         return plot_3d_scatter(
             xyz, labs,
             colorscale="Viridis",
             scatter_alpha=0.0,          # hide individual points; means tell the story
-            show_labels=False,          # disables per-class annotations …
-            show_colorbar="auto",       # … and auto-enables the colorbar
             connect_means=True,         # draw the sorted path through all means
             colorbar_title="class",
             title="150-class Ring – Viridis + colorbar + mean path",

@@ -438,8 +438,6 @@ class Expert:
         continuous_color: bool = False,
         color_scale: str = "Plasma",
         color_map: dict[str, str] | None = None,
-        show_labels: bool | None = None,
-        show_colorbar: bool | None = None,
         connect_means: bool | None = None,
     ) -> Figure:
         # Lazy-evaluate continuity
@@ -464,15 +462,11 @@ class Expert:
                 if len(candidate) == len(set(int_labels.tolist())):
                     cscale = candidate
 
-            _show_labels = show_labels if show_labels is not None else (not continuous_color)
-            _show_colorbar = show_colorbar if show_colorbar is not None else continuous_color
             _connect_means = connect_means if connect_means is not None else continuous_color
             fig = plot_3d_scatter(
                 pts, int_labels,
                 label_names=lnames,
                 colorscale=color_scale if continuous_color else cscale,
-                show_labels=_show_labels,
-                show_colorbar=_show_colorbar,
                 connect_means=_connect_means,
                 title=self._make_title(),
             )
@@ -502,8 +496,6 @@ class Expert:
         color_scale: str = "Plasma",
         continuous_color: bool = False,
         color_map: dict[str, str] | None = None,
-        show_labels: bool | None = None,
-        show_colorbar: bool | None = None,
         connect_means: bool | None = None,
     ) -> Figure | None:
         if self.labels is None or label_names is None:
@@ -524,15 +516,11 @@ class Expert:
             if len(candidate) == len(set(int_labels.tolist())):
                 cscale = candidate
 
-        _show_labels = show_labels if show_labels is not None else (not continuous_color)
-        _show_colorbar = show_colorbar if show_colorbar is not None else continuous_color
         _connect_means = connect_means if connect_means is not None else continuous_color
         return plot_3d_scatter(
             pts, int_labels,
             label_names=lnames,
             colorscale=color_scale if continuous_color else cscale,
-            show_labels=_show_labels,
-            show_colorbar=_show_colorbar,
             scatter_alpha=0.0,
             connect_means=_connect_means,
             title=self._make_title() + " [class means]",

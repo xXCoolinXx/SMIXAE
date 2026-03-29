@@ -165,8 +165,6 @@ def run_pipeline(
             continuous_color=cfg.effective_continuous_color,
             color_scale=cfg.effective_color_scale,
             color_map=cfg.color_map,
-            show_labels=True,
-            show_colorbar=False,
             connect_means=False,
         )
         mean_fig = expert.get_mean_plot(
@@ -174,8 +172,6 @@ def run_pipeline(
             color_scale=cfg.effective_color_scale,
             continuous_color=cfg.effective_continuous_color,
             color_map=cfg.color_map,
-            show_labels=True,
-            show_colorbar=False,
             connect_means=False,
         )
         l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
