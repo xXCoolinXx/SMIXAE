@@ -28,8 +28,8 @@ set -euo pipefail
 # ── Defaults ─────────────────────────────────────────────────────────────── #
 TRAINING_TOKENS=500000000
 N_EXPERTS=4096
-D_EXPERT=8
-K_EXPERTS=128
+D_EXPERT=16
+K_EXPERTS=64
 DATASETS_CONFIG="datasets/probing/dataset_config.json"
 HOURS_DATASET="datasets/probing/hours.csv"
 TOKENIZED_DATASET=""
@@ -71,48 +71,48 @@ else
     DATASET_FLAGS=""
 fi
 
-# smixae train \
-#     --model-name "${MODEL}" \
-#     --hook-name "${HOOK}" \
-#     --training-tokens "${TRAINING_TOKENS}" \
-#     --n-experts "${N_EXPERTS}" \
-#     --d-in "${D_IN}" \
-#     --d-expert "${D_EXPERT}" \
-#     --k-experts "${K_EXPERTS}" \
-#     --output-path "${RESULTS_DIR}/model" \
-#     --checkpoint-path "${RESULTS_DIR}/checkpoints" \
-#     --use-affine-smixae "${USE_AFFINE_SMIXAE}" \
-#     ${DATASET_FLAGS}
+smixae train \
+    --model-name "${MODEL}" \
+    --hook-name "${HOOK}" \
+    --training-tokens "${TRAINING_TOKENS}" \
+    --n-experts "${N_EXPERTS}" \
+    --d-in "${D_IN}" \
+    --d-expert "${D_EXPERT}" \
+    --k-experts "${K_EXPERTS}" \
+    --output-path "${RESULTS_DIR}/model" \
+    --checkpoint-path "${RESULTS_DIR}/checkpoints" \
+    --use-affine-smixae "${USE_AFFINE_SMIXAE}" \
+    ${DATASET_FLAGS}
 
 # --------------------------------------------------------------------------- #
 # 2. Probe all datasets                                                         #
 # Final model is at the fixed output_path — no glob needed.                    #
 # --------------------------------------------------------------------------- #
-# smixae probe all-datasets \
-#     --checkpoint-path "${RESULTS_DIR}/model" \
-#     --base-model-name "${MODEL}" \
-#     --hook-point "${HOOK}" \
-#     --datasets-config "${DATASETS_CONFIG}" \
-#     --output-dir "${RESULTS_DIR}/probe" \
-#     --min-points 750 
+smixae probe all-datasets \
+    --checkpoint-path "${RESULTS_DIR}/model" \
+    --base-model-name "${MODEL}" \
+    --hook-point "${HOOK}" \
+    --datasets-config "${DATASETS_CONFIG}" \
+    --output-dir "${RESULTS_DIR}/probe" \
+    --min-points 750 
 
 # --------------------------------------------------------------------------- #
 # 3. Newline-position manifold analysis                                         #
 # --------------------------------------------------------------------------- #
 
-# smixae newline main \
-#     --smixae-path "${RESULTS_DIR}/model" \
-#     --model-name "${MODEL}" \
-#     --hook-name "${HOOK}" \
-#     --output-path "${RESULTS_DIR}/newline_150" \
-#     --line-length 150
+smixae newline main \
+    --smixae-path "${RESULTS_DIR}/model" \
+    --model-name "${MODEL}" \
+    --hook-name "${HOOK}" \
+    --output-path "${RESULTS_DIR}/newline_150" \
+    --line-length 150
 
-# smixae newline main \
-#     --smixae-path "${RESULTS_DIR}/model" \
-#     --model-name "${MODEL}" \
-#     --hook-name "${HOOK}" \
-#     --output-path "${RESULTS_DIR}/newline_80" \
-#     --line-length 80
+smixae newline main \
+    --smixae-path "${RESULTS_DIR}/model" \
+    --model-name "${MODEL}" \
+    --hook-name "${HOOK}" \
+    --output-path "${RESULTS_DIR}/newline_80" \
+    --line-length 80
 
 # --------------------------------------------------------------------------- #
 # 4. Steering                                                                   #
