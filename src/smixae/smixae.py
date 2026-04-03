@@ -355,7 +355,7 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         # )
 
         # hopefully this is better
-        losses['dead_expert_aux_loss'] = self.calculate_pre_act_aux_loss(dead_expert_mask)
+        losses['dead_expert_aux_loss'] = self.calculate_pre_act_aux_loss(self.n_passes_since_fired > self.cfg.dead_after_n_passes)
 
         return losses
 
