@@ -62,7 +62,7 @@ class SMIXAE(SAE[SMIXAEConfig]):
         self.register_buffer(
             "threshold",
             # use double precision as otherwise we can run into numerical issues
-            torch.tensor(0.0, dtype=torch.double, device=self.W_dec.device),
+            torch.tensor(0.0, dtype=torch.double, device=self.W_dec.device, requires_grad=False),
         )
 
         # Dead expert tracker - remove this later, not used for inference
@@ -373,10 +373,10 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         
         # Push norms toward threshold from below
         # Only penalize experts that are below threshold (relu clips those already above)
-        shortfall = torch.relu(self.threshold.float() - dead_norms)
+        shortfall = torch.relu(self.threshold.detach().float() - dead_norms)
         
         # Weight by decoder norm so experts with larger decoders get more pressure
-        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask]
+        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask].detach()
         
         return self.cfg.aux_loss_coefficient * (shortfall * dead_decoder_norms).sum(dim=-1)
 
