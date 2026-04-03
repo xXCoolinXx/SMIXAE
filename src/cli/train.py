@@ -122,7 +122,7 @@ def train(
         True, help="Rescale bottleneck activations by decoder norm.", rich_help_panel="SAE Architecture"
     ),
     threshold_lr: float = typer.Option(
-        1e-3, help="Learning rate for the inference threshold update.", rich_help_panel="SAE Architecture"
+        1e-1, help="Learning rate for the inference threshold update.", rich_help_panel="SAE Architecture"
     ),
     dead_after_n_passes: Optional[int] = typer.Option(
         None,

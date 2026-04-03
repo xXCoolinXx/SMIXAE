@@ -376,9 +376,9 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         shortfall = torch.relu(self.threshold.detach().float() - dead_norms)
         
         # Weight by decoder norm so experts with larger decoders get more pressure
-        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask].detach()
+        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask]
         
-        return self.cfg.aux_loss_coefficient * (shortfall * dead_decoder_norms).sum(dim=-1)
+        return self.cfg.aux_loss_coefficient * (shortfall * dead_decoder_norms).sum(dim=-1).mean()
 
     def calculate_topk_aux_loss(
         self,
