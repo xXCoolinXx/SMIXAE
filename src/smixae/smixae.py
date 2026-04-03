@@ -347,14 +347,38 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
     ) -> dict[str, torch.Tensor]:
         losses = {}
 
-        losses["dead_expert_aux_loss"] = self.calculate_topk_aux_loss(
-            step_input.sae_in,
-            sae_out,
-            self.hidden_pre_bottleneck,
-            self.n_passes_since_fired > self.cfg.dead_after_n_passes,
-        )
+        # losses["dead_expert_aux_loss"] = self.calculate_topk_aux_loss(
+        #     step_input.sae_in,
+        #     sae_out,
+        #     self.hidden_pre_bottleneck,
+        #     self.n_passes_since_fired > self.cfg.dead_after_n_passes,
+        # )
+
+        # hopefully this is better
+        losses['dead_expert_aux_loss'] = self.calculate_pre_act_aux_loss(dead_expert_mask)
 
         return losses
+
+    def calculate_pre_act_aux_loss(self, dead_expert_mask):
+        """
+        Push dead experts' bottleneck norms toward the selection threshold.
+        No residual peeking — purely about making dead experts competitive.
+        """
+        if dead_expert_mask is None or not dead_expert_mask.any():
+            return self.threshold.new_tensor(0.0)
+        
+        # How far below the selection threshold are dead experts?
+        expert_norms = self.hidden_pre_bottleneck.norm(dim=-1)  # (batch, n_experts)
+        dead_norms = expert_norms[:, dead_expert_mask]  # (batch, n_dead)
+        
+        # Push norms toward threshold from below
+        # Only penalize experts that are below threshold (relu clips those already above)
+        shortfall = torch.relu(self.threshold.float() - dead_norms)
+        
+        # Weight by decoder norm so experts with larger decoders get more pressure
+        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask]
+        
+        return self.cfg.aux_loss_coefficient * (shortfall * dead_decoder_norms).sum(dim=-1)
 
     def calculate_topk_aux_loss(
         self,

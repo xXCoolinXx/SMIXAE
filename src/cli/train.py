@@ -116,7 +116,7 @@ def train(
         3, help="Bottleneck dimensionality (3 for 3D visualization).", rich_help_panel="SAE Architecture"
     ),
     aux_loss_coefficient: float = typer.Option(
-        3 / 32, help="Auxiliary loss coefficient for dead-expert recovery. Heuristic: d_bottleneck / 32", rich_help_panel="SAE Architecture"
+        3 * 3e-6, help="Auxiliary loss coefficient for dead-expert recovery. Heuristic: d_bottleneck / 32 or 3 * 3e-6 for pre_act loss", rich_help_panel="SAE Architecture"
     ),
     rescale_acts_by_decoder_norm: bool = typer.Option(
         True, help="Rescale bottleneck activations by decoder norm.", rich_help_panel="SAE Architecture"
