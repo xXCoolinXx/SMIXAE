@@ -376,7 +376,9 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         shortfall = torch.relu(self.threshold.detach().float() - dead_norms)
         
         # Weight by decoder norm so experts with larger decoders get more pressure
-        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask]
+        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask].detach() 
+        # Detachment avoids the model just making decoder norm 0 - this isn't a problem for JumpReLU since the trivial fix for the model is to just lower the threshold
+        # But here decoder norm 0 is optimal
         
         return self.cfg.aux_loss_coefficient * (shortfall * dead_decoder_norms).sum(dim=-1).mean()
 
