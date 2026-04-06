@@ -595,6 +595,22 @@ def add_discrete_legend(
     return fig
 
 
+def _auto_tick_increment(lo: float, hi: float, n_classes: int, requested: Optional[float]) -> Optional[float]:
+    """
+    For datasets with more than 25 classes, pick the largest increment from
+    {20, 10, 5} that still produces at least 5 visible ticks across [lo, hi].
+    Falls back to 5 if none of the candidates satisfy the threshold.
+    Returns ``requested`` unchanged when n_classes <= 25.
+    """
+    if n_classes <= 25:
+        return requested
+    span = hi - lo
+    for inc in [20, 10, 5]:
+        if span / inc >= 5:
+            return float(inc)
+    return 5.0
+
+
 def add_colorbar_trace(
     fig: go.Figure,
     classes: list,
@@ -619,6 +635,8 @@ def add_colorbar_trace(
     label_range      : (start_label, end_label) for endpoint-only ticks.
     colorbar_title   : optional title text above the colorbar.
     tick_increment   : numeric tick spacing; ignored when ``names`` is given.
+                       When n_classes > 25 and ``names`` is None, this value is
+                       overridden by ``_auto_tick_increment``.
     colorbar_thickness, colorbar_len, colorbar_x : colorbar geometry.
     """
     n = len(classes)
@@ -630,6 +648,7 @@ def add_colorbar_trace(
     else:
         lo = float(classes[0]) if not isinstance(classes[0], str) else 0.0
         hi = float(classes[-1]) if not isinstance(classes[-1], str) else float(n - 1)
+        tick_increment = _auto_tick_increment(lo, hi, n, tick_increment)
         if tick_increment is not None and tick_increment > 0:
             first_tick = np.ceil(lo / tick_increment) * tick_increment
             tickvals = list(np.arange(first_tick, hi + 1e-9, tick_increment))
