@@ -26,7 +26,7 @@ from __future__ import annotations
 import os
 import re
 from contextlib import contextmanager
-from typing import Generator
+from typing import Generator, Optional
 
 import pandas as pd
 import torch
@@ -250,6 +250,12 @@ def main(
     gen_batch_size: int = typer.Option(32, help="Batch size for text generation"),
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold for expert activity"),
     min_points: int = typer.Option(50, help="Minimum active tokens to keep an expert"),
+    expert_ids: Optional[str] = typer.Option(
+        None,
+        help="Comma-separated expert IDs to steer (e.g. '42,137,512'). "
+             "Overrides automatic Fisher-based discovery. The probing pass still runs "
+             "to compute class means for the specified experts.",
+    ),
 ):
     """Run SMIXAE steering experiments on hours-of-day prompts."""
     os.makedirs(output_dir, exist_ok=True)
@@ -293,13 +299,26 @@ def main(
     print(f"Scoring Fisher for {len(experts)} active experts…")
     for e in tqdm(experts):
         e.evaluate_fisher()
-    experts.sort(key=lambda e: e.fisher_score or 0.0, reverse=True)
 
-    top_experts = experts[:n_top_experts]
-    print(
-        f"\nTop {n_top_experts} expert(s):"
-        + "".join(f"\n  Expert {e.expert_id}  fisher={e.fisher_score:.4f}" for e in top_experts)
-    )
+    if expert_ids is not None:
+        id_list = [int(x.strip()) for x in expert_ids.split(",")]
+        id_set = set(id_list)
+        found_map = {e.expert_id: e for e in experts if e.expert_id in id_set}
+        missing = id_set - set(found_map)
+        if missing:
+            print(f"Warning: the following expert IDs were not active (below threshold or min_points): {sorted(missing)}")
+        top_experts = [found_map[i] for i in id_list if i in found_map]
+        print(
+            f"\nUsing {len(top_experts)} manually specified expert(s):"
+            + "".join(f"\n  Expert {e.expert_id}  fisher={e.fisher_score:.4f}" for e in top_experts)
+        )
+    else:
+        experts.sort(key=lambda e: e.fisher_score or 0.0, reverse=True)
+        top_experts = experts[:n_top_experts]
+        print(
+            f"\nTop {n_top_experts} expert(s) by Fisher score:"
+            + "".join(f"\n  Expert {e.expert_id}  fisher={e.fisher_score:.4f}" for e in top_experts)
+        )
 
     assert label_names is not None, "Hours dataset must have labels"
     hour_map = build_hour_map(label_names)  # stripped_hour → class_id

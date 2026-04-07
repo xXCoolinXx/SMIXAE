@@ -34,6 +34,8 @@ DATASETS_CONFIG="datasets/probing/dataset_config.json"
 HOURS_DATASET="datasets/probing/hours.csv"
 TOKENIZED_DATASET=""
 USE_AFFINE_SMIXAE=false
+STEER_EXPERT_IDS=""
+STEPS="train,probe,newline"
 
 # ── Parse flags ──────────────────────────────────────────────────────────── #
 while [[ $# -gt 0 ]]; do
@@ -49,7 +51,9 @@ while [[ $# -gt 0 ]]; do
         --datasets-config)    DATASETS_CONFIG="$2";    shift 2 ;;
         --hours-dataset)      HOURS_DATASET="$2";      shift 2 ;;
         --tokenized-dataset)  TOKENIZED_DATASET="$2";  shift 2 ;;
-        --use-affine-smixae) USE_AFFINE_SMIXAE="$2";   shift 2 ;; 
+        --use-affine-smixae) USE_AFFINE_SMIXAE="$2";   shift 2 ;;
+        --steer-expert-ids)  STEER_EXPERT_IDS="$2";   shift 2 ;;
+        --steps)             STEPS="$2";              shift 2 ;;
         *) echo "Unknown flag: $1" >&2; exit 1 ;;
     esac
 done
@@ -62,64 +66,93 @@ done
 
 RESULTS_DIR="results/${EXPERIMENT_NAME}"
 
+_has_step() { [[ ",${STEPS}," == *",${1},"* ]]; }
+
 # --------------------------------------------------------------------------- #
 # 1. Train                                                                      #
 # --------------------------------------------------------------------------- #
-if [[ -n "${TOKENIZED_DATASET}" ]]; then
-    DATASET_FLAGS="--dataset-path ${TOKENIZED_DATASET} --is-dataset-tokenized --no-streaming"
-else
-    DATASET_FLAGS=""
-fi
+if _has_step train; then
+    if [[ -n "${TOKENIZED_DATASET}" ]]; then
+        DATASET_FLAGS="--dataset-path ${TOKENIZED_DATASET} --is-dataset-tokenized --no-streaming"
+    else
+        DATASET_FLAGS=""
+    fi
 
-smixae train \
-    --model-name "${MODEL}" \
-    --hook-name "${HOOK}" \
-    --training-tokens "${TRAINING_TOKENS}" \
-    --n-experts "${N_EXPERTS}" \
-    --d-in "${D_IN}" \
-    --d-expert "${D_EXPERT}" \
-    --k-experts "${K_EXPERTS}" \
-    --output-path "${RESULTS_DIR}/model" \
-    --checkpoint-path "${RESULTS_DIR}/checkpoints" \
-    --use-affine-smixae "${USE_AFFINE_SMIXAE}" \
-    ${DATASET_FLAGS}
+    smixae train \
+        --model-name "${MODEL}" \
+        --hook-name "${HOOK}" \
+        --training-tokens "${TRAINING_TOKENS}" \
+        --n-experts "${N_EXPERTS}" \
+        --d-in "${D_IN}" \
+        --d-expert "${D_EXPERT}" \
+        --k-experts "${K_EXPERTS}" \
+        --output-path "${RESULTS_DIR}/model" \
+        --checkpoint-path "${RESULTS_DIR}/checkpoints" \
+        --use-affine-smixae "${USE_AFFINE_SMIXAE}" \
+        ${DATASET_FLAGS}
+fi
 
 # --------------------------------------------------------------------------- #
 # 2. Probe all datasets                                                         #
 # Final model is at the fixed output_path — no glob needed.                    #
 # --------------------------------------------------------------------------- #
-smixae probe all-datasets \
-    --checkpoint-path "${RESULTS_DIR}/model" \
-    --base-model-name "${MODEL}" \
-    --hook-point "${HOOK}" \
-    --datasets-config "${DATASETS_CONFIG}" \
-    --output-dir "${RESULTS_DIR}/probe" \
-    --min-points 750 
+if _has_step probe; then
+    smixae probe all-datasets \
+        --checkpoint-path "${RESULTS_DIR}/model" \
+        --base-model-name "${MODEL}" \
+        --hook-point "${HOOK}" \
+        --datasets-config "${DATASETS_CONFIG}" \
+        --output-dir "${RESULTS_DIR}/probe" \
+        --min-points 750
+fi
 
 # --------------------------------------------------------------------------- #
 # 3. Newline-position manifold analysis                                         #
 # --------------------------------------------------------------------------- #
+if _has_step newline; then
+    smixae newline main \
+        --smixae-path "${RESULTS_DIR}/model" \
+        --model-name "${MODEL}" \
+        --hook-name "${HOOK}" \
+        --output-path "${RESULTS_DIR}/newline_150" \
+        --line-length 150
 
-smixae newline main \
-    --smixae-path "${RESULTS_DIR}/model" \
-    --model-name "${MODEL}" \
-    --hook-name "${HOOK}" \
-    --output-path "${RESULTS_DIR}/newline_150" \
-    --line-length 150
+    smixae newline main \
+        --smixae-path "${RESULTS_DIR}/model" \
+        --model-name "${MODEL}" \
+        --hook-name "${HOOK}" \
+        --output-path "${RESULTS_DIR}/newline_80" \
+        --line-length 80
+fi
 
-smixae newline main \
-    --smixae-path "${RESULTS_DIR}/model" \
-    --model-name "${MODEL}" \
-    --hook-name "${HOOK}" \
-    --output-path "${RESULTS_DIR}/newline_80" \
-    --line-length 80
-
-# --------------------------------------------------------------------------- #
-# 4. Steering                                                                   #
-# --------------------------------------------------------------------------- #
-smixae steer main \
-    --checkpoint-path "${RESULTS_DIR}/model" \
-    --base-model-name "${MODEL}" \
-    --hook-point "${HOOK}" \
-    --hours-dataset "${HOURS_DATASET}" \
-    --output-dir "${RESULTS_DIR}/steer"
+# =========================================================================== #
+# MANUAL STEP — Steering                                                        #
+#                                                                               #
+# Steering requires reviewing probe results and identifying relevant experts.   #
+# It is intentionally excluded from the default --steps value.                  #
+#                                                                               #
+# After reviewing ${RESULTS_DIR}/probe/, re-run with:                           #
+#   --steps steer --steer-expert-ids "42,137,512"                               #
+#                                                                               #
+# Or invoke the CLI directly:                                                   #
+#   smixae steer main \                                                         #
+#       --checkpoint-path "${RESULTS_DIR}/model" \                              #
+#       --base-model-name "${MODEL}" \                                          #
+#       --hook-point "${HOOK}" \                                                #
+#       --hours-dataset "${HOURS_DATASET}" \                                    #
+#       --expert-ids "42,137,512" \                                             #
+#       --output-dir "${RESULTS_DIR}/steer"                                     #
+# =========================================================================== #
+if _has_step steer; then
+    if [[ -z "${STEER_EXPERT_IDS}" ]]; then
+        echo "Error: --steer-expert-ids is required when steer is included in --steps." >&2
+        exit 1
+    fi
+    smixae steer main \
+        --checkpoint-path "${RESULTS_DIR}/model" \
+        --base-model-name "${MODEL}" \
+        --hook-point "${HOOK}" \
+        --hours-dataset "${HOURS_DATASET}" \
+        --expert-ids "${STEER_EXPERT_IDS}" \
+        --output-dir "${RESULTS_DIR}/steer"
+fi
