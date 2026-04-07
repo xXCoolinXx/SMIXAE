@@ -16,5 +16,6 @@ logs/*
 datasets/tokenized/*
 .ruff_cache
 wandb
-results
+results/*/checkpoints
+results/*/model
 .wandb_key

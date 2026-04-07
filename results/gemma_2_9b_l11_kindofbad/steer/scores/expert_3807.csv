@@ -1,0 +1,421 @@
+task,src_hour,tgt_hour,start_hour,expected_hours,steered_expected_hours,prompt,baseline_pred,steered_pred,baseline_correct,steered_correct
+current_time,1AM,2AM,,,,"You glance at the clock and find it is 1:00AM. Your friend Alex asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,3AM,,,,"You glance at the clock and find it is 1:00AM. Your friend Sam asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,4AM,,,,"You glance at the clock and find it is 1:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,8AM,,,,"You glance at the clock and find it is 1:00AM. Your friend Sam asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,9AM,,,,"You glance at the clock and find it is 1:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,3PM,,,,"You glance at the clock and find it is 1:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,4PM,,,,"You glance at the clock and find it is 1:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,5PM,,,,"You glance at the clock and find it is 1:00AM. Your friend Alex asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,6PM,,,,"You glance at the clock and find it is 1:00AM. Your friend Sam asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,7PM,,,,"You glance at the clock and find it is 1:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,1AM,8PM,,,,"You glance at the clock and find it is 1:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",1AM,1AM,True,False
+current_time,2AM,1AM,,,,"You glance at the clock and find it is 2:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,3AM,,,,"You glance at the clock and find it is 2:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,4AM,,,,"You glance at the clock and find it is 2:00AM. Your friend Alex asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,8AM,,,,"You glance at the clock and find it is 2:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,9AM,,,,"You glance at the clock and find it is 2:00AM. Your friend Alex asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,3PM,,,,"You glance at the clock and find it is 2:00AM. Your friend Sam asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,4PM,,,,"You glance at the clock and find it is 2:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,5PM,,,,"You glance at the clock and find it is 2:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,6PM,,,,"You glance at the clock and find it is 2:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,7PM,,,,"You glance at the clock and find it is 2:00AM. Your friend Alex asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,2AM,8PM,,,,"You glance at the clock and find it is 2:00AM. Your friend Sam asks you for the time, and you respond, saying it is",2AM,2AM,True,False
+current_time,3AM,1AM,,,,"You glance at the clock and find it is 3:00AM. Your friend Sam asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,2AM,,,,"You glance at the clock and find it is 3:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,4AM,,,,"You glance at the clock and find it is 3:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,8AM,,,,"You glance at the clock and find it is 3:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,9AM,,,,"You glance at the clock and find it is 3:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,3PM,,,,"You glance at the clock and find it is 3:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,4PM,,,,"You glance at the clock and find it is 3:00AM. Your friend Alex asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,5PM,,,,"You glance at the clock and find it is 3:00AM. Your friend Sam asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,6PM,,,,"You glance at the clock and find it is 3:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,7PM,,,,"You glance at the clock and find it is 3:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,3AM,8PM,,,,"You glance at the clock and find it is 3:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",3AM,3AM,True,False
+current_time,4AM,1AM,,,,"You glance at the clock and find it is 4:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,2AM,,,,"You glance at the clock and find it is 4:00AM. Your friend Alex asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,3AM,,,,"You glance at the clock and find it is 4:00AM. Your friend Sam asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,8AM,,,,"You glance at the clock and find it is 4:00AM. Your friend Alex asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,9AM,,,,"You glance at the clock and find it is 4:00AM. Your friend Sam asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,3PM,,,,"You glance at the clock and find it is 4:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,4PM,,,,"You glance at the clock and find it is 4:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,5PM,,,,"You glance at the clock and find it is 4:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,6PM,,,,"You glance at the clock and find it is 4:00AM. Your friend Alex asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,7PM,,,,"You glance at the clock and find it is 4:00AM. Your friend Sam asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,4AM,8PM,,,,"You glance at the clock and find it is 4:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",4AM,4AM,True,False
+current_time,5AM,1AM,,,,"You glance at the clock and find it is 5:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,2AM,,,,"You glance at the clock and find it is 5:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,3AM,,,,"You glance at the clock and find it is 5:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,4AM,,,,"You glance at the clock and find it is 5:00AM. Your friend Alex asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,8AM,,,,"You glance at the clock and find it is 5:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,9AM,,,,"You glance at the clock and find it is 5:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,3PM,,,,"You glance at the clock and find it is 5:00AM. Your friend Alex asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,4PM,,,,"You glance at the clock and find it is 5:00AM. Your friend Sam asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,5PM,,,,"You glance at the clock and find it is 5:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,6PM,,,,"You glance at the clock and find it is 5:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,7PM,,,,"You glance at the clock and find it is 5:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,5AM,8PM,,,,"You glance at the clock and find it is 5:00AM. Your friend Alex asks you for the time, and you respond, saying it is",5AM,5AM,True,False
+current_time,6AM,1AM,,,,"You glance at the clock and find it is 6:00AM. Your friend Alex asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,2AM,,,,"You glance at the clock and find it is 6:00AM. Your friend Sam asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,3AM,,,,"You glance at the clock and find it is 6:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,4AM,,,,"You glance at the clock and find it is 6:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,8AM,,,,"You glance at the clock and find it is 6:00AM. Your friend Sam asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,9AM,,,,"You glance at the clock and find it is 6:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,3PM,,,,"You glance at the clock and find it is 6:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,4PM,,,,"You glance at the clock and find it is 6:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,5PM,,,,"You glance at the clock and find it is 6:00AM. Your friend Alex asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,6PM,,,,"You glance at the clock and find it is 6:00AM. Your friend Sam asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,7PM,,,,"You glance at the clock and find it is 6:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,6AM,8PM,,,,"You glance at the clock and find it is 6:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",6AM,6AM,True,False
+current_time,7AM,1AM,,,,"You glance at the clock and find it is 7:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,2AM,,,,"You glance at the clock and find it is 7:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,3AM,,,,"You glance at the clock and find it is 7:00AM. Your friend Alex asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,4AM,,,,"You glance at the clock and find it is 7:00AM. Your friend Sam asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,8AM,,,,"You glance at the clock and find it is 7:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,9AM,,,,"You glance at the clock and find it is 7:00AM. Your friend Alex asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,3PM,,,,"You glance at the clock and find it is 7:00AM. Your friend Sam asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,4PM,,,,"You glance at the clock and find it is 7:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,5PM,,,,"You glance at the clock and find it is 7:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,6PM,,,,"You glance at the clock and find it is 7:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,7PM,,,,"You glance at the clock and find it is 7:00AM. Your friend Alex asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,7AM,8PM,,,,"You glance at the clock and find it is 7:00AM. Your friend Sam asks you for the time, and you respond, saying it is",7AM,7AM,True,False
+current_time,8AM,1AM,,,,"You glance at the clock and find it is 8:00AM. Your friend Sam asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,2AM,,,,"You glance at the clock and find it is 8:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,3AM,,,,"You glance at the clock and find it is 8:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,4AM,,,,"You glance at the clock and find it is 8:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,9AM,,,,"You glance at the clock and find it is 8:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,3PM,,,,"You glance at the clock and find it is 8:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,4PM,,,,"You glance at the clock and find it is 8:00AM. Your friend Alex asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,5PM,,,,"You glance at the clock and find it is 8:00AM. Your friend Sam asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,6PM,,,,"You glance at the clock and find it is 8:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,7PM,,,,"You glance at the clock and find it is 8:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,8AM,8PM,,,,"You glance at the clock and find it is 8:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",8AM,8AM,True,False
+current_time,9AM,1AM,,,,"You glance at the clock and find it is 9:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,2AM,,,,"You glance at the clock and find it is 9:00AM. Your friend Alex asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,3AM,,,,"You glance at the clock and find it is 9:00AM. Your friend Sam asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,4AM,,,,"You glance at the clock and find it is 9:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,8AM,,,,"You glance at the clock and find it is 9:00AM. Your friend Sam asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,3PM,,,,"You glance at the clock and find it is 9:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,4PM,,,,"You glance at the clock and find it is 9:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,5PM,,,,"You glance at the clock and find it is 9:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,6PM,,,,"You glance at the clock and find it is 9:00AM. Your friend Alex asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,7PM,,,,"You glance at the clock and find it is 9:00AM. Your friend Sam asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,9AM,8PM,,,,"You glance at the clock and find it is 9:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",9AM,9AM,True,False
+current_time,10AM,1AM,,,,"You glance at the clock and find it is 10:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,2AM,,,,"You glance at the clock and find it is 10:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,3AM,,,,"You glance at the clock and find it is 10:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,4AM,,,,"You glance at the clock and find it is 10:00AM. Your friend Alex asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,8AM,,,,"You glance at the clock and find it is 10:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,9AM,,,,"You glance at the clock and find it is 10:00AM. Your friend Alex asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,3PM,,,,"You glance at the clock and find it is 10:00AM. Your friend Alex asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,4PM,,,,"You glance at the clock and find it is 10:00AM. Your friend Sam asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,5PM,,,,"You glance at the clock and find it is 10:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,6PM,,,,"You glance at the clock and find it is 10:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,7PM,,,,"You glance at the clock and find it is 10:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,10AM,8PM,,,,"You glance at the clock and find it is 10:00AM. Your friend Alex asks you for the time, and you respond, saying it is",10AM,10AM,True,False
+current_time,11AM,1AM,,,,"You glance at the clock and find it is 11:00AM. Your friend Alex asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,2AM,,,,"You glance at the clock and find it is 11:00AM. Your friend Sam asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,3AM,,,,"You glance at the clock and find it is 11:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,4AM,,,,"You glance at the clock and find it is 11:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,8AM,,,,"You glance at the clock and find it is 11:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,9AM,,,,"You glance at the clock and find it is 11:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,3PM,,,,"You glance at the clock and find it is 11:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,4PM,,,,"You glance at the clock and find it is 11:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,5PM,,,,"You glance at the clock and find it is 11:00AM. Your friend Alex asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,6PM,,,,"You glance at the clock and find it is 11:00AM. Your friend Sam asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,7PM,,,,"You glance at the clock and find it is 11:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,11AM,8PM,,,,"You glance at the clock and find it is 11:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",11AM,11AM,True,False
+current_time,12PM,1AM,,,,"You glance at the clock and find it is 12:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,2AM,,,,"You glance at the clock and find it is 12:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,3AM,,,,"You glance at the clock and find it is 12:00PM. Your friend Alex asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,4AM,,,,"You glance at the clock and find it is 12:00PM. Your friend Sam asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,8AM,,,,"You glance at the clock and find it is 12:00PM. Your friend Alex asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,9AM,,,,"You glance at the clock and find it is 12:00PM. Your friend Sam asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,3PM,,,,"You glance at the clock and find it is 12:00PM. Your friend Sam asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,4PM,,,,"You glance at the clock and find it is 12:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,5PM,,,,"You glance at the clock and find it is 12:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,6PM,,,,"You glance at the clock and find it is 12:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,7PM,,,,"You glance at the clock and find it is 12:00PM. Your friend Alex asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,12PM,8PM,,,,"You glance at the clock and find it is 12:00PM. Your friend Sam asks you for the time, and you respond, saying it is",12PM,12PM,True,False
+current_time,1PM,1AM,,,,"You glance at the clock and find it is 1:00PM. Your friend Sam asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,2AM,,,,"You glance at the clock and find it is 1:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,3AM,,,,"You glance at the clock and find it is 1:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,4AM,,,,"You glance at the clock and find it is 1:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,8AM,,,,"You glance at the clock and find it is 1:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,9AM,,,,"You glance at the clock and find it is 1:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,3PM,,,,"You glance at the clock and find it is 1:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,4PM,,,,"You glance at the clock and find it is 1:00PM. Your friend Alex asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,5PM,,,,"You glance at the clock and find it is 1:00PM. Your friend Sam asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,6PM,,,,"You glance at the clock and find it is 1:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,7PM,,,,"You glance at the clock and find it is 1:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,1PM,8PM,,,,"You glance at the clock and find it is 1:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",1PM,1PM,True,False
+current_time,2PM,1AM,,,,"You glance at the clock and find it is 2:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,2AM,,,,"You glance at the clock and find it is 2:00PM. Your friend Alex asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,3AM,,,,"You glance at the clock and find it is 2:00PM. Your friend Sam asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,4AM,,,,"You glance at the clock and find it is 2:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,8AM,,,,"You glance at the clock and find it is 2:00PM. Your friend Sam asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,9AM,,,,"You glance at the clock and find it is 2:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,3PM,,,,"You glance at the clock and find it is 2:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,4PM,,,,"You glance at the clock and find it is 2:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,5PM,,,,"You glance at the clock and find it is 2:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,6PM,,,,"You glance at the clock and find it is 2:00PM. Your friend Alex asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,7PM,,,,"You glance at the clock and find it is 2:00PM. Your friend Sam asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,2PM,8PM,,,,"You glance at the clock and find it is 2:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",2PM,2PM,True,False
+current_time,3PM,1AM,,,,"You glance at the clock and find it is 3:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",,,False,False
+current_time,3PM,2AM,,,,"You glance at the clock and find it is 3:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",,,False,False
+current_time,3PM,3AM,,,,"You glance at the clock and find it is 3:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",3PM,3PM,True,False
+current_time,3PM,4AM,,,,"You glance at the clock and find it is 3:00PM. Your friend Alex asks you for the time, and you respond, saying it is",3PM,3PM,True,False
+current_time,3PM,8AM,,,,"You glance at the clock and find it is 3:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",3PM,3PM,True,False
+current_time,3PM,9AM,,,,"You glance at the clock and find it is 3:00PM. Your friend Alex asks you for the time, and you respond, saying it is",3PM,3PM,True,False
+current_time,3PM,4PM,,,,"You glance at the clock and find it is 3:00PM. Your friend Sam asks you for the time, and you respond, saying it is",3PM,3PM,True,False
+current_time,3PM,5PM,,,,"You glance at the clock and find it is 3:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",,3PM,False,False
+current_time,3PM,6PM,,,,"You glance at the clock and find it is 3:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",,,False,False
+current_time,3PM,7PM,,,,"You glance at the clock and find it is 3:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",3PM,3PM,True,False
+current_time,3PM,8PM,,,,"You glance at the clock and find it is 3:00PM. Your friend Alex asks you for the time, and you respond, saying it is",3PM,3PM,True,False
+current_time,4PM,1AM,,,,"You glance at the clock and find it is 4:00PM. Your friend Alex asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,2AM,,,,"You glance at the clock and find it is 4:00PM. Your friend Sam asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,3AM,,,,"You glance at the clock and find it is 4:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,4AM,,,,"You glance at the clock and find it is 4:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,8AM,,,,"You glance at the clock and find it is 4:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,9AM,,,,"You glance at the clock and find it is 4:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,3PM,,,,"You glance at the clock and find it is 4:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,5PM,,,,"You glance at the clock and find it is 4:00PM. Your friend Alex asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,6PM,,,,"You glance at the clock and find it is 4:00PM. Your friend Sam asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,7PM,,,,"You glance at the clock and find it is 4:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,4PM,8PM,,,,"You glance at the clock and find it is 4:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",4PM,4PM,True,False
+current_time,5PM,1AM,,,,"You glance at the clock and find it is 5:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,2AM,,,,"You glance at the clock and find it is 5:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,3AM,,,,"You glance at the clock and find it is 5:00PM. Your friend Alex asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,4AM,,,,"You glance at the clock and find it is 5:00PM. Your friend Sam asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,8AM,,,,"You glance at the clock and find it is 5:00PM. Your friend Alex asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,9AM,,,,"You glance at the clock and find it is 5:00PM. Your friend Sam asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,3PM,,,,"You glance at the clock and find it is 5:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,4PM,,,,"You glance at the clock and find it is 5:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,6PM,,,,"You glance at the clock and find it is 5:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,7PM,,,,"You glance at the clock and find it is 5:00PM. Your friend Alex asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,5PM,8PM,,,,"You glance at the clock and find it is 5:00PM. Your friend Sam asks you for the time, and you respond, saying it is",5PM,5PM,True,False
+current_time,6PM,1AM,,,,"You glance at the clock and find it is 6:00PM. Your friend Sam asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,2AM,,,,"You glance at the clock and find it is 6:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,3AM,,,,"You glance at the clock and find it is 6:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,4AM,,,,"You glance at the clock and find it is 6:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,8AM,,,,"You glance at the clock and find it is 6:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,9AM,,,,"You glance at the clock and find it is 6:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,3PM,,,,"You glance at the clock and find it is 6:00PM. Your friend Alex asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,4PM,,,,"You glance at the clock and find it is 6:00PM. Your friend Sam asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,5PM,,,,"You glance at the clock and find it is 6:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,7PM,,,,"You glance at the clock and find it is 6:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,6PM,8PM,,,,"You glance at the clock and find it is 6:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",6PM,6PM,True,False
+current_time,7PM,1AM,,,,"You glance at the clock and find it is 7:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,2AM,,,,"You glance at the clock and find it is 7:00PM. Your friend Alex asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,3AM,,,,"You glance at the clock and find it is 7:00PM. Your friend Sam asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,4AM,,,,"You glance at the clock and find it is 7:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,8AM,,,,"You glance at the clock and find it is 7:00PM. Your friend Sam asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,9AM,,,,"You glance at the clock and find it is 7:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,3PM,,,,"You glance at the clock and find it is 7:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,4PM,,,,"You glance at the clock and find it is 7:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,5PM,,,,"You glance at the clock and find it is 7:00PM. Your friend Alex asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,6PM,,,,"You glance at the clock and find it is 7:00PM. Your friend Sam asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,7PM,8PM,,,,"You glance at the clock and find it is 7:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",7PM,7PM,True,False
+current_time,8PM,1AM,,,,"You glance at the clock and find it is 8:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,2AM,,,,"You glance at the clock and find it is 8:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,3AM,,,,"You glance at the clock and find it is 8:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,4AM,,,,"You glance at the clock and find it is 8:00PM. Your friend Alex asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,8AM,,,,"You glance at the clock and find it is 8:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,9AM,,,,"You glance at the clock and find it is 8:00PM. Your friend Alex asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,3PM,,,,"You glance at the clock and find it is 8:00PM. Your friend Sam asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,4PM,,,,"You glance at the clock and find it is 8:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,5PM,,,,"You glance at the clock and find it is 8:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,6PM,,,,"You glance at the clock and find it is 8:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,8PM,7PM,,,,"You glance at the clock and find it is 8:00PM. Your friend Alex asks you for the time, and you respond, saying it is",8PM,8PM,True,False
+current_time,9PM,1AM,,,,"You glance at the clock and find it is 9:00PM. Your friend Alex asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,2AM,,,,"You glance at the clock and find it is 9:00PM. Your friend Sam asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,3AM,,,,"You glance at the clock and find it is 9:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,4AM,,,,"You glance at the clock and find it is 9:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,8AM,,,,"You glance at the clock and find it is 9:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,9AM,,,,"You glance at the clock and find it is 9:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,3PM,,,,"You glance at the clock and find it is 9:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,4PM,,,,"You glance at the clock and find it is 9:00PM. Your friend Alex asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,5PM,,,,"You glance at the clock and find it is 9:00PM. Your friend Sam asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,6PM,,,,"You glance at the clock and find it is 9:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,7PM,,,,"You glance at the clock and find it is 9:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,9PM,8PM,,,,"You glance at the clock and find it is 9:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",9PM,9PM,True,False
+current_time,10PM,1AM,,,,"You glance at the clock and find it is 10:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,2AM,,,,"You glance at the clock and find it is 10:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",10PM,10PM,True,False
+current_time,10PM,3AM,,,,"You glance at the clock and find it is 10:00PM. Your friend Alex asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,4AM,,,,"You glance at the clock and find it is 10:00PM. Your friend Sam asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,8AM,,,,"You glance at the clock and find it is 10:00PM. Your friend Alex asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,9AM,,,,"You glance at the clock and find it is 10:00PM. Your friend Sam asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,3PM,,,,"You glance at the clock and find it is 10:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,4PM,,,,"You glance at the clock and find it is 10:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,5PM,,,,"You glance at the clock and find it is 10:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",10PM,10PM,True,False
+current_time,10PM,6PM,,,,"You glance at the clock and find it is 10:00PM. Your friend Alex asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,7PM,,,,"You glance at the clock and find it is 10:00PM. Your friend Sam asks you for the time, and you respond, saying it is",,,False,False
+current_time,10PM,8PM,,,,"You glance at the clock and find it is 10:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",,,False,False
+current_time,11PM,1AM,,,,"You glance at the clock and find it is 11:00PM. Your friend Sam asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,2AM,,,,"You glance at the clock and find it is 11:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,3AM,,,,"You glance at the clock and find it is 11:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,4AM,,,,"You glance at the clock and find it is 11:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,8AM,,,,"You glance at the clock and find it is 11:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,9AM,,,,"You glance at the clock and find it is 11:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,3PM,,,,"You glance at the clock and find it is 11:00PM. Your friend Alex asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,4PM,,,,"You glance at the clock and find it is 11:00PM. Your friend Sam asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,5PM,,,,"You glance at the clock and find it is 11:00PM. Your friend Jordan asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,6PM,,,,"You glance at the clock and find it is 11:00PM. Your friend Taylor asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,7PM,,,,"You glance at the clock and find it is 11:00PM. Your friend Morgan asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,11PM,8PM,,,,"You glance at the clock and find it is 11:00PM. Your friend Alex asks you for the time, and you respond, saying it is",11PM,11PM,True,False
+current_time,12AM,1AM,,,,"You glance at the clock and find it is 12:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,2AM,,,,"You glance at the clock and find it is 12:00AM. Your friend Alex asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,3AM,,,,"You glance at the clock and find it is 12:00AM. Your friend Sam asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,4AM,,,,"You glance at the clock and find it is 12:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,8AM,,,,"You glance at the clock and find it is 12:00AM. Your friend Sam asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,9AM,,,,"You glance at the clock and find it is 12:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,3PM,,,,"You glance at the clock and find it is 12:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,4PM,,,,"You glance at the clock and find it is 12:00AM. Your friend Morgan asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,5PM,,,,"You glance at the clock and find it is 12:00AM. Your friend Alex asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,6PM,,,,"You glance at the clock and find it is 12:00AM. Your friend Sam asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,7PM,,,,"You glance at the clock and find it is 12:00AM. Your friend Jordan asks you for the time, and you respond, saying it is",,,False,False
+current_time,12AM,8PM,,,,"You glance at the clock and find it is 12:00AM. Your friend Taylor asks you for the time, and you respond, saying it is",,,False,False
+elapsed_time,1AM,2AM,12AM,1.0,2.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 12:00AM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,1AM,2AM,11PM,2.0,3.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 11:00PM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,1AM,2AM,10PM,3.0,4.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 10:00PM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,1AM,2AM,9PM,4.0,5.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 9:00PM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,1AM,2AM,8PM,5.0,6.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 8:00PM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,1AM,2AM,7PM,6.0,7.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 7:00PM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,1AM,2AM,6PM,7.0,8.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 6:00PM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,1AM,2AM,5PM,8.0,9.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 5:00PM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,1AM,2AM,4PM,9.0,10.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 4:00PM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,1AM,2AM,3PM,10.0,11.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 3:00PM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,1AM,2AM,2PM,11.0,12.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 2:00PM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,1AM,2AM,1PM,12.0,13.0,"You check your phone, and see that the current time is 1:00AM. You realize that, since 1:00PM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,2AM,3AM,1AM,1.0,2.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 1:00AM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,2AM,3AM,12AM,2.0,3.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 12:00AM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,2AM,3AM,11PM,3.0,4.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 11:00PM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,2AM,3AM,10PM,4.0,5.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 10:00PM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,2AM,3AM,9PM,5.0,6.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 9:00PM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,2AM,3AM,8PM,6.0,7.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 8:00PM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,2AM,3AM,7PM,7.0,8.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 7:00PM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,2AM,3AM,6PM,8.0,9.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 6:00PM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,2AM,3AM,5PM,9.0,10.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 5:00PM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,2AM,3AM,4PM,10.0,11.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 4:00PM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,2AM,3AM,3PM,11.0,12.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 3:00PM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,2AM,3AM,2PM,12.0,13.0,"You check your phone, and see that the current time is 2:00AM. You realize that, since 2:00PM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,3AM,4AM,2AM,1.0,2.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 2:00AM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,3AM,4AM,1AM,2.0,3.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 1:00AM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,3AM,4AM,12AM,3.0,4.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 12:00AM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,3AM,4AM,11PM,4.0,5.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 11:00PM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,3AM,4AM,10PM,5.0,6.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 10:00PM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,3AM,4AM,9PM,6.0,7.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 9:00PM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,3AM,4AM,8PM,7.0,8.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 8:00PM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,3AM,4AM,7PM,8.0,9.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 7:00PM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,3AM,4AM,6PM,9.0,10.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 6:00PM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,3AM,4AM,5PM,10.0,11.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 5:00PM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,3AM,4AM,4PM,11.0,12.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 4:00PM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,3AM,4AM,3PM,12.0,13.0,"You check your phone, and see that the current time is 3:00AM. You realize that, since 3:00PM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,7AM,8AM,6AM,1.0,2.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 6:00AM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,7AM,8AM,5AM,2.0,3.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 5:00AM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,7AM,8AM,4AM,3.0,4.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 4:00AM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,7AM,8AM,3AM,4.0,5.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 3:00AM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,7AM,8AM,2AM,5.0,6.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 2:00AM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,7AM,8AM,1AM,6.0,7.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 1:00AM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,7AM,8AM,12AM,7.0,8.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 12:00AM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,7AM,8AM,11PM,8.0,9.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 11:00PM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,7AM,8AM,10PM,9.0,10.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 10:00PM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,7AM,8AM,9PM,10.0,11.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 9:00PM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,7AM,8AM,8PM,11.0,12.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 8:00PM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,7AM,8AM,7PM,12.0,13.0,"You check your phone, and see that the current time is 7:00AM. You realize that, since 7:00PM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,8AM,9AM,7AM,1.0,2.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 7:00AM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,8AM,9AM,6AM,2.0,3.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 6:00AM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,8AM,9AM,5AM,3.0,4.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 5:00AM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,8AM,9AM,4AM,4.0,5.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 4:00AM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,8AM,9AM,3AM,5.0,6.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 3:00AM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,8AM,9AM,2AM,6.0,7.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 2:00AM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,8AM,9AM,1AM,7.0,8.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 1:00AM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,8AM,9AM,12AM,8.0,9.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 12:00AM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,8AM,9AM,11PM,9.0,10.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 11:00PM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,8AM,9AM,10PM,10.0,11.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 10:00PM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,8AM,9AM,9PM,11.0,12.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 9:00PM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,8AM,9AM,8PM,12.0,13.0,"You check your phone, and see that the current time is 8:00AM. You realize that, since 8:00PM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,2PM,3PM,1PM,1.0,2.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 1:00PM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,2PM,3PM,12PM,2.0,3.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 12:00PM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,2PM,3PM,11AM,3.0,4.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 11:00AM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,2PM,3PM,10AM,4.0,5.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 10:00AM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,2PM,3PM,9AM,5.0,6.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 9:00AM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,2PM,3PM,8AM,6.0,7.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 8:00AM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,2PM,3PM,7AM,7.0,8.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 7:00AM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,2PM,3PM,6AM,8.0,9.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 6:00AM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,2PM,3PM,5AM,9.0,10.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 5:00AM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,2PM,3PM,4AM,10.0,11.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 4:00AM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,2PM,3PM,3AM,11.0,12.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 3:00AM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,2PM,3PM,2AM,12.0,13.0,"You check your phone, and see that the current time is 2:00PM. You realize that, since 2:00AM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,3PM,4PM,2PM,1.0,2.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 2:00PM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,3PM,4PM,1PM,2.0,3.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 1:00PM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,3PM,4PM,12PM,3.0,4.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 12:00PM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,3PM,4PM,11AM,4.0,5.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 11:00AM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,3PM,4PM,10AM,5.0,6.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 10:00AM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,3PM,4PM,9AM,6.0,7.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 9:00AM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,3PM,4PM,8AM,7.0,8.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 8:00AM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,3PM,4PM,7AM,8.0,9.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 7:00AM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,3PM,4PM,6AM,9.0,10.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 6:00AM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,3PM,4PM,5AM,10.0,11.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 5:00AM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,3PM,4PM,4AM,11.0,12.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 4:00AM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,3PM,4PM,3AM,12.0,13.0,"You check your phone, and see that the current time is 3:00PM. You realize that, since 3:00AM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,4PM,5PM,3PM,1.0,2.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 3:00PM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,4PM,5PM,2PM,2.0,3.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 2:00PM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,4PM,5PM,1PM,3.0,4.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 1:00PM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,4PM,5PM,12PM,4.0,5.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 12:00PM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,4PM,5PM,11AM,5.0,6.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 11:00AM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,4PM,5PM,10AM,6.0,7.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 10:00AM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,4PM,5PM,9AM,7.0,8.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 9:00AM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,4PM,5PM,8AM,8.0,9.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 8:00AM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,4PM,5PM,7AM,9.0,10.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 7:00AM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,4PM,5PM,6AM,10.0,11.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 6:00AM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,4PM,5PM,5AM,11.0,12.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 5:00AM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,4PM,5PM,4AM,12.0,13.0,"You check your phone, and see that the current time is 4:00PM. You realize that, since 4:00AM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,5PM,6PM,4PM,1.0,2.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 4:00PM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,5PM,6PM,3PM,2.0,3.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 3:00PM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,5PM,6PM,2PM,3.0,4.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 2:00PM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,5PM,6PM,1PM,4.0,5.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 1:00PM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,5PM,6PM,12PM,5.0,6.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 12:00PM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,5PM,6PM,11AM,6.0,7.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 11:00AM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,5PM,6PM,10AM,7.0,8.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 10:00AM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,5PM,6PM,9AM,8.0,9.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 9:00AM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,5PM,6PM,8AM,9.0,10.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 8:00AM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,5PM,6PM,7AM,10.0,11.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 7:00AM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,5PM,6PM,6AM,11.0,12.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 6:00AM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,5PM,6PM,5AM,12.0,13.0,"You check your phone, and see that the current time is 5:00PM. You realize that, since 5:00AM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,6PM,7PM,5PM,1.0,2.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 5:00PM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,6PM,7PM,4PM,2.0,3.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 4:00PM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,6PM,7PM,3PM,3.0,4.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 3:00PM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,6PM,7PM,2PM,4.0,5.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 2:00PM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,6PM,7PM,1PM,5.0,6.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 1:00PM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,6PM,7PM,12PM,6.0,7.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 12:00PM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,6PM,7PM,11AM,7.0,8.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 11:00AM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,6PM,7PM,10AM,8.0,9.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 10:00AM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,6PM,7PM,9AM,9.0,10.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 9:00AM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,6PM,7PM,8AM,10.0,11.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 8:00AM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,6PM,7PM,7AM,11.0,12.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 7:00AM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,6PM,7PM,6AM,12.0,13.0,"You check your phone, and see that the current time is 6:00PM. You realize that, since 6:00AM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,7PM,8PM,6PM,1.0,2.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 6:00PM, the amount of hours that has passed is",1,1,True,False
+elapsed_time,7PM,8PM,5PM,2.0,3.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 5:00PM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,7PM,8PM,4PM,3.0,4.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 4:00PM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,7PM,8PM,3PM,4.0,5.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 3:00PM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,7PM,8PM,2PM,5.0,6.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 2:00PM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,7PM,8PM,1PM,6.0,7.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 1:00PM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,7PM,8PM,12PM,7.0,8.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 12:00PM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,7PM,8PM,11AM,8.0,9.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 11:00AM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,7PM,8PM,10AM,9.0,10.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 10:00AM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,7PM,8PM,9AM,10.0,11.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 9:00AM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,7PM,8PM,8AM,11.0,12.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 8:00AM, the amount of hours that has passed is",11,11,True,False
+elapsed_time,7PM,8PM,7AM,12.0,13.0,"You check your phone, and see that the current time is 7:00PM. You realize that, since 7:00AM, the amount of hours that has passed is",12,12,True,False
+elapsed_time,12AM,1AM,11PM,1.0,2.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 11:00PM, the amount of hours that has passed is",,,False,False
+elapsed_time,12AM,1AM,10PM,2.0,3.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 10:00PM, the amount of hours that has passed is",2,2,True,False
+elapsed_time,12AM,1AM,9PM,3.0,4.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 9:00PM, the amount of hours that has passed is",3,3,True,False
+elapsed_time,12AM,1AM,8PM,4.0,5.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 8:00PM, the amount of hours that has passed is",4,4,True,False
+elapsed_time,12AM,1AM,7PM,5.0,6.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 7:00PM, the amount of hours that has passed is",5,5,True,False
+elapsed_time,12AM,1AM,6PM,6.0,7.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 6:00PM, the amount of hours that has passed is",6,6,True,False
+elapsed_time,12AM,1AM,5PM,7.0,8.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 5:00PM, the amount of hours that has passed is",7,7,True,False
+elapsed_time,12AM,1AM,4PM,8.0,9.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 4:00PM, the amount of hours that has passed is",8,8,True,False
+elapsed_time,12AM,1AM,3PM,9.0,10.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 3:00PM, the amount of hours that has passed is",9,9,True,False
+elapsed_time,12AM,1AM,2PM,10.0,11.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 2:00PM, the amount of hours that has passed is",10,10,True,False
+elapsed_time,12AM,1AM,1PM,11.0,12.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 1:00PM, the amount of hours that has passed is",13,13,False,False
+elapsed_time,12AM,1AM,12PM,12.0,13.0,"You check your phone, and see that the current time is 12:00AM. You realize that, since 12:00PM, the amount of hours that has passed is",,,False,False
