@@ -460,7 +460,7 @@ class Expert:
                     for i in label_names
                     if _strip_prefix(label_names[i]) in color_map
                 }
-                if len(candidate) == len(set(int_labels.tolist())):
+                if set(int_labels.tolist()) <= candidate.keys():
                     cscale = candidate
 
             _connect_means = connect_means if connect_means is not None else continuous_color
@@ -516,7 +516,7 @@ class Expert:
                 for i in label_names
                 if _strip_prefix(label_names[i]) in color_map
             }
-            if len(candidate) == len(set(int_labels.tolist())):
+            if set(int_labels.tolist()) <= candidate.keys():
                 cscale = candidate
 
         _connect_means = connect_means if connect_means is not None else continuous_color

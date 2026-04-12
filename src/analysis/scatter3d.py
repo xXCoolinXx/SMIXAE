@@ -641,20 +641,23 @@ def add_colorbar_trace(
     """
     n = len(classes)
     if names is not None:
-        # One tick per class, labeled with display names.
         lo, hi = 0.0, float(n - 1)
-        tickvals = list(range(n))
-        ticktext = [str(names.get(c, c)) for c in classes]
+        inc = _auto_tick_increment(lo, hi, n, tick_increment)
+        if inc is not None and inc > 0 and n > 25:
+            raw = np.arange(np.ceil(lo / inc) * inc, hi + 1e-9, inc)
+            indices = sorted(int(v) for v in raw if 0 <= int(v) < n)
+            tickvals = indices
+            ticktext = [str(names.get(classes[i], classes[i])) for i in indices]
+        else:
+            tickvals = list(range(n))
+            ticktext = [str(names.get(c, c)) for c in classes]
     else:
         lo = float(classes[0]) if not isinstance(classes[0], str) else 0.0
         hi = float(classes[-1]) if not isinstance(classes[-1], str) else float(n - 1)
         tick_increment = _auto_tick_increment(lo, hi, n, tick_increment)
         if tick_increment is not None and tick_increment > 0:
             first_tick = np.ceil(lo / tick_increment) * tick_increment
-            tickvals = list(np.arange(first_tick, hi + 1e-9, tick_increment))
-            if lo not in tickvals:
-                tickvals = [lo] + tickvals
-            tickvals = sorted(set(tickvals))
+            tickvals = sorted(set(np.arange(first_tick, hi + 1e-9, tick_increment)))
             ticktext = [str(int(v)) if v == int(v) else f"{v:.2f}" for v in tickvals]
         else:
             start_label, end_label = (

@@ -28,6 +28,7 @@ class DatasetConfig:
     output_subdir: str | None = None
     color_map: dict[str, str] | None = None  # label → CSS color for 1:1 color schemes
     n_input_samples: int | None = None  # overrides CLI --n-input-samples when set
+    max_points: int | None = None  # overrides CLI --max-points when set (0 = no cap)
     show_labels: bool = False  # annotate class means with text labels
 
     @property
@@ -400,7 +401,11 @@ def all_datasets(
     )
 
     for cfg in dataset_cfgs:
-        per_cfg_kwargs = {**pipeline_kwargs, "n_input_samples": cfg.n_input_samples or n_input_samples}
+        per_cfg_kwargs = {
+            **pipeline_kwargs,
+            "n_input_samples": cfg.n_input_samples or n_input_samples,
+            "max_points": cfg.max_points if cfg.max_points is not None else max_points,
+        }
         run_pipeline(cfg=cfg, sort_by=sort_by, **per_cfg_kwargs)  # type: ignore[arg-type]
 
     # Unlabelled continuity pass
