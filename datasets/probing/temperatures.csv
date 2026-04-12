@@ -1,1001 +1,1001 @@
 Sentence,Label
-the PI measured the soil temperature as mild,05_mild
-the nurse flagged that the freezer felt chilly,03_chilly
-The greenhouse environment is scorching,09_scorching
-Omar complained the office was boiling,10_boiling
-Liam adjusted the thermostat because it was boiling,10_boiling
-The reactor core temperature reads warm,06_warm
-Liam flagged that the freezer felt mild,05_mild
-Dr. Okafor noted the sample chamber felt frigid,01_frigid
-Dr. Patel measured the soil temperature as cool,04_cool
-Outside it is absolutely hot,07_hot
-the technician reported the autoclave room as frigid,01_frigid
-The incubation environment should remain scorching,09_scorching
-the technician adjusted the thermostat because it was hot,07_hot
-the coordinator said the walk-in cooler felt mild,05_mild
-Yuki complained the office was warm,06_warm
-Volunteers rated the testing room as boiling,10_boiling
-The ventilation output is blowing cool,04_cool
-Ambient conditions in the corridor are sweltering,08_sweltering
-Yuki noted the sample chamber felt boiling,10_boiling
-Dr. Chen recorded that the growth chamber felt sweltering,08_sweltering
-the technician recorded that the growth chamber felt cold,02_cold
-The ventilation output is blowing frigid,01_frigid
-the postdoc noted the sample chamber felt warm,06_warm
-the intern noted the sample chamber felt freezing,00_freezing
-Sarah complained the office was chilly,03_chilly
-Elena recorded that the growth chamber felt warm,06_warm
-The reactor core temperature reads cold,02_cold
-Omar complained the office was sweltering,08_sweltering
-The reagent shelf area felt scorching,09_scorching
-Prof. Wang complained the office was chilly,03_chilly
-Bob noted the sample chamber felt cold,02_cold
-Maria described the cleanroom as mild,05_mild
-Yuki noted the sample chamber felt cold,02_cold
-Raj flagged that the freezer felt warm,06_warm
-Alice reported the autoclave room as chilly,03_chilly
-James noted the sample chamber felt chilly,03_chilly
-Elena adjusted the thermostat because it was sweltering,08_sweltering
-the coordinator measured the soil temperature as warm,06_warm
-Dr. Smith said the walk-in cooler felt warm,06_warm
-the technician measured the soil temperature as mild,05_mild
-the coordinator measured the soil temperature as sweltering,08_sweltering
-The water bath feels freezing,00_freezing
-Dr. Chen said the walk-in cooler felt cool,04_cool
-Dr. Patel said the walk-in cooler felt freezing,00_freezing
-Ambient conditions in the corridor are mild,05_mild
-Fatima reported the autoclave room as cold,02_cold
-Alice complained the office was cold,02_cold
-Dr. Rossi flagged that the freezer felt frigid,01_frigid
-the PI adjusted the thermostat because it was warm,06_warm
-The water bath feels mild,05_mild
-The reagent shelf area felt sweltering,08_sweltering
-The water bath feels chilly,03_chilly
-the coordinator reported the autoclave room as boiling,10_boiling
-the nurse recorded that the growth chamber felt cool,04_cool
-Elena described the cleanroom as hot,07_hot
-Prof. Kim reported the autoclave room as scorching,09_scorching
-Dr. Chen adjusted the thermostat because it was warm,06_warm
-Kevin flagged that the freezer felt warm,06_warm
-The bioreactor jacket temperature is scorching,09_scorching
-Elena described the cleanroom as cold,02_cold
-Charlie complained the office was boiling,10_boiling
-Liam described the cleanroom as scorching,09_scorching
-Surface readings indicate conditions are cool,04_cool
-Charlie complained the office was hot,07_hot
-Dr. Rossi reported the autoclave room as boiling,10_boiling
-Fatima complained the office was cool,04_cool
-the postdoc said the walk-in cooler felt freezing,00_freezing
-Alice measured the soil temperature as scorching,09_scorching
-The curing oven is running hot,07_hot
-The lab conditions today are sweltering,08_sweltering
-The fermentation tank is currently cold,02_cold
-The reagent shelf area felt frigid,01_frigid
-Yuki noted the sample chamber felt chilly,03_chilly
-Sarah adjusted the thermostat because it was frigid,01_frigid
-Prof. Wang measured the soil temperature as mild,05_mild
-the postdoc flagged that the freezer felt mild,05_mild
-Patients reported feeling cold during the trial,02_cold
-Sarah complained the office was hot,07_hot
-the coordinator measured the soil temperature as frigid,01_frigid
-The ventilation output is blowing freezing,00_freezing
-Prof. Wang described the cleanroom as scorching,09_scorching
-the supervisor described the cleanroom as cool,04_cool
-Raj complained the office was chilly,03_chilly
-The drying chamber atmosphere is scorching,09_scorching
-the technician noted the sample chamber felt warm,06_warm
-The incubation environment should remain sweltering,08_sweltering
-the intern said the walk-in cooler felt boiling,10_boiling
-the coordinator flagged that the freezer felt scorching,09_scorching
-Fatima reported the autoclave room as scorching,09_scorching
-Field conditions were cool during collection,04_cool
-The water bath feels hot,07_hot
-Amara noted the sample chamber felt freezing,00_freezing
-Dr. Smith reported the autoclave room as boiling,10_boiling
-Amara noted the sample chamber felt mild,05_mild
-the intern noted the sample chamber felt frigid,01_frigid
-Yuki flagged that the freezer felt cool,04_cool
-Kevin adjusted the thermostat because it was cold,02_cold
-Elena measured the soil temperature as frigid,01_frigid
-The storage unit is running boiling,10_boiling
-Prof. Wang said the walk-in cooler felt boiling,10_boiling
-Yuki measured the soil temperature as mild,05_mild
-Morning readings showed the habitat was frigid,01_frigid
-James complained the office was chilly,03_chilly
-Kevin noted the sample chamber felt freezing,00_freezing
-Bob complained the office was hot,07_hot
-Ambient conditions in the corridor are frigid,01_frigid
-Yuki adjusted the thermostat because it was cool,04_cool
-Liam said the walk-in cooler felt frigid,01_frigid
-Omar flagged that the freezer felt mild,05_mild
-Morning readings showed the habitat was warm,06_warm
-The fermentation tank is currently chilly,03_chilly
-the analyst reported the autoclave room as frigid,01_frigid
-Sarah said the walk-in cooler felt freezing,00_freezing
-Elena described the cleanroom as chilly,03_chilly
-Yuki said the walk-in cooler felt warm,06_warm
-the intern measured the soil temperature as frigid,01_frigid
-Fatima complained the office was frigid,01_frigid
-Liam complained the office was cool,04_cool
-Dr. Smith flagged that the freezer felt freezing,00_freezing
-the supervisor recorded that the growth chamber felt frigid,01_frigid
-Morning readings showed the habitat was cold,02_cold
-James reported the autoclave room as freezing,00_freezing
-Dr. Okafor said the walk-in cooler felt cold,02_cold
-the postdoc described the cleanroom as mild,05_mild
-Dr. Smith recorded that the growth chamber felt boiling,10_boiling
-the nurse reported the autoclave room as cool,04_cool
-Prof. Wang recorded that the growth chamber felt scorching,09_scorching
-Dr. Chen described the cleanroom as cold,02_cold
-the analyst recorded that the growth chamber felt scorching,09_scorching
-the PI complained the office was scorching,09_scorching
-Dr. Rossi recorded that the growth chamber felt chilly,03_chilly
-Alice reported the autoclave room as sweltering,08_sweltering
-Bob adjusted the thermostat because it was warm,06_warm
-Charlie flagged that the freezer felt mild,05_mild
-Yuki measured the soil temperature as chilly,03_chilly
-the postdoc said the walk-in cooler felt cold,02_cold
 Ambient conditions in the corridor are chilly,03_chilly
-Amara complained the office was freezing,00_freezing
-Fatima adjusted the thermostat because it was scorching,09_scorching
-The reactor core temperature reads boiling,10_boiling
-Dr. Patel reported the autoclave room as mild,05_mild
-The drying chamber atmosphere is frigid,01_frigid
-the PI noted the sample chamber felt frigid,01_frigid
-Fatima measured the soil temperature as frigid,01_frigid
-The lab conditions today are frigid,01_frigid
-the coordinator recorded that the growth chamber felt scorching,09_scorching
-Dr. Okafor described the cleanroom as mild,05_mild
-The drying chamber atmosphere is cold,02_cold
-Liam described the cleanroom as cold,02_cold
-Prof. Wang recorded that the growth chamber felt frigid,01_frigid
-Sarah complained the office was frigid,01_frigid
-Prof. Wang said the walk-in cooler felt cool,04_cool
-the technician complained the office was cool,04_cool
-the postdoc noted the sample chamber felt cold,02_cold
-Field conditions were warm during collection,06_warm
-The drying chamber atmosphere is chilly,03_chilly
-The climate chamber was set to freezing,00_freezing
-The fermentation tank is currently scorching,09_scorching
-Dr. Smith noted the sample chamber felt warm,06_warm
-Outside it is absolutely mild,05_mild
-the nurse reported the autoclave room as sweltering,08_sweltering
-the intern adjusted the thermostat because it was sweltering,08_sweltering
-Raj flagged that the freezer felt cold,02_cold
-Omar complained the office was scorching,09_scorching
-Maria reported the autoclave room as hot,07_hot
-Volunteers rated the testing room as sweltering,08_sweltering
-The storage unit is running frigid,01_frigid
-Maria complained the office was hot,07_hot
-the analyst adjusted the thermostat because it was hot,07_hot
-The reagent shelf area felt hot,07_hot
-Maria described the cleanroom as chilly,03_chilly
-Alice described the cleanroom as cold,02_cold
-The reactor core temperature reads cool,04_cool
-Dr. Rossi recorded that the growth chamber felt frigid,01_frigid
-Morning readings showed the habitat was scorching,09_scorching
-Yuki noted the sample chamber felt cool,04_cool
-Raj noted the sample chamber felt sweltering,08_sweltering
-Kevin recorded that the growth chamber felt cool,04_cool
-The storage unit is running hot,07_hot
-Dr. Chen complained the office was boiling,10_boiling
-Fatima measured the soil temperature as cool,04_cool
-The server room is dangerously chilly,03_chilly
-Bob noted the sample chamber felt mild,05_mild
-Prof. Kim recorded that the growth chamber felt chilly,03_chilly
-Patients reported feeling mild during the trial,05_mild
-Prof. Müller complained the office was mild,05_mild
-Charlie said the walk-in cooler felt mild,05_mild
-the supervisor measured the soil temperature as mild,05_mild
-Prof. Müller adjusted the thermostat because it was cool,04_cool
-Dr. Chen measured the soil temperature as chilly,03_chilly
-the supervisor said the walk-in cooler felt sweltering,08_sweltering
-The drying chamber atmosphere is boiling,10_boiling
-Prof. Kim recorded that the growth chamber felt scorching,09_scorching
-Bob flagged that the freezer felt cool,04_cool
-Amara adjusted the thermostat because it was freezing,00_freezing
-The climate chamber was set to boiling,10_boiling
-Dr. Chen adjusted the thermostat because it was chilly,03_chilly
-Volunteers rated the testing room as cool,04_cool
-Fatima said the walk-in cooler felt hot,07_hot
-the postdoc said the walk-in cooler felt warm,06_warm
-Maria recorded that the growth chamber felt hot,07_hot
-James described the cleanroom as frigid,01_frigid
-Maria reported the autoclave room as sweltering,08_sweltering
-the intern flagged that the freezer felt freezing,00_freezing
-Patients reported feeling chilly during the trial,03_chilly
-Dr. Rossi adjusted the thermostat because it was freezing,00_freezing
-Dr. Patel measured the soil temperature as scorching,09_scorching
-Kevin flagged that the freezer felt boiling,10_boiling
-Raj recorded that the growth chamber felt cold,02_cold
-Dr. Patel recorded that the growth chamber felt cool,04_cool
-the intern measured the soil temperature as cold,02_cold
-the nurse flagged that the freezer felt frigid,01_frigid
-Prof. Kim measured the soil temperature as cool,04_cool
-the intern complained the office was frigid,01_frigid
-The lab conditions today are scorching,09_scorching
-Yuki adjusted the thermostat because it was frigid,01_frigid
-the coordinator adjusted the thermostat because it was cold,02_cold
-Field conditions were hot during collection,07_hot
-Outside it is absolutely scorching,09_scorching
-Kevin adjusted the thermostat because it was chilly,03_chilly
-Maria noted the sample chamber felt sweltering,08_sweltering
-Dr. Smith measured the soil temperature as scorching,09_scorching
-Prof. Wang noted the sample chamber felt cold,02_cold
-the postdoc noted the sample chamber felt chilly,03_chilly
-Maria measured the soil temperature as boiling,10_boiling
-the postdoc described the cleanroom as boiling,10_boiling
-Alice described the cleanroom as mild,05_mild
-Charlie reported the autoclave room as hot,07_hot
-the technician measured the soil temperature as boiling,10_boiling
-Fatima recorded that the growth chamber felt cold,02_cold
-Sarah noted the sample chamber felt warm,06_warm
-the analyst described the cleanroom as cool,04_cool
-the PI complained the office was sweltering,08_sweltering
-Liam flagged that the freezer felt chilly,03_chilly
-The reactor core temperature reads chilly,03_chilly
-Raj recorded that the growth chamber felt chilly,03_chilly
-Yuki reported the autoclave room as hot,07_hot
-the analyst said the walk-in cooler felt hot,07_hot
-The storage unit is running freezing,00_freezing
-Dr. Chen noted the sample chamber felt freezing,00_freezing
-the intern complained the office was scorching,09_scorching
-The server room is dangerously warm,06_warm
-The incubation environment should remain boiling,10_boiling
-Dr. Chen reported the autoclave room as chilly,03_chilly
-Prof. Kim described the cleanroom as scorching,09_scorching
-the supervisor recorded that the growth chamber felt mild,05_mild
-Prof. Kim said the walk-in cooler felt hot,07_hot
-Alice measured the soil temperature as chilly,03_chilly
-Alice adjusted the thermostat because it was mild,05_mild
-the postdoc reported the autoclave room as scorching,09_scorching
-The lab conditions today are chilly,03_chilly
-Dr. Patel recorded that the growth chamber felt scorching,09_scorching
-Bob reported the autoclave room as sweltering,08_sweltering
-Dr. Smith said the walk-in cooler felt scorching,09_scorching
-Kevin said the walk-in cooler felt sweltering,08_sweltering
-Dr. Patel complained the office was freezing,00_freezing
-Maria described the cleanroom as cold,02_cold
-Kevin complained the office was hot,07_hot
-Charlie complained the office was chilly,03_chilly
-The drying chamber atmosphere is freezing,00_freezing
-the intern complained the office was hot,07_hot
-Dr. Okafor noted the sample chamber felt warm,06_warm
-the analyst said the walk-in cooler felt chilly,03_chilly
-Yuki reported the autoclave room as boiling,10_boiling
-Morning readings showed the habitat was cool,04_cool
-Kevin complained the office was cool,04_cool
-The water bath feels scorching,09_scorching
-Dr. Patel said the walk-in cooler felt frigid,01_frigid
-Bob said the walk-in cooler felt frigid,01_frigid
-Ambient conditions in the corridor are warm,06_warm
-Volunteers rated the testing room as hot,07_hot
-Prof. Kim measured the soil temperature as scorching,09_scorching
-Morning readings showed the habitat was mild,05_mild
-Outside it is absolutely cold,02_cold
-Dr. Smith adjusted the thermostat because it was hot,07_hot
-Elena said the walk-in cooler felt chilly,03_chilly
-the postdoc measured the soil temperature as frigid,01_frigid
-Fatima reported the autoclave room as hot,07_hot
-Prof. Müller reported the autoclave room as chilly,03_chilly
-Raj reported the autoclave room as sweltering,08_sweltering
-Charlie measured the soil temperature as hot,07_hot
-the intern noted the sample chamber felt cool,04_cool
-James measured the soil temperature as chilly,03_chilly
-Dr. Patel noted the sample chamber felt boiling,10_boiling
-the PI recorded that the growth chamber felt freezing,00_freezing
-Charlie described the cleanroom as scorching,09_scorching
-the analyst reported the autoclave room as chilly,03_chilly
-Amara described the cleanroom as frigid,01_frigid
-Dr. Chen flagged that the freezer felt hot,07_hot
-Sarah flagged that the freezer felt mild,05_mild
-Dr. Patel said the walk-in cooler felt cool,04_cool
-the coordinator adjusted the thermostat because it was hot,07_hot
-the supervisor recorded that the growth chamber felt hot,07_hot
-James said the walk-in cooler felt mild,05_mild
-Surface readings indicate conditions are boiling,10_boiling
-Maria noted the sample chamber felt cold,02_cold
-Maria said the walk-in cooler felt boiling,10_boiling
-the coordinator recorded that the growth chamber felt cold,02_cold
-Liam recorded that the growth chamber felt cold,02_cold
-Elena flagged that the freezer felt sweltering,08_sweltering
-Maria flagged that the freezer felt cold,02_cold
-Liam measured the soil temperature as hot,07_hot
-Dr. Rossi reported the autoclave room as cool,04_cool
-The curing oven is running mild,05_mild
-James flagged that the freezer felt freezing,00_freezing
-Alice reported the autoclave room as freezing,00_freezing
-Maria reported the autoclave room as scorching,09_scorching
-the technician noted the sample chamber felt frigid,01_frigid
-Morning readings showed the habitat was freezing,00_freezing
-Dr. Smith adjusted the thermostat because it was cold,02_cold
-James complained the office was frigid,01_frigid
-Morning readings showed the habitat was boiling,10_boiling
-Kevin described the cleanroom as cool,04_cool
-the nurse complained the office was frigid,01_frigid
-Liam noted the sample chamber felt scorching,09_scorching
-The reactor core temperature reads sweltering,08_sweltering
-Fatima said the walk-in cooler felt frigid,01_frigid
-the supervisor noted the sample chamber felt freezing,00_freezing
-Maria recorded that the growth chamber felt scorching,09_scorching
-Kevin described the cleanroom as mild,05_mild
-Bob adjusted the thermostat because it was freezing,00_freezing
-Dr. Okafor described the cleanroom as cold,02_cold
-the supervisor said the walk-in cooler felt scorching,09_scorching
-Patients reported feeling cool during the trial,04_cool
-Omar recorded that the growth chamber felt chilly,03_chilly
-the technician described the cleanroom as hot,07_hot
-Dr. Okafor said the walk-in cooler felt frigid,01_frigid
-Fatima adjusted the thermostat because it was frigid,01_frigid
-Bob noted the sample chamber felt cool,04_cool
-the nurse recorded that the growth chamber felt hot,07_hot
-Field conditions were mild during collection,05_mild
-Dr. Chen recorded that the growth chamber felt hot,07_hot
-Elena reported the autoclave room as cold,02_cold
-Prof. Müller said the walk-in cooler felt scorching,09_scorching
-Patients reported feeling sweltering during the trial,08_sweltering
-The greenhouse environment is warm,06_warm
-Fatima recorded that the growth chamber felt freezing,00_freezing
-the PI described the cleanroom as hot,07_hot
-Elena reported the autoclave room as cool,04_cool
-Dr. Rossi measured the soil temperature as cool,04_cool
-James recorded that the growth chamber felt boiling,10_boiling
-The bioreactor jacket temperature is cold,02_cold
-the coordinator noted the sample chamber felt warm,06_warm
-Ambient conditions in the corridor are cold,02_cold
-Omar noted the sample chamber felt cool,04_cool
-Dr. Patel measured the soil temperature as sweltering,08_sweltering
-Raj recorded that the growth chamber felt boiling,10_boiling
-the nurse described the cleanroom as sweltering,08_sweltering
-Charlie measured the soil temperature as boiling,10_boiling
-Yuki reported the autoclave room as sweltering,08_sweltering
-the analyst complained the office was mild,05_mild
-the supervisor noted the sample chamber felt boiling,10_boiling
-the nurse measured the soil temperature as sweltering,08_sweltering
-Elena flagged that the freezer felt frigid,01_frigid
-the analyst said the walk-in cooler felt freezing,00_freezing
-the intern recorded that the growth chamber felt freezing,00_freezing
-the supervisor recorded that the growth chamber felt freezing,00_freezing
-James complained the office was scorching,09_scorching
-Prof. Kim said the walk-in cooler felt warm,06_warm
-Dr. Okafor adjusted the thermostat because it was cool,04_cool
-Yuki described the cleanroom as frigid,01_frigid
-the postdoc recorded that the growth chamber felt scorching,09_scorching
-Liam said the walk-in cooler felt boiling,10_boiling
-Charlie said the walk-in cooler felt freezing,00_freezing
-Dr. Patel described the cleanroom as mild,05_mild
-Dr. Patel said the walk-in cooler felt chilly,03_chilly
-James recorded that the growth chamber felt warm,06_warm
-Prof. Wang flagged that the freezer felt chilly,03_chilly
-Alice flagged that the freezer felt freezing,00_freezing
-the coordinator adjusted the thermostat because it was frigid,01_frigid
-Dr. Smith complained the office was chilly,03_chilly
-Charlie said the walk-in cooler felt sweltering,08_sweltering
-Dr. Smith flagged that the freezer felt sweltering,08_sweltering
-The bioreactor jacket temperature is freezing,00_freezing
-Bob reported the autoclave room as frigid,01_frigid
-Liam recorded that the growth chamber felt boiling,10_boiling
-Elena measured the soil temperature as cold,02_cold
-Liam adjusted the thermostat because it was freezing,00_freezing
-Bob complained the office was sweltering,08_sweltering
-James said the walk-in cooler felt warm,06_warm
-Dr. Rossi described the cleanroom as frigid,01_frigid
-Prof. Müller adjusted the thermostat because it was chilly,03_chilly
-Prof. Kim said the walk-in cooler felt sweltering,08_sweltering
-Amara complained the office was chilly,03_chilly
-Morning readings showed the habitat was sweltering,08_sweltering
-Omar adjusted the thermostat because it was boiling,10_boiling
-the postdoc recorded that the growth chamber felt sweltering,08_sweltering
-The fermentation tank is currently sweltering,08_sweltering
-Charlie noted the sample chamber felt frigid,01_frigid
-Dr. Okafor said the walk-in cooler felt cool,04_cool
-Yuki measured the soil temperature as cold,02_cold
-Dr. Chen recorded that the growth chamber felt frigid,01_frigid
-Prof. Müller said the walk-in cooler felt cool,04_cool
-Dr. Chen described the cleanroom as mild,05_mild
-the nurse measured the soil temperature as freezing,00_freezing
-the technician adjusted the thermostat because it was scorching,09_scorching
-the PI recorded that the growth chamber felt warm,06_warm
-the supervisor flagged that the freezer felt freezing,00_freezing
-Sarah described the cleanroom as chilly,03_chilly
-Raj recorded that the growth chamber felt cool,04_cool
-Maria flagged that the freezer felt boiling,10_boiling
-Fatima recorded that the growth chamber felt boiling,10_boiling
-Prof. Kim noted the sample chamber felt scorching,09_scorching
-the analyst noted the sample chamber felt hot,07_hot
-Raj described the cleanroom as sweltering,08_sweltering
-Dr. Chen said the walk-in cooler felt warm,06_warm
-The bioreactor jacket temperature is sweltering,08_sweltering
-Dr. Patel flagged that the freezer felt sweltering,08_sweltering
-the analyst adjusted the thermostat because it was freezing,00_freezing
-The climate chamber was set to sweltering,08_sweltering
-Alice measured the soil temperature as cool,04_cool
-The server room is dangerously hot,07_hot
-Yuki described the cleanroom as scorching,09_scorching
-The greenhouse environment is cold,02_cold
-Alice reported the autoclave room as mild,05_mild
-The water bath feels warm,06_warm
-The ventilation output is blowing scorching,09_scorching
-the nurse said the walk-in cooler felt hot,07_hot
-The incubation environment should remain mild,05_mild
-Volunteers rated the testing room as scorching,09_scorching
-the postdoc noted the sample chamber felt mild,05_mild
-The lab conditions today are freezing,00_freezing
-Maria reported the autoclave room as chilly,03_chilly
-The bioreactor jacket temperature is hot,07_hot
-Ambient conditions in the corridor are freezing,00_freezing
-James complained the office was warm,06_warm
-Field conditions were sweltering during collection,08_sweltering
-Dr. Okafor complained the office was hot,07_hot
-Charlie measured the soil temperature as mild,05_mild
-Prof. Müller complained the office was freezing,00_freezing
-the intern described the cleanroom as freezing,00_freezing
-Liam described the cleanroom as sweltering,08_sweltering
-Surface readings indicate conditions are hot,07_hot
-Prof. Kim reported the autoclave room as mild,05_mild
-The incubation environment should remain freezing,00_freezing
-Maria recorded that the growth chamber felt boiling,10_boiling
-the technician reported the autoclave room as hot,07_hot
-Sarah described the cleanroom as boiling,10_boiling
-Prof. Kim recorded that the growth chamber felt warm,06_warm
-the coordinator said the walk-in cooler felt freezing,00_freezing
-Raj recorded that the growth chamber felt scorching,09_scorching
-The bioreactor jacket temperature is boiling,10_boiling
-Bob complained the office was warm,06_warm
-Bob reported the autoclave room as freezing,00_freezing
-the technician complained the office was sweltering,08_sweltering
-Dr. Okafor complained the office was cool,04_cool
-Prof. Wang measured the soil temperature as hot,07_hot
-the intern said the walk-in cooler felt hot,07_hot
-The greenhouse environment is sweltering,08_sweltering
-The curing oven is running warm,06_warm
-Dr. Okafor recorded that the growth chamber felt chilly,03_chilly
-Dr. Patel noted the sample chamber felt cold,02_cold
-Bob flagged that the freezer felt chilly,03_chilly
-Dr. Okafor complained the office was warm,06_warm
-Sarah noted the sample chamber felt boiling,10_boiling
-Patients reported feeling scorching during the trial,09_scorching
-the coordinator complained the office was scorching,09_scorching
-the coordinator adjusted the thermostat because it was cool,04_cool
-Dr. Chen recorded that the growth chamber felt scorching,09_scorching
-Dr. Patel described the cleanroom as warm,06_warm
-James flagged that the freezer felt cool,04_cool
-Dr. Patel flagged that the freezer felt chilly,03_chilly
-Prof. Wang complained the office was cold,02_cold
-James described the cleanroom as boiling,10_boiling
-Amara measured the soil temperature as mild,05_mild
-Dr. Okafor complained the office was freezing,00_freezing
-Prof. Wang described the cleanroom as mild,05_mild
-Prof. Kim reported the autoclave room as sweltering,08_sweltering
-Sarah measured the soil temperature as scorching,09_scorching
-the technician recorded that the growth chamber felt freezing,00_freezing
-the postdoc complained the office was hot,07_hot
-the postdoc adjusted the thermostat because it was cool,04_cool
-Dr. Smith measured the soil temperature as warm,06_warm
-the coordinator complained the office was warm,06_warm
-Yuki said the walk-in cooler felt cool,04_cool
-The incubation environment should remain warm,06_warm
-Dr. Smith said the walk-in cooler felt chilly,03_chilly
-The climate chamber was set to cool,04_cool
-Prof. Wang flagged that the freezer felt cold,02_cold
-the PI recorded that the growth chamber felt scorching,09_scorching
-The climate chamber was set to scorching,09_scorching
-The climate chamber was set to warm,06_warm
-Raj reported the autoclave room as warm,06_warm
-Yuki recorded that the growth chamber felt sweltering,08_sweltering
-the supervisor measured the soil temperature as freezing,00_freezing
-The server room is dangerously cold,02_cold
-The reactor core temperature reads scorching,09_scorching
-Kevin flagged that the freezer felt chilly,03_chilly
-Dr. Okafor reported the autoclave room as frigid,01_frigid
-Dr. Rossi complained the office was scorching,09_scorching
-Alice measured the soil temperature as cold,02_cold
-Kevin flagged that the freezer felt freezing,00_freezing
-Dr. Smith recorded that the growth chamber felt mild,05_mild
-James described the cleanroom as freezing,00_freezing
-the postdoc complained the office was cold,02_cold
-Dr. Smith reported the autoclave room as mild,05_mild
-Omar adjusted the thermostat because it was frigid,01_frigid
-Prof. Wang described the cleanroom as freezing,00_freezing
-Dr. Patel flagged that the freezer felt hot,07_hot
-Dr. Chen complained the office was mild,05_mild
-Dr. Chen said the walk-in cooler felt hot,07_hot
-Dr. Chen adjusted the thermostat because it was frigid,01_frigid
-the supervisor reported the autoclave room as mild,05_mild
-The ventilation output is blowing hot,07_hot
-Charlie noted the sample chamber felt warm,06_warm
-The incubation environment should remain hot,07_hot
-Prof. Kim said the walk-in cooler felt scorching,09_scorching
-Fatima flagged that the freezer felt frigid,01_frigid
-Dr. Chen adjusted the thermostat because it was cool,04_cool
-the nurse said the walk-in cooler felt freezing,00_freezing
-Prof. Müller reported the autoclave room as sweltering,08_sweltering
-the technician flagged that the freezer felt mild,05_mild
-Fatima recorded that the growth chamber felt cool,04_cool
-Dr. Chen recorded that the growth chamber felt boiling,10_boiling
-Charlie adjusted the thermostat because it was scorching,09_scorching
-the PI flagged that the freezer felt boiling,10_boiling
-Amara reported the autoclave room as sweltering,08_sweltering
-the PI reported the autoclave room as cold,02_cold
-The lab conditions today are boiling,10_boiling
-The fermentation tank is currently freezing,00_freezing
-the nurse flagged that the freezer felt freezing,00_freezing
-Dr. Chen said the walk-in cooler felt freezing,00_freezing
-Fatima measured the soil temperature as cold,02_cold
-Bob complained the office was frigid,01_frigid
-Dr. Okafor noted the sample chamber felt scorching,09_scorching
-the postdoc measured the soil temperature as sweltering,08_sweltering
-The reagent shelf area felt boiling,10_boiling
-Kevin flagged that the freezer felt frigid,01_frigid
-Dr. Smith described the cleanroom as chilly,03_chilly
-Surface readings indicate conditions are frigid,01_frigid
-the intern recorded that the growth chamber felt chilly,03_chilly
-The reagent shelf area felt cold,02_cold
-The ventilation output is blowing cold,02_cold
-Field conditions were frigid during collection,01_frigid
-the nurse flagged that the freezer felt sweltering,08_sweltering
-Prof. Müller adjusted the thermostat because it was sweltering,08_sweltering
-the analyst measured the soil temperature as scorching,09_scorching
-Volunteers rated the testing room as chilly,03_chilly
-Dr. Okafor adjusted the thermostat because it was sweltering,08_sweltering
-Surface readings indicate conditions are mild,05_mild
-Raj complained the office was cold,02_cold
-Ambient conditions in the corridor are scorching,09_scorching
-Dr. Chen said the walk-in cooler felt sweltering,08_sweltering
-Elena said the walk-in cooler felt boiling,10_boiling
-Dr. Smith complained the office was frigid,01_frigid
-Amara measured the soil temperature as freezing,00_freezing
-The drying chamber atmosphere is sweltering,08_sweltering
-Bob measured the soil temperature as hot,07_hot
-the coordinator noted the sample chamber felt cool,04_cool
-Dr. Okafor noted the sample chamber felt mild,05_mild
-Sarah reported the autoclave room as boiling,10_boiling
-Amara noted the sample chamber felt sweltering,08_sweltering
-the analyst recorded that the growth chamber felt cool,04_cool
-Dr. Okafor measured the soil temperature as cold,02_cold
-Dr. Patel complained the office was frigid,01_frigid
-Prof. Müller flagged that the freezer felt cold,02_cold
-The greenhouse environment is cool,04_cool
-Bob measured the soil temperature as boiling,10_boiling
-the intern described the cleanroom as boiling,10_boiling
-The reactor core temperature reads freezing,00_freezing
-The fermentation tank is currently hot,07_hot
-Bob described the cleanroom as frigid,01_frigid
-Maria flagged that the freezer felt sweltering,08_sweltering
-Bob described the cleanroom as cold,02_cold
-James said the walk-in cooler felt sweltering,08_sweltering
-Kevin measured the soil temperature as boiling,10_boiling
-The ventilation output is blowing sweltering,08_sweltering
-the PI complained the office was mild,05_mild
-Omar flagged that the freezer felt sweltering,08_sweltering
-Omar complained the office was hot,07_hot
-Bob said the walk-in cooler felt chilly,03_chilly
-the intern measured the soil temperature as hot,07_hot
-The ventilation output is blowing warm,06_warm
-The climate chamber was set to mild,05_mild
-Elena recorded that the growth chamber felt scorching,09_scorching
-Prof. Wang described the cleanroom as warm,06_warm
-Dr. Patel reported the autoclave room as chilly,03_chilly
-the technician flagged that the freezer felt cool,04_cool
-Bob adjusted the thermostat because it was cool,04_cool
-the PI measured the soil temperature as warm,06_warm
-the postdoc reported the autoclave room as hot,07_hot
-Patients reported feeling hot during the trial,07_hot
-the technician described the cleanroom as frigid,01_frigid
-The greenhouse environment is frigid,01_frigid
-Omar flagged that the freezer felt cold,02_cold
-The greenhouse environment is freezing,00_freezing
-Dr. Rossi adjusted the thermostat because it was sweltering,08_sweltering
-Maria said the walk-in cooler felt warm,06_warm
-Bob adjusted the thermostat because it was chilly,03_chilly
-Surface readings indicate conditions are warm,06_warm
-Alice recorded that the growth chamber felt freezing,00_freezing
-Charlie adjusted the thermostat because it was warm,06_warm
-Dr. Rossi measured the soil temperature as cold,02_cold
-Field conditions were scorching during collection,09_scorching
-Dr. Smith adjusted the thermostat because it was chilly,03_chilly
-Charlie flagged that the freezer felt chilly,03_chilly
-The incubation environment should remain frigid,01_frigid
-Prof. Müller complained the office was hot,07_hot
-Dr. Chen noted the sample chamber felt hot,07_hot
-the intern noted the sample chamber felt cold,02_cold
-Omar complained the office was mild,05_mild
-the PI recorded that the growth chamber felt cold,02_cold
-the nurse recorded that the growth chamber felt boiling,10_boiling
-the PI adjusted the thermostat because it was frigid,01_frigid
-Dr. Smith said the walk-in cooler felt cold,02_cold
-Prof. Kim noted the sample chamber felt cold,02_cold
-Maria said the walk-in cooler felt sweltering,08_sweltering
-the PI described the cleanroom as frigid,01_frigid
-Kevin adjusted the thermostat because it was boiling,10_boiling
-the nurse recorded that the growth chamber felt mild,05_mild
-Outside it is absolutely boiling,10_boiling
-The server room is dangerously mild,05_mild
-Dr. Smith complained the office was mild,05_mild
-Dr. Patel recorded that the growth chamber felt warm,06_warm
-Elena recorded that the growth chamber felt chilly,03_chilly
-Yuki flagged that the freezer felt hot,07_hot
-Charlie adjusted the thermostat because it was boiling,10_boiling
-The reagent shelf area felt cool,04_cool
-Elena adjusted the thermostat because it was chilly,03_chilly
-Prof. Müller said the walk-in cooler felt hot,07_hot
-Alice recorded that the growth chamber felt mild,05_mild
-Outside it is absolutely cool,04_cool
-The greenhouse environment is mild,05_mild
-the supervisor adjusted the thermostat because it was freezing,00_freezing
-Maria flagged that the freezer felt scorching,09_scorching
-The storage unit is running mild,05_mild
-Prof. Müller said the walk-in cooler felt sweltering,08_sweltering
-Charlie said the walk-in cooler felt warm,06_warm
-Patients reported feeling freezing during the trial,00_freezing
-The server room is dangerously freezing,00_freezing
-The incubation environment should remain cool,04_cool
-Amara complained the office was cold,02_cold
-Volunteers rated the testing room as frigid,01_frigid
-Kevin said the walk-in cooler felt chilly,03_chilly
-The storage unit is running sweltering,08_sweltering
-the nurse said the walk-in cooler felt cool,04_cool
-Elena measured the soil temperature as sweltering,08_sweltering
-the supervisor described the cleanroom as chilly,03_chilly
-Prof. Müller noted the sample chamber felt chilly,03_chilly
-Omar described the cleanroom as cold,02_cold
-Kevin recorded that the growth chamber felt hot,07_hot
-The ventilation output is blowing mild,05_mild
-Dr. Rossi noted the sample chamber felt warm,06_warm
-the coordinator complained the office was chilly,03_chilly
-The fermentation tank is currently warm,06_warm
-Sarah recorded that the growth chamber felt boiling,10_boiling
-Dr. Smith recorded that the growth chamber felt cold,02_cold
-the PI recorded that the growth chamber felt mild,05_mild
-Dr. Chen reported the autoclave room as scorching,09_scorching
-The drying chamber atmosphere is hot,07_hot
-The reactor core temperature reads frigid,01_frigid
-Surface readings indicate conditions are cold,02_cold
-Dr. Patel complained the office was warm,06_warm
-the postdoc said the walk-in cooler felt sweltering,08_sweltering
-Volunteers rated the testing room as mild,05_mild
-The server room is dangerously boiling,10_boiling
-Outside it is absolutely warm,06_warm
-Dr. Okafor flagged that the freezer felt hot,07_hot
-the analyst noted the sample chamber felt boiling,10_boiling
-Yuki reported the autoclave room as freezing,00_freezing
-The drying chamber atmosphere is warm,06_warm
-Field conditions were cold during collection,02_cold
-The curing oven is running frigid,01_frigid
-Charlie reported the autoclave room as cold,02_cold
-The curing oven is running cold,02_cold
-the postdoc described the cleanroom as sweltering,08_sweltering
-Charlie described the cleanroom as warm,06_warm
-the nurse described the cleanroom as scorching,09_scorching
-Liam adjusted the thermostat because it was mild,05_mild
-Kevin reported the autoclave room as boiling,10_boiling
-Dr. Rossi recorded that the growth chamber felt cool,04_cool
-Prof. Wang described the cleanroom as cool,04_cool
-Dr. Okafor reported the autoclave room as cold,02_cold
-the technician described the cleanroom as sweltering,08_sweltering
-the technician adjusted the thermostat because it was chilly,03_chilly
-The lab conditions today are warm,06_warm
-the coordinator measured the soil temperature as cold,02_cold
-Prof. Kim reported the autoclave room as chilly,03_chilly
-Bob recorded that the growth chamber felt scorching,09_scorching
-Dr. Smith recorded that the growth chamber felt cool,04_cool
-Dr. Chen complained the office was cold,02_cold
-Liam complained the office was scorching,09_scorching
-the analyst flagged that the freezer felt scorching,09_scorching
-Prof. Müller recorded that the growth chamber felt mild,05_mild
-the postdoc complained the office was sweltering,08_sweltering
-Dr. Patel measured the soil temperature as boiling,10_boiling
-Bob reported the autoclave room as scorching,09_scorching
-Charlie measured the soil temperature as chilly,03_chilly
-The climate chamber was set to chilly,03_chilly
-Alice recorded that the growth chamber felt chilly,03_chilly
-the supervisor measured the soil temperature as frigid,01_frigid
-The greenhouse environment is chilly,03_chilly
-Prof. Wang flagged that the freezer felt hot,07_hot
-Prof. Müller flagged that the freezer felt hot,07_hot
-Fatima adjusted the thermostat because it was chilly,03_chilly
-Field conditions were chilly during collection,03_chilly
-Field conditions were freezing during collection,00_freezing
-the nurse noted the sample chamber felt sweltering,08_sweltering
-the technician measured the soil temperature as cold,02_cold
-Charlie said the walk-in cooler felt hot,07_hot
-the supervisor reported the autoclave room as boiling,10_boiling
-the analyst adjusted the thermostat because it was sweltering,08_sweltering
-the supervisor said the walk-in cooler felt cool,04_cool
-the technician recorded that the growth chamber felt cool,04_cool
-Sarah noted the sample chamber felt freezing,00_freezing
-Raj noted the sample chamber felt cold,02_cold
-The climate chamber was set to frigid,01_frigid
-Fatima described the cleanroom as cool,04_cool
-Raj adjusted the thermostat because it was cool,04_cool
-Dr. Rossi measured the soil temperature as warm,06_warm
-Kevin reported the autoclave room as cool,04_cool
-the coordinator noted the sample chamber felt freezing,00_freezing
-the technician reported the autoclave room as cool,04_cool
-Ambient conditions in the corridor are cool,04_cool
-Prof. Kim recorded that the growth chamber felt sweltering,08_sweltering
-Outside it is absolutely freezing,00_freezing
-Dr. Patel complained the office was hot,07_hot
-The curing oven is running boiling,10_boiling
-Amara noted the sample chamber felt frigid,01_frigid
-Prof. Kim noted the sample chamber felt freezing,00_freezing
-Omar said the walk-in cooler felt warm,06_warm
-The water bath feels sweltering,08_sweltering
-Omar said the walk-in cooler felt frigid,01_frigid
-Raj adjusted the thermostat because it was warm,06_warm
-Charlie recorded that the growth chamber felt freezing,00_freezing
-Charlie flagged that the freezer felt cool,04_cool
-Prof. Müller said the walk-in cooler felt cold,02_cold
-Charlie said the walk-in cooler felt cool,04_cool
-The greenhouse environment is hot,07_hot
-Dr. Okafor complained the office was mild,05_mild
-Maria measured the soil temperature as hot,07_hot
-The server room is dangerously sweltering,08_sweltering
-Dr. Smith described the cleanroom as warm,06_warm
-the analyst noted the sample chamber felt sweltering,08_sweltering
-Volunteers rated the testing room as freezing,00_freezing
-The reagent shelf area felt chilly,03_chilly
-Yuki said the walk-in cooler felt scorching,09_scorching
-Sarah noted the sample chamber felt cool,04_cool
-Prof. Kim complained the office was freezing,00_freezing
-The bioreactor jacket temperature is mild,05_mild
-Dr. Rossi reported the autoclave room as mild,05_mild
-Kevin noted the sample chamber felt sweltering,08_sweltering
-the analyst complained the office was cool,04_cool
-Field conditions were boiling during collection,10_boiling
-Amara recorded that the growth chamber felt chilly,03_chilly
-Dr. Patel adjusted the thermostat because it was chilly,03_chilly
-Kevin complained the office was mild,05_mild
-The bioreactor jacket temperature is frigid,01_frigid
-Dr. Okafor noted the sample chamber felt chilly,03_chilly
-Maria flagged that the freezer felt chilly,03_chilly
-The lab conditions today are mild,05_mild
-Prof. Wang flagged that the freezer felt boiling,10_boiling
-the technician described the cleanroom as scorching,09_scorching
-Dr. Rossi noted the sample chamber felt chilly,03_chilly
-Yuki noted the sample chamber felt mild,05_mild
-Bob reported the autoclave room as cold,02_cold
-Prof. Müller measured the soil temperature as boiling,10_boiling
-Raj complained the office was cool,04_cool
-Maria noted the sample chamber felt scorching,09_scorching
-Prof. Wang adjusted the thermostat because it was chilly,03_chilly
-The incubation environment should remain cold,02_cold
-the nurse said the walk-in cooler felt warm,06_warm
-Amara complained the office was mild,05_mild
-the nurse described the cleanroom as boiling,10_boiling
-Amara measured the soil temperature as boiling,10_boiling
-Prof. Kim adjusted the thermostat because it was freezing,00_freezing
-Sarah noted the sample chamber felt mild,05_mild
-The climate chamber was set to cold,02_cold
-Dr. Okafor flagged that the freezer felt boiling,10_boiling
-Dr. Smith measured the soil temperature as hot,07_hot
-Surface readings indicate conditions are freezing,00_freezing
-Volunteers rated the testing room as cold,02_cold
-Dr. Rossi reported the autoclave room as sweltering,08_sweltering
-Dr. Smith noted the sample chamber felt cool,04_cool
-Surface readings indicate conditions are scorching,09_scorching
-Dr. Okafor adjusted the thermostat because it was cold,02_cold
-Prof. Müller adjusted the thermostat because it was scorching,09_scorching
-Dr. Chen complained the office was hot,07_hot
-the technician said the walk-in cooler felt scorching,09_scorching
-the nurse said the walk-in cooler felt sweltering,08_sweltering
-Bob said the walk-in cooler felt cool,04_cool
-the coordinator said the walk-in cooler felt scorching,09_scorching
-Alice measured the soil temperature as mild,05_mild
-the analyst flagged that the freezer felt frigid,01_frigid
-Surface readings indicate conditions are chilly,03_chilly
-the supervisor described the cleanroom as mild,05_mild
-the intern reported the autoclave room as freezing,00_freezing
-Dr. Patel measured the soil temperature as frigid,01_frigid
-Dr. Smith reported the autoclave room as frigid,01_frigid
-The fermentation tank is currently mild,05_mild
-Morning readings showed the habitat was chilly,03_chilly
-Liam measured the soil temperature as cool,04_cool
-Yuki complained the office was hot,07_hot
-Dr. Patel reported the autoclave room as cold,02_cold
-Amara flagged that the freezer felt frigid,01_frigid
-Amara recorded that the growth chamber felt hot,07_hot
-Dr. Smith recorded that the growth chamber felt sweltering,08_sweltering
-The reactor core temperature reads mild,05_mild
-Dr. Smith recorded that the growth chamber felt freezing,00_freezing
-the analyst described the cleanroom as cold,02_cold
-Fatima flagged that the freezer felt mild,05_mild
-Bob measured the soil temperature as cold,02_cold
-the nurse measured the soil temperature as boiling,10_boiling
-Dr. Patel described the cleanroom as frigid,01_frigid
-Dr. Smith noted the sample chamber felt cold,02_cold
-Dr. Chen measured the soil temperature as cool,04_cool
-the technician complained the office was cold,02_cold
-Dr. Chen described the cleanroom as hot,07_hot
-Fatima adjusted the thermostat because it was warm,06_warm
-The storage unit is running cold,02_cold
-Charlie flagged that the freezer felt scorching,09_scorching
-Bob measured the soil temperature as warm,06_warm
-Raj flagged that the freezer felt frigid,01_frigid
-Ambient conditions in the corridor are boiling,10_boiling
-Yuki described the cleanroom as cool,04_cool
-The drying chamber atmosphere is cool,04_cool
-the postdoc recorded that the growth chamber felt cold,02_cold
-James complained the office was mild,05_mild
-The storage unit is running warm,06_warm
-Maria adjusted the thermostat because it was warm,06_warm
-Patients reported feeling warm during the trial,06_warm
-Yuki recorded that the growth chamber felt chilly,03_chilly
-The ventilation output is blowing chilly,03_chilly
-Bob flagged that the freezer felt warm,06_warm
-Amara complained the office was sweltering,08_sweltering
-Dr. Smith complained the office was freezing,00_freezing
-Dr. Chen adjusted the thermostat because it was mild,05_mild
-Fatima adjusted the thermostat because it was freezing,00_freezing
-The curing oven is running sweltering,08_sweltering
-Sarah flagged that the freezer felt cold,02_cold
-the coordinator recorded that the growth chamber felt mild,05_mild
-the supervisor adjusted the thermostat because it was chilly,03_chilly
-Alice adjusted the thermostat because it was boiling,10_boiling
-James described the cleanroom as mild,05_mild
-Fatima described the cleanroom as mild,05_mild
-The server room is dangerously cool,04_cool
-the nurse reported the autoclave room as frigid,01_frigid
-Dr. Okafor flagged that the freezer felt cold,02_cold
-Dr. Okafor described the cleanroom as boiling,10_boiling
-the technician noted the sample chamber felt cool,04_cool
-Charlie complained the office was sweltering,08_sweltering
-The bioreactor jacket temperature is warm,06_warm
-the nurse reported the autoclave room as cold,02_cold
-Liam measured the soil temperature as warm,06_warm
-Dr. Smith flagged that the freezer felt mild,05_mild
-Raj measured the soil temperature as frigid,01_frigid
-The curing oven is running scorching,09_scorching
-Prof. Kim reported the autoclave room as frigid,01_frigid
-Kevin adjusted the thermostat because it was freezing,00_freezing
-The reactor core temperature reads hot,07_hot
-The fermentation tank is currently frigid,01_frigid
-Sarah recorded that the growth chamber felt mild,05_mild
-The server room is dangerously frigid,01_frigid
-The curing oven is running cool,04_cool
-Prof. Müller recorded that the growth chamber felt frigid,01_frigid
-Liam complained the office was mild,05_mild
-Yuki described the cleanroom as sweltering,08_sweltering
-Yuki complained the office was sweltering,08_sweltering
-the PI noted the sample chamber felt freezing,00_freezing
-Charlie reported the autoclave room as frigid,01_frigid
-the analyst noted the sample chamber felt scorching,09_scorching
-the PI reported the autoclave room as hot,07_hot
-Dr. Smith measured the soil temperature as frigid,01_frigid
-The water bath feels cold,02_cold
-Dr. Rossi said the walk-in cooler felt chilly,03_chilly
-the supervisor described the cleanroom as boiling,10_boiling
-The incubation environment should remain chilly,03_chilly
-the nurse reported the autoclave room as scorching,09_scorching
-Raj described the cleanroom as hot,07_hot
-Sarah complained the office was freezing,00_freezing
-The fermentation tank is currently boiling,10_boiling
-Elena described the cleanroom as sweltering,08_sweltering
-Prof. Wang recorded that the growth chamber felt cool,04_cool
-Dr. Okafor recorded that the growth chamber felt cool,04_cool
-The reagent shelf area felt warm,06_warm
-Prof. Kim measured the soil temperature as mild,05_mild
-Raj adjusted the thermostat because it was sweltering,08_sweltering
-Outside it is absolutely frigid,01_frigid
-Maria adjusted the thermostat because it was frigid,01_frigid
-Prof. Müller noted the sample chamber felt mild,05_mild
-the supervisor described the cleanroom as warm,06_warm
-the coordinator complained the office was sweltering,08_sweltering
-Maria noted the sample chamber felt cool,04_cool
-Maria flagged that the freezer felt cool,04_cool
-Yuki recorded that the growth chamber felt mild,05_mild
-Dr. Smith complained the office was cold,02_cold
-The drying chamber atmosphere is mild,05_mild
-Dr. Rossi described the cleanroom as freezing,00_freezing
-The curing oven is running chilly,03_chilly
-Dr. Okafor said the walk-in cooler felt boiling,10_boiling
-The curing oven is running freezing,00_freezing
-the technician complained the office was boiling,10_boiling
-Prof. Kim adjusted the thermostat because it was hot,07_hot
-Patients reported feeling frigid during the trial,01_frigid
-Dr. Rossi complained the office was warm,06_warm
-Dr. Rossi flagged that the freezer felt hot,07_hot
-Dr. Rossi noted the sample chamber felt freezing,00_freezing
-Dr. Smith said the walk-in cooler felt freezing,00_freezing
-the intern described the cleanroom as hot,07_hot
-Outside it is absolutely chilly,03_chilly
-The reagent shelf area felt freezing,00_freezing
-The climate chamber was set to hot,07_hot
-Dr. Patel said the walk-in cooler felt warm,06_warm
-the PI said the walk-in cooler felt hot,07_hot
-the coordinator complained the office was boiling,10_boiling
-the analyst reported the autoclave room as hot,07_hot
-The water bath feels frigid,01_frigid
-Prof. Müller recorded that the growth chamber felt hot,07_hot
-Maria said the walk-in cooler felt freezing,00_freezing
-The storage unit is running scorching,09_scorching
-The water bath feels boiling,10_boiling
-Dr. Patel reported the autoclave room as cool,04_cool
-the analyst said the walk-in cooler felt mild,05_mild
-Amara flagged that the freezer felt hot,07_hot
-Prof. Müller said the walk-in cooler felt mild,05_mild
-the PI recorded that the growth chamber felt hot,07_hot
-the technician adjusted the thermostat because it was cool,04_cool
-the nurse measured the soil temperature as scorching,09_scorching
-Sarah said the walk-in cooler felt cool,04_cool
-Dr. Okafor adjusted the thermostat because it was mild,05_mild
-The storage unit is running chilly,03_chilly
-Prof. Müller noted the sample chamber felt frigid,01_frigid
-Elena said the walk-in cooler felt cool,04_cool
-Outside it is absolutely sweltering,08_sweltering
-Amara described the cleanroom as boiling,10_boiling
-Fatima described the cleanroom as warm,06_warm
-Sarah described the cleanroom as mild,05_mild
-Dr. Okafor adjusted the thermostat because it was hot,07_hot
-Elena measured the soil temperature as freezing,00_freezing
-Ambient conditions in the corridor are hot,07_hot
 The reagent shelf area felt mild,05_mild
-Dr. Okafor measured the soil temperature as sweltering,08_sweltering
-the PI measured the soil temperature as boiling,10_boiling
-Fatima recorded that the growth chamber felt scorching,09_scorching
-the supervisor measured the soil temperature as chilly,03_chilly
-the postdoc said the walk-in cooler felt cool,04_cool
-the coordinator measured the soil temperature as scorching,09_scorching
-Dr. Smith described the cleanroom as freezing,00_freezing
-the nurse reported the autoclave room as freezing,00_freezing
-Charlie noted the sample chamber felt sweltering,08_sweltering
-The lab conditions today are cold,02_cold
-Prof. Wang said the walk-in cooler felt sweltering,08_sweltering
-Dr. Okafor said the walk-in cooler felt scorching,09_scorching
-Sarah flagged that the freezer felt chilly,03_chilly
-Amara flagged that the freezer felt mild,05_mild
-Maria measured the soil temperature as cold,02_cold
-Bob said the walk-in cooler felt freezing,00_freezing
-James recorded that the growth chamber felt frigid,01_frigid
-Patients reported feeling boiling during the trial,10_boiling
-the technician said the walk-in cooler felt hot,07_hot
-Dr. Patel described the cleanroom as sweltering,08_sweltering
-Alice flagged that the freezer felt chilly,03_chilly
-Omar adjusted the thermostat because it was sweltering,08_sweltering
-Dr. Patel recorded that the growth chamber felt hot,07_hot
-Charlie adjusted the thermostat because it was frigid,01_frigid
-Surface readings indicate conditions are sweltering,08_sweltering
-The bioreactor jacket temperature is cool,04_cool
-The lab conditions today are hot,07_hot
-Prof. Wang said the walk-in cooler felt mild,05_mild
-Volunteers rated the testing room as warm,06_warm
-Charlie reported the autoclave room as sweltering,08_sweltering
-James noted the sample chamber felt sweltering,08_sweltering
-Charlie said the walk-in cooler felt cold,02_cold
-The storage unit is running cool,04_cool
-Alice said the walk-in cooler felt sweltering,08_sweltering
-the intern adjusted the thermostat because it was boiling,10_boiling
-The fermentation tank is currently cool,04_cool
-the coordinator complained the office was hot,07_hot
-The server room is dangerously scorching,09_scorching
-the nurse complained the office was cold,02_cold
-Fatima noted the sample chamber felt frigid,01_frigid
-the analyst recorded that the growth chamber felt boiling,10_boiling
-the coordinator reported the autoclave room as mild,05_mild
-the intern said the walk-in cooler felt chilly,03_chilly
-Prof. Kim flagged that the freezer felt scorching,09_scorching
-Prof. Wang flagged that the freezer felt scorching,09_scorching
-Bob noted the sample chamber felt chilly,03_chilly
-Amara measured the soil temperature as cold,02_cold
-Raj said the walk-in cooler felt mild,05_mild
-Omar flagged that the freezer felt cool,04_cool
-The greenhouse environment is boiling,10_boiling
-Morning readings showed the habitat was hot,07_hot
-the PI recorded that the growth chamber felt sweltering,08_sweltering
-Prof. Müller recorded that the growth chamber felt cool,04_cool
-The ventilation output is blowing boiling,10_boiling
-Prof. Wang complained the office was frigid,01_frigid
-Dr. Okafor described the cleanroom as freezing,00_freezing
-The bioreactor jacket temperature is chilly,03_chilly
-Sarah complained the office was cool,04_cool
-Dr. Chen described the cleanroom as frigid,01_frigid
-the supervisor measured the soil temperature as cold,02_cold
-The lab conditions today are cool,04_cool
-the supervisor flagged that the freezer felt chilly,03_chilly
-James adjusted the thermostat because it was boiling,10_boiling
+James said the walk-in cooler felt boiling,10_boiling
+Elena measured the soil temperature as freezing,00_freezing
+Field conditions were cold during collection,02_cold
+Bob complained the office was sweltering,08_sweltering
+Elena said the walk-in cooler felt sweltering,08_sweltering
+Bob complained the office was mild,05_mild
+Raj complained the office was cool,04_cool
+The greenhouse environment is cold,02_cold
+James described the cleanroom as sweltering,08_sweltering
+Surface readings indicate conditions are freezing,00_freezing
+Bob noted the sample chamber felt frigid,01_frigid
+Yuki recorded that the growth chamber felt chilly,03_chilly
+Maria flagged that the freezer felt mild,05_mild
+Ambient conditions in the corridor are frigid,01_frigid
+Prof. Kim described the cleanroom as sweltering,08_sweltering
+Bob said the walk-in cooler felt cool,04_cool
+The lab conditions today are scorching,09_scorching
+Charlie described the cleanroom as frigid,01_frigid
+Maria reported the autoclave room as mild,05_mild
+The curing oven is running warm,06_warm
+Dr. Patel reported the autoclave room as mild,05_mild
+The storage unit is running cold,02_cold
+Prof. Kim noted the sample chamber felt scorching,09_scorching
+the coordinator adjusted the thermostat because it was cold,02_cold
+Kevin recorded that the growth chamber felt mild,05_mild
+Dr. Rossi noted the sample chamber felt cool,04_cool
+the intern recorded that the growth chamber felt hot,07_hot
+Yuki noted the sample chamber felt hot,07_hot
+Dr. Rossi reported the autoclave room as hot,07_hot
+Prof. Kim complained the office was sweltering,08_sweltering
+Sarah described the cleanroom as hot,07_hot
+Sarah noted the sample chamber felt warm,06_warm
+Alice flagged that the freezer felt cool,04_cool
+the analyst recorded that the growth chamber felt sweltering,08_sweltering
+the technician flagged that the freezer felt cool,04_cool
+The climate chamber was set to sweltering,08_sweltering
+Fatima said the walk-in cooler felt warm,06_warm
+Dr. Rossi measured the soil temperature as hot,07_hot
+Surface readings indicate conditions are scorching,09_scorching
+the PI described the cleanroom as hot,07_hot
+the PI measured the soil temperature as mild,05_mild
+The server room is dangerously sweltering,08_sweltering
+Field conditions were mild during collection,05_mild
+Dr. Rossi said the walk-in cooler felt scorching,09_scorching
+James recorded that the growth chamber felt cold,02_cold
+Dr. Rossi reported the autoclave room as cool,04_cool
+Fatima recorded that the growth chamber felt hot,07_hot
+The drying chamber atmosphere is mild,05_mild
+Prof. Wang noted the sample chamber felt freezing,00_freezing
+The drying chamber atmosphere is scorching,09_scorching
+Elena reported the autoclave room as scorching,09_scorching
+Alice adjusted the thermostat because it was mild,05_mild
+The incubation environment should remain frigid,01_frigid
+the supervisor reported the autoclave room as scorching,09_scorching
+Maria recorded that the growth chamber felt scorching,09_scorching
+the coordinator flagged that the freezer felt warm,06_warm
+Dr. Rossi flagged that the freezer felt cold,02_cold
+Fatima adjusted the thermostat because it was mild,05_mild
+the coordinator noted the sample chamber felt hot,07_hot
+Kevin measured the soil temperature as cold,02_cold
+the technician said the walk-in cooler felt cold,02_cold
+Liam recorded that the growth chamber felt boiling,10_boiling
+The climate chamber was set to freezing,00_freezing
+Morning readings showed the habitat was mild,05_mild
+The greenhouse environment is freezing,00_freezing
+The bioreactor jacket temperature is sweltering,08_sweltering
+Dr. Patel flagged that the freezer felt hot,07_hot
+Dr. Rossi recorded that the growth chamber felt scorching,09_scorching
+Prof. Kim described the cleanroom as scorching,09_scorching
+the PI flagged that the freezer felt cool,04_cool
+Bob described the cleanroom as mild,05_mild
+Amara complained the office was frigid,01_frigid
+Charlie recorded that the growth chamber felt scorching,09_scorching
+Yuki reported the autoclave room as warm,06_warm
+Dr. Rossi adjusted the thermostat because it was mild,05_mild
+Kevin said the walk-in cooler felt sweltering,08_sweltering
+Charlie recorded that the growth chamber felt boiling,10_boiling
+Alice said the walk-in cooler felt cool,04_cool
+Kevin reported the autoclave room as chilly,03_chilly
+Yuki noted the sample chamber felt sweltering,08_sweltering
+Prof. Wang recorded that the growth chamber felt freezing,00_freezing
+The drying chamber atmosphere is freezing,00_freezing
+Bob measured the soil temperature as cold,02_cold
+the nurse described the cleanroom as sweltering,08_sweltering
+Sarah described the cleanroom as cool,04_cool
+Outside it is absolutely sweltering,08_sweltering
+Bob adjusted the thermostat because it was sweltering,08_sweltering
 Prof. Kim complained the office was warm,06_warm
-the supervisor described the cleanroom as freezing,00_freezing
+the technician recorded that the growth chamber felt scorching,09_scorching
+The curing oven is running cool,04_cool
+The climate chamber was set to boiling,10_boiling
+the PI noted the sample chamber felt mild,05_mild
+Dr. Rossi described the cleanroom as warm,06_warm
+the PI said the walk-in cooler felt mild,05_mild
+Fatima described the cleanroom as boiling,10_boiling
+The fermentation tank is currently cool,04_cool
+Elena complained the office was sweltering,08_sweltering
 The water bath feels cool,04_cool
-the coordinator complained the office was freezing,00_freezing
-Dr. Smith adjusted the thermostat because it was freezing,00_freezing
-Amara reported the autoclave room as cold,02_cold
+Amara recorded that the growth chamber felt mild,05_mild
+Dr. Patel measured the soil temperature as hot,07_hot
+Omar recorded that the growth chamber felt warm,06_warm
+The ventilation output is blowing chilly,03_chilly
+Bob noted the sample chamber felt cold,02_cold
+Dr. Chen complained the office was warm,06_warm
+The greenhouse environment is hot,07_hot
+The fermentation tank is currently sweltering,08_sweltering
+Prof. Wang said the walk-in cooler felt cold,02_cold
+Prof. Kim adjusted the thermostat because it was hot,07_hot
+the supervisor complained the office was hot,07_hot
+Dr. Patel adjusted the thermostat because it was scorching,09_scorching
+Bob recorded that the growth chamber felt boiling,10_boiling
+Elena said the walk-in cooler felt cold,02_cold
+Liam reported the autoclave room as sweltering,08_sweltering
+The fermentation tank is currently chilly,03_chilly
+Ambient conditions in the corridor are sweltering,08_sweltering
+Maria flagged that the freezer felt chilly,03_chilly
+The climate chamber was set to frigid,01_frigid
+The curing oven is running frigid,01_frigid
+Kevin reported the autoclave room as cool,04_cool
+the technician measured the soil temperature as cold,02_cold
+Field conditions were hot during collection,07_hot
+Dr. Rossi flagged that the freezer felt cool,04_cool
+Amara flagged that the freezer felt chilly,03_chilly
+The ventilation output is blowing cold,02_cold
+Dr. Patel said the walk-in cooler felt frigid,01_frigid
+Maria measured the soil temperature as chilly,03_chilly
+Alice noted the sample chamber felt chilly,03_chilly
+Dr. Okafor noted the sample chamber felt mild,05_mild
+the nurse reported the autoclave room as cool,04_cool
+Dr. Chen flagged that the freezer felt boiling,10_boiling
+Kevin said the walk-in cooler felt scorching,09_scorching
+Liam noted the sample chamber felt warm,06_warm
+the supervisor recorded that the growth chamber felt cool,04_cool
+The climate chamber was set to scorching,09_scorching
+Patients reported feeling freezing during the trial,00_freezing
+Prof. Wang noted the sample chamber felt mild,05_mild
+the coordinator measured the soil temperature as boiling,10_boiling
+Prof. Müller flagged that the freezer felt boiling,10_boiling
+the PI measured the soil temperature as frigid,01_frigid
+The lab conditions today are cold,02_cold
+Sarah reported the autoclave room as cool,04_cool
+the coordinator complained the office was chilly,03_chilly
+Dr. Patel reported the autoclave room as frigid,01_frigid
+Field conditions were cool during collection,04_cool
+The drying chamber atmosphere is sweltering,08_sweltering
+Liam noted the sample chamber felt mild,05_mild
+Fatima adjusted the thermostat because it was scorching,09_scorching
+Fatima described the cleanroom as sweltering,08_sweltering
+Kevin complained the office was hot,07_hot
+Kevin described the cleanroom as hot,07_hot
+the intern flagged that the freezer felt chilly,03_chilly
+the coordinator adjusted the thermostat because it was boiling,10_boiling
+the intern said the walk-in cooler felt warm,06_warm
+Dr. Patel adjusted the thermostat because it was cold,02_cold
+The incubation environment should remain warm,06_warm
+The greenhouse environment is boiling,10_boiling
+the PI reported the autoclave room as boiling,10_boiling
+Bob noted the sample chamber felt freezing,00_freezing
+Prof. Wang noted the sample chamber felt cold,02_cold
+Prof. Müller recorded that the growth chamber felt sweltering,08_sweltering
+Fatima complained the office was hot,07_hot
+Dr. Chen measured the soil temperature as freezing,00_freezing
+Liam recorded that the growth chamber felt mild,05_mild
+The greenhouse environment is scorching,09_scorching
+the nurse flagged that the freezer felt sweltering,08_sweltering
+Raj described the cleanroom as frigid,01_frigid
+The ventilation output is blowing warm,06_warm
+the coordinator recorded that the growth chamber felt cool,04_cool
+the intern described the cleanroom as mild,05_mild
+the coordinator noted the sample chamber felt scorching,09_scorching
+Kevin noted the sample chamber felt cool,04_cool
+Dr. Smith reported the autoclave room as sweltering,08_sweltering
+Outside it is absolutely mild,05_mild
+Liam reported the autoclave room as mild,05_mild
+The bioreactor jacket temperature is scorching,09_scorching
+Liam complained the office was scorching,09_scorching
+Kevin reported the autoclave room as hot,07_hot
+Yuki flagged that the freezer felt boiling,10_boiling
+Maria said the walk-in cooler felt cool,04_cool
+Raj said the walk-in cooler felt frigid,01_frigid
+Dr. Chen reported the autoclave room as hot,07_hot
+the supervisor adjusted the thermostat because it was freezing,00_freezing
+Dr. Patel reported the autoclave room as sweltering,08_sweltering
+Dr. Patel adjusted the thermostat because it was chilly,03_chilly
+the technician flagged that the freezer felt warm,06_warm
+Bob complained the office was boiling,10_boiling
+the nurse said the walk-in cooler felt cold,02_cold
+the PI reported the autoclave room as scorching,09_scorching
+Amara adjusted the thermostat because it was cool,04_cool
+the nurse noted the sample chamber felt boiling,10_boiling
+Sarah said the walk-in cooler felt cold,02_cold
+The server room is dangerously chilly,03_chilly
+Elena flagged that the freezer felt cold,02_cold
+the coordinator flagged that the freezer felt hot,07_hot
+the PI noted the sample chamber felt hot,07_hot
+Prof. Wang adjusted the thermostat because it was warm,06_warm
+Fatima adjusted the thermostat because it was chilly,03_chilly
+Amara reported the autoclave room as sweltering,08_sweltering
+Outside it is absolutely warm,06_warm
+James complained the office was freezing,00_freezing
+Omar reported the autoclave room as boiling,10_boiling
+The water bath feels cold,02_cold
+Dr. Rossi described the cleanroom as cool,04_cool
+the coordinator recorded that the growth chamber felt warm,06_warm
+the postdoc said the walk-in cooler felt sweltering,08_sweltering
+Alice said the walk-in cooler felt scorching,09_scorching
+Amara complained the office was warm,06_warm
+Alice adjusted the thermostat because it was chilly,03_chilly
+the supervisor measured the soil temperature as frigid,01_frigid
+Prof. Müller noted the sample chamber felt cold,02_cold
+Yuki complained the office was hot,07_hot
+Dr. Patel said the walk-in cooler felt cool,04_cool
+the postdoc said the walk-in cooler felt scorching,09_scorching
+Sarah said the walk-in cooler felt chilly,03_chilly
+The ventilation output is blowing hot,07_hot
+The climate chamber was set to chilly,03_chilly
+the analyst described the cleanroom as freezing,00_freezing
+Raj adjusted the thermostat because it was frigid,01_frigid
+Amara reported the autoclave room as boiling,10_boiling
+the nurse described the cleanroom as chilly,03_chilly
+Dr. Okafor reported the autoclave room as hot,07_hot
+The server room is dangerously mild,05_mild
+Outside it is absolutely scorching,09_scorching
+Patients reported feeling hot during the trial,07_hot
+Bob measured the soil temperature as chilly,03_chilly
+The fermentation tank is currently cold,02_cold
+The curing oven is running scorching,09_scorching
+Elena measured the soil temperature as boiling,10_boiling
+Dr. Chen said the walk-in cooler felt sweltering,08_sweltering
+the coordinator recorded that the growth chamber felt cold,02_cold
+Dr. Smith measured the soil temperature as chilly,03_chilly
+The lab conditions today are freezing,00_freezing
+Surface readings indicate conditions are cool,04_cool
+Raj reported the autoclave room as frigid,01_frigid
+The server room is dangerously cold,02_cold
+Bob flagged that the freezer felt hot,07_hot
+the technician described the cleanroom as mild,05_mild
+Amara recorded that the growth chamber felt scorching,09_scorching
+The curing oven is running hot,07_hot
+Prof. Müller said the walk-in cooler felt boiling,10_boiling
+Patients reported feeling warm during the trial,06_warm
+Dr. Smith described the cleanroom as frigid,01_frigid
+Volunteers rated the testing room as boiling,10_boiling
+The lab conditions today are frigid,01_frigid
+Prof. Müller adjusted the thermostat because it was hot,07_hot
+Patients reported feeling frigid during the trial,01_frigid
+The reagent shelf area felt scorching,09_scorching
+Ambient conditions in the corridor are mild,05_mild
+Dr. Okafor noted the sample chamber felt sweltering,08_sweltering
+the PI complained the office was cool,04_cool
+The drying chamber atmosphere is frigid,01_frigid
+the postdoc flagged that the freezer felt sweltering,08_sweltering
+the intern flagged that the freezer felt warm,06_warm
+The climate chamber was set to hot,07_hot
+Raj noted the sample chamber felt cold,02_cold
+Dr. Chen adjusted the thermostat because it was freezing,00_freezing
+Kevin reported the autoclave room as mild,05_mild
+The water bath feels boiling,10_boiling
+Dr. Chen measured the soil temperature as warm,06_warm
+Bob reported the autoclave room as freezing,00_freezing
+Dr. Okafor said the walk-in cooler felt sweltering,08_sweltering
+Dr. Smith said the walk-in cooler felt cool,04_cool
+the technician described the cleanroom as chilly,03_chilly
+Liam recorded that the growth chamber felt cold,02_cold
+Omar recorded that the growth chamber felt hot,07_hot
+Prof. Kim measured the soil temperature as boiling,10_boiling
+Elena measured the soil temperature as cool,04_cool
+Charlie flagged that the freezer felt cool,04_cool
+Prof. Kim noted the sample chamber felt hot,07_hot
+Dr. Okafor noted the sample chamber felt warm,06_warm
+The greenhouse environment is chilly,03_chilly
+the coordinator adjusted the thermostat because it was cool,04_cool
+The ventilation output is blowing mild,05_mild
+Prof. Kim measured the soil temperature as hot,07_hot
+Amara flagged that the freezer felt scorching,09_scorching
+Ambient conditions in the corridor are scorching,09_scorching
+Kevin said the walk-in cooler felt chilly,03_chilly
+the intern measured the soil temperature as scorching,09_scorching
+the nurse complained the office was mild,05_mild
+Sarah noted the sample chamber felt sweltering,08_sweltering
+Bob noted the sample chamber felt warm,06_warm
+the PI complained the office was freezing,00_freezing
+James noted the sample chamber felt warm,06_warm
+the postdoc flagged that the freezer felt frigid,01_frigid
+Maria measured the soil temperature as scorching,09_scorching
+Morning readings showed the habitat was freezing,00_freezing
+the PI described the cleanroom as cold,02_cold
+the coordinator recorded that the growth chamber felt mild,05_mild
+The climate chamber was set to cold,02_cold
+Amara recorded that the growth chamber felt hot,07_hot
+the PI reported the autoclave room as cool,04_cool
+Sarah flagged that the freezer felt scorching,09_scorching
+Dr. Chen complained the office was cool,04_cool
+Dr. Rossi measured the soil temperature as warm,06_warm
+Maria noted the sample chamber felt cold,02_cold
+The greenhouse environment is sweltering,08_sweltering
+the postdoc complained the office was sweltering,08_sweltering
+the analyst said the walk-in cooler felt boiling,10_boiling
+Patients reported feeling sweltering during the trial,08_sweltering
+Kevin adjusted the thermostat because it was hot,07_hot
+The server room is dangerously cool,04_cool
+The reagent shelf area felt cool,04_cool
+Yuki said the walk-in cooler felt chilly,03_chilly
+The reagent shelf area felt warm,06_warm
+Prof. Müller described the cleanroom as mild,05_mild
+The curing oven is running sweltering,08_sweltering
+Patients reported feeling cold during the trial,02_cold
+Prof. Wang adjusted the thermostat because it was cool,04_cool
+Elena adjusted the thermostat because it was frigid,01_frigid
+Surface readings indicate conditions are cold,02_cold
+the supervisor flagged that the freezer felt chilly,03_chilly
+Bob recorded that the growth chamber felt warm,06_warm
+Liam noted the sample chamber felt hot,07_hot
+Alice noted the sample chamber felt freezing,00_freezing
+Dr. Rossi reported the autoclave room as cold,02_cold
+Amara complained the office was boiling,10_boiling
+Charlie said the walk-in cooler felt boiling,10_boiling
+Dr. Okafor complained the office was cold,02_cold
+Prof. Kim noted the sample chamber felt freezing,00_freezing
+the intern noted the sample chamber felt scorching,09_scorching
+Prof. Kim measured the soil temperature as cold,02_cold
+Yuki flagged that the freezer felt mild,05_mild
+the supervisor described the cleanroom as scorching,09_scorching
+Raj flagged that the freezer felt scorching,09_scorching
+Dr. Chen described the cleanroom as sweltering,08_sweltering
+the technician flagged that the freezer felt sweltering,08_sweltering
+Volunteers rated the testing room as frigid,01_frigid
+Raj adjusted the thermostat because it was chilly,03_chilly
+Field conditions were freezing during collection,00_freezing
+the PI reported the autoclave room as frigid,01_frigid
+the postdoc noted the sample chamber felt freezing,00_freezing
+Prof. Kim adjusted the thermostat because it was boiling,10_boiling
+The fermentation tank is currently scorching,09_scorching
+Kevin complained the office was mild,05_mild
+the coordinator said the walk-in cooler felt boiling,10_boiling
+James adjusted the thermostat because it was frigid,01_frigid
+Fatima flagged that the freezer felt scorching,09_scorching
+Prof. Wang complained the office was boiling,10_boiling
+The drying chamber atmosphere is chilly,03_chilly
+Dr. Patel recorded that the growth chamber felt hot,07_hot
+Ambient conditions in the corridor are warm,06_warm
+Sarah noted the sample chamber felt freezing,00_freezing
+The reactor core temperature reads warm,06_warm
+The server room is dangerously hot,07_hot
+the analyst reported the autoclave room as chilly,03_chilly
+Maria adjusted the thermostat because it was freezing,00_freezing
+Kevin recorded that the growth chamber felt scorching,09_scorching
+The water bath feels mild,05_mild
+Dr. Smith measured the soil temperature as sweltering,08_sweltering
+Dr. Okafor adjusted the thermostat because it was freezing,00_freezing
+Elena reported the autoclave room as hot,07_hot
+Ambient conditions in the corridor are freezing,00_freezing
+Charlie adjusted the thermostat because it was scorching,09_scorching
+the technician measured the soil temperature as boiling,10_boiling
+the technician reported the autoclave room as cold,02_cold
+Charlie described the cleanroom as freezing,00_freezing
+Alice measured the soil temperature as sweltering,08_sweltering
+Elena described the cleanroom as sweltering,08_sweltering
+The storage unit is running scorching,09_scorching
+the technician noted the sample chamber felt chilly,03_chilly
+Surface readings indicate conditions are sweltering,08_sweltering
+The reactor core temperature reads hot,07_hot
+the technician adjusted the thermostat because it was chilly,03_chilly
+the analyst measured the soil temperature as boiling,10_boiling
+Dr. Okafor reported the autoclave room as scorching,09_scorching
+The water bath feels sweltering,08_sweltering
+Dr. Smith said the walk-in cooler felt mild,05_mild
+The reagent shelf area felt sweltering,08_sweltering
+the supervisor recorded that the growth chamber felt chilly,03_chilly
+Bob noted the sample chamber felt scorching,09_scorching
+Dr. Chen adjusted the thermostat because it was chilly,03_chilly
+The reactor core temperature reads chilly,03_chilly
+the supervisor said the walk-in cooler felt cold,02_cold
+Charlie recorded that the growth chamber felt cold,02_cold
+Kevin said the walk-in cooler felt frigid,01_frigid
+Omar reported the autoclave room as hot,07_hot
+James recorded that the growth chamber felt mild,05_mild
+Dr. Chen recorded that the growth chamber felt sweltering,08_sweltering
+Elena reported the autoclave room as freezing,00_freezing
+Amara recorded that the growth chamber felt cold,02_cold
+Field conditions were warm during collection,06_warm
+Bob measured the soil temperature as mild,05_mild
+Volunteers rated the testing room as cold,02_cold
+Liam reported the autoclave room as warm,06_warm
+The water bath feels hot,07_hot
+the supervisor said the walk-in cooler felt frigid,01_frigid
+Charlie complained the office was cool,04_cool
+Dr. Smith complained the office was scorching,09_scorching
+The greenhouse environment is mild,05_mild
+the technician described the cleanroom as scorching,09_scorching
+Dr. Patel measured the soil temperature as warm,06_warm
+The drying chamber atmosphere is cool,04_cool
+the intern flagged that the freezer felt hot,07_hot
+the postdoc reported the autoclave room as sweltering,08_sweltering
+Maria said the walk-in cooler felt scorching,09_scorching
+Dr. Smith flagged that the freezer felt cool,04_cool
+Dr. Okafor recorded that the growth chamber felt cold,02_cold
+the supervisor measured the soil temperature as cold,02_cold
+Raj reported the autoclave room as sweltering,08_sweltering
+Charlie said the walk-in cooler felt scorching,09_scorching
+the coordinator described the cleanroom as chilly,03_chilly
+the nurse adjusted the thermostat because it was chilly,03_chilly
+Alice complained the office was sweltering,08_sweltering
+Bob noted the sample chamber felt hot,07_hot
+Liam said the walk-in cooler felt freezing,00_freezing
+the coordinator noted the sample chamber felt mild,05_mild
+the supervisor said the walk-in cooler felt mild,05_mild
+the analyst adjusted the thermostat because it was chilly,03_chilly
+James described the cleanroom as cool,04_cool
+The storage unit is running hot,07_hot
+Surface readings indicate conditions are chilly,03_chilly
+Prof. Müller recorded that the growth chamber felt chilly,03_chilly
+Dr. Patel adjusted the thermostat because it was frigid,01_frigid
+The storage unit is running chilly,03_chilly
+Elena reported the autoclave room as cool,04_cool
+Liam reported the autoclave room as chilly,03_chilly
+Kevin noted the sample chamber felt frigid,01_frigid
+Dr. Okafor complained the office was chilly,03_chilly
+Prof. Müller described the cleanroom as sweltering,08_sweltering
+Omar flagged that the freezer felt cool,04_cool
+Dr. Chen recorded that the growth chamber felt scorching,09_scorching
+the analyst noted the sample chamber felt sweltering,08_sweltering
+Maria described the cleanroom as frigid,01_frigid
+Prof. Müller reported the autoclave room as freezing,00_freezing
+Kevin adjusted the thermostat because it was cool,04_cool
+Charlie adjusted the thermostat because it was hot,07_hot
+Maria recorded that the growth chamber felt cool,04_cool
+Raj reported the autoclave room as hot,07_hot
+the postdoc flagged that the freezer felt freezing,00_freezing
+Alice measured the soil temperature as chilly,03_chilly
+Elena reported the autoclave room as sweltering,08_sweltering
+Dr. Smith measured the soil temperature as frigid,01_frigid
+the postdoc said the walk-in cooler felt chilly,03_chilly
+Ambient conditions in the corridor are cold,02_cold
+Dr. Chen measured the soil temperature as mild,05_mild
+Kevin said the walk-in cooler felt hot,07_hot
+James said the walk-in cooler felt warm,06_warm
+Fatima said the walk-in cooler felt mild,05_mild
+Yuki measured the soil temperature as chilly,03_chilly
+Elena said the walk-in cooler felt frigid,01_frigid
+Fatima described the cleanroom as cool,04_cool
+The storage unit is running frigid,01_frigid
+Prof. Müller recorded that the growth chamber felt scorching,09_scorching
+the PI noted the sample chamber felt freezing,00_freezing
+the analyst described the cleanroom as chilly,03_chilly
+Elena complained the office was warm,06_warm
+Bob adjusted the thermostat because it was scorching,09_scorching
+Charlie recorded that the growth chamber felt hot,07_hot
+the postdoc said the walk-in cooler felt hot,07_hot
+Prof. Kim said the walk-in cooler felt chilly,03_chilly
+Amara said the walk-in cooler felt boiling,10_boiling
+Sarah adjusted the thermostat because it was warm,06_warm
+Surface readings indicate conditions are mild,05_mild
+the postdoc adjusted the thermostat because it was scorching,09_scorching
+Alice said the walk-in cooler felt chilly,03_chilly
+the coordinator adjusted the thermostat because it was sweltering,08_sweltering
+Prof. Kim recorded that the growth chamber felt scorching,09_scorching
+Omar complained the office was cool,04_cool
+The water bath feels chilly,03_chilly
+Dr. Patel measured the soil temperature as cool,04_cool
+Dr. Rossi flagged that the freezer felt boiling,10_boiling
+Alice adjusted the thermostat because it was boiling,10_boiling
+Fatima flagged that the freezer felt cool,04_cool
+Elena described the cleanroom as cold,02_cold
+Amara reported the autoclave room as warm,06_warm
+Prof. Kim complained the office was cold,02_cold
+Dr. Chen measured the soil temperature as scorching,09_scorching
+Dr. Smith adjusted the thermostat because it was chilly,03_chilly
+James flagged that the freezer felt chilly,03_chilly
+Prof. Müller noted the sample chamber felt warm,06_warm
+Alice measured the soil temperature as cold,02_cold
+Liam reported the autoclave room as boiling,10_boiling
+James recorded that the growth chamber felt chilly,03_chilly
+Dr. Smith complained the office was cold,02_cold
+Prof. Müller complained the office was cold,02_cold
+Charlie reported the autoclave room as warm,06_warm
+James adjusted the thermostat because it was freezing,00_freezing
+The water bath feels freezing,00_freezing
+the supervisor flagged that the freezer felt freezing,00_freezing
+Dr. Okafor measured the soil temperature as sweltering,08_sweltering
+Kevin recorded that the growth chamber felt sweltering,08_sweltering
+Dr. Okafor measured the soil temperature as mild,05_mild
+Prof. Wang described the cleanroom as frigid,01_frigid
+The reagent shelf area felt frigid,01_frigid
+the coordinator recorded that the growth chamber felt scorching,09_scorching
+The storage unit is running mild,05_mild
+Alice noted the sample chamber felt cool,04_cool
+Maria complained the office was hot,07_hot
+the PI reported the autoclave room as hot,07_hot
+The incubation environment should remain chilly,03_chilly
+the technician complained the office was cold,02_cold
+Maria measured the soil temperature as warm,06_warm
+The bioreactor jacket temperature is frigid,01_frigid
+The drying chamber atmosphere is boiling,10_boiling
+the PI adjusted the thermostat because it was mild,05_mild
+the intern described the cleanroom as scorching,09_scorching
+Charlie reported the autoclave room as mild,05_mild
+Dr. Smith recorded that the growth chamber felt chilly,03_chilly
+Omar adjusted the thermostat because it was freezing,00_freezing
+Dr. Okafor reported the autoclave room as cool,04_cool
+The storage unit is running freezing,00_freezing
+the nurse noted the sample chamber felt mild,05_mild
+The reactor core temperature reads boiling,10_boiling
+The storage unit is running cool,04_cool
+Maria measured the soil temperature as freezing,00_freezing
+Liam described the cleanroom as warm,06_warm
+Fatima noted the sample chamber felt sweltering,08_sweltering
+the nurse measured the soil temperature as cold,02_cold
+Charlie reported the autoclave room as scorching,09_scorching
+the postdoc said the walk-in cooler felt frigid,01_frigid
+Maria adjusted the thermostat because it was cold,02_cold
+Omar complained the office was scorching,09_scorching
+Amara said the walk-in cooler felt freezing,00_freezing
+Bob measured the soil temperature as hot,07_hot
+Field conditions were chilly during collection,03_chilly
+Charlie complained the office was boiling,10_boiling
+the PI adjusted the thermostat because it was chilly,03_chilly
+the coordinator measured the soil temperature as cold,02_cold
+Amara complained the office was sweltering,08_sweltering
+Dr. Patel noted the sample chamber felt hot,07_hot
+the intern complained the office was scorching,09_scorching
+The lab conditions today are sweltering,08_sweltering
+the technician measured the soil temperature as hot,07_hot
+Liam measured the soil temperature as boiling,10_boiling
+Patients reported feeling chilly during the trial,03_chilly
+The water bath feels warm,06_warm
+The storage unit is running sweltering,08_sweltering
+Dr. Rossi flagged that the freezer felt scorching,09_scorching
+The storage unit is running boiling,10_boiling
+Prof. Kim complained the office was scorching,09_scorching
+Prof. Müller said the walk-in cooler felt frigid,01_frigid
+The bioreactor jacket temperature is cool,04_cool
+the postdoc measured the soil temperature as sweltering,08_sweltering
+Alice measured the soil temperature as boiling,10_boiling
+James adjusted the thermostat because it was mild,05_mild
+the intern recorded that the growth chamber felt sweltering,08_sweltering
+Volunteers rated the testing room as chilly,03_chilly
+the intern reported the autoclave room as frigid,01_frigid
+Fatima recorded that the growth chamber felt boiling,10_boiling
+The bioreactor jacket temperature is boiling,10_boiling
+Amara reported the autoclave room as freezing,00_freezing
+Liam adjusted the thermostat because it was frigid,01_frigid
+Sarah flagged that the freezer felt freezing,00_freezing
+The lab conditions today are warm,06_warm
+Elena recorded that the growth chamber felt cold,02_cold
+the PI flagged that the freezer felt warm,06_warm
+Raj said the walk-in cooler felt boiling,10_boiling
+Yuki adjusted the thermostat because it was mild,05_mild
+Prof. Müller said the walk-in cooler felt chilly,03_chilly
+The lab conditions today are chilly,03_chilly
+the nurse measured the soil temperature as hot,07_hot
+Sarah flagged that the freezer felt hot,07_hot
+The curing oven is running freezing,00_freezing
+the postdoc measured the soil temperature as mild,05_mild
+the coordinator measured the soil temperature as frigid,01_frigid
+Alice reported the autoclave room as cool,04_cool
+the postdoc flagged that the freezer felt scorching,09_scorching
+Prof. Wang said the walk-in cooler felt sweltering,08_sweltering
+the coordinator recorded that the growth chamber felt freezing,00_freezing
+the coordinator reported the autoclave room as warm,06_warm
+Raj adjusted the thermostat because it was mild,05_mild
+Omar complained the office was cold,02_cold
+Yuki recorded that the growth chamber felt freezing,00_freezing
+Dr. Okafor recorded that the growth chamber felt boiling,10_boiling
+The reagent shelf area felt hot,07_hot
+Field conditions were scorching during collection,09_scorching
+Kevin reported the autoclave room as boiling,10_boiling
+the intern complained the office was mild,05_mild
+Liam noted the sample chamber felt boiling,10_boiling
+Prof. Wang described the cleanroom as warm,06_warm
+The server room is dangerously freezing,00_freezing
+Amara said the walk-in cooler felt frigid,01_frigid
+Prof. Müller described the cleanroom as chilly,03_chilly
+Maria described the cleanroom as chilly,03_chilly
+Dr. Smith said the walk-in cooler felt warm,06_warm
+The incubation environment should remain cool,04_cool
+Charlie noted the sample chamber felt mild,05_mild
+the intern reported the autoclave room as sweltering,08_sweltering
+Omar reported the autoclave room as sweltering,08_sweltering
+Maria measured the soil temperature as mild,05_mild
+Omar said the walk-in cooler felt freezing,00_freezing
+Bob adjusted the thermostat because it was warm,06_warm
+Amara measured the soil temperature as hot,07_hot
+Dr. Patel complained the office was hot,07_hot
+The ventilation output is blowing sweltering,08_sweltering
+Charlie reported the autoclave room as frigid,01_frigid
+Prof. Wang reported the autoclave room as chilly,03_chilly
+the coordinator reported the autoclave room as chilly,03_chilly
+Dr. Chen flagged that the freezer felt cool,04_cool
+the PI adjusted the thermostat because it was hot,07_hot
+Elena described the cleanroom as warm,06_warm
+Alice described the cleanroom as mild,05_mild
+the technician described the cleanroom as cold,02_cold
+Liam recorded that the growth chamber felt scorching,09_scorching
+Kevin described the cleanroom as frigid,01_frigid
+Dr. Smith adjusted the thermostat because it was cold,02_cold
+Prof. Müller complained the office was scorching,09_scorching
+Yuki adjusted the thermostat because it was hot,07_hot
+the technician noted the sample chamber felt hot,07_hot
+Omar noted the sample chamber felt mild,05_mild
+Field conditions were boiling during collection,10_boiling
+the intern reported the autoclave room as cool,04_cool
+Dr. Patel measured the soil temperature as chilly,03_chilly
+Prof. Kim adjusted the thermostat because it was sweltering,08_sweltering
+Morning readings showed the habitat was warm,06_warm
+Prof. Kim recorded that the growth chamber felt warm,06_warm
+the PI flagged that the freezer felt hot,07_hot
+Outside it is absolutely frigid,01_frigid
+The reagent shelf area felt chilly,03_chilly
+The reagent shelf area felt cold,02_cold
+Charlie flagged that the freezer felt frigid,01_frigid
+Sarah said the walk-in cooler felt hot,07_hot
+the technician flagged that the freezer felt boiling,10_boiling
+The reactor core temperature reads mild,05_mild
+Morning readings showed the habitat was boiling,10_boiling
+Prof. Kim complained the office was mild,05_mild
+Maria said the walk-in cooler felt frigid,01_frigid
+Elena adjusted the thermostat because it was cool,04_cool
+Prof. Müller recorded that the growth chamber felt warm,06_warm
+Fatima recorded that the growth chamber felt sweltering,08_sweltering
+Elena recorded that the growth chamber felt freezing,00_freezing
+The curing oven is running mild,05_mild
+Liam recorded that the growth chamber felt cool,04_cool
+Elena measured the soil temperature as warm,06_warm
+Bob flagged that the freezer felt frigid,01_frigid
+Morning readings showed the habitat was scorching,09_scorching
+Prof. Kim measured the soil temperature as warm,06_warm
+the analyst described the cleanroom as sweltering,08_sweltering
+the technician complained the office was freezing,00_freezing
+Sarah said the walk-in cooler felt cool,04_cool
+The bioreactor jacket temperature is hot,07_hot
+the technician reported the autoclave room as chilly,03_chilly
+The ventilation output is blowing scorching,09_scorching
+the intern noted the sample chamber felt chilly,03_chilly
+Kevin complained the office was freezing,00_freezing
+Prof. Wang complained the office was hot,07_hot
+the supervisor recorded that the growth chamber felt frigid,01_frigid
+Prof. Kim complained the office was hot,07_hot
+the nurse adjusted the thermostat because it was scorching,09_scorching
+Dr. Rossi noted the sample chamber felt warm,06_warm
+Dr. Patel recorded that the growth chamber felt frigid,01_frigid
+Alice measured the soil temperature as scorching,09_scorching
+the coordinator described the cleanroom as cold,02_cold
+Yuki described the cleanroom as warm,06_warm
+Prof. Kim reported the autoclave room as mild,05_mild
+The lab conditions today are hot,07_hot
+Sarah complained the office was frigid,01_frigid
+Dr. Okafor described the cleanroom as scorching,09_scorching
+Prof. Wang complained the office was cool,04_cool
+Maria reported the autoclave room as frigid,01_frigid
+The reactor core temperature reads scorching,09_scorching
+Dr. Patel reported the autoclave room as cold,02_cold
+Bob recorded that the growth chamber felt cool,04_cool
+Omar adjusted the thermostat because it was mild,05_mild
+Outside it is absolutely cool,04_cool
+Dr. Rossi noted the sample chamber felt frigid,01_frigid
+Dr. Smith reported the autoclave room as boiling,10_boiling
+the postdoc described the cleanroom as boiling,10_boiling
+The incubation environment should remain freezing,00_freezing
+Dr. Chen said the walk-in cooler felt freezing,00_freezing
+James described the cleanroom as scorching,09_scorching
+Prof. Wang flagged that the freezer felt hot,07_hot
+the supervisor measured the soil temperature as mild,05_mild
+the postdoc reported the autoclave room as frigid,01_frigid
+Charlie recorded that the growth chamber felt cool,04_cool
+Prof. Müller described the cleanroom as hot,07_hot
+The curing oven is running chilly,03_chilly
+Omar said the walk-in cooler felt boiling,10_boiling
+Elena described the cleanroom as chilly,03_chilly
+Alice flagged that the freezer felt warm,06_warm
+the supervisor described the cleanroom as warm,06_warm
+Yuki noted the sample chamber felt freezing,00_freezing
+Kevin described the cleanroom as cool,04_cool
+Omar described the cleanroom as cold,02_cold
+Omar recorded that the growth chamber felt chilly,03_chilly
+The reactor core temperature reads cool,04_cool
+James measured the soil temperature as freezing,00_freezing
+Dr. Chen flagged that the freezer felt hot,07_hot
+Raj flagged that the freezer felt mild,05_mild
+Prof. Kim recorded that the growth chamber felt frigid,01_frigid
+Prof. Wang flagged that the freezer felt chilly,03_chilly
+Fatima flagged that the freezer felt mild,05_mild
+The bioreactor jacket temperature is warm,06_warm
+the analyst noted the sample chamber felt hot,07_hot
+Alice adjusted the thermostat because it was hot,07_hot
+the technician said the walk-in cooler felt frigid,01_frigid
+the supervisor adjusted the thermostat because it was warm,06_warm
+the nurse complained the office was chilly,03_chilly
+the postdoc flagged that the freezer felt hot,07_hot
+Raj reported the autoclave room as chilly,03_chilly
+Prof. Wang measured the soil temperature as boiling,10_boiling
+Prof. Wang reported the autoclave room as cool,04_cool
+The bioreactor jacket temperature is cold,02_cold
+Alice measured the soil temperature as hot,07_hot
+Volunteers rated the testing room as scorching,09_scorching
+Amara said the walk-in cooler felt sweltering,08_sweltering
+Prof. Kim measured the soil temperature as chilly,03_chilly
+The storage unit is running warm,06_warm
+Elena noted the sample chamber felt boiling,10_boiling
+Sarah described the cleanroom as sweltering,08_sweltering
+the technician recorded that the growth chamber felt hot,07_hot
+The ventilation output is blowing frigid,01_frigid
+The incubation environment should remain hot,07_hot
+Fatima complained the office was warm,06_warm
+the technician noted the sample chamber felt scorching,09_scorching
+Maria said the walk-in cooler felt warm,06_warm
+Dr. Rossi said the walk-in cooler felt mild,05_mild
+Prof. Wang noted the sample chamber felt sweltering,08_sweltering
+Prof. Müller adjusted the thermostat because it was sweltering,08_sweltering
+Kevin reported the autoclave room as scorching,09_scorching
+The incubation environment should remain mild,05_mild
+Fatima measured the soil temperature as cold,02_cold
+Bob complained the office was warm,06_warm
+Amara reported the autoclave room as mild,05_mild
+Omar flagged that the freezer felt sweltering,08_sweltering
+The fermentation tank is currently frigid,01_frigid
+Prof. Wang said the walk-in cooler felt boiling,10_boiling
+Dr. Smith measured the soil temperature as mild,05_mild
+the postdoc noted the sample chamber felt mild,05_mild
+Charlie adjusted the thermostat because it was boiling,10_boiling
+Dr. Chen complained the office was chilly,03_chilly
+the nurse complained the office was scorching,09_scorching
+Maria complained the office was cold,02_cold
+the coordinator complained the office was hot,07_hot
+Fatima described the cleanroom as cold,02_cold
+Yuki complained the office was chilly,03_chilly
+Raj noted the sample chamber felt boiling,10_boiling
+The fermentation tank is currently hot,07_hot
+Dr. Rossi adjusted the thermostat because it was warm,06_warm
+Fatima measured the soil temperature as boiling,10_boiling
+The reactor core temperature reads frigid,01_frigid
+Charlie complained the office was freezing,00_freezing
+the intern complained the office was chilly,03_chilly
+Patients reported feeling boiling during the trial,10_boiling
+Liam said the walk-in cooler felt sweltering,08_sweltering
+The server room is dangerously warm,06_warm
+Volunteers rated the testing room as cool,04_cool
+The lab conditions today are mild,05_mild
+Kevin noted the sample chamber felt sweltering,08_sweltering
+Fatima noted the sample chamber felt frigid,01_frigid
+Dr. Smith described the cleanroom as cool,04_cool
+Bob complained the office was hot,07_hot
+the postdoc adjusted the thermostat because it was frigid,01_frigid
+Morning readings showed the habitat was cool,04_cool
+Prof. Kim measured the soil temperature as freezing,00_freezing
+Charlie noted the sample chamber felt scorching,09_scorching
+Omar said the walk-in cooler felt warm,06_warm
+The greenhouse environment is cool,04_cool
+The bioreactor jacket temperature is chilly,03_chilly
+Volunteers rated the testing room as warm,06_warm
+the intern noted the sample chamber felt boiling,10_boiling
+Elena flagged that the freezer felt frigid,01_frigid
+Surface readings indicate conditions are frigid,01_frigid
+Fatima flagged that the freezer felt cold,02_cold
+Omar adjusted the thermostat because it was cold,02_cold
+Bob described the cleanroom as boiling,10_boiling
+Kevin reported the autoclave room as warm,06_warm
+the analyst measured the soil temperature as chilly,03_chilly
+Prof. Wang recorded that the growth chamber felt cool,04_cool
+Dr. Smith described the cleanroom as sweltering,08_sweltering
+Sarah measured the soil temperature as cold,02_cold
+Surface readings indicate conditions are hot,07_hot
+the intern recorded that the growth chamber felt freezing,00_freezing
+the PI adjusted the thermostat because it was cold,02_cold
+the intern measured the soil temperature as mild,05_mild
+Patients reported feeling cool during the trial,04_cool
+The fermentation tank is currently boiling,10_boiling
+Volunteers rated the testing room as mild,05_mild
+Dr. Okafor measured the soil temperature as warm,06_warm
+Dr. Patel described the cleanroom as freezing,00_freezing
+Prof. Kim complained the office was frigid,01_frigid
+Liam described the cleanroom as frigid,01_frigid
+Patients reported feeling scorching during the trial,09_scorching
+the technician reported the autoclave room as sweltering,08_sweltering
+Prof. Wang recorded that the growth chamber felt cold,02_cold
+Volunteers rated the testing room as hot,07_hot
+Liam described the cleanroom as mild,05_mild
+The incubation environment should remain cold,02_cold
+the coordinator described the cleanroom as freezing,00_freezing
+the coordinator said the walk-in cooler felt hot,07_hot
+Ambient conditions in the corridor are hot,07_hot
+Dr. Chen recorded that the growth chamber felt mild,05_mild
+Prof. Kim recorded that the growth chamber felt boiling,10_boiling
+The incubation environment should remain scorching,09_scorching
+The drying chamber atmosphere is hot,07_hot
+Yuki noted the sample chamber felt chilly,03_chilly
+Liam noted the sample chamber felt sweltering,08_sweltering
+Omar complained the office was boiling,10_boiling
+Liam measured the soil temperature as sweltering,08_sweltering
+Dr. Rossi reported the autoclave room as scorching,09_scorching
+Dr. Okafor reported the autoclave room as boiling,10_boiling
+Bob flagged that the freezer felt warm,06_warm
+Liam adjusted the thermostat because it was cold,02_cold
+The lab conditions today are cool,04_cool
+Volunteers rated the testing room as sweltering,08_sweltering
+The fermentation tank is currently mild,05_mild
+The ventilation output is blowing boiling,10_boiling
+Yuki recorded that the growth chamber felt cold,02_cold
+Raj reported the autoclave room as mild,05_mild
+Dr. Chen adjusted the thermostat because it was hot,07_hot
+Kevin recorded that the growth chamber felt boiling,10_boiling
+Omar recorded that the growth chamber felt cool,04_cool
+The water bath feels frigid,01_frigid
+Elena reported the autoclave room as warm,06_warm
+Ambient conditions in the corridor are cool,04_cool
+The greenhouse environment is frigid,01_frigid
+Fatima described the cleanroom as frigid,01_frigid
+James measured the soil temperature as chilly,03_chilly
+Maria measured the soil temperature as cool,04_cool
+Alice flagged that the freezer felt scorching,09_scorching
+Alice noted the sample chamber felt mild,05_mild
+the coordinator said the walk-in cooler felt sweltering,08_sweltering
+the technician noted the sample chamber felt freezing,00_freezing
+James measured the soil temperature as mild,05_mild
+Dr. Smith recorded that the growth chamber felt frigid,01_frigid
+Raj noted the sample chamber felt scorching,09_scorching
+the analyst measured the soil temperature as mild,05_mild
+the technician reported the autoclave room as boiling,10_boiling
+The water bath feels scorching,09_scorching
+Prof. Müller complained the office was cool,04_cool
+Amara described the cleanroom as scorching,09_scorching
+The drying chamber atmosphere is cold,02_cold
+Dr. Okafor measured the soil temperature as scorching,09_scorching
+Outside it is absolutely hot,07_hot
+Amara noted the sample chamber felt hot,07_hot
+Morning readings showed the habitat was cold,02_cold
+the coordinator measured the soil temperature as freezing,00_freezing
+Omar recorded that the growth chamber felt mild,05_mild
+Kevin described the cleanroom as cold,02_cold
+The ventilation output is blowing freezing,00_freezing
+Fatima noted the sample chamber felt scorching,09_scorching
+the analyst complained the office was sweltering,08_sweltering
+Prof. Wang complained the office was frigid,01_frigid
+Volunteers rated the testing room as freezing,00_freezing
+Fatima recorded that the growth chamber felt freezing,00_freezing
+Dr. Patel recorded that the growth chamber felt cool,04_cool
+The server room is dangerously scorching,09_scorching
+Dr. Okafor recorded that the growth chamber felt freezing,00_freezing
+the coordinator measured the soil temperature as chilly,03_chilly
+Liam noted the sample chamber felt freezing,00_freezing
+Maria said the walk-in cooler felt cold,02_cold
+Fatima complained the office was chilly,03_chilly
+Morning readings showed the habitat was chilly,03_chilly
+the PI complained the office was cold,02_cold
+the analyst adjusted the thermostat because it was cool,04_cool
+Amara flagged that the freezer felt warm,06_warm
+the analyst noted the sample chamber felt warm,06_warm
+the PI recorded that the growth chamber felt warm,06_warm
+Dr. Patel described the cleanroom as boiling,10_boiling
+Raj described the cleanroom as scorching,09_scorching
+Prof. Wang adjusted the thermostat because it was mild,05_mild
+the analyst complained the office was warm,06_warm
+Yuki noted the sample chamber felt mild,05_mild
+The curing oven is running boiling,10_boiling
+the coordinator described the cleanroom as frigid,01_frigid
+Dr. Okafor flagged that the freezer felt warm,06_warm
+the postdoc described the cleanroom as frigid,01_frigid
+Fatima complained the office was sweltering,08_sweltering
+the analyst described the cleanroom as cool,04_cool
+Sarah adjusted the thermostat because it was cold,02_cold
+Prof. Wang adjusted the thermostat because it was chilly,03_chilly
+James said the walk-in cooler felt scorching,09_scorching
+Alice complained the office was chilly,03_chilly
+the postdoc measured the soil temperature as frigid,01_frigid
+the PI measured the soil temperature as cool,04_cool
+The lab conditions today are boiling,10_boiling
+Bob flagged that the freezer felt sweltering,08_sweltering
+The climate chamber was set to mild,05_mild
+Maria described the cleanroom as boiling,10_boiling
+Amara complained the office was cold,02_cold
+Outside it is absolutely freezing,00_freezing
+James adjusted the thermostat because it was sweltering,08_sweltering
+Dr. Patel described the cleanroom as cool,04_cool
+Yuki reported the autoclave room as cold,02_cold
+Liam measured the soil temperature as cool,04_cool
+Bob recorded that the growth chamber felt chilly,03_chilly
+Elena recorded that the growth chamber felt warm,06_warm
+Morning readings showed the habitat was sweltering,08_sweltering
+the nurse recorded that the growth chamber felt chilly,03_chilly
+Dr. Rossi described the cleanroom as boiling,10_boiling
+Elena noted the sample chamber felt sweltering,08_sweltering
+Dr. Chen measured the soil temperature as frigid,01_frigid
+James flagged that the freezer felt hot,07_hot
+Morning readings showed the habitat was hot,07_hot
+the nurse said the walk-in cooler felt frigid,01_frigid
+Omar noted the sample chamber felt scorching,09_scorching
+The bioreactor jacket temperature is freezing,00_freezing
+Yuki described the cleanroom as cold,02_cold
+Amara recorded that the growth chamber felt frigid,01_frigid
+Prof. Müller flagged that the freezer felt warm,06_warm
+The ventilation output is blowing cool,04_cool
+Field conditions were sweltering during collection,08_sweltering
+the technician adjusted the thermostat because it was cool,04_cool
+Sarah noted the sample chamber felt boiling,10_boiling
+The reagent shelf area felt boiling,10_boiling
+Elena noted the sample chamber felt freezing,00_freezing
+Amara flagged that the freezer felt freezing,00_freezing
+the PI complained the office was sweltering,08_sweltering
+the coordinator said the walk-in cooler felt cold,02_cold
+the intern complained the office was hot,07_hot
+Dr. Okafor flagged that the freezer felt freezing,00_freezing
+Maria flagged that the freezer felt cool,04_cool
+Dr. Okafor adjusted the thermostat because it was boiling,10_boiling
+the technician said the walk-in cooler felt warm,06_warm
+Fatima noted the sample chamber felt freezing,00_freezing
+Dr. Patel said the walk-in cooler felt boiling,10_boiling
+Dr. Rossi said the walk-in cooler felt frigid,01_frigid
+Dr. Smith measured the soil temperature as hot,07_hot
+The curing oven is running cold,02_cold
+The incubation environment should remain sweltering,08_sweltering
+Dr. Chen complained the office was hot,07_hot
+Sarah complained the office was sweltering,08_sweltering
+The fermentation tank is currently freezing,00_freezing
+Outside it is absolutely cold,02_cold
+Sarah measured the soil temperature as warm,06_warm
+Prof. Kim measured the soil temperature as sweltering,08_sweltering
+Fatima measured the soil temperature as chilly,03_chilly
+Surface readings indicate conditions are boiling,10_boiling
+the coordinator said the walk-in cooler felt frigid,01_frigid
+Fatima reported the autoclave room as chilly,03_chilly
+The reagent shelf area felt freezing,00_freezing
+Dr. Smith said the walk-in cooler felt cold,02_cold
+Maria flagged that the freezer felt warm,06_warm
+the nurse described the cleanroom as boiling,10_boiling
+Outside it is absolutely boiling,10_boiling
+the postdoc flagged that the freezer felt cool,04_cool
+the postdoc adjusted the thermostat because it was freezing,00_freezing
+Prof. Wang complained the office was chilly,03_chilly
+the technician complained the office was cool,04_cool
+the postdoc complained the office was cold,02_cold
+Alice reported the autoclave room as mild,05_mild
+The bioreactor jacket temperature is mild,05_mild
+Charlie flagged that the freezer felt boiling,10_boiling
+the supervisor complained the office was sweltering,08_sweltering
+Fatima reported the autoclave room as sweltering,08_sweltering
+the analyst noted the sample chamber felt mild,05_mild
+Yuki flagged that the freezer felt warm,06_warm
+Prof. Wang said the walk-in cooler felt freezing,00_freezing
+the postdoc described the cleanroom as sweltering,08_sweltering
+The reactor core temperature reads cold,02_cold
+James complained the office was sweltering,08_sweltering
+the coordinator complained the office was mild,05_mild
+The server room is dangerously frigid,01_frigid
+Yuki described the cleanroom as boiling,10_boiling
+The climate chamber was set to warm,06_warm
+Outside it is absolutely chilly,03_chilly
+Prof. Müller complained the office was hot,07_hot
+Charlie said the walk-in cooler felt freezing,00_freezing
+Omar flagged that the freezer felt frigid,01_frigid
+Morning readings showed the habitat was frigid,01_frigid
+The reactor core temperature reads freezing,00_freezing
+the intern reported the autoclave room as boiling,10_boiling
+Elena flagged that the freezer felt boiling,10_boiling
+Omar noted the sample chamber felt cold,02_cold
+Field conditions were frigid during collection,01_frigid
+the analyst adjusted the thermostat because it was mild,05_mild
+Liam complained the office was cool,04_cool
+Dr. Chen noted the sample chamber felt cool,04_cool
+Dr. Smith complained the office was frigid,01_frigid
+The climate chamber was set to cool,04_cool
+Patients reported feeling mild during the trial,05_mild
+Dr. Rossi measured the soil temperature as cool,04_cool
+Liam flagged that the freezer felt hot,07_hot
+the coordinator noted the sample chamber felt cold,02_cold
+Maria adjusted the thermostat because it was boiling,10_boiling
+Kevin flagged that the freezer felt freezing,00_freezing
+Liam flagged that the freezer felt cool,04_cool
+Prof. Kim adjusted the thermostat because it was chilly,03_chilly
+Alice described the cleanroom as hot,07_hot
+the intern measured the soil temperature as boiling,10_boiling
+Raj adjusted the thermostat because it was boiling,10_boiling
+the postdoc complained the office was cool,04_cool
+Amara flagged that the freezer felt cold,02_cold
+the technician measured the soil temperature as frigid,01_frigid
+The greenhouse environment is warm,06_warm
+Prof. Wang noted the sample chamber felt boiling,10_boiling
+Yuki reported the autoclave room as scorching,09_scorching
+The reactor core temperature reads sweltering,08_sweltering
+the technician noted the sample chamber felt sweltering,08_sweltering
+The fermentation tank is currently warm,06_warm
+the coordinator flagged that the freezer felt freezing,00_freezing
+Raj said the walk-in cooler felt warm,06_warm
+Prof. Müller described the cleanroom as scorching,09_scorching
+Liam said the walk-in cooler felt mild,05_mild
+Sarah described the cleanroom as frigid,01_frigid
+The incubation environment should remain boiling,10_boiling
+the nurse recorded that the growth chamber felt frigid,01_frigid
+The drying chamber atmosphere is warm,06_warm
+Prof. Müller adjusted the thermostat because it was warm,06_warm
+Surface readings indicate conditions are warm,06_warm
+Prof. Kim flagged that the freezer felt mild,05_mild
+Ambient conditions in the corridor are boiling,10_boiling
+The server room is dangerously boiling,10_boiling
+the technician measured the soil temperature as chilly,03_chilly
+Alice recorded that the growth chamber felt cold,02_cold
+the PI said the walk-in cooler felt freezing,00_freezing
+the nurse complained the office was hot,07_hot
+the analyst flagged that the freezer felt freezing,00_freezing
