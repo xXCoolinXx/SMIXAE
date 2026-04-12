@@ -558,6 +558,29 @@ def generate_months(n_samples=1000):
     return _enumerate_unique(templates, months, ("month",), n_samples)
 
 
+def generate_emotions() -> pd.DataFrame:
+    """Load go_emotions validation split, keep single-label examples only."""
+    from datasets import load_dataset as hf_load_dataset
+
+    emotions_path = Path(__file__).parent.parent.parent / "datasets" / "probing" / "emotions.txt"
+    emotion_names = emotions_path.read_text().strip().splitlines()
+
+    ds = hf_load_dataset("google-research-datasets/go_emotions", split="validation")
+
+    rows = []
+    for example in ds:
+        lbls = example["labels"]
+        if len(lbls) == 1:
+            rows.append({"Sentence": example["text"], "Label": emotion_names[lbls[0]]})
+
+    df = pd.DataFrame(rows).drop_duplicates(subset=["Sentence"])
+    rows = df.to_dict("records")
+    random.shuffle(rows)
+    df = pd.DataFrame(rows)
+    print(f"Emotions: {len(df)} single-label examples from go_emotions validation split")
+    return df
+
+
 app = typer.Typer()
 
 
@@ -578,6 +601,7 @@ def generate(
         ("living_things.csv", generate_living_things(1000)),
         ("months.csv", generate_months(1000)),
         ("colors.csv", generate_colors(1000)),
+        ("emotions.csv", generate_emotions()),
     ]
 
     for filename, df in datasets:
