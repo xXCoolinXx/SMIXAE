@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Newline-position manifold analysis with SMIXAE expert activations.
+"""Newline-position manifold analysis with SMIXAE expert activations.
 
 Scores each expert with four metrics:
   • decode_r2:          R² of  chars_since_nl ~ linear(bottleneck)
@@ -9,6 +8,8 @@ Scores each expert with four metrics:
   • periodic_gain:      encode_periodic_r2 − encode_linear_r2
 
 Generates a tabbed HTML of top experts ranked by periodic_gain.
+
+Code is loosely based on the reproduction paper from Sinii et. al.
 """
 
 import json
@@ -32,7 +33,15 @@ from tqdm import tqdm
 from transformers import DataCollatorWithPadding
 
 from analysis.scatter3d import plot_3d_scatter
-from analysis.utils import build_dataset_html, collect_hook_activations, encode_sae_batched, flush_gpu, gpu_mem_mb, load_llm, load_sae
+from analysis.utils import (
+    build_dataset_html,
+    collect_hook_activations,
+    encode_sae_batched,
+    flush_gpu,
+    gpu_mem_mb,
+    load_llm,
+    load_sae,
+)
 
 # ═══════════════════════ Constants ═══════════════════════════════════════
 
@@ -48,6 +57,14 @@ VALID_RANK_BY = [
 
 
 def extract_layer_from_hook(hook_name: str) -> int | None:
+    """Extract the first integer layer index from a hook name string.
+
+    Args:
+        hook_name: Hook point name such as ``"model.layers.11"`` or ``"blocks.5.hook_resid_post"``.
+
+    Returns:
+        The first integer found after a ``.`` separator, or ``None`` if no integer is present.
+    """
     m = re.search(r"\.(\d+)(?:\.|$)", hook_name)
     return int(m.group(1)) if m else None
 
@@ -56,6 +73,17 @@ def extract_layer_from_hook(hook_name: str) -> int | None:
 
 
 def wrap_preserve_newlines(text: str, width: int) -> str:
+    """Wrap ``text`` at ``width`` characters while preserving existing newlines.
+
+    Unlike ``textwrap.fill``, blank lines and intentional line breaks are kept intact.
+
+    Args:
+        text: Input text, potentially containing newlines.
+        width: Maximum line width for the wrapped output.
+
+    Returns:
+        The wrapped text as a single string with newline separators.
+    """
     wrapper = textwrap.TextWrapper(width=width)
     out: list[str] = []
     for line in text.splitlines(keepends=False):
@@ -67,6 +95,18 @@ def wrap_preserve_newlines(text: str, width: int) -> str:
 
 
 def make_line_wrapper(line_length: int):
+    """Return a HuggingFace dataset map function that wraps each example's text.
+
+    Adds a ``"text_lines"`` key to each example with the wrapped text, suitable for
+    downstream tokenisation where ``chars_since_nl`` needs to stay bounded by
+    ``line_length``.
+
+    Args:
+        line_length: Target line width passed to :func:`wrap_preserve_newlines`.
+
+    Returns:
+        A single-example map function compatible with ``Dataset.map()``.
+    """
     def _fn(ex):
         ex["text_lines"] = wrap_preserve_newlines(ex["text"], width=line_length)
         return ex
@@ -75,6 +115,17 @@ def make_line_wrapper(line_length: int):
 
 
 def assert_chars_since_nl_map(line_length: int):
+    """Return a batched map function that asserts ``chars_since_nl`` values stay in range.
+
+    Raises ``AssertionError`` if any ``chars_since_nl`` value exceeds ``line_length``.
+    Use this as a sanity-check step after wrapping to catch tokeniser offset bugs.
+
+    Args:
+        line_length: Maximum permitted ``chars_since_nl`` value.
+
+    Returns:
+        A batched map function compatible with ``Dataset.map(batched=True)``.
+    """
     def _fn(batch):
         bad = [(i, m) for i, seq in enumerate(batch["chars_since_nl"]) if (m := max(seq, default=0)) > line_length]
         assert not bad, f"chars_since_nl > {line_length} in {len(bad)} seqs; first={bad[0]}"
@@ -88,6 +139,28 @@ def make_forward_inputs_with_chars_since_nl(
     max_seq_len: int,
     use_chat: bool,
 ):
+    r"""Return a batched map function that tokenises text and computes per-token ``chars_since_nl``.
+
+    For each token the function records how many characters have elapsed since the most
+    recent ``\\n`` character in the source text (using the tokeniser's offset mapping).
+    Special tokens and tokens outside the content span (when ``use_chat=True``) are
+    assigned ``chars_since_nl = 0``.
+
+    Requires a *fast* (Rust-backed) tokenizer with ``return_offsets_mapping`` support.
+
+    Args:
+        tokenizer: A HuggingFace fast tokenizer instance.
+        max_seq_len: Maximum token sequence length (truncation is applied).
+        use_chat: If ``True``, wraps each text in a user-turn chat template before
+            tokenising, then maps offsets back to the original content span.
+
+    Returns:
+        A batched map function compatible with ``Dataset.map(batched=True)`` that adds
+        ``"input_ids"``, ``"attention_mask"``, and ``"chars_since_nl"`` to each batch.
+
+    Raises:
+        ValueError: If ``tokenizer.is_fast`` is ``False``.
+    """
     if not getattr(tokenizer, "is_fast", False):
         raise ValueError("Requires a *fast* tokenizer (for offset_mapping).")
     special_ids = set(getattr(tokenizer, "all_special_ids", ()))
@@ -164,6 +237,29 @@ def collect_hook_hiddens(
     num_workers: int = 0,
     max_seq_len: int | None = None,
 ) -> list[torch.Tensor]:
+    """Collect per-token hidden states at a named hook point for an entire dataset.
+
+    Pads each batch to ``max_seq_len`` (or the batch's longest sequence), runs the
+    model with a registered forward hook on ``hook_name``, then strips padding so that
+    the returned tensors each contain only the real (non-padded) token positions.
+
+    Handles both left-padded and right-padded tokenizers automatically.
+
+    Args:
+        dataset: A HuggingFace ``Dataset`` with ``"input_ids"`` and
+            ``"attention_mask"`` columns (torch tensor format).
+        model: A HuggingFace ``PreTrainedModel`` in eval mode on the target device.
+        tokenizer: The corresponding tokenizer (used only for ``padding_side``).
+        hook_name: Dot-separated module path to hook, e.g. ``"model.layers.11"``.
+        batch_size: Number of examples per forward pass.
+        num_workers: DataLoader worker count (``0`` = main process only).
+        max_seq_len: Pad all batches to this length.  ``None`` pads to each batch's
+            longest sequence.
+
+    Returns:
+        A list of ``len(dataset)`` tensors, each of shape ``(seq_len_i, d_model)``,
+        containing the hidden states for the non-padding tokens of example ``i``.
+    """
     model.eval()
     device = next(model.parameters()).device
 
@@ -227,6 +323,35 @@ def compute_expert_scores(
     n_harmonics: int = 3,
     chunk_size: int = 64,
 ) -> pd.DataFrame:
+    """Score every expert on how well its bottleneck encodes character-since-newline position.
+
+    Fits two regression models per expert in both the encode (bottleneck → position) and
+    decode (position → bottleneck) directions, then reports four summary metrics:
+
+    - **decode_r2** — R² of ``chars_since_nl ~ linear(bottleneck)``, fit via least-squares.
+    - **encode_linear_r2** — mean per-dimension R² of ``bottleneck_dim ~ linear(chars)``.
+    - **encode_periodic_r2** — mean per-dimension R² of
+      ``bottleneck_dim ~ linear(chars) + sum_k[sin, cos](2πkc/L)``,
+      where ``L = line_length`` and ``k = 1…n_harmonics``.
+    - **periodic_gain** — ``encode_periodic_r2 - encode_linear_r2``.  A high value
+      indicates the expert has a periodic (helical/toroidal) position encoding.
+
+    Computation is chunked over experts to keep peak memory bounded.
+
+    Args:
+        expert_acts: Bottleneck activations, shape ``(N, n_experts, d_bottleneck)``,
+            on CPU in float32.
+        labels: Integer ``chars_since_nl`` value for each sample, shape ``(N,)``.
+        line_length: The maximum ``chars_since_nl`` value (period ``L`` for Fourier
+            features).
+        n_harmonics: Number of Fourier harmonics to include in the periodic fit.
+        chunk_size: Number of experts processed per loop iteration.
+
+    Returns:
+        A :class:`pandas.DataFrame` with one row per expert, columns ``expert_id``,
+        ``decode_r2``, ``encode_linear_r2``, ``encode_periodic_r2``, ``periodic_gain``,
+        and per-dimension ``dim{j}_corr``, ``dim{j}_linear_r2``, ``dim{j}_periodic_r2``.
+    """
     N, n_experts, d = expert_acts.shape
     chars = labels.double()
 
@@ -308,6 +433,21 @@ def compute_expert_class_stats(
     labels: torch.Tensor,
     threshold: float = 0.0,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Compute per-class mean activations and firing rates for a single expert.
+
+    Args:
+        expert_acts: Bottleneck activations for one expert, shape ``(N, d_bottleneck)``.
+        labels: Integer class labels, shape ``(N,)``.
+        threshold: L2 norm below which an expert is considered inactive.
+
+    Returns:
+        A 3-tuple of ``(means, rates, unique_classes)`` where:
+
+        - ``means``: shape ``(n_classes, d_bottleneck)`` — per-class mean activations.
+        - ``rates``: shape ``(n_classes, d_bottleneck)`` — per-class firing rates
+          (fraction of samples with norm > ``threshold``).
+        - ``unique_classes``: 1-D array of the unique class values in sorted order.
+    """
     unique = torch.unique(labels).tolist()
     norms = expert_acts.norm(dim=-1)
     means, rates = [], []
@@ -331,8 +471,7 @@ def plot_newline_experts_html(
     max_points: int = 50_000,
     output_path: str = "top_experts.html",
 ) -> None:
-    """
-    Build a tabbed HTML of top experts ranked by periodic_gain.
+    """Build a tabbed HTML of top experts ranked by periodic_gain.
 
     Each tab shows two plots side-by-side:
       • scatter  — raw bottleneck activations colored by chars_since_nl
@@ -543,7 +682,6 @@ def main(
     seed: int = typer.Option(42),
 ) -> None:
     """Analyse SMIXAE experts for newline-position manifold structure."""
-
     set_seed(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.set_grad_enabled(False)

@@ -8,14 +8,13 @@ from pathlib import Path
 from typing import Any, Iterable
 
 import numpy as np
-
 import pandas as pd
+import plotly.io as pio
+import plotly.offline as pyo
 import torch
 import torch.nn.functional as F
 from datasets import load_dataset
 from loguru import logger
-import plotly.io as pio
-import plotly.offline as pyo
 from plotly.graph_objects import Figure
 from sae_lens import SAE
 from tqdm import tqdm
@@ -23,8 +22,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
-from smixae import SMIXAE
 from analysis.scatter3d import plot_3d_scatter
+from smixae import SMIXAE
 
 # ── Tabbed HTML builder ───────────────────────────────────────────────────────
 
@@ -81,6 +80,21 @@ def build_dataset_html(
     expert_entries: list[tuple[str, Figure, Figure | None]],
     dataset_title: str,
 ) -> str:
+    """Build a self-contained tabbed HTML page containing Plotly figures for each expert.
+
+    Each expert occupies one tab.  Figures are embedded as JSON and rendered lazily
+    (only when the tab is first selected) to keep the initial load fast.  The Plotly.js
+    bundle is inlined so the file is fully standalone — no internet connection required.
+
+    Args:
+        expert_entries: List of ``(tab_label, scatter_fig, mean_fig)`` tuples.
+            ``scatter_fig`` is the per-token 3D scatter; ``mean_fig`` is the class-mean
+            plot (``None`` if labels are unavailable and the mean plot was skipped).
+        dataset_title: String shown as the page ``<h2>`` heading and ``<title>``.
+
+    Returns:
+        A complete UTF-8 HTML document as a string.
+    """
     tab_buttons: list[str] = []
     tab_panes: list[str] = []
     figures_json_parts: list[str] = []
@@ -113,6 +127,7 @@ def build_dataset_html(
 
 
 def gpu_mem_mb() -> str:
+    """Return a formatted string of current and peak GPU memory usage in MB, or empty string if no CUDA."""
     if not torch.cuda.is_available():
         return ""
     cur = torch.cuda.memory_allocated() / 1e6
@@ -121,6 +136,7 @@ def gpu_mem_mb() -> str:
 
 
 def flush_gpu():
+    """Run Python GC and clear the CUDA memory cache and peak memory stats."""
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
@@ -264,6 +280,31 @@ def _strip_prefix(label: str) -> str:
 
 
 class Expert:
+    """Container for one SMIXAE expert's bottleneck activations and analysis results.
+
+    Stores the subset of token positions where the expert was active (norm above
+    threshold), together with optional ground-truth labels, sequence positions, and
+    LLM activations for continuity scoring.  Provides methods to score the expert
+    (:meth:`evaluate_fisher`, :meth:`evaluate_manifold`) and to generate interactive
+    Plotly figures (:meth:`get_plot`, :meth:`get_mean_plot`).
+
+    Attributes:
+        expert_activations: Active bottleneck activations, shape ``(n_active, d_bottleneck)``.
+        llm_activations: LLM residual-stream activations for the same positions,
+            shape ``(n_active, d_model)``.  ``None`` if not collected.
+        labels: Integer class labels for each active token, or ``None`` if unlabelled.
+        seq_positions: Per-sample last-token positions (used for last-token-only mode).
+        n_classes: Total number of label classes in the dataset (for coverage scoring).
+        expert_id: Global expert index.
+        active_indices: List of ``[batch_idx, seq_idx]`` pairs pointing back to the
+            original token positions.
+        mean_latent_l0: Mean pre-bottleneck L0 sparsity for this expert, or ``None``.
+        local_continuity_scores: Per-token continuity scores (set by
+            :meth:`evaluate_manifold`), shape ``(n_active,)``, or ``None``.
+        fisher_score: Multivariate Fisher discriminant ratio (set by
+            :meth:`evaluate_fisher`), or ``None``.
+    """
+
     def __init__(
         self,
         active_mask: torch.Tensor,
@@ -292,23 +333,37 @@ class Expert:
     # ── accessors ─────────────────────────────────────────────────────
     @property
     def mean_continuity(self) -> float | None:
+        """Mean local manifold-continuity score across all active samples, or ``None`` if not evaluated."""
         if self.local_continuity_scores is None:
             return None
         return float(self.local_continuity_scores.mean().item())
 
     @property
     def n_unique_labels(self) -> int | None:
+        """Number of distinct label values seen in active samples, or ``None`` if labels are absent."""
         if self.labels is None:
             return None
         return int(self.labels.unique().numel())
 
     @property
     def adjusted_fisher_score(self) -> float | None:
+        """Fisher score rescaled by the fraction of dataset classes actually present in active samples."""
         if self.fisher_score is None or self.n_unique_labels is None or self.n_classes == 0:
             return None
         return self.fisher_score * (self.n_unique_labels / self.n_classes)
 
     def sort_key(self, sort_by: str) -> float:
+        """Return the numeric value of the requested metric, or ``-inf`` if not yet computed.
+
+        Args:
+            sort_by: One of ``"fisher"``, ``"adjusted_fisher"``, or ``"continuity"``.
+
+        Returns:
+            The metric value as a float, or ``float("-inf")`` if the metric is ``None``.
+
+        Raises:
+            ValueError: If ``sort_by`` is not a recognised metric name.
+        """
         mapping: dict[str, float | None] = {
             "fisher": self.fisher_score,
             "adjusted_fisher": self.adjusted_fisher_score,
@@ -321,6 +376,26 @@ class Expert:
 
     # ── continuity (unlabelled) ───────────────────────────────────────
     def evaluate_manifold(self, k_neighbors: int = 10, device: str = "cuda") -> torch.Tensor:
+        """Score expert continuity by comparing bottleneck neighbourhoods to LLM space.
+
+        For each token, finds the ``k_neighbors`` nearest neighbours in bottleneck
+        space, then computes the mean cosine similarity between the token's LLM
+        activation and those neighbours' LLM activations.  High continuity means that
+        tokens close in the bottleneck also tend to be close in the LLM residual stream,
+        implying the expert captures a coherent linguistic feature.
+
+        Results are stored in ``self.local_continuity_scores``.
+
+        Args:
+            k_neighbors: Number of nearest bottleneck neighbours to consider.
+            device: Device to move tensors to for distance computation.
+
+        Returns:
+            Continuity scores, shape ``(n_active,)``, on CPU.
+
+        Raises:
+            ValueError: If ``self.llm_activations`` is ``None``.
+        """
         if self.llm_activations is None:
             raise ValueError("evaluate_manifold requires llm_activations, which was not provided.")
         expert_acts_gpu = self.expert_activations.to(device)
@@ -344,8 +419,7 @@ class Expert:
 
     # ── multivariate fisher score (labelled) ──────────────────────────
     def evaluate_fisher(self) -> float:
-        """
-        Multivariate Fisher discriminant ratio: tr(S_W^{-1} S_B)
+        """Multivariate Fisher discriminant ratio: tr(S_W^{-1} S_B).
 
         Measures how well the 3D bottleneck separates classes.
         Works for clusters, ordered clusters, and rings — anything
@@ -400,6 +474,21 @@ class Expert:
 
     # ── context windows ───────────────────────────────────────────────
     def get_context_windows(self, str_tokens: list[list[str]], context_window: int = 10) -> list[str]:
+        """Build HTML-formatted context window strings for each active token.
+
+        For each active token, extracts a surrounding window of ``context_window``
+        tokens on each side, bolds the target token with ``<b>[token]</b>``, and
+        replaces newlines with ``<br>`` for HTML display.
+
+        Args:
+            str_tokens: Nested list of string tokens, indexed by
+                ``[batch_idx][seq_idx]``, as returned by the tokenizer.
+            context_window: Number of tokens to include on each side of the target.
+
+        Returns:
+            List of HTML strings, one per active token, in the same order as
+            ``self.active_indices``.
+        """
         contexts = []
         for batch_idx, seq_idx in self.active_indices:
             seq = str_tokens[batch_idx]
@@ -415,6 +504,7 @@ class Expert:
 
     # ── plotting ──────────────────────────────────────────────────────
     def _make_title(self) -> str:
+        """Build a plot title string summarising this expert's key metrics."""
         parts = [f"Expert {self.expert_id}  (n={self.expert_activations.shape[0]}"]
         if self.mean_latent_l0 is not None:
             parts.append(f"L0={self.mean_latent_l0:.1f}")
@@ -441,6 +531,29 @@ class Expert:
         connect_means: bool | None = None,
         show_labels: bool = False,
     ) -> Figure:
+        """Generate an interactive 3D scatter of this expert's bottleneck activations.
+
+        Lazily evaluates manifold continuity if it hasn't been computed yet.
+        For labelled data, colours points by class (using ``color_map`` for 1:1 mappings
+        or ``color_scale`` for continuous/ordinal data).  For unlabelled data, colours
+        points by per-token continuity score.
+
+        Args:
+            str_tokens: Nested list of string tokens for building hover context windows.
+            k_neighbors: Neighbourhood size for lazy continuity evaluation.
+            context_window: Tokens on each side of the target in hover text.
+            device: Device for continuity computation.
+            label_names: Map from integer label id to display string.
+            continuous_color: Colour by label ordinal (continuous) rather than class.
+            color_scale: Plotly colorscale name for continuous colouring.
+            color_map: ``{display_label: CSS_color}`` for discrete 1:1 colour mapping.
+            connect_means: Whether to draw lines connecting class-mean markers.
+                Defaults to ``continuous_color``.
+            show_labels: Annotate class-mean markers with text.
+
+        Returns:
+            A Plotly :class:`Figure` with a single 3D scatter trace.
+        """
         # Lazy-evaluate continuity
         if self.local_continuity_scores is None:
             self.evaluate_manifold(k_neighbors=k_neighbors, device=device)
@@ -501,6 +614,23 @@ class Expert:
         connect_means: bool | None = None,
         show_labels: bool = False,
     ) -> Figure | None:
+        """Generate a 3D scatter showing only per-class mean bottleneck activations.
+
+        Identical colour/scale options as :meth:`get_plot`, but ``scatter_alpha=0.0``
+        so individual token points are hidden.  Returns ``None`` when labels or
+        label names are unavailable.
+
+        Args:
+            label_names: Map from integer label id to display string.
+            color_scale: Plotly colorscale for continuous colouring.
+            continuous_color: Colour by label ordinal rather than by class.
+            color_map: ``{display_label: CSS_color}`` for 1:1 colour mapping.
+            connect_means: Whether to draw lines between class means.
+            show_labels: Annotate markers with text labels.
+
+        Returns:
+            A Plotly :class:`Figure` or ``None`` if unlabelled.
+        """
         if self.labels is None or label_names is None:
             return None
 

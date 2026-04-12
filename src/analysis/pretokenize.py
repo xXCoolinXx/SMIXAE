@@ -30,13 +30,27 @@ app = typer.Typer()
 
 @dataclass
 class LimitedPretokenizeRunnerConfig(PretokenizeRunnerConfig):
+    """Extends PretokenizeRunnerConfig with a token-count cap for partial dataset tokenization."""
+
     n_tokens: int = 1_000_000_000
 
 
 class LimitedPretokenizeRunner(PretokenizeRunner):
+    """PretokenizeRunner variant that streams and materialises only ``n_tokens`` tokens."""
+
     cfg: LimitedPretokenizeRunnerConfig
 
     def run(self) -> Dataset:
+        """Run the limited pretokenization pipeline and return (and optionally save) the result.
+
+        Streams the source dataset, takes the minimum number of source documents needed
+        to hit ``cfg.n_tokens``, tokenizes, truncates to exactly ``n_seqs`` sequences, and
+        saves to ``cfg.save_path`` if set.
+
+        Returns:
+            A :class:`datasets.Dataset` with exactly ``n_seqs`` rows of ``context_size`` tokens,
+            or fewer if the source dataset was exhausted.
+        """
         n_seqs = self.cfg.n_tokens // self.cfg.context_size
         n_docs = n_seqs
 

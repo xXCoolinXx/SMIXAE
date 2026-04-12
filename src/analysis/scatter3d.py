@@ -1,6 +1,4 @@
-"""
-scatter3d.py — Flexible 3-D scatter with per-class means, labels, and colorbar
-===============================================================================
+"""Flexible 3-D Plotly scatter with per-class means, label annotations, and colorbar support.
 
 Public API (all importable directly)
 -------------------------------------
@@ -51,13 +49,12 @@ Pass ``show_legend=False`` to suppress entirely.
 from __future__ import annotations
 
 from colorsys import hsv_to_rgb
-from typing import Any, Dict, List, Literal, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
-import plotly.graph_objects as go
 import plotly.colors as pc
+import plotly.graph_objects as go
 from matplotlib.colors import to_rgb as _mpl_to_rgb
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  COLOR HELPERS
@@ -81,8 +78,7 @@ def _rgb_from_floats(r: float, g: float, b: float) -> str:
 
 
 def rgb_with_alpha(rgb_str: str, alpha: float) -> str:
-    """
-    Append alpha to a canonical 'rgb(R,G,B)' string.
+    """Append alpha to a canonical 'rgb(R,G,B)' string.
 
     Parameters
     ----------
@@ -90,7 +86,7 @@ def rgb_with_alpha(rgb_str: str, alpha: float) -> str:
                     ensure this).
     alpha   : float Opacity in [0, 1].
 
-    Returns
+    Returns:
     -------
     str  'rgba(R,G,B,alpha)'
     """
@@ -117,8 +113,7 @@ def build_color_map(
     classes: list,
     colorscale: Optional[Union[str, list, dict]],
 ) -> Dict[Any, str]:
-    """
-    Build a mapping from class label → canonical 'rgb(R,G,B)' color string.
+    """Build a mapping from class label → canonical 'rgb(R,G,B)' color string.
 
     Parameters
     ----------
@@ -129,7 +124,7 @@ def build_color_map(
         list[str]      — one Plotly-native color string per class
         dict           — {label: color_str} explicit mapping
 
-    Returns
+    Returns:
     -------
     dict mapping each class label to a normalized 'rgb(R,G,B)' string.
     All values are guaranteed to be in 'rgb(...)' format so rgb_with_alpha
@@ -171,14 +166,18 @@ def build_color_map(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  LABEL LAYOUT  (adjustText)
+#  LABEL LAYOUT  (adjustText) - WARNING: This doesn't work very well. Included in case it is necessary later
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _camera_project(pts: np.ndarray, eye: np.ndarray) -> np.ndarray:
-    """Orthographic projection of (N, 3) points onto the screen plane for a
-    Plotly camera at ``eye`` looking at the origin with world-up = (0, 0, 1).
+    """Orthographically project 3-D points onto the screen plane for a given Plotly camera.
 
-    Returns (N, 2) screen coordinates in the same unit system as ``pts``.
+    Args:
+        pts: ``(N, 3)`` array of points in data space.
+        eye: ``(3,)`` camera eye position; the camera looks at the origin with world-up ``(0,0,1)``.
+
+    Returns:
+        ``(N, 2)`` array of screen coordinates in the same unit system as ``pts``.
     """
     fwd = -eye / np.linalg.norm(eye)           # camera → origin
     world_up = np.array([0.0, 0.0, 1.0])
@@ -197,29 +196,25 @@ def compute_label_offsets(
     fig_h: int = 850,
     camera_eye: tuple = (1.5, -1.3, 0.8),
 ) -> np.ndarray:
-    """
-    Compute non-overlapping (ax, ay) pixel offsets for Plotly 3-D annotations
-    using adjustText.
+    """Compute non-overlapping ``(ax, ay)`` pixel offsets for Plotly 3-D label annotations.
 
-    Projects mean_xyz using the actual camera orthographic projection (so the
-    2-D layout matches what appears on screen), normalizes to [0,1] space,
-    places initial positions radially from the centroid, then runs adjustText
+    Projects ``mean_xyz`` using an orthographic camera projection, normalises to ``[0,1]``
+    space, places initial positions radially from the centroid, then runs ``adjustText``
     with strong forces to resolve overlaps.
 
-    Parameters
-    ----------
-    mean_xyz   : (K, 3) array of class mean positions in data space.
-    display_labels : list of K label strings.
-    base_r     : initial radial offset in pixels before adjustText runs.
-    fig_w, fig_h : figure dimensions for pixel↔normalized conversion.
-    camera_eye : Plotly camera eye tuple (x, y, z); must match the figure.
+    Args:
+        mean_xyz: ``(K, 3)`` array of class mean positions in data space.
+        display_labels: List of ``K`` label strings.
+        base_r: Initial radial offset in pixels before ``adjustText`` runs.
+        fig_w: Figure width in pixels for pixel↔normalised conversion.
+        fig_h: Figure height in pixels.
+        camera_eye: Plotly camera eye tuple ``(x, y, z)``; must match the figure.
 
-    Returns
-    -------
-    offsets : (K, 2) array of (ax, ay) pixel offsets for Plotly annotations.
+    Returns:
+        ``(K, 2)`` array of ``(ax, ay)`` pixel offsets for Plotly annotations.
     """
-    from adjustText import adjust_text
     import matplotlib
+    from adjustText import adjust_text
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
@@ -307,8 +302,7 @@ def add_scatter_trace(
     scatter_size: float = 3,
     hovertext: Optional[List[str]] = None,
 ) -> go.Figure:
-    """
-    Add the raw point-cloud trace to fig.
+    """Add the raw point-cloud trace to fig.
 
     Each point is colored by its class using cmap, with scatter_alpha applied.
     Returns fig for chaining.
@@ -345,8 +339,7 @@ def add_continuous_scatter_trace(
     colorbar_len: float = 0.75,
     colorbar_x: float = 1.02,
 ) -> go.Figure:
-    """
-    Add a scatter trace colored by continuous float values.
+    """Add a scatter trace colored by continuous float values.
 
     Bypasses the class-label color machinery — color is applied directly from
     the ``values`` array via a Plotly colorscale, with a built-in colorbar.
@@ -357,7 +350,7 @@ def add_continuous_scatter_trace(
     colorscale : named Plotly colorscale string (default "Viridis").
     hovertext  : per-point hover strings; defaults to (x,y,z) coordinates.
 
-    Returns
+    Returns:
     -------
     fig for chaining.
     """
@@ -407,9 +400,9 @@ def add_mean_trace(
     mean_size: float = 6,
     mean_marker_line_width: float = 1,
 ) -> go.Figure:
-    """
-    Add one marker per class mean to fig, colored to match the scatter trace.
-    Returns fig for chaining.
+    """Add one marker per class mean to ``fig``, colored to match the scatter trace.
+
+    Returns ``fig`` for chaining.
     """
     fig.add_trace(go.Scatter3d(
         x=mean_xyz[:, 0], y=mean_xyz[:, 1], z=mean_xyz[:, 2],
@@ -438,8 +431,8 @@ def add_mean_line_trace(
     cmap: Dict[Any, str],
     line_width: float = 3,
 ) -> go.Figure:
-    """
-    Connect adjacent class means (in sorted class order) with a gradient line.
+    """Connect adjacent class means (in sorted class order) with a gradient line.
+
     No wraparound — the last point does NOT connect back to the first.
 
     The line color interpolates smoothly from each point's class color to the
@@ -453,7 +446,7 @@ def add_mean_line_trace(
     cmap       : {label: 'rgb(R,G,B)'} — used to derive the gradient colorscale.
     line_width : stroke width in pixels (default 3).
 
-    Returns
+    Returns:
     -------
     fig for chaining.
     """
@@ -496,9 +489,9 @@ def add_label_annotations(
     camera_eye: tuple = (1.5, -1.3, 0.8),
     label_every_n: int = 1,
 ) -> go.Figure:
-    """
-    Compute adjustText-based offsets and attach 3-D annotations to fig.scene.
-    Returns fig for chaining.
+    """Compute adjustText-based offsets and attach 3-D label annotations to ``fig.scene``.
+
+    Returns ``fig`` for chaining.
     """
     # Subsample classes if label_every_n > 1 (reduces clutter for dense sets).
     labeled_classes = classes[::label_every_n]
@@ -540,8 +533,7 @@ def add_origin_marker(
     size: float = 5,
     symbol: str = "cross",
 ) -> go.Figure:
-    """
-    Place a subtle crosshair marker at (0, 0, 0).
+    """Place a subtle crosshair marker at (0, 0, 0).
 
     Uses a 'cross' symbol (or any Plotly 3-D marker symbol) so it reads
     clearly as an origin reference without adding clutter.  No hover text
@@ -553,7 +545,7 @@ def add_origin_marker(
     size   : marker size in pixels.
     symbol : Plotly 3-D marker symbol (default "cross").
 
-    Returns
+    Returns:
     -------
     fig for chaining.
     """
@@ -580,9 +572,9 @@ def add_discrete_legend(
     names: Dict[Any, str],
     marker_size: float = 8,
 ) -> go.Figure:
-    """
-    Add one invisible marker trace per class to populate Plotly's 2-D legend.
-    Returns fig for chaining.
+    """Add one invisible marker trace per class to populate Plotly's 2-D legend.
+
+    Returns ``fig`` for chaining.
     """
     for c in classes:
         fig.add_trace(go.Scatter3d(
@@ -596,11 +588,11 @@ def add_discrete_legend(
 
 
 def _auto_tick_increment(lo: float, hi: float, n_classes: int, requested: Optional[float]) -> Optional[float]:
-    """
-    For datasets with more than 25 classes, pick the largest increment from
-    {20, 10, 5} that still produces at least 5 visible ticks across [lo, hi].
-    Falls back to 5 if none of the candidates satisfy the threshold.
-    Returns ``requested`` unchanged when n_classes <= 25.
+    """Pick a sensible colorbar tick increment for datasets with more than 25 classes.
+
+    Selects the largest increment from ``{20, 10, 5}`` that still produces at least 5
+    visible ticks across ``[lo, hi]``.  Falls back to 5 if none satisfies the threshold.
+    Returns ``requested`` unchanged when ``n_classes <= 25``.
     """
     if n_classes <= 25:
         return requested
@@ -623,8 +615,7 @@ def add_colorbar_trace(
     colorbar_x: float = 1.02,
     tick_increment: Optional[float] = 20,
 ) -> go.Figure:
-    """
-    Add an invisible scatter trace whose sole purpose is to render a colorbar.
+    """Add an invisible scatter trace whose sole purpose is to render a colorbar.
 
     Parameters
     ----------
@@ -735,9 +726,7 @@ def plot_3d_scatter(
     title: str = "",
     show: bool = False,
 ) -> go.Figure:
-    """
-    3-D scatter plot with per-class mean spheres, optional annotations, and
-    optional continuous colorbar.
+    """Build a 3-D scatter plot with per-class mean spheres, optional annotations, and optional continuous colorbar.
 
     Parameters
     ----------
@@ -768,7 +757,7 @@ def plot_3d_scatter(
     title          : figure title string.
     show           : if True, call fig.show() before returning.
 
-    Returns
+    Returns:
     -------
     go.Figure
     """
@@ -900,10 +889,9 @@ def make_hour_ring(
     noise: float = 4.0,
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray, Dict[int, str]]:
-    """
-    Synthetic 24-class hour ring.
+    """Synthetic 24-class hour ring.
 
-    Returns
+    Returns:
     -------
     xyz          : (N, 3) point cloud
     labels       : (N,) integer labels 0–23
@@ -937,14 +925,11 @@ def make_continuous_ring(
     noise: float = 4.0,
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Synthetic ring with n_classes integer labels (0 … n_classes-1).
-    Designed to demonstrate the colorbar mode.
+    """Generate a synthetic ring dataset with integer class labels for demonstrating colorbar mode.
 
-    Returns
-    -------
-    xyz    : (N, 3) point cloud
-    labels : (N,) integer labels 0 … n_classes-1
+    Returns:
+        Tuple of ``(xyz, labels)`` where ``xyz`` is an ``(N, 3)`` point cloud
+        and ``labels`` is an ``(N,)`` integer array with values ``0 … n_classes-1``.
     """
     rng = np.random.default_rng(seed)
     all_xyz, all_labels = [], []
@@ -963,8 +948,7 @@ def make_continuous_ring(
 # ══════════════════════════════════════════════════════════════════════════════
 
 def demo(which: str = "hour") -> go.Figure:
-    """
-    Notebook-friendly demos.
+    """Notebook-friendly demos.
 
     Parameters
     ----------

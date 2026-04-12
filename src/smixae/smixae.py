@@ -1,3 +1,5 @@
+"""SMIXAE model architecture: inference and training classes for the Sparse Mixture of Autoencoders."""
+
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -19,9 +21,7 @@ from typing_extensions import override
 
 @dataclass
 class SMIXAEConfig(SAEConfig):
-    """
-    Configuration class for a SMIXAE.
-    """
+    """Configuration class for a SMIXAE."""
 
     n_experts: int = 1024
     d_expert: int = 16
@@ -35,11 +35,13 @@ class SMIXAEConfig(SAEConfig):
 
 
 class SMIXAE(SAE[SMIXAEConfig]):
-    """
-    SMIXAE is an inference-only implementation of a Sparse Autoencoder (SAE)
-    using a simple linear encoder and decoder.
+    """Inference-only SMIXAE: Sparse Autoencoder with nonlinear expert bottleneck.
 
-    It implements the required abstract methods from BaseSAE:
+    Uses a linear encoder/decoder but routes activations through a per-expert
+    low-dimensional bottleneck, allowing each expert to capture arbitrary multdimensional
+    geometry rather than a linear direction.
+
+    Implements the required abstract methods from BaseSAE:
 
       - initialize_weights: sets up simple parameter initializations for W_enc, b_enc, W_dec, and b_dec.
       - encode: computes the feature activations from an input.
@@ -79,6 +81,7 @@ class SMIXAE(SAE[SMIXAEConfig]):
 
     @override
     def initialize_weights(self) -> None:
+        """Initialise base SAE weights then register SMIXAE-specific parameters."""
         # Initialize encoder weights and bias.
         super().initialize_weights()
         _init_weights_smixae(self)
@@ -88,9 +91,7 @@ class SMIXAE(SAE[SMIXAEConfig]):
     #     return torch.exp(self.log_threshold)
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Encode the input tensor into the feature space.
-        """
+        """Encode the input tensor into the feature space."""
         _, _, hidden_pre_bottleneck = smixae_encode(self, x)  # (batch, n_experts, d_bottleneck)
 
         bottleneck_mask = hidden_pre_bottleneck.norm(dim=-1) > self.threshold  # type: ignore # (batch, n_experts) mask
@@ -98,9 +99,7 @@ class SMIXAE(SAE[SMIXAEConfig]):
         return hidden_pre_bottleneck * bottleneck_mask.unsqueeze(-1)  # Apply mask per bottleneck
 
     def encode_with_latents(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        """
-        Encode the input tensor, returning both the masked bottleneck activations and
-        the pre-bottleneck latent activations (post-LeakyReLU, shape ``(batch, n_experts * d_expert)``).
+        """Encode input, returning masked bottleneck activations and pre-bottleneck latents.
 
         Returns:
             bottleneck:  ``(batch, n_experts, d_bottleneck)`` — same as ``encode()``.
@@ -112,9 +111,9 @@ class SMIXAE(SAE[SMIXAEConfig]):
         return bottleneck, h_latent
 
     def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
-        """
-        Decode the feature activations back to the input space.
-        Now, if hook_z reshaping is turned on, we reverse the flattening.
+        """Decode feature activations back to the input space.
+
+        Reverses hook_z reshaping if it was applied during input processing.
         """
         sae_out_pre = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec)
         sae_out_pre = sae_out_pre.flatten(-2, -1)
@@ -125,14 +124,15 @@ class SMIXAE(SAE[SMIXAEConfig]):
         return self.reshape_fn_out(sae_out_pre, self.d_head)
 
     def get_activation_fn(self) -> Callable[[torch.Tensor], torch.Tensor]:
+        """Return LeakyReLU(1e-4) to avoid dead neurons while preserving expert norms."""
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
 
     @property
     def effective_decoder_norm(self) -> torch.Tensor:
-        """
-        Computes the Frobenius norm of the effective 3D -> Residual projection.
-        Returns a tensor of shape (n_experts,)
+        """Compute the Frobenius norm of the effective bottleneck-to-residual projection.
+
+        Returns a tensor of shape ``(n_experts,)``.
         """
         W_dec_reshaped = self.W_dec.view(self.cfg.n_experts, self.cfg.d_expert, -1)
 
@@ -145,9 +145,7 @@ class SMIXAE(SAE[SMIXAEConfig]):
 
 @dataclass
 class SMIXAETrainingConfig(TrainingSAEConfig):
-    """
-    Configuration class for training a SMIXAETraining.
-    """
+    """Configuration class for training a SMIXAETraining."""
 
     n_experts: int = 1024
     d_expert: int = 16
@@ -167,15 +165,10 @@ class SMIXAETrainingConfig(TrainingSAEConfig):
 
 
 class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
-    """
-    SMIXAETraining is a concrete implementation of BaseTrainingSAE using the "standard" SAE architecture.
-    It implements:
+    """Training-mode SMIXAE with BatchTopK routing and dead-expert auxiliary loss.
 
-      - initialize_weights: basic weight initialization for encoder/decoder.
-      - encode: inference encoding (invokes encode_with_hidden_pre).
-      - decode: a simple linear decoder.
-      - encode_with_hidden_pre: computes activations and pre-activations.
-      - calculate_aux_loss: computes a sparsity penalty based on the (optionally scaled) p-norm of feature activations.
+    Implements the full training forward pass including MSE reconstruction loss,
+    dead-expert recovery via auxiliary loss, and running threshold updates.
     """
 
     b_enc: nn.Parameter
@@ -213,14 +206,34 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         # self.b_dec.requires_grad_(False)
 
     def initialize_weights(self) -> None:
+        """Initialise base SAE weights then register SMIXAE-specific parameters."""
         super().initialize_weights()
         _init_weights_smixae(self)
 
     @override
     def get_coefficients(self) -> dict[str, TrainCoefficientConfig | float]:
+        """Return an empty coefficient dict; SMIXAE manages loss weighting internally."""
         return {}
 
     def encode_with_hidden_pre(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """Encode input and stash intermediate activations needed for the training pass.
+
+        Calls :func:`smixae_encode` then applies BatchTopK masking on expert norms to
+        select the ``k_experts`` most active experts per example.  The masked bottleneck
+        activations are stashed in ``self.h_bottleneck`` and the pre-mask activations in
+        ``self.hidden_pre_bottleneck`` so that :meth:`training_forward_pass` and
+        :meth:`calculate_aux_loss` can access them without re-running the encoder.
+
+        Args:
+            x: Input activations of shape ``(batch, d_model)``.
+
+        Returns:
+            h_latent: Post-activation expert space activations
+                ``(batch, n_experts * d_expert)`` — returned for SAELens compatibility
+                but not used by the training loop.
+            hidden_pre_latent: Pre-activation projections, same shape — likewise
+                returned for compatibility.
+        """
         h_latent, hidden_pre_latent, hidden_pre_bottleneck = smixae_encode(self, x)
 
         batch_norm_mask = self.batchtopk(hidden_pre_bottleneck.norm(dim=-1)) > 0  # (batch_size, n_experts)
@@ -236,9 +249,10 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         return h_latent, hidden_pre_latent  # These get ignored
 
     def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
-        """
-        Decodes feature activations back into input space,
-        applying optional finetuning scale, hooking, out normalization, etc.
+        """Decode bottleneck activations back to the input space.
+
+        Applies the latent decoder, flattens expert dimensions, and projects through
+        ``W_dec``. The bias is added only at the output to avoid collapsing manifold structure.
         """
         sae_out_pre = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec)
         sae_out_pre = sae_out_pre.flatten(-2, -1)
@@ -255,7 +269,32 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         self,
         step_input: TrainStepInput,
     ) -> TrainStepOutput:
-        """Forward pass during training."""
+        """Run a full training forward pass and compute all losses and metrics.
+
+        Steps:
+        1. Encode the input via :meth:`encode_with_hidden_pre`, which stashes
+           ``self.h_bottleneck`` (TopK-masked bottleneck activations).
+        2. Decode ``self.h_bottleneck`` to get the reconstruction.
+        3. Update the running threshold from the current batch's bottleneck norms.
+        4. Track per-expert firing: reset counters for experts that fired this batch;
+           increment counters for those that did not.
+        5. Compute MSE reconstruction loss.
+        6. Compute auxiliary losses (currently dead-expert recovery via
+           :meth:`calculate_aux_loss`).
+        7. Return a :class:`TrainStepOutput` with the combined loss and per-step metrics.
+
+        Logged metrics include expert activity counts at two thresholds (1e-3, 1e-1
+        L2 norm), mean active expert norm, dead expert count, threshold value, and
+        latent L0 sparsity.
+
+        Args:
+            step_input: Contains ``sae_in`` (the residual stream slice to reconstruct).
+
+        Returns:
+            A :class:`TrainStepOutput` with ``sae_in``, ``sae_out``, ``feature_acts``,
+            ``hidden_pre``, ``loss`` (scalar), ``losses`` (per-term dict), and
+            ``metrics`` (dict of float tensors).
+        """
         feature_acts, hidden_pre = self.encode_with_hidden_pre(step_input.sae_in)
         sae_out = self.decode(self.h_bottleneck)
 
@@ -345,6 +384,21 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         hidden_pre: torch.Tensor,
         sae_out: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
+        """Compute architecture-specific auxiliary losses.
+
+        Currently applies :meth:`calculate_pre_act_aux_loss` to recover dead experts
+        by pushing their bottleneck norms toward the selection threshold.
+
+        Args:
+            step_input: Training step input (unused here; present for API compatibility).
+            feature_acts: Post-activation expert activations (unused here).
+            hidden_pre: Pre-activation projections (unused here).
+            sae_out: SAE reconstruction (unused here).
+
+        Returns:
+            A dict mapping loss name to scalar tensor, e.g.
+            ``{"dead_expert_aux_loss": tensor(...)}``.
+        """
         losses = {}
 
         # losses["dead_expert_aux_loss"] = self.calculate_topk_aux_loss(
@@ -360,26 +414,26 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         return losses
 
     def calculate_pre_act_aux_loss(self, dead_expert_mask):
-        """
-        Push dead experts' bottleneck norms toward the selection threshold.
-        No residual peeking — purely about making dead experts competitive.
+        """Push dead experts' bottleneck norms toward the selection threshold.
+
+        No residual peeking — purely about making dead experts competitive via norm pressure.
         """
         if dead_expert_mask is None or not dead_expert_mask.any():
             return self.threshold.new_tensor(0.0)
-        
+
         # How far below the selection threshold are dead experts?
         expert_norms = self.hidden_pre_bottleneck.norm(dim=-1)  # (batch, n_experts)
         dead_norms = expert_norms[:, dead_expert_mask]  # (batch, n_dead)
-        
+
         # Push norms toward threshold from below
         # Only penalize experts that are below threshold (relu clips those already above)
         shortfall = torch.relu(self.threshold.detach().float() - dead_norms)
-        
+
         # Weight by decoder norm so experts with larger decoders get more pressure
-        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask].detach() 
+        dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask].detach()
         # Detachment avoids the model just making decoder norm 0 - this isn't a problem for JumpReLU since the trivial fix for the model is to just lower the threshold
         # But here decoder norm 0 is optimal
-        
+
         return self.cfg.aux_loss_coefficient * (shortfall * dead_decoder_norms).sum(dim=-1).mean()
 
     def calculate_topk_aux_loss(
@@ -389,6 +443,21 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         z_pre_mask: torch.Tensor,  # (batch, n_experts, d_bottleneck) before TopK
         dead_expert_mask: torch.Tensor,  # (n_experts,) bool
     ) -> torch.Tensor:
+        """Compute auxiliary reconstruction loss over dead experts (residual-peeking variant).
+
+        Selects ``k_aux`` dead experts by bottleneck norm, decodes them through the full
+        expert pipeline, and penalises the reconstruction error against the current residual.
+        This variant is currently commented out in favour of :meth:`calculate_pre_act_aux_loss`.
+
+        Args:
+            sae_in: Original encoder input, shape ``(batch, d_in)``.
+            sae_out: Current reconstruction, same shape.
+            z_pre_mask: Pre-mask bottleneck activations, shape ``(batch, n_experts, d_bottleneck)``.
+            dead_expert_mask: Boolean mask of shape ``(n_experts,)``; ``True`` for dead experts.
+
+        Returns:
+            Scaled auxiliary loss scalar tensor.
+        """
         if dead_expert_mask is None or (num_dead := int(dead_expert_mask.sum())) == 0:
             return sae_out.new_tensor(0.0)
 
@@ -420,6 +489,19 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
 
     @torch.no_grad()
     def update_threshold(self, norms_topk: torch.Tensor) -> None:
+        """Update the running selection threshold via exponential moving average.
+
+        Tracks the minimum positive bottleneck norm seen this batch and performs an
+        EMA update: ``threshold ← (1 - lr) * threshold + lr * min_positive``.
+        If no positive norms exist in the batch the threshold is left unchanged.
+
+        The threshold is stored in double precision to avoid numerical instability
+        when the threshold is very small.
+
+        Args:
+            norms_topk: Per-expert bottleneck norms from the current batch,
+                shape ``(batch, n_experts)``.  Zero entries represent inactive experts.
+        """
         positive_mask = norms_topk > 0
         lr = self.cfg.threshold_lr
         # autocast can cause numerical issues with the threshold update
@@ -430,9 +512,9 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
 
     @property
     def effective_decoder_norm(self) -> torch.Tensor:
-        """
-        Computes the Frobenius norm of the effective 3D -> Residual projection.
-        Returns a tensor of shape (n_experts,)
+        """Compute the Frobenius norm of the effective bottleneck-to-residual projection.
+
+        Returns a tensor of shape ``(n_experts,)``.
         """
         W_dec_reshaped = self.W_dec.view(self.cfg.n_experts, self.cfg.d_expert, -1)
 
@@ -443,6 +525,7 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         return torch.linalg.matrix_norm(W_eff, ord="fro", dim=(-2, -1))
 
     def get_activation_fn(self) -> Callable[[torch.Tensor], torch.Tensor]:
+        """Return LeakyReLU(1e-4) to avoid dead neurons while preserving expert norms."""
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
 
@@ -450,6 +533,21 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
 def _init_weights_smixae(
     sae: SAE[SMIXAEConfig] | TrainingSAE[SMIXAETrainingConfig],
 ) -> None:
+    """Register SMIXAE-specific parameters on an SAE or TrainingSAE instance.
+
+    Called by :meth:`initialize_weights` on both :class:`SMIXAE` and
+    :class:`SMIXAETraining` after the base-class initialisation.  Registers three
+    learnable parameters:
+
+    - ``b_enc``: encoder bias, shape ``(n_experts * d_expert,)``, zero-initialised.
+    - ``W_bottleneck``: expert-space → bottleneck projection,
+      shape ``(n_experts, d_expert, d_bottleneck)``, Kaiming-uniform init.
+    - ``W_latent_dec``: bottleneck → expert-space projection (decoder side),
+      shape ``(n_experts, d_bottleneck, d_expert)``, Kaiming-uniform init.
+
+    Args:
+        sae: The SAE or TrainingSAE instance on which to register the parameters.
+    """
     # Add gate bias term to allow more expressivity - pre relu
     sae.b_enc = nn.Parameter(
         torch.zeros(
@@ -492,7 +590,30 @@ def _init_weights_smixae(
     nn.init.kaiming_uniform_(sae.W_latent_dec)
 
 
-def smixae_encode(sae: SMIXAE | SMIXAETraining, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+def smixae_encode(
+    sae: SMIXAE | SMIXAETraining, x: torch.Tensor
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Shared encoding logic for both inference and training SMIXAE models.
+
+    Applies the full encoding pipeline:
+    ``x → W_enc + b_enc → LeakyReLU → reshape (n_experts, d_expert) → W_bottleneck einsum → bottleneck``.
+
+    Optionally rescales bottleneck activations by the Frobenius norm of each expert's
+    effective decoder projection (``W_latent_dec @ W_dec``), so that experts with larger
+    decoders have proportionally higher selection pressure under TopK.
+
+    Args:
+        sae: Either an :class:`SMIXAE` (inference) or :class:`SMIXAETraining` instance.
+        x: Input activations of shape ``(batch, d_model)``.
+
+    Returns:
+        h_latent: Post-activation expert space activations, shape
+            ``(batch, n_experts * d_expert)``.
+        hidden_pre_latent: Pre-activation linear projections (before LeakyReLU), same
+            shape as ``h_latent``. Used by the training forward pass for auxiliary loss.
+        hidden_pre_bottleneck: Bottleneck activations before TopK or threshold masking,
+            shape ``(batch, n_experts, d_bottleneck)``.
+    """
     sae_in = sae.process_sae_in(x)
 
     # Standard forward

@@ -1,3 +1,5 @@
+"""Expert probing pipeline: load a SMIXAE checkpoint, score experts on labeled datasets, and produce HTML visualizations."""
+
 import dataclasses
 import json
 import os
@@ -20,6 +22,33 @@ from smixae import SMIXAE
 # ======================================================================
 @dataclasses.dataclass
 class DatasetConfig:
+    """Per-dataset configuration for the probing pipeline.
+
+    Controls which data file to load, how labels are mapped to colours, and how
+    many samples to encode.  Instances are typically constructed from entries in
+    ``datasets/probing/dataset_config.json``.
+
+    Attributes:
+        dataframe_path: Path to the CSV/Parquet/JSONL file (relative to the config
+            directory, or absolute).
+        text_column: Column name containing the input text. Defaults to ``"Sentence"``.
+        label_column: Column name containing class labels, or ``None`` for unlabelled
+            (continuity-only) analysis.
+        color_scale: Named Plotly colorscale (e.g. ``"Plasma"``, ``"Phase"``) used when
+            ``continuous_color`` is ``True``.  ``None`` uses discrete categorical colours.
+        continuous_color: If ``True``, colour points by label ordinal rather than by
+            class.  Automatically set to ``True`` when ``color_scale`` is provided.
+        output_subdir: Override for the output sub-directory name.  Defaults to the
+            stem of ``dataframe_path``.
+        color_map: Explicit ``{label: CSS_color}`` mapping for 1:1 colour schemes.
+            Takes precedence over ``color_scale`` for discrete plots.
+        n_input_samples: Override for the ``--n-input-samples`` CLI flag for this
+            dataset only.  ``None`` uses the global CLI value.
+        max_points: Override for ``--max-points`` for this dataset.
+            ``0`` means no cap; ``None`` uses the global CLI value.
+        show_labels: Annotate class-mean markers with text labels in the 3D scatter.
+    """
+
     dataframe_path: str
     text_column: str = "Sentence"
     label_column: str | None = "Label"
@@ -38,6 +67,7 @@ class DatasetConfig:
 
     @property
     def effective_color_scale(self) -> str:
+        """Return the configured color scale, falling back to ``"Plasma"``."""
         return self.color_scale if self.color_scale is not None else "Plasma"
 
 
@@ -67,6 +97,50 @@ def run_pipeline(
     context_window_display: int,
     dataset_name: str | None = None,
 ) -> None:
+    """Run the full analysis pipeline for a single dataset and write an HTML report.
+
+    Five-stage pipeline:
+
+    1. **Collect LLM activations** — tokenise the dataset and register a forward hook
+       at ``hook_point`` to capture residual stream activations.
+    2. **SAE encoding** — run SMIXAE on the activations in batches; filter experts
+       by ``active_threshold`` and ``min_points``.
+    3. **Evaluate experts** — score by Fisher discriminant ratio (labelled data) or
+       manifold continuity (unlabelled data).
+    4. **Sort** — rank experts by the chosen metric (``sort_by``).
+    5. **Plot** — generate interactive 3D Plotly scatters for the top-N experts and
+       serialise everything into a single self-contained HTML file.
+
+    Output is written to ``{final_output_dir}/{subdir}/experts.html``.
+
+    Args:
+        model: Pre-loaded HuggingFace language model.
+        tokenizer: Corresponding tokenizer.
+        sae: Loaded SMIXAE inference checkpoint.
+        cfg: Per-dataset configuration (colours, sample count overrides, etc.).
+        final_output_dir: Root directory under which per-dataset sub-directories
+            are created.
+        hook_point: HuggingFace module path to hook (e.g. ``"model.layers.11"``).
+        n_input_samples: Number of texts to encode (overridden by ``cfg.n_input_samples``
+            when set).
+        input_sequence_length: Max token length for padding/truncation.
+        device: Torch device string (e.g. ``"cuda"``).
+        llm_batch_size: Batch size for LLM forward passes.
+        sae_batch_size: Batch size for SAE encoding.
+        sort_by: Metric to rank experts by — one of ``"fisher"``,
+            ``"adjusted_fisher"``, ``"continuity"``, or ``"auto"``.
+        sort_ascending: If ``True``, rank lowest scores first.
+        adjusted_fisher: If ``True``, multiply Fisher score by class coverage fraction.
+        k_neighbors: Neighbourhood size for manifold continuity scoring.
+        active_threshold: Minimum L2 norm for an expert to be considered active.
+        min_points: Minimum number of active tokens required to include an expert.
+        max_points: Cap on active tokens per expert (``0`` = no cap).
+        n_interesting_experts_to_plot: Number of top-ranked experts to include in the
+            HTML report.
+        context_window_display: Number of surrounding tokens shown on hover.
+        dataset_name: HuggingFace dataset name to stream (used when
+            ``cfg.dataframe_path`` is empty, e.g. for the continuity pass).
+    """
     subdir = cfg.output_subdir or Path(cfg.dataframe_path).stem
     output_dir = os.path.join(final_output_dir, subdir)
     os.makedirs(output_dir, exist_ok=True)
@@ -261,6 +335,17 @@ def single(
     color_scale: str = typer.Option("Plasma", help="Plotly continuous colorscale name (e.g. Plasma, Viridis, RdBu)"),
     output_dir: str = typer.Option("expert_plots", help="Base directory to save the HTML plots"),
 ):
+    """Probe a single dataset against a SMIXAE checkpoint and write an HTML report.
+
+    Loads the LLM and SAE once, runs :func:`run_pipeline` for the specified dataset,
+    and writes interactive 3D scatter plots of the top-N experts to
+    ``{output_dir}/{run_hash}_{step}/{dataset_stem}/experts.html``.
+
+    Supports both labelled data (CSV/Parquet/JSONL with a label column, scored by Fisher
+    discriminant ratio) and unlabelled streaming (HuggingFace dataset, scored by manifold
+    continuity).  If neither ``--dataset-name`` nor ``--dataframe-path`` is given,
+    defaults to streaming ``monology/pile-uncopyrighted``.
+    """
     if dataset_name is None and dataframe_path is None:
         dataset_name = "monology/pile-uncopyrighted"
         print(f"No data source specified — defaulting to {dataset_name}")
@@ -354,6 +439,21 @@ def all_datasets(
         help="HuggingFace dataset to stream for the unlabelled continuity pass",
     ),
 ):
+    """Probe all datasets listed in a JSON config file, then run an unlabelled continuity pass.
+
+    Loads the LLM and SAE **once** and iterates over every entry in ``datasets_config``,
+    calling :func:`run_pipeline` for each.  After all labelled datasets are processed,
+    runs a final continuity pass by streaming ``continuity_dataset`` (unlabelled) and
+    scoring experts by manifold continuity.
+
+    The JSON config is a list of objects, each following the :class:`DatasetConfig`
+    schema (``dataframe_path`` required; all other fields optional).  Relative paths in
+    the config are resolved relative to the config file's parent directory.
+
+    All outputs land under ``{output_dir}/{run_hash}_{step}/``, with one sub-directory
+    per dataset (named by ``output_subdir`` or the CSV stem) and a ``continuity/``
+    sub-directory for the unlabelled pass.
+    """
     config_dir = Path(datasets_config).resolve().parent
     with open(datasets_config) as f:
         raw_configs = json.load(f)

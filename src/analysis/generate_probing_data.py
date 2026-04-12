@@ -1,3 +1,5 @@
+"""Template-based synthetic dataset generation for probing SMIXAE experts on discrete concepts."""
+
 import itertools
 import random
 from pathlib import Path
@@ -40,9 +42,9 @@ names = [
 
 
 def _enumerate_unique(templates, labels_list, label_fmt, n_samples):
-    """
-    Enumerate all unique (template × name × label_value) combinations,
-    deduplicate on rendered sentence, shuffle, and return up to n_samples.
+    """Enumerate all unique (template × name × label_value) combinations.
+
+    Deduplicates on the rendered sentence, shuffles, and returns up to ``n_samples`` rows.
     """
     combos = list(itertools.product(templates, names, labels_list))
     random.shuffle(combos)
@@ -69,6 +71,17 @@ def _enumerate_unique(templates, labels_list, label_fmt, n_samples):
 
 
 def generate_weekdays(n_samples=1000):
+    """Generate a probing dataset for day-of-week (Monday–Sunday).
+
+    Creates sentences from lab-context templates mentioning a specific day.  Labels are
+    the day names, ordered Monday through Sunday.
+
+    Args:
+        n_samples: Maximum number of unique sentences to return.
+
+    Returns:
+        DataFrame with columns ``Sentence`` and ``Label``.
+    """
     days = [
         "Monday",
         "Tuesday",
@@ -124,6 +137,17 @@ def generate_weekdays(n_samples=1000):
 
 
 def generate_hours(n_samples=1000):
+    """Generate a probing dataset for hour-of-day (1AM–12AM, 24 classes).
+
+    Creates sentences from lab-context templates mentioning a specific clock time.
+    Labels are the 24 hour values in AM/PM format, ordered chronologically.
+
+    Args:
+        n_samples: Maximum number of unique sentences to return.
+
+    Returns:
+        DataFrame with columns ``Sentence`` and ``Label``.
+    """
     hours = [
         "1AM",
         "2AM",
@@ -196,6 +220,18 @@ def generate_hours(n_samples=1000):
 
 
 def generate_temperatures(n_samples=1000):
+    """Generate a probing dataset for ordinal temperature descriptions (freezing → boiling).
+
+    Creates sentences from lab-context templates mentioning a temperature descriptor.
+    Labels are 11 ordinal terms from ``"freezing"`` to ``"boiling"``, useful for probing
+    ordinal/continuous concept representations.
+
+    Args:
+        n_samples: Maximum number of unique sentences to return.
+
+    Returns:
+        DataFrame with columns ``Sentence`` and ``Label``.
+    """
     temps = [
         "freezing",
         "frigid",
@@ -255,6 +291,18 @@ def generate_temperatures(n_samples=1000):
 
 
 def generate_time_units(n_samples=1000):
+    """Generate a probing dataset for time units (millisecond → century).
+
+    Creates sentences from lab-context templates mentioning a specific time unit.
+    Labels are 10 units ordered shortest to longest duration — useful for probing
+    ordinal scale representations.
+
+    Args:
+        n_samples: Maximum number of unique sentences to return.
+
+    Returns:
+        DataFrame with columns ``Sentence`` and ``Label``.
+    """
     # Ordered from shortest to longest duration
     units = [
         "millisecond",
@@ -314,6 +362,18 @@ def generate_time_units(n_samples=1000):
 
 
 def generate_body_parts(n_samples=1000):
+    """Generate a probing dataset for anatomical body parts (head to toe).
+
+    Creates sentences from medical/clinical templates referencing a body part.
+    Labels are 16 body parts ordered head-to-toe, useful for probing spatial or
+    positional representations.
+
+    Args:
+        n_samples: Maximum number of unique sentences to return.
+
+    Returns:
+        DataFrame with columns ``Sentence`` and ``Label``.
+    """
     # Ordered head-to-toe
     parts = [
         "head",
@@ -379,6 +439,18 @@ def generate_body_parts(n_samples=1000):
 
 
 def generate_living_things(n_samples=1000):
+    """Generate a probing dataset for biological organisms by complexity (plants → mammals).
+
+    Creates sentences from ecology/biology templates referencing a type of organism.
+    Labels are 14 organism categories ordered from simpler (moss) to more complex
+    (mammal), useful for probing biological or taxonomic representations.
+
+    Args:
+        n_samples: Maximum number of unique sentences to return.
+
+    Returns:
+        DataFrame with columns ``Sentence`` and ``Label``.
+    """
     # Ordered from simpler to more complex organisms (plants then animals)
     organisms = [
         "moss",
@@ -442,6 +514,17 @@ def generate_living_things(n_samples=1000):
 
 
 def generate_colors(n_samples=1000):
+    """Generate a probing dataset for color perception in lab contexts (ROYGBIV order).
+
+    Creates sentences from laboratory templates where a color is observed (e.g. indicator
+    color changes, staining results).  Labels are 8 colors in rainbow order, plus pink.
+
+    Args:
+        n_samples: Maximum number of unique sentences to return.
+
+    Returns:
+        DataFrame with columns ``Sentence`` and ``Label``.
+    """
     # Rainbow order (ROYGBIV + pink/violet)
     colors = [
         "red",
@@ -499,6 +582,18 @@ def generate_colors(n_samples=1000):
 
 
 def generate_months(n_samples=1000):
+    """Generate a probing dataset for calendar months (January–December).
+
+    Creates sentences from lab-context templates referencing a specific month.
+    Labels are the 12 month names in calendar order, useful for probing cyclic or
+    ordinal temporal representations.
+
+    Args:
+        n_samples: Maximum number of unique sentences to return.
+
+    Returns:
+        DataFrame with columns ``Sentence`` and ``Label``.
+    """
     months = [
         "January",
         "February",

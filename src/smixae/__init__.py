@@ -1,3 +1,12 @@
+"""SMIXAE public API and SAELens architecture registration.
+
+Importing this module (directly or transitively) registers both the ``"smixae"`` and
+``"affine_smixae"`` architectures with SAELens so they can be loaded via
+:meth:`SAE.load_from_disk` without any additional setup.
+
+Note: ``AffineSMIXAE`` is not actively used or maintained. It is exported here for
+historical completeness only.
+"""
 from sae_lens import register_sae_class, register_sae_training_class
 
 from smixae.affine_smixae import AffineSMIXAE, AffineSMIXAEConfig, AffineSMIXAETraining, AffineSMIXAETrainingConfig

@@ -1,3 +1,10 @@
+"""AffineSMIXAE: a SMIXAE variant with a learned W_directions affine routing matrix.
+
+.. warning::
+    This module is **not actively used or maintained**. It is kept for historical reference only.
+    Use :mod:`smixae.smixae` for all current work.
+"""
+
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -20,9 +27,7 @@ from typing_extensions import override
 
 @dataclass
 class AffineSMIXAEConfig(SAEConfig):
-    """
-    Configuration class for a AffineSMIXAE.
-    """
+    """Configuration class for a AffineSMIXAE."""
 
     n_experts: int = 1024
     d_expert: int = 16
@@ -36,18 +41,14 @@ class AffineSMIXAEConfig(SAEConfig):
 
 
 class AffineSMIXAE(SAE[AffineSMIXAEConfig]):
-    """
-    AffineSMIXAE is an inference-only implementation of a Sparse Autoencoder (SAE)
-    using a simple linear encoder and decoder.
+    """Inference-only AffineSMIXAE: SMIXAE variant with learned affine routing directions.
 
-    It implements the required abstract methods from BaseSAE:
+    **Not actively used or maintained** — kept for historical reference only.
 
-      - initialize_weights: sets up simple parameter initializations for W_enc, b_enc, W_dec, and b_dec.
-      - encode: computes the feature activations from an input.
-      - decode: reconstructs the input from the feature activations.
-
-    The BaseSAE.forward() method automatically calls encode and decode,
-    including any error-term processing if configured.
+    Extends the standard SMIXAE by adding a ``W_directions`` parameter
+    ``(n_experts, d_in)`` that defines per-expert routing directions in the input space.
+    Routing uses cosine similarity between the input and each direction rather than the
+    bottleneck norm used in :class:`SMIXAE`.
     """
 
     # W_gate: nn.Parameter
@@ -81,6 +82,7 @@ class AffineSMIXAE(SAE[AffineSMIXAEConfig]):
 
     @override
     def initialize_weights(self) -> None:
+        """Initialize base SAE weights then register AffineSMIXAE-specific parameters."""
         # Initialize encoder weights and bias.
         super().initialize_weights()
         _init_weights_affine_smixae(self)
@@ -90,9 +92,7 @@ class AffineSMIXAE(SAE[AffineSMIXAEConfig]):
     #     return torch.exp(self.log_threshold)
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Encode the input tensor into the feature space.
-        """
+        """Encode the input tensor into the feature space."""
         _, _, _, bottleneck, _, _ = affine_smixae_encode(self, x)  # (batch, n_experts, d_bottleneck)
 
         return bottleneck
@@ -112,9 +112,10 @@ class AffineSMIXAE(SAE[AffineSMIXAEConfig]):
     #     return bottleneck, h_latent
 
     def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
-        """
-        Decode the feature activations back to the input space.
-        Now, if hook_z reshaping is turned on, we reverse the flattening.
+        """Decode bottleneck activations back to the input space.
+
+        Applies the latent decoder, flattens expert dimensions, and projects through
+        ``W_dec``. Reverses hook_z reshaping if it was applied during input processing.
         """
         sae_out_pre = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec)
         sae_out_pre = sae_out_pre.flatten(-2, -1)
@@ -125,14 +126,15 @@ class AffineSMIXAE(SAE[AffineSMIXAEConfig]):
         return self.reshape_fn_out(sae_out_pre, self.d_head)
 
     def get_activation_fn(self) -> Callable[[torch.Tensor], torch.Tensor]:
+        """Return LeakyReLU(1e-4) to avoid dead neurons while preserving expert norms."""
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
 
     @property
     def effective_decoder_norm(self) -> torch.Tensor:
-        """
-        Computes the Frobenius norm of the effective 3D -> Residual projection.
-        Returns a tensor of shape (n_experts,)
+        """Compute the Frobenius norm of the effective bottleneck-to-residual projection.
+
+        Returns a tensor of shape ``(n_experts,)``.
         """
         W_dec_reshaped = self.W_dec.view(self.cfg.n_experts, self.cfg.d_expert, -1)
 
@@ -145,9 +147,7 @@ class AffineSMIXAE(SAE[AffineSMIXAEConfig]):
 
 @dataclass
 class AffineSMIXAETrainingConfig(TrainingSAEConfig):
-    """
-    Configuration class for training a AffineSMIXAETraining.
-    """
+    """Configuration class for training a AffineSMIXAETraining."""
 
     n_experts: int = 1024
     d_expert: int = 16
@@ -167,15 +167,12 @@ class AffineSMIXAETrainingConfig(TrainingSAEConfig):
 
 
 class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
-    """
-    AffineSMIXAETraining is a concrete implementation of BaseTrainingSAE using the "standard" SAE architecture.
-    It implements:
+    """Training-mode AffineSMIXAE with BatchTopK routing and dead-expert auxiliary loss.
 
-      - initialize_weights: basic weight initialization for encoder/decoder.
-      - encode: inference encoding (invokes encode_with_hidden_pre).
-      - decode: a simple linear decoder.
-      - encode_with_hidden_pre: computes activations and pre-activations.
-      - calculate_aux_loss: computes a sparsity penalty based on the (optionally scaled) p-norm of feature activations.
+    **Not actively used or maintained** — kept for historical reference only.
+
+    Mirrors :class:`SMIXAETraining` but uses cosine-similarity routing via
+    ``W_directions`` instead of bottleneck-norm routing.
     """
 
     b_enc: nn.Parameter
@@ -214,14 +211,25 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         # self.b_dec.requires_grad_(False)
 
     def initialize_weights(self) -> None:
+        """Initialize base SAE weights then register AffineSMIXAE-specific parameters."""
         super().initialize_weights()
         _init_weights_affine_smixae(self)
 
     @override
     def get_coefficients(self) -> dict[str, TrainCoefficientConfig | float]:
+        """Return an empty coefficient dict (no sparsity penalties are used in AffineSMIXAE)."""
         return {}
 
     def encode_with_hidden_pre(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """Encode ``x`` through the full affine pipeline, stashing bottleneck state for training.
+
+        Args:
+            x: Input activations of shape ``(batch, d_model)``.
+
+        Returns:
+            A 2-tuple ``(h_latent, hidden_pre_latent)`` returned for SAELens compatibility;
+            the training loop reads ``self.h_bottleneck`` directly.
+        """
         h_latent, hidden_pre_latent, hidden_pre_bottleneck, bottleneck, mask, cos_sims = affine_smixae_encode(self, x)
 
         # Stash
@@ -237,9 +245,10 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         return h_latent, hidden_pre_latent  # These get ignored
 
     def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
-        """
-        Decodes feature activations back into input space,
-        applying optional finetuning scale, hooking, out normalization, etc.
+        """Decode bottleneck activations back to the input space.
+
+        Applies the latent decoder, flattens expert dimensions, and projects through
+        ``W_dec``. The bias is added only at the output to avoid collapsing manifold structure.
         """
         sae_out_pre = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec)
         sae_out_pre = sae_out_pre.flatten(-2, -1)
@@ -344,6 +353,11 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         hidden_pre: torch.Tensor,
         sae_out: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
+        """Compute architecture-specific auxiliary losses.
+
+        Returns:
+            A dict mapping ``"dead_expert_aux_loss"`` to a scalar tensor.
+        """
         losses = {}
 
         losses["dead_expert_aux_loss"] = self.calculate_topk_aux_loss(
@@ -362,6 +376,21 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         z_pre_mask: torch.Tensor,  # (batch, n_experts, d_bottleneck) before TopK
         dead_expert_mask: torch.Tensor,  # (n_experts,) bool
     ) -> torch.Tensor:
+        """Compute auxiliary reconstruction loss over dead experts.
+
+        Selects ``k_aux`` dead experts by masked cosine similarity, decodes them through the
+        full expert pipeline, and penalises the reconstruction error against the current residual.
+        Also adds a direction-steering loss that pushes dead expert directions toward the residual.
+
+        Args:
+            sae_in: Original encoder input, shape ``(batch, d_in)``.
+            sae_out: Current reconstruction, same shape.
+            z_pre_mask: Pre-mask bottleneck activations, shape ``(batch, n_experts, d_bottleneck)``.
+            dead_expert_mask: Boolean mask of shape ``(n_experts,)``; ``True`` for dead experts.
+
+        Returns:
+            Scaled auxiliary loss scalar tensor.
+        """
         if dead_expert_mask is None or (num_dead := int(dead_expert_mask.sum())) == 0:
             return sae_out.new_tensor(0.0)
 
@@ -398,6 +427,12 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
 
     @torch.no_grad()
     def update_threshold(self, norms_topk: torch.Tensor) -> None:
+        """Update the routing threshold via EMA over the minimum positive cosine similarity.
+
+        Args:
+            norms_topk: Per-expert cosine similarities from the current batch,
+                shape ``(batch, n_experts)``.  Zero entries are inactive experts.
+        """
         positive_mask = norms_topk > 0 # cos sim now, I don't care
         lr = self.cfg.threshold_lr
         # autocast can cause numerical issues with the threshold update
@@ -408,9 +443,9 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
 
     @property
     def effective_decoder_norm(self) -> torch.Tensor:
-        """
-        Computes the Frobenius norm of the effective 3D -> Residual projection.
-        Returns a tensor of shape (n_experts,)
+        """Compute the Frobenius norm of the effective bottleneck-to-residual projection.
+
+        Returns a tensor of shape ``(n_experts,)``.
         """
         W_dec_reshaped = self.W_dec.view(self.cfg.n_experts, self.cfg.d_expert, -1)
 
@@ -421,6 +456,7 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
         return torch.linalg.matrix_norm(W_eff, ord="fro", dim=(-2, -1))
 
     def get_activation_fn(self) -> Callable[[torch.Tensor], torch.Tensor]:
+        """Return LeakyReLU(1e-4) to avoid dead neurons while preserving expert norms."""
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
 
@@ -428,6 +464,15 @@ class AffineSMIXAETraining(TrainingSAE[AffineSMIXAETrainingConfig]):
 def _init_weights_affine_smixae(
     sae: SAE[AffineSMIXAEConfig] | TrainingSAE[AffineSMIXAETrainingConfig],
 ) -> None:
+    """Register AffineSMIXAE-specific parameters on a SAE or TrainingSAE instance.
+
+    Registers four parameters: ``b_enc`` (encoder bias), ``W_directions`` (affine routing,
+    random normal init), ``W_bottleneck`` (expert space → bottleneck, Kaiming uniform), and
+    ``W_latent_dec`` (bottleneck → expert space, Kaiming uniform).
+
+    Args:
+        sae: The SAE or TrainingSAE instance on which to register the parameters.
+    """
     # Add gate bias term to allow more expressivity - pre relu
     sae.b_enc = nn.Parameter(
         torch.zeros(
@@ -480,6 +525,23 @@ def _init_weights_affine_smixae(
 
 
 def affine_smixae_encode(sae: AffineSMIXAE | AffineSMIXAETraining, x: torch.Tensor, threshold : torch.Tensor = None) -> tuple[torch.Tensor, ...]:  # noqa: E501
+    """Shared encoding logic for :class:`AffineSMIXAE` and :class:`AffineSMIXAETraining`.
+
+    Routing is based on cosine similarity between the (normalised) input and each expert's
+    ``W_directions`` direction.  During training, BatchTopK is applied over cosine similarities;
+    during inference, a scalar threshold gates the experts.
+
+    Args:
+        sae: An :class:`AffineSMIXAE` or :class:`AffineSMIXAETraining` instance.
+        x: Input activations, shape ``(batch, d_model)``.
+        threshold: Scalar threshold tensor for inference-time gating.  Pass ``None`` during
+            training to use BatchTopK routing instead.
+
+    Returns:
+        A 6-tuple ``(h_latent, hidden_pre_latent, hidden_pre_bottleneck, bottleneck, mask, cosine_similarities)``
+        where shapes are ``(batch, n_experts * d_expert)``, same, ``(batch, n_experts, d_bottleneck)``,
+        same, ``(batch, n_experts)``, ``(batch, n_experts)``.
+    """
     sae_in = sae.process_sae_in(x) # (batch_size, d_in)
 
     # Compute cosine similarities

@@ -1,7 +1,9 @@
-"""Training CLI for SMIXAE. Exposes all LanguageModelSAERunnerConfig and
-SMIXAETrainingConfig options. Run-specific args (model, hook, architecture
-scale, token budget) are required; all others default to the standard
-experiment settings."""
+"""Training CLI for SMIXAE.
+
+Exposes all ``LanguageModelSAERunnerConfig`` and ``SMIXAETrainingConfig`` options as Typer flags.
+Run-specific args (model, hook, architecture scale, token budget) are required;
+all others default to the standard experiment settings.
+"""
 
 import re as _re
 from typing import Optional
@@ -21,6 +23,7 @@ _orig_load_dataset = _acts_store.load_dataset
 
 
 def _auto_load_dataset(path, *args, **kwargs):
+    """Try ``load_from_disk`` first; fall back to SAELens' ``load_dataset`` for HuggingFace paths."""
     if isinstance(path, str):
         try:
             return _load_from_disk(path)
@@ -38,6 +41,19 @@ _orig_validate = _acts_store.validate_pretokenized_dataset_tokenizer
 
 
 def _smart_validate(dataset_path: str, model_tokenizer) -> None:  # type: ignore[type-arg]
+    """Validate pretokenized dataset tokenizer, supporting local ``save_to_disk`` paths.
+
+    SAELens' built-in validator only catches ``HfHubHTTPError`` (for Hub paths).
+    Local datasets saved with ``Dataset.save_to_disk`` raise ``HFValidationError``
+    instead, which the original code does not handle.
+
+    This patch reads ``sae_lens.json`` directly from the local directory (when present)
+    and compares vocabularies.  Falls back to the original validator for Hub paths.
+
+    Args:
+        dataset_path: Path to a local dataset directory or a HuggingFace Hub identifier.
+        model_tokenizer: The model's tokenizer, used for vocabulary comparison.
+    """
     import json
     from pathlib import Path
 
@@ -68,6 +84,24 @@ _orig_extract_stop = _acts_store.extract_stop_at_layer_from_tlens_hook_name
 
 
 def _smart_extract_stop(hook_name: str) -> int | None:
+    r"""Extract ``stop_at_layer`` from a hook name, handling HuggingFace-style names.
+
+    SAELens' regex ``r"\\.(\\d+)\\."`` requires a trailing dot after the layer number,
+    so it returns ``None`` for names like ``"model.layers.11"`` (no trailing dot).
+    When that happens, the full forward pass including ``lm_head`` runs, causing OOM
+    on large vocabularies (e.g. Gemma 2 with 256k tokens).
+
+    This patch falls back to matching ``r"\\.(\\d+)$"`` (end-of-string) for
+    HuggingFace-style hook names and returns ``layer_num + 1`` as the stop layer.
+
+    Args:
+        hook_name: Hook point string, e.g. ``"model.layers.11"`` or
+            ``"blocks.11.hook_resid_post"`` (TransformerLens style).
+
+    Returns:
+        The layer index at which to stop the forward pass, or ``None`` if the
+        hook name does not match any known pattern.
+    """
     result = _orig_extract_stop(hook_name)
     if result is not None:
         return result

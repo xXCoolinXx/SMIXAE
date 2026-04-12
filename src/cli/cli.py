@@ -1,3 +1,9 @@
+"""Centralised CLI entry point for the ``smixae`` command.
+
+Assembles all sub-apps (train, probe, newline, steer, generate-probing-data,
+generate-steering-data, pretokenize) into a single Typer application registered
+as the ``smixae`` console script in ``pyproject.toml``.
+"""
 import typer
 
 from analysis.anthropic_newline import app as newline

@@ -40,7 +40,19 @@ src = ["src"]
 line-length = 120
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I"]
+select = ["E", "F", "W", "I", "D"]
+ignore = [
+    "D105",   # missing magic method docstring
+    "D107",   # missing __init__ docstring (covered by class docstring)
+    "E501",   # line too long — not enforced; use # noqa: E501 for individual overrides
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"smixae_run.py" = ["D"]
+"experiments/*" = ["D"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/smixae", "src/analysis", "src/cli"]

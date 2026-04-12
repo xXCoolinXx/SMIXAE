@@ -17,14 +17,17 @@ SMIXAE/
 ├── src/
 │   ├── smixae/
 │   │   ├── __init__.py             # Public exports + SAELens architecture registration
-│   │   └── smixae.py               # Core architecture: SMIXAE model + training classes
+│   │   ├── smixae.py               # Core architecture: SMIXAE model + training classes
+│   │   └── affine_smixae.py        # AffineSMIXAE variant with W_directions routing (NOT actively used/maintained)
 │   ├── analysis/
 │   │   ├── utils.py                 # Shared infrastructure: load_llm, load_sae, collect_hook_activations, encode_sae_batched, Expert
 │   │   ├── generate_probing_data.py # Synthetic probing dataset generation (outputs to datasets/probing/)
 │   │   ├── generate_steering_data.py # Steering prompt dataset generation (outputs to datasets/steering/)
 │   │   ├── categorize_all.py        # Expert probing pipeline: load checkpoint, evaluate experts, produce HTML visualizations
 │   │   ├── anthropic_newline.py     # Newline-position manifold analysis
-│   │   └── steer.py                 # Steering experiments: coordinate substitution via top Fisher expert
+│   │   ├── steer.py                 # Steering experiments: coordinate substitution via top Fisher expert
+│   │   ├── scatter3d.py             # Flexible 3-D Plotly scatter with per-class means, labels, and colorbar
+│   │   └── pretokenize.py           # Converts HuggingFace datasets to SAELens tokenized format
 │   └── cli/
 │       ├── cli.py                   # Centralized CLI entry point (smixae command)
 │       └── train.py                 # smixae train subcommand — all training options as CLI flags
@@ -66,15 +69,15 @@ Given a residual stream activation `x` of shape `(batch, d_model)` (e.g. 3584 fo
 
 ### Key Hyperparameters (current experiment)
 
-| Parameter       | Value | Meaning                                      |
-|-----------------|-------|----------------------------------------------|
-| `n_experts`     | 4096  | Total number of experts                      |
-| `d_expert`      | 8     | Dimensionality of each expert's activation   |
-| `d_bottleneck`  | 3     | Bottleneck dimension (3D for visualization)  |
-| `k_experts`     | 128   | Experts active per forward pass (top-k)      |
-| `d_model`       | 3584  | Gemma 2-9B residual stream dimension         |
+| Parameter       | Value | Notes                                                     |
+|-----------------|-------|-----------------------------------------------------------|
+| `n_experts`     | 2048  | Used in current paper experiments; 4096 is possible but increases memory |
+| `d_expert`      | 8     | Expert capacity — scales parameters vs. expressivity      |
+| `d_bottleneck`  | 3     | Chosen for 3-D visualization; tuning requires dimensionality regularization (not in this repo) |
+| `k_experts`     | 128   | Active experts per token; 64–128 is a good range          |
+| `d_model`       | 3584  | Gemma 2-9B residual stream dimension                      |
 
-`d_bottleneck=3` is chosen for direct 3D visualization. Future work will explore higher dimensions with a minimum-dimensionality penalty.
+`d_bottleneck=3` is chosen for direct 3-D visualization. Increasing it is possible but requires a minimum-dimensionality penalty (not currently implemented) to prevent the bottleneck from collapsing to fewer effective dimensions.
 
 ### Dead Expert Recovery
 
@@ -142,6 +145,70 @@ Causal intervention script using **coordinate substitution**: for a target exper
 
 Expert discovery reuses `collect_activations()` + `get_sae_activations()` from `utils.py`. Output: `steering_results.csv` with columns `task`, `expert_id`, `src_hour`, `tgt_hour`, `start_hour`, `prompt`, `baseline_output`, `steered_output`. Exposed via CLI as `smixae steer main`.
 
+### `src/analysis/scatter3d.py`
+
+Flexible 3-D Plotly scatter utility used by `categorize_all.py` and `anthropic_newline.py`. Key public API:
+
+- **`plot_3d_scatter(xyz, labels, ...)`**: top-level entry point — builds a complete figure with per-class means, optional label annotations, and optional colorbar.
+- **`build_color_map(classes, colorscale)`**: maps class labels to `"rgb(...)"` strings.
+- **`add_scatter_trace` / `add_mean_trace` / `add_label_annotations` / `add_colorbar_trace`**: composable building blocks; each returns the modified figure for chaining.
+
+Colorscale formats: `None`/`"auto"` (HSV rainbow), any Plotly named scale (e.g. `"Viridis"`), `list[color]`, or `dict[label, color]`.
+
+### `src/analysis/pretokenize.py`
+
+Wraps SAELens `PretokenizeRunner` with a token-count cap so you can produce a fixed-size tokenized dataset from a streaming HuggingFace source. Exposed via CLI as `smixae pretokenize`. Key classes:
+
+- **`LimitedPretokenizeRunnerConfig`**: extends `PretokenizeRunnerConfig` with `n_tokens` field.
+- **`LimitedPretokenizeRunner`**: streams, materialises, tokenizes, and saves exactly `n_tokens` tokens (or fewer if the source is exhausted).
+
+### `src/smixae/affine_smixae.py`
+
+> **Not actively used or maintained.** Kept for historical reference only.
+
+A SMIXAE variant that replaces bottleneck-norm routing with cosine-similarity routing via a learned `W_directions` parameter of shape `(n_experts, d_in)`. Each expert has an associated direction in input space; routing selects experts whose directions align with the current input. See `affine_smixae_encode()` for the full forward pass.
+
+---
+
+## Analysis Metrics
+
+### Fisher Discriminant Ratio
+
+Measures class separability in the expert's 3-D bottleneck space. Computed as the ratio of between-class variance to within-class variance across the bottleneck dimensions. Higher is better, though this can be from noise.
+
+The `adjusted_fisher_score` property rescales by the fraction of dataset classes actually present in the active samples, preventing experts that only see a subset of classes from appearing artificially strong.
+
+This is useful when the exact regression target is unknown.
+
+### KNN Continuity
+
+Measures whether the expert's bottleneck activations smoothly transition over the original activation vectors, measured using cosine similarity of the neighbors of a single point (found using KNN) and averaging. This is used for unsupervised discovery, but mostly finds linear directions. 
+
+### Newline Metrics (from `anthropic_newline.py`)
+
+| Metric | Meaning |
+|--------|---------|
+| `decode_r2` | R² of a linear regression predicting chars-since-newline from the **decoded** residual stream contribution of the expert. Measures how linearly decodable the position signal is from the full output. |
+| `encode_linear_r2` | R² of a linear regression on the **bottleneck** activations directly. Measures raw linear structure in 3-D. |
+| `encode_periodic_r2` | R² of a Fourier regression (sin + cos) on the bottleneck. Measures periodic / ring structure. |
+| `periodic_gain` | `encode_periodic_r2 − encode_linear_r2`. Positive gain = ring or spiral geometry; negative = the linear fit was better. **This is the most useful metric** |
+
+---
+
+## Dataset Config Schema (`datasets/probing/dataset_config.json`)
+
+Each entry in the config maps a dataset name to a dict with the following fields:
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `dataframe_path` | `str` | Path to the CSV file (relative to repo root) |
+| `color_scale` | `str \| null` | Plotly colorscale name (e.g. `"HSV"`, `"Plasma"`); `null` for auto |
+| `color_map` | `dict \| null` | Explicit `{label: color}` map overriding `color_scale` |
+| `n_input_samples` | `int` | Number of sentences to sample when collecting activations |
+| `max_points` | `int` | Maximum scatter points per expert in the HTML output |
+| `show_labels` | `bool` | Whether to render class-name annotations on mean spheres |
+| `continuous_color` | `bool` | If `true`, uses continuous colorbar mode instead of discrete legend |
+
 ---
 
 ## How to Write New Code
@@ -201,7 +268,7 @@ smixae train \
     --model-name google/gemma-2-9b \
     --hook-name model.layers.11 \
     --training-tokens 500000000 \
-    --n-experts 4096 \
+    --n-experts 2048 \
     --d-in 3584 \
     --d-expert 8 \
     --k-experts 128 \
@@ -215,6 +282,8 @@ python smixae_run.py
 Training logs to W&B. Intermediate checkpoints are saved under `--checkpoint-path` with a `{run_id}/{step}/` subdirectory appended (non-deterministic path, useful for resuming). The final inference-ready model is saved to `--output-path` as a flat directory — no subdirs — making it directly referenceable by downstream analysis scripts.
 
 The `smixae train` command exposes all `LanguageModelSAERunnerConfig` and `SMIXAETrainingConfig` options. Run `smixae train --help` to see all flags grouped by category (Model, Data, Training, SAE Architecture, Logging, etc.). Run-specific args (`--model-name`, `--hook-name`, `--training-tokens`, `--n-experts`, `--d-in`, `--d-expert`, `--k-experts`) are required; all others have sensible defaults. A `--factor` multiplier scales batch size, LR, warm-up, and dead-expert window together.
+
+`--use-affine-smixae` switches to `AffineSMIXAETraining` instead of `SMIXAETraining`. **Not actively used or maintained** — only use this flag for historical reproduction experiments.
 
 ### Experiment Scripts
 
@@ -239,6 +308,7 @@ All commands run through the `smixae` CLI (installed as an editable package via 
 ```
 smixae
 ├── train                        # Train a SMIXAE (all config options exposed as flags)
+├── pretokenize                  # Tokenize a HuggingFace dataset and save for SAELens training
 ├── generate-probing-data
 │   └── generate                 # Generate all probing datasets → datasets/probing/
 ├── generate-steering-data
