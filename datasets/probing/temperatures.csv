@@ -1,1001 +1,1001 @@
-Sentence,Label
-Ambient conditions in the corridor are chilly,03_chilly
-The reagent shelf area felt mild,05_mild
-James said the walk-in cooler felt boiling,10_boiling
-Elena measured the soil temperature as freezing,00_freezing
-Field conditions were cold during collection,02_cold
-Bob complained the office was sweltering,08_sweltering
-Elena said the walk-in cooler felt sweltering,08_sweltering
-Bob complained the office was mild,05_mild
-Raj complained the office was cool,04_cool
-The greenhouse environment is cold,02_cold
-James described the cleanroom as sweltering,08_sweltering
-Surface readings indicate conditions are freezing,00_freezing
-Bob noted the sample chamber felt frigid,01_frigid
-Yuki recorded that the growth chamber felt chilly,03_chilly
-Maria flagged that the freezer felt mild,05_mild
-Ambient conditions in the corridor are frigid,01_frigid
-Prof. Kim described the cleanroom as sweltering,08_sweltering
-Bob said the walk-in cooler felt cool,04_cool
-The lab conditions today are scorching,09_scorching
-Charlie described the cleanroom as frigid,01_frigid
-Maria reported the autoclave room as mild,05_mild
-The curing oven is running warm,06_warm
-Dr. Patel reported the autoclave room as mild,05_mild
-The storage unit is running cold,02_cold
-Prof. Kim noted the sample chamber felt scorching,09_scorching
-the coordinator adjusted the thermostat because it was cold,02_cold
-Kevin recorded that the growth chamber felt mild,05_mild
-Dr. Rossi noted the sample chamber felt cool,04_cool
-the intern recorded that the growth chamber felt hot,07_hot
-Yuki noted the sample chamber felt hot,07_hot
-Dr. Rossi reported the autoclave room as hot,07_hot
-Prof. Kim complained the office was sweltering,08_sweltering
-Sarah described the cleanroom as hot,07_hot
-Sarah noted the sample chamber felt warm,06_warm
-Alice flagged that the freezer felt cool,04_cool
-the analyst recorded that the growth chamber felt sweltering,08_sweltering
-the technician flagged that the freezer felt cool,04_cool
-The climate chamber was set to sweltering,08_sweltering
-Fatima said the walk-in cooler felt warm,06_warm
-Dr. Rossi measured the soil temperature as hot,07_hot
-Surface readings indicate conditions are scorching,09_scorching
-the PI described the cleanroom as hot,07_hot
-the PI measured the soil temperature as mild,05_mild
-The server room is dangerously sweltering,08_sweltering
-Field conditions were mild during collection,05_mild
-Dr. Rossi said the walk-in cooler felt scorching,09_scorching
-James recorded that the growth chamber felt cold,02_cold
-Dr. Rossi reported the autoclave room as cool,04_cool
-Fatima recorded that the growth chamber felt hot,07_hot
-The drying chamber atmosphere is mild,05_mild
-Prof. Wang noted the sample chamber felt freezing,00_freezing
-The drying chamber atmosphere is scorching,09_scorching
-Elena reported the autoclave room as scorching,09_scorching
-Alice adjusted the thermostat because it was mild,05_mild
-The incubation environment should remain frigid,01_frigid
-the supervisor reported the autoclave room as scorching,09_scorching
-Maria recorded that the growth chamber felt scorching,09_scorching
-the coordinator flagged that the freezer felt warm,06_warm
-Dr. Rossi flagged that the freezer felt cold,02_cold
-Fatima adjusted the thermostat because it was mild,05_mild
-the coordinator noted the sample chamber felt hot,07_hot
-Kevin measured the soil temperature as cold,02_cold
-the technician said the walk-in cooler felt cold,02_cold
-Liam recorded that the growth chamber felt boiling,10_boiling
-The climate chamber was set to freezing,00_freezing
-Morning readings showed the habitat was mild,05_mild
-The greenhouse environment is freezing,00_freezing
-The bioreactor jacket temperature is sweltering,08_sweltering
-Dr. Patel flagged that the freezer felt hot,07_hot
-Dr. Rossi recorded that the growth chamber felt scorching,09_scorching
-Prof. Kim described the cleanroom as scorching,09_scorching
-the PI flagged that the freezer felt cool,04_cool
-Bob described the cleanroom as mild,05_mild
-Amara complained the office was frigid,01_frigid
-Charlie recorded that the growth chamber felt scorching,09_scorching
-Yuki reported the autoclave room as warm,06_warm
-Dr. Rossi adjusted the thermostat because it was mild,05_mild
-Kevin said the walk-in cooler felt sweltering,08_sweltering
-Charlie recorded that the growth chamber felt boiling,10_boiling
-Alice said the walk-in cooler felt cool,04_cool
-Kevin reported the autoclave room as chilly,03_chilly
-Yuki noted the sample chamber felt sweltering,08_sweltering
-Prof. Wang recorded that the growth chamber felt freezing,00_freezing
-The drying chamber atmosphere is freezing,00_freezing
-Bob measured the soil temperature as cold,02_cold
-the nurse described the cleanroom as sweltering,08_sweltering
-Sarah described the cleanroom as cool,04_cool
-Outside it is absolutely sweltering,08_sweltering
-Bob adjusted the thermostat because it was sweltering,08_sweltering
-Prof. Kim complained the office was warm,06_warm
-the technician recorded that the growth chamber felt scorching,09_scorching
-The curing oven is running cool,04_cool
-The climate chamber was set to boiling,10_boiling
-the PI noted the sample chamber felt mild,05_mild
-Dr. Rossi described the cleanroom as warm,06_warm
-the PI said the walk-in cooler felt mild,05_mild
-Fatima described the cleanroom as boiling,10_boiling
-The fermentation tank is currently cool,04_cool
-Elena complained the office was sweltering,08_sweltering
-The water bath feels cool,04_cool
-Amara recorded that the growth chamber felt mild,05_mild
-Dr. Patel measured the soil temperature as hot,07_hot
-Omar recorded that the growth chamber felt warm,06_warm
-The ventilation output is blowing chilly,03_chilly
-Bob noted the sample chamber felt cold,02_cold
-Dr. Chen complained the office was warm,06_warm
-The greenhouse environment is hot,07_hot
-The fermentation tank is currently sweltering,08_sweltering
-Prof. Wang said the walk-in cooler felt cold,02_cold
-Prof. Kim adjusted the thermostat because it was hot,07_hot
-the supervisor complained the office was hot,07_hot
-Dr. Patel adjusted the thermostat because it was scorching,09_scorching
-Bob recorded that the growth chamber felt boiling,10_boiling
-Elena said the walk-in cooler felt cold,02_cold
-Liam reported the autoclave room as sweltering,08_sweltering
-The fermentation tank is currently chilly,03_chilly
-Ambient conditions in the corridor are sweltering,08_sweltering
-Maria flagged that the freezer felt chilly,03_chilly
-The climate chamber was set to frigid,01_frigid
-The curing oven is running frigid,01_frigid
-Kevin reported the autoclave room as cool,04_cool
-the technician measured the soil temperature as cold,02_cold
-Field conditions were hot during collection,07_hot
-Dr. Rossi flagged that the freezer felt cool,04_cool
-Amara flagged that the freezer felt chilly,03_chilly
-The ventilation output is blowing cold,02_cold
-Dr. Patel said the walk-in cooler felt frigid,01_frigid
-Maria measured the soil temperature as chilly,03_chilly
-Alice noted the sample chamber felt chilly,03_chilly
-Dr. Okafor noted the sample chamber felt mild,05_mild
-the nurse reported the autoclave room as cool,04_cool
-Dr. Chen flagged that the freezer felt boiling,10_boiling
-Kevin said the walk-in cooler felt scorching,09_scorching
-Liam noted the sample chamber felt warm,06_warm
-the supervisor recorded that the growth chamber felt cool,04_cool
-The climate chamber was set to scorching,09_scorching
-Patients reported feeling freezing during the trial,00_freezing
-Prof. Wang noted the sample chamber felt mild,05_mild
-the coordinator measured the soil temperature as boiling,10_boiling
-Prof. Müller flagged that the freezer felt boiling,10_boiling
-the PI measured the soil temperature as frigid,01_frigid
-The lab conditions today are cold,02_cold
-Sarah reported the autoclave room as cool,04_cool
-the coordinator complained the office was chilly,03_chilly
-Dr. Patel reported the autoclave room as frigid,01_frigid
-Field conditions were cool during collection,04_cool
-The drying chamber atmosphere is sweltering,08_sweltering
-Liam noted the sample chamber felt mild,05_mild
-Fatima adjusted the thermostat because it was scorching,09_scorching
-Fatima described the cleanroom as sweltering,08_sweltering
-Kevin complained the office was hot,07_hot
-Kevin described the cleanroom as hot,07_hot
-the intern flagged that the freezer felt chilly,03_chilly
-the coordinator adjusted the thermostat because it was boiling,10_boiling
-the intern said the walk-in cooler felt warm,06_warm
-Dr. Patel adjusted the thermostat because it was cold,02_cold
-The incubation environment should remain warm,06_warm
-The greenhouse environment is boiling,10_boiling
-the PI reported the autoclave room as boiling,10_boiling
-Bob noted the sample chamber felt freezing,00_freezing
-Prof. Wang noted the sample chamber felt cold,02_cold
-Prof. Müller recorded that the growth chamber felt sweltering,08_sweltering
-Fatima complained the office was hot,07_hot
-Dr. Chen measured the soil temperature as freezing,00_freezing
-Liam recorded that the growth chamber felt mild,05_mild
-The greenhouse environment is scorching,09_scorching
-the nurse flagged that the freezer felt sweltering,08_sweltering
-Raj described the cleanroom as frigid,01_frigid
-The ventilation output is blowing warm,06_warm
-the coordinator recorded that the growth chamber felt cool,04_cool
-the intern described the cleanroom as mild,05_mild
-the coordinator noted the sample chamber felt scorching,09_scorching
-Kevin noted the sample chamber felt cool,04_cool
-Dr. Smith reported the autoclave room as sweltering,08_sweltering
-Outside it is absolutely mild,05_mild
-Liam reported the autoclave room as mild,05_mild
-The bioreactor jacket temperature is scorching,09_scorching
-Liam complained the office was scorching,09_scorching
-Kevin reported the autoclave room as hot,07_hot
-Yuki flagged that the freezer felt boiling,10_boiling
-Maria said the walk-in cooler felt cool,04_cool
-Raj said the walk-in cooler felt frigid,01_frigid
-Dr. Chen reported the autoclave room as hot,07_hot
-the supervisor adjusted the thermostat because it was freezing,00_freezing
-Dr. Patel reported the autoclave room as sweltering,08_sweltering
-Dr. Patel adjusted the thermostat because it was chilly,03_chilly
-the technician flagged that the freezer felt warm,06_warm
-Bob complained the office was boiling,10_boiling
-the nurse said the walk-in cooler felt cold,02_cold
-the PI reported the autoclave room as scorching,09_scorching
-Amara adjusted the thermostat because it was cool,04_cool
-the nurse noted the sample chamber felt boiling,10_boiling
-Sarah said the walk-in cooler felt cold,02_cold
-The server room is dangerously chilly,03_chilly
-Elena flagged that the freezer felt cold,02_cold
-the coordinator flagged that the freezer felt hot,07_hot
-the PI noted the sample chamber felt hot,07_hot
-Prof. Wang adjusted the thermostat because it was warm,06_warm
-Fatima adjusted the thermostat because it was chilly,03_chilly
-Amara reported the autoclave room as sweltering,08_sweltering
-Outside it is absolutely warm,06_warm
-James complained the office was freezing,00_freezing
-Omar reported the autoclave room as boiling,10_boiling
-The water bath feels cold,02_cold
-Dr. Rossi described the cleanroom as cool,04_cool
-the coordinator recorded that the growth chamber felt warm,06_warm
-the postdoc said the walk-in cooler felt sweltering,08_sweltering
-Alice said the walk-in cooler felt scorching,09_scorching
-Amara complained the office was warm,06_warm
-Alice adjusted the thermostat because it was chilly,03_chilly
-the supervisor measured the soil temperature as frigid,01_frigid
-Prof. Müller noted the sample chamber felt cold,02_cold
-Yuki complained the office was hot,07_hot
-Dr. Patel said the walk-in cooler felt cool,04_cool
-the postdoc said the walk-in cooler felt scorching,09_scorching
-Sarah said the walk-in cooler felt chilly,03_chilly
-The ventilation output is blowing hot,07_hot
-The climate chamber was set to chilly,03_chilly
-the analyst described the cleanroom as freezing,00_freezing
-Raj adjusted the thermostat because it was frigid,01_frigid
-Amara reported the autoclave room as boiling,10_boiling
-the nurse described the cleanroom as chilly,03_chilly
-Dr. Okafor reported the autoclave room as hot,07_hot
-The server room is dangerously mild,05_mild
-Outside it is absolutely scorching,09_scorching
-Patients reported feeling hot during the trial,07_hot
-Bob measured the soil temperature as chilly,03_chilly
-The fermentation tank is currently cold,02_cold
-The curing oven is running scorching,09_scorching
-Elena measured the soil temperature as boiling,10_boiling
-Dr. Chen said the walk-in cooler felt sweltering,08_sweltering
-the coordinator recorded that the growth chamber felt cold,02_cold
-Dr. Smith measured the soil temperature as chilly,03_chilly
-The lab conditions today are freezing,00_freezing
-Surface readings indicate conditions are cool,04_cool
-Raj reported the autoclave room as frigid,01_frigid
-The server room is dangerously cold,02_cold
-Bob flagged that the freezer felt hot,07_hot
-the technician described the cleanroom as mild,05_mild
-Amara recorded that the growth chamber felt scorching,09_scorching
-The curing oven is running hot,07_hot
-Prof. Müller said the walk-in cooler felt boiling,10_boiling
-Patients reported feeling warm during the trial,06_warm
-Dr. Smith described the cleanroom as frigid,01_frigid
-Volunteers rated the testing room as boiling,10_boiling
-The lab conditions today are frigid,01_frigid
-Prof. Müller adjusted the thermostat because it was hot,07_hot
-Patients reported feeling frigid during the trial,01_frigid
-The reagent shelf area felt scorching,09_scorching
-Ambient conditions in the corridor are mild,05_mild
-Dr. Okafor noted the sample chamber felt sweltering,08_sweltering
-the PI complained the office was cool,04_cool
-The drying chamber atmosphere is frigid,01_frigid
-the postdoc flagged that the freezer felt sweltering,08_sweltering
-the intern flagged that the freezer felt warm,06_warm
-The climate chamber was set to hot,07_hot
-Raj noted the sample chamber felt cold,02_cold
-Dr. Chen adjusted the thermostat because it was freezing,00_freezing
-Kevin reported the autoclave room as mild,05_mild
-The water bath feels boiling,10_boiling
-Dr. Chen measured the soil temperature as warm,06_warm
-Bob reported the autoclave room as freezing,00_freezing
-Dr. Okafor said the walk-in cooler felt sweltering,08_sweltering
-Dr. Smith said the walk-in cooler felt cool,04_cool
-the technician described the cleanroom as chilly,03_chilly
-Liam recorded that the growth chamber felt cold,02_cold
-Omar recorded that the growth chamber felt hot,07_hot
-Prof. Kim measured the soil temperature as boiling,10_boiling
-Elena measured the soil temperature as cool,04_cool
-Charlie flagged that the freezer felt cool,04_cool
-Prof. Kim noted the sample chamber felt hot,07_hot
-Dr. Okafor noted the sample chamber felt warm,06_warm
-The greenhouse environment is chilly,03_chilly
-the coordinator adjusted the thermostat because it was cool,04_cool
-The ventilation output is blowing mild,05_mild
-Prof. Kim measured the soil temperature as hot,07_hot
-Amara flagged that the freezer felt scorching,09_scorching
-Ambient conditions in the corridor are scorching,09_scorching
-Kevin said the walk-in cooler felt chilly,03_chilly
-the intern measured the soil temperature as scorching,09_scorching
-the nurse complained the office was mild,05_mild
-Sarah noted the sample chamber felt sweltering,08_sweltering
-Bob noted the sample chamber felt warm,06_warm
-the PI complained the office was freezing,00_freezing
-James noted the sample chamber felt warm,06_warm
-the postdoc flagged that the freezer felt frigid,01_frigid
-Maria measured the soil temperature as scorching,09_scorching
-Morning readings showed the habitat was freezing,00_freezing
-the PI described the cleanroom as cold,02_cold
-the coordinator recorded that the growth chamber felt mild,05_mild
-The climate chamber was set to cold,02_cold
-Amara recorded that the growth chamber felt hot,07_hot
-the PI reported the autoclave room as cool,04_cool
-Sarah flagged that the freezer felt scorching,09_scorching
-Dr. Chen complained the office was cool,04_cool
-Dr. Rossi measured the soil temperature as warm,06_warm
-Maria noted the sample chamber felt cold,02_cold
-The greenhouse environment is sweltering,08_sweltering
-the postdoc complained the office was sweltering,08_sweltering
-the analyst said the walk-in cooler felt boiling,10_boiling
-Patients reported feeling sweltering during the trial,08_sweltering
-Kevin adjusted the thermostat because it was hot,07_hot
-The server room is dangerously cool,04_cool
-The reagent shelf area felt cool,04_cool
-Yuki said the walk-in cooler felt chilly,03_chilly
-The reagent shelf area felt warm,06_warm
-Prof. Müller described the cleanroom as mild,05_mild
-The curing oven is running sweltering,08_sweltering
-Patients reported feeling cold during the trial,02_cold
-Prof. Wang adjusted the thermostat because it was cool,04_cool
-Elena adjusted the thermostat because it was frigid,01_frigid
-Surface readings indicate conditions are cold,02_cold
-the supervisor flagged that the freezer felt chilly,03_chilly
-Bob recorded that the growth chamber felt warm,06_warm
-Liam noted the sample chamber felt hot,07_hot
-Alice noted the sample chamber felt freezing,00_freezing
-Dr. Rossi reported the autoclave room as cold,02_cold
-Amara complained the office was boiling,10_boiling
-Charlie said the walk-in cooler felt boiling,10_boiling
-Dr. Okafor complained the office was cold,02_cold
-Prof. Kim noted the sample chamber felt freezing,00_freezing
-the intern noted the sample chamber felt scorching,09_scorching
-Prof. Kim measured the soil temperature as cold,02_cold
-Yuki flagged that the freezer felt mild,05_mild
-the supervisor described the cleanroom as scorching,09_scorching
-Raj flagged that the freezer felt scorching,09_scorching
-Dr. Chen described the cleanroom as sweltering,08_sweltering
-the technician flagged that the freezer felt sweltering,08_sweltering
-Volunteers rated the testing room as frigid,01_frigid
-Raj adjusted the thermostat because it was chilly,03_chilly
-Field conditions were freezing during collection,00_freezing
-the PI reported the autoclave room as frigid,01_frigid
-the postdoc noted the sample chamber felt freezing,00_freezing
-Prof. Kim adjusted the thermostat because it was boiling,10_boiling
-The fermentation tank is currently scorching,09_scorching
-Kevin complained the office was mild,05_mild
-the coordinator said the walk-in cooler felt boiling,10_boiling
-James adjusted the thermostat because it was frigid,01_frigid
-Fatima flagged that the freezer felt scorching,09_scorching
-Prof. Wang complained the office was boiling,10_boiling
-The drying chamber atmosphere is chilly,03_chilly
-Dr. Patel recorded that the growth chamber felt hot,07_hot
-Ambient conditions in the corridor are warm,06_warm
-Sarah noted the sample chamber felt freezing,00_freezing
-The reactor core temperature reads warm,06_warm
-The server room is dangerously hot,07_hot
-the analyst reported the autoclave room as chilly,03_chilly
-Maria adjusted the thermostat because it was freezing,00_freezing
-Kevin recorded that the growth chamber felt scorching,09_scorching
-The water bath feels mild,05_mild
-Dr. Smith measured the soil temperature as sweltering,08_sweltering
-Dr. Okafor adjusted the thermostat because it was freezing,00_freezing
-Elena reported the autoclave room as hot,07_hot
-Ambient conditions in the corridor are freezing,00_freezing
-Charlie adjusted the thermostat because it was scorching,09_scorching
-the technician measured the soil temperature as boiling,10_boiling
-the technician reported the autoclave room as cold,02_cold
-Charlie described the cleanroom as freezing,00_freezing
-Alice measured the soil temperature as sweltering,08_sweltering
-Elena described the cleanroom as sweltering,08_sweltering
-The storage unit is running scorching,09_scorching
-the technician noted the sample chamber felt chilly,03_chilly
-Surface readings indicate conditions are sweltering,08_sweltering
-The reactor core temperature reads hot,07_hot
-the technician adjusted the thermostat because it was chilly,03_chilly
-the analyst measured the soil temperature as boiling,10_boiling
-Dr. Okafor reported the autoclave room as scorching,09_scorching
-The water bath feels sweltering,08_sweltering
-Dr. Smith said the walk-in cooler felt mild,05_mild
-The reagent shelf area felt sweltering,08_sweltering
-the supervisor recorded that the growth chamber felt chilly,03_chilly
-Bob noted the sample chamber felt scorching,09_scorching
-Dr. Chen adjusted the thermostat because it was chilly,03_chilly
-The reactor core temperature reads chilly,03_chilly
-the supervisor said the walk-in cooler felt cold,02_cold
-Charlie recorded that the growth chamber felt cold,02_cold
-Kevin said the walk-in cooler felt frigid,01_frigid
-Omar reported the autoclave room as hot,07_hot
-James recorded that the growth chamber felt mild,05_mild
-Dr. Chen recorded that the growth chamber felt sweltering,08_sweltering
-Elena reported the autoclave room as freezing,00_freezing
-Amara recorded that the growth chamber felt cold,02_cold
-Field conditions were warm during collection,06_warm
-Bob measured the soil temperature as mild,05_mild
-Volunteers rated the testing room as cold,02_cold
-Liam reported the autoclave room as warm,06_warm
-The water bath feels hot,07_hot
-the supervisor said the walk-in cooler felt frigid,01_frigid
-Charlie complained the office was cool,04_cool
-Dr. Smith complained the office was scorching,09_scorching
-The greenhouse environment is mild,05_mild
-the technician described the cleanroom as scorching,09_scorching
-Dr. Patel measured the soil temperature as warm,06_warm
-The drying chamber atmosphere is cool,04_cool
-the intern flagged that the freezer felt hot,07_hot
-the postdoc reported the autoclave room as sweltering,08_sweltering
-Maria said the walk-in cooler felt scorching,09_scorching
-Dr. Smith flagged that the freezer felt cool,04_cool
-Dr. Okafor recorded that the growth chamber felt cold,02_cold
-the supervisor measured the soil temperature as cold,02_cold
-Raj reported the autoclave room as sweltering,08_sweltering
-Charlie said the walk-in cooler felt scorching,09_scorching
-the coordinator described the cleanroom as chilly,03_chilly
-the nurse adjusted the thermostat because it was chilly,03_chilly
-Alice complained the office was sweltering,08_sweltering
-Bob noted the sample chamber felt hot,07_hot
-Liam said the walk-in cooler felt freezing,00_freezing
-the coordinator noted the sample chamber felt mild,05_mild
-the supervisor said the walk-in cooler felt mild,05_mild
-the analyst adjusted the thermostat because it was chilly,03_chilly
-James described the cleanroom as cool,04_cool
-The storage unit is running hot,07_hot
-Surface readings indicate conditions are chilly,03_chilly
-Prof. Müller recorded that the growth chamber felt chilly,03_chilly
-Dr. Patel adjusted the thermostat because it was frigid,01_frigid
-The storage unit is running chilly,03_chilly
-Elena reported the autoclave room as cool,04_cool
-Liam reported the autoclave room as chilly,03_chilly
-Kevin noted the sample chamber felt frigid,01_frigid
-Dr. Okafor complained the office was chilly,03_chilly
-Prof. Müller described the cleanroom as sweltering,08_sweltering
-Omar flagged that the freezer felt cool,04_cool
-Dr. Chen recorded that the growth chamber felt scorching,09_scorching
-the analyst noted the sample chamber felt sweltering,08_sweltering
-Maria described the cleanroom as frigid,01_frigid
-Prof. Müller reported the autoclave room as freezing,00_freezing
-Kevin adjusted the thermostat because it was cool,04_cool
-Charlie adjusted the thermostat because it was hot,07_hot
-Maria recorded that the growth chamber felt cool,04_cool
-Raj reported the autoclave room as hot,07_hot
-the postdoc flagged that the freezer felt freezing,00_freezing
-Alice measured the soil temperature as chilly,03_chilly
-Elena reported the autoclave room as sweltering,08_sweltering
-Dr. Smith measured the soil temperature as frigid,01_frigid
-the postdoc said the walk-in cooler felt chilly,03_chilly
-Ambient conditions in the corridor are cold,02_cold
-Dr. Chen measured the soil temperature as mild,05_mild
-Kevin said the walk-in cooler felt hot,07_hot
-James said the walk-in cooler felt warm,06_warm
-Fatima said the walk-in cooler felt mild,05_mild
-Yuki measured the soil temperature as chilly,03_chilly
-Elena said the walk-in cooler felt frigid,01_frigid
-Fatima described the cleanroom as cool,04_cool
-The storage unit is running frigid,01_frigid
-Prof. Müller recorded that the growth chamber felt scorching,09_scorching
-the PI noted the sample chamber felt freezing,00_freezing
-the analyst described the cleanroom as chilly,03_chilly
-Elena complained the office was warm,06_warm
-Bob adjusted the thermostat because it was scorching,09_scorching
-Charlie recorded that the growth chamber felt hot,07_hot
-the postdoc said the walk-in cooler felt hot,07_hot
-Prof. Kim said the walk-in cooler felt chilly,03_chilly
-Amara said the walk-in cooler felt boiling,10_boiling
-Sarah adjusted the thermostat because it was warm,06_warm
-Surface readings indicate conditions are mild,05_mild
-the postdoc adjusted the thermostat because it was scorching,09_scorching
-Alice said the walk-in cooler felt chilly,03_chilly
-the coordinator adjusted the thermostat because it was sweltering,08_sweltering
-Prof. Kim recorded that the growth chamber felt scorching,09_scorching
-Omar complained the office was cool,04_cool
-The water bath feels chilly,03_chilly
-Dr. Patel measured the soil temperature as cool,04_cool
-Dr. Rossi flagged that the freezer felt boiling,10_boiling
-Alice adjusted the thermostat because it was boiling,10_boiling
-Fatima flagged that the freezer felt cool,04_cool
-Elena described the cleanroom as cold,02_cold
-Amara reported the autoclave room as warm,06_warm
-Prof. Kim complained the office was cold,02_cold
-Dr. Chen measured the soil temperature as scorching,09_scorching
-Dr. Smith adjusted the thermostat because it was chilly,03_chilly
-James flagged that the freezer felt chilly,03_chilly
-Prof. Müller noted the sample chamber felt warm,06_warm
-Alice measured the soil temperature as cold,02_cold
-Liam reported the autoclave room as boiling,10_boiling
-James recorded that the growth chamber felt chilly,03_chilly
-Dr. Smith complained the office was cold,02_cold
-Prof. Müller complained the office was cold,02_cold
-Charlie reported the autoclave room as warm,06_warm
-James adjusted the thermostat because it was freezing,00_freezing
-The water bath feels freezing,00_freezing
-the supervisor flagged that the freezer felt freezing,00_freezing
-Dr. Okafor measured the soil temperature as sweltering,08_sweltering
-Kevin recorded that the growth chamber felt sweltering,08_sweltering
-Dr. Okafor measured the soil temperature as mild,05_mild
-Prof. Wang described the cleanroom as frigid,01_frigid
-The reagent shelf area felt frigid,01_frigid
-the coordinator recorded that the growth chamber felt scorching,09_scorching
-The storage unit is running mild,05_mild
-Alice noted the sample chamber felt cool,04_cool
-Maria complained the office was hot,07_hot
-the PI reported the autoclave room as hot,07_hot
-The incubation environment should remain chilly,03_chilly
-the technician complained the office was cold,02_cold
-Maria measured the soil temperature as warm,06_warm
-The bioreactor jacket temperature is frigid,01_frigid
-The drying chamber atmosphere is boiling,10_boiling
-the PI adjusted the thermostat because it was mild,05_mild
-the intern described the cleanroom as scorching,09_scorching
-Charlie reported the autoclave room as mild,05_mild
-Dr. Smith recorded that the growth chamber felt chilly,03_chilly
-Omar adjusted the thermostat because it was freezing,00_freezing
-Dr. Okafor reported the autoclave room as cool,04_cool
-The storage unit is running freezing,00_freezing
-the nurse noted the sample chamber felt mild,05_mild
-The reactor core temperature reads boiling,10_boiling
-The storage unit is running cool,04_cool
-Maria measured the soil temperature as freezing,00_freezing
-Liam described the cleanroom as warm,06_warm
-Fatima noted the sample chamber felt sweltering,08_sweltering
-the nurse measured the soil temperature as cold,02_cold
-Charlie reported the autoclave room as scorching,09_scorching
-the postdoc said the walk-in cooler felt frigid,01_frigid
-Maria adjusted the thermostat because it was cold,02_cold
-Omar complained the office was scorching,09_scorching
-Amara said the walk-in cooler felt freezing,00_freezing
-Bob measured the soil temperature as hot,07_hot
-Field conditions were chilly during collection,03_chilly
-Charlie complained the office was boiling,10_boiling
-the PI adjusted the thermostat because it was chilly,03_chilly
-the coordinator measured the soil temperature as cold,02_cold
-Amara complained the office was sweltering,08_sweltering
-Dr. Patel noted the sample chamber felt hot,07_hot
-the intern complained the office was scorching,09_scorching
-The lab conditions today are sweltering,08_sweltering
-the technician measured the soil temperature as hot,07_hot
-Liam measured the soil temperature as boiling,10_boiling
-Patients reported feeling chilly during the trial,03_chilly
-The water bath feels warm,06_warm
-The storage unit is running sweltering,08_sweltering
-Dr. Rossi flagged that the freezer felt scorching,09_scorching
-The storage unit is running boiling,10_boiling
-Prof. Kim complained the office was scorching,09_scorching
-Prof. Müller said the walk-in cooler felt frigid,01_frigid
-The bioreactor jacket temperature is cool,04_cool
-the postdoc measured the soil temperature as sweltering,08_sweltering
-Alice measured the soil temperature as boiling,10_boiling
-James adjusted the thermostat because it was mild,05_mild
-the intern recorded that the growth chamber felt sweltering,08_sweltering
-Volunteers rated the testing room as chilly,03_chilly
-the intern reported the autoclave room as frigid,01_frigid
-Fatima recorded that the growth chamber felt boiling,10_boiling
-The bioreactor jacket temperature is boiling,10_boiling
-Amara reported the autoclave room as freezing,00_freezing
-Liam adjusted the thermostat because it was frigid,01_frigid
-Sarah flagged that the freezer felt freezing,00_freezing
-The lab conditions today are warm,06_warm
-Elena recorded that the growth chamber felt cold,02_cold
-the PI flagged that the freezer felt warm,06_warm
-Raj said the walk-in cooler felt boiling,10_boiling
-Yuki adjusted the thermostat because it was mild,05_mild
-Prof. Müller said the walk-in cooler felt chilly,03_chilly
-The lab conditions today are chilly,03_chilly
-the nurse measured the soil temperature as hot,07_hot
-Sarah flagged that the freezer felt hot,07_hot
-The curing oven is running freezing,00_freezing
-the postdoc measured the soil temperature as mild,05_mild
-the coordinator measured the soil temperature as frigid,01_frigid
-Alice reported the autoclave room as cool,04_cool
-the postdoc flagged that the freezer felt scorching,09_scorching
-Prof. Wang said the walk-in cooler felt sweltering,08_sweltering
-the coordinator recorded that the growth chamber felt freezing,00_freezing
-the coordinator reported the autoclave room as warm,06_warm
-Raj adjusted the thermostat because it was mild,05_mild
-Omar complained the office was cold,02_cold
-Yuki recorded that the growth chamber felt freezing,00_freezing
-Dr. Okafor recorded that the growth chamber felt boiling,10_boiling
-The reagent shelf area felt hot,07_hot
-Field conditions were scorching during collection,09_scorching
-Kevin reported the autoclave room as boiling,10_boiling
-the intern complained the office was mild,05_mild
-Liam noted the sample chamber felt boiling,10_boiling
-Prof. Wang described the cleanroom as warm,06_warm
-The server room is dangerously freezing,00_freezing
-Amara said the walk-in cooler felt frigid,01_frigid
-Prof. Müller described the cleanroom as chilly,03_chilly
-Maria described the cleanroom as chilly,03_chilly
-Dr. Smith said the walk-in cooler felt warm,06_warm
-The incubation environment should remain cool,04_cool
-Charlie noted the sample chamber felt mild,05_mild
-the intern reported the autoclave room as sweltering,08_sweltering
-Omar reported the autoclave room as sweltering,08_sweltering
-Maria measured the soil temperature as mild,05_mild
-Omar said the walk-in cooler felt freezing,00_freezing
-Bob adjusted the thermostat because it was warm,06_warm
-Amara measured the soil temperature as hot,07_hot
-Dr. Patel complained the office was hot,07_hot
-The ventilation output is blowing sweltering,08_sweltering
-Charlie reported the autoclave room as frigid,01_frigid
-Prof. Wang reported the autoclave room as chilly,03_chilly
-the coordinator reported the autoclave room as chilly,03_chilly
-Dr. Chen flagged that the freezer felt cool,04_cool
-the PI adjusted the thermostat because it was hot,07_hot
-Elena described the cleanroom as warm,06_warm
-Alice described the cleanroom as mild,05_mild
-the technician described the cleanroom as cold,02_cold
-Liam recorded that the growth chamber felt scorching,09_scorching
-Kevin described the cleanroom as frigid,01_frigid
-Dr. Smith adjusted the thermostat because it was cold,02_cold
-Prof. Müller complained the office was scorching,09_scorching
-Yuki adjusted the thermostat because it was hot,07_hot
-the technician noted the sample chamber felt hot,07_hot
-Omar noted the sample chamber felt mild,05_mild
-Field conditions were boiling during collection,10_boiling
-the intern reported the autoclave room as cool,04_cool
-Dr. Patel measured the soil temperature as chilly,03_chilly
-Prof. Kim adjusted the thermostat because it was sweltering,08_sweltering
-Morning readings showed the habitat was warm,06_warm
-Prof. Kim recorded that the growth chamber felt warm,06_warm
-the PI flagged that the freezer felt hot,07_hot
-Outside it is absolutely frigid,01_frigid
-The reagent shelf area felt chilly,03_chilly
-The reagent shelf area felt cold,02_cold
-Charlie flagged that the freezer felt frigid,01_frigid
-Sarah said the walk-in cooler felt hot,07_hot
-the technician flagged that the freezer felt boiling,10_boiling
-The reactor core temperature reads mild,05_mild
-Morning readings showed the habitat was boiling,10_boiling
-Prof. Kim complained the office was mild,05_mild
-Maria said the walk-in cooler felt frigid,01_frigid
-Elena adjusted the thermostat because it was cool,04_cool
-Prof. Müller recorded that the growth chamber felt warm,06_warm
-Fatima recorded that the growth chamber felt sweltering,08_sweltering
-Elena recorded that the growth chamber felt freezing,00_freezing
-The curing oven is running mild,05_mild
-Liam recorded that the growth chamber felt cool,04_cool
-Elena measured the soil temperature as warm,06_warm
-Bob flagged that the freezer felt frigid,01_frigid
-Morning readings showed the habitat was scorching,09_scorching
-Prof. Kim measured the soil temperature as warm,06_warm
-the analyst described the cleanroom as sweltering,08_sweltering
-the technician complained the office was freezing,00_freezing
-Sarah said the walk-in cooler felt cool,04_cool
-The bioreactor jacket temperature is hot,07_hot
-the technician reported the autoclave room as chilly,03_chilly
-The ventilation output is blowing scorching,09_scorching
-the intern noted the sample chamber felt chilly,03_chilly
-Kevin complained the office was freezing,00_freezing
-Prof. Wang complained the office was hot,07_hot
-the supervisor recorded that the growth chamber felt frigid,01_frigid
-Prof. Kim complained the office was hot,07_hot
-the nurse adjusted the thermostat because it was scorching,09_scorching
-Dr. Rossi noted the sample chamber felt warm,06_warm
-Dr. Patel recorded that the growth chamber felt frigid,01_frigid
-Alice measured the soil temperature as scorching,09_scorching
-the coordinator described the cleanroom as cold,02_cold
-Yuki described the cleanroom as warm,06_warm
-Prof. Kim reported the autoclave room as mild,05_mild
-The lab conditions today are hot,07_hot
-Sarah complained the office was frigid,01_frigid
-Dr. Okafor described the cleanroom as scorching,09_scorching
-Prof. Wang complained the office was cool,04_cool
-Maria reported the autoclave room as frigid,01_frigid
-The reactor core temperature reads scorching,09_scorching
-Dr. Patel reported the autoclave room as cold,02_cold
-Bob recorded that the growth chamber felt cool,04_cool
-Omar adjusted the thermostat because it was mild,05_mild
-Outside it is absolutely cool,04_cool
-Dr. Rossi noted the sample chamber felt frigid,01_frigid
-Dr. Smith reported the autoclave room as boiling,10_boiling
-the postdoc described the cleanroom as boiling,10_boiling
-The incubation environment should remain freezing,00_freezing
-Dr. Chen said the walk-in cooler felt freezing,00_freezing
-James described the cleanroom as scorching,09_scorching
-Prof. Wang flagged that the freezer felt hot,07_hot
-the supervisor measured the soil temperature as mild,05_mild
-the postdoc reported the autoclave room as frigid,01_frigid
-Charlie recorded that the growth chamber felt cool,04_cool
-Prof. Müller described the cleanroom as hot,07_hot
-The curing oven is running chilly,03_chilly
-Omar said the walk-in cooler felt boiling,10_boiling
-Elena described the cleanroom as chilly,03_chilly
-Alice flagged that the freezer felt warm,06_warm
-the supervisor described the cleanroom as warm,06_warm
-Yuki noted the sample chamber felt freezing,00_freezing
-Kevin described the cleanroom as cool,04_cool
-Omar described the cleanroom as cold,02_cold
-Omar recorded that the growth chamber felt chilly,03_chilly
-The reactor core temperature reads cool,04_cool
-James measured the soil temperature as freezing,00_freezing
-Dr. Chen flagged that the freezer felt hot,07_hot
-Raj flagged that the freezer felt mild,05_mild
-Prof. Kim recorded that the growth chamber felt frigid,01_frigid
-Prof. Wang flagged that the freezer felt chilly,03_chilly
-Fatima flagged that the freezer felt mild,05_mild
-The bioreactor jacket temperature is warm,06_warm
-the analyst noted the sample chamber felt hot,07_hot
-Alice adjusted the thermostat because it was hot,07_hot
-the technician said the walk-in cooler felt frigid,01_frigid
-the supervisor adjusted the thermostat because it was warm,06_warm
-the nurse complained the office was chilly,03_chilly
-the postdoc flagged that the freezer felt hot,07_hot
-Raj reported the autoclave room as chilly,03_chilly
-Prof. Wang measured the soil temperature as boiling,10_boiling
-Prof. Wang reported the autoclave room as cool,04_cool
-The bioreactor jacket temperature is cold,02_cold
-Alice measured the soil temperature as hot,07_hot
-Volunteers rated the testing room as scorching,09_scorching
-Amara said the walk-in cooler felt sweltering,08_sweltering
-Prof. Kim measured the soil temperature as chilly,03_chilly
-The storage unit is running warm,06_warm
-Elena noted the sample chamber felt boiling,10_boiling
-Sarah described the cleanroom as sweltering,08_sweltering
-the technician recorded that the growth chamber felt hot,07_hot
-The ventilation output is blowing frigid,01_frigid
-The incubation environment should remain hot,07_hot
-Fatima complained the office was warm,06_warm
-the technician noted the sample chamber felt scorching,09_scorching
-Maria said the walk-in cooler felt warm,06_warm
-Dr. Rossi said the walk-in cooler felt mild,05_mild
-Prof. Wang noted the sample chamber felt sweltering,08_sweltering
-Prof. Müller adjusted the thermostat because it was sweltering,08_sweltering
-Kevin reported the autoclave room as scorching,09_scorching
-The incubation environment should remain mild,05_mild
-Fatima measured the soil temperature as cold,02_cold
-Bob complained the office was warm,06_warm
-Amara reported the autoclave room as mild,05_mild
-Omar flagged that the freezer felt sweltering,08_sweltering
-The fermentation tank is currently frigid,01_frigid
-Prof. Wang said the walk-in cooler felt boiling,10_boiling
-Dr. Smith measured the soil temperature as mild,05_mild
-the postdoc noted the sample chamber felt mild,05_mild
-Charlie adjusted the thermostat because it was boiling,10_boiling
-Dr. Chen complained the office was chilly,03_chilly
-the nurse complained the office was scorching,09_scorching
-Maria complained the office was cold,02_cold
-the coordinator complained the office was hot,07_hot
-Fatima described the cleanroom as cold,02_cold
-Yuki complained the office was chilly,03_chilly
-Raj noted the sample chamber felt boiling,10_boiling
-The fermentation tank is currently hot,07_hot
-Dr. Rossi adjusted the thermostat because it was warm,06_warm
-Fatima measured the soil temperature as boiling,10_boiling
-The reactor core temperature reads frigid,01_frigid
-Charlie complained the office was freezing,00_freezing
-the intern complained the office was chilly,03_chilly
-Patients reported feeling boiling during the trial,10_boiling
-Liam said the walk-in cooler felt sweltering,08_sweltering
-The server room is dangerously warm,06_warm
-Volunteers rated the testing room as cool,04_cool
-The lab conditions today are mild,05_mild
-Kevin noted the sample chamber felt sweltering,08_sweltering
-Fatima noted the sample chamber felt frigid,01_frigid
-Dr. Smith described the cleanroom as cool,04_cool
-Bob complained the office was hot,07_hot
-the postdoc adjusted the thermostat because it was frigid,01_frigid
-Morning readings showed the habitat was cool,04_cool
-Prof. Kim measured the soil temperature as freezing,00_freezing
-Charlie noted the sample chamber felt scorching,09_scorching
-Omar said the walk-in cooler felt warm,06_warm
-The greenhouse environment is cool,04_cool
-The bioreactor jacket temperature is chilly,03_chilly
-Volunteers rated the testing room as warm,06_warm
-the intern noted the sample chamber felt boiling,10_boiling
-Elena flagged that the freezer felt frigid,01_frigid
-Surface readings indicate conditions are frigid,01_frigid
-Fatima flagged that the freezer felt cold,02_cold
-Omar adjusted the thermostat because it was cold,02_cold
-Bob described the cleanroom as boiling,10_boiling
-Kevin reported the autoclave room as warm,06_warm
-the analyst measured the soil temperature as chilly,03_chilly
-Prof. Wang recorded that the growth chamber felt cool,04_cool
-Dr. Smith described the cleanroom as sweltering,08_sweltering
-Sarah measured the soil temperature as cold,02_cold
-Surface readings indicate conditions are hot,07_hot
-the intern recorded that the growth chamber felt freezing,00_freezing
-the PI adjusted the thermostat because it was cold,02_cold
-the intern measured the soil temperature as mild,05_mild
-Patients reported feeling cool during the trial,04_cool
-The fermentation tank is currently boiling,10_boiling
-Volunteers rated the testing room as mild,05_mild
-Dr. Okafor measured the soil temperature as warm,06_warm
-Dr. Patel described the cleanroom as freezing,00_freezing
-Prof. Kim complained the office was frigid,01_frigid
-Liam described the cleanroom as frigid,01_frigid
-Patients reported feeling scorching during the trial,09_scorching
-the technician reported the autoclave room as sweltering,08_sweltering
-Prof. Wang recorded that the growth chamber felt cold,02_cold
-Volunteers rated the testing room as hot,07_hot
-Liam described the cleanroom as mild,05_mild
-The incubation environment should remain cold,02_cold
-the coordinator described the cleanroom as freezing,00_freezing
-the coordinator said the walk-in cooler felt hot,07_hot
-Ambient conditions in the corridor are hot,07_hot
-Dr. Chen recorded that the growth chamber felt mild,05_mild
-Prof. Kim recorded that the growth chamber felt boiling,10_boiling
-The incubation environment should remain scorching,09_scorching
-The drying chamber atmosphere is hot,07_hot
-Yuki noted the sample chamber felt chilly,03_chilly
-Liam noted the sample chamber felt sweltering,08_sweltering
-Omar complained the office was boiling,10_boiling
-Liam measured the soil temperature as sweltering,08_sweltering
-Dr. Rossi reported the autoclave room as scorching,09_scorching
-Dr. Okafor reported the autoclave room as boiling,10_boiling
-Bob flagged that the freezer felt warm,06_warm
-Liam adjusted the thermostat because it was cold,02_cold
-The lab conditions today are cool,04_cool
-Volunteers rated the testing room as sweltering,08_sweltering
-The fermentation tank is currently mild,05_mild
-The ventilation output is blowing boiling,10_boiling
-Yuki recorded that the growth chamber felt cold,02_cold
-Raj reported the autoclave room as mild,05_mild
-Dr. Chen adjusted the thermostat because it was hot,07_hot
-Kevin recorded that the growth chamber felt boiling,10_boiling
-Omar recorded that the growth chamber felt cool,04_cool
-The water bath feels frigid,01_frigid
-Elena reported the autoclave room as warm,06_warm
-Ambient conditions in the corridor are cool,04_cool
-The greenhouse environment is frigid,01_frigid
-Fatima described the cleanroom as frigid,01_frigid
-James measured the soil temperature as chilly,03_chilly
-Maria measured the soil temperature as cool,04_cool
-Alice flagged that the freezer felt scorching,09_scorching
-Alice noted the sample chamber felt mild,05_mild
-the coordinator said the walk-in cooler felt sweltering,08_sweltering
-the technician noted the sample chamber felt freezing,00_freezing
-James measured the soil temperature as mild,05_mild
-Dr. Smith recorded that the growth chamber felt frigid,01_frigid
-Raj noted the sample chamber felt scorching,09_scorching
-the analyst measured the soil temperature as mild,05_mild
-the technician reported the autoclave room as boiling,10_boiling
-The water bath feels scorching,09_scorching
-Prof. Müller complained the office was cool,04_cool
-Amara described the cleanroom as scorching,09_scorching
-The drying chamber atmosphere is cold,02_cold
-Dr. Okafor measured the soil temperature as scorching,09_scorching
-Outside it is absolutely hot,07_hot
-Amara noted the sample chamber felt hot,07_hot
-Morning readings showed the habitat was cold,02_cold
-the coordinator measured the soil temperature as freezing,00_freezing
-Omar recorded that the growth chamber felt mild,05_mild
-Kevin described the cleanroom as cold,02_cold
-The ventilation output is blowing freezing,00_freezing
-Fatima noted the sample chamber felt scorching,09_scorching
-the analyst complained the office was sweltering,08_sweltering
-Prof. Wang complained the office was frigid,01_frigid
-Volunteers rated the testing room as freezing,00_freezing
-Fatima recorded that the growth chamber felt freezing,00_freezing
-Dr. Patel recorded that the growth chamber felt cool,04_cool
-The server room is dangerously scorching,09_scorching
-Dr. Okafor recorded that the growth chamber felt freezing,00_freezing
-the coordinator measured the soil temperature as chilly,03_chilly
-Liam noted the sample chamber felt freezing,00_freezing
-Maria said the walk-in cooler felt cold,02_cold
-Fatima complained the office was chilly,03_chilly
-Morning readings showed the habitat was chilly,03_chilly
-the PI complained the office was cold,02_cold
-the analyst adjusted the thermostat because it was cool,04_cool
-Amara flagged that the freezer felt warm,06_warm
-the analyst noted the sample chamber felt warm,06_warm
-the PI recorded that the growth chamber felt warm,06_warm
-Dr. Patel described the cleanroom as boiling,10_boiling
-Raj described the cleanroom as scorching,09_scorching
-Prof. Wang adjusted the thermostat because it was mild,05_mild
-the analyst complained the office was warm,06_warm
-Yuki noted the sample chamber felt mild,05_mild
-The curing oven is running boiling,10_boiling
-the coordinator described the cleanroom as frigid,01_frigid
-Dr. Okafor flagged that the freezer felt warm,06_warm
-the postdoc described the cleanroom as frigid,01_frigid
-Fatima complained the office was sweltering,08_sweltering
-the analyst described the cleanroom as cool,04_cool
-Sarah adjusted the thermostat because it was cold,02_cold
-Prof. Wang adjusted the thermostat because it was chilly,03_chilly
-James said the walk-in cooler felt scorching,09_scorching
-Alice complained the office was chilly,03_chilly
-the postdoc measured the soil temperature as frigid,01_frigid
-the PI measured the soil temperature as cool,04_cool
-The lab conditions today are boiling,10_boiling
-Bob flagged that the freezer felt sweltering,08_sweltering
-The climate chamber was set to mild,05_mild
-Maria described the cleanroom as boiling,10_boiling
-Amara complained the office was cold,02_cold
-Outside it is absolutely freezing,00_freezing
-James adjusted the thermostat because it was sweltering,08_sweltering
-Dr. Patel described the cleanroom as cool,04_cool
-Yuki reported the autoclave room as cold,02_cold
-Liam measured the soil temperature as cool,04_cool
-Bob recorded that the growth chamber felt chilly,03_chilly
-Elena recorded that the growth chamber felt warm,06_warm
-Morning readings showed the habitat was sweltering,08_sweltering
-the nurse recorded that the growth chamber felt chilly,03_chilly
-Dr. Rossi described the cleanroom as boiling,10_boiling
-Elena noted the sample chamber felt sweltering,08_sweltering
-Dr. Chen measured the soil temperature as frigid,01_frigid
-James flagged that the freezer felt hot,07_hot
-Morning readings showed the habitat was hot,07_hot
-the nurse said the walk-in cooler felt frigid,01_frigid
-Omar noted the sample chamber felt scorching,09_scorching
-The bioreactor jacket temperature is freezing,00_freezing
-Yuki described the cleanroom as cold,02_cold
-Amara recorded that the growth chamber felt frigid,01_frigid
-Prof. Müller flagged that the freezer felt warm,06_warm
-The ventilation output is blowing cool,04_cool
-Field conditions were sweltering during collection,08_sweltering
-the technician adjusted the thermostat because it was cool,04_cool
-Sarah noted the sample chamber felt boiling,10_boiling
-The reagent shelf area felt boiling,10_boiling
-Elena noted the sample chamber felt freezing,00_freezing
-Amara flagged that the freezer felt freezing,00_freezing
-the PI complained the office was sweltering,08_sweltering
-the coordinator said the walk-in cooler felt cold,02_cold
-the intern complained the office was hot,07_hot
-Dr. Okafor flagged that the freezer felt freezing,00_freezing
-Maria flagged that the freezer felt cool,04_cool
-Dr. Okafor adjusted the thermostat because it was boiling,10_boiling
-the technician said the walk-in cooler felt warm,06_warm
-Fatima noted the sample chamber felt freezing,00_freezing
-Dr. Patel said the walk-in cooler felt boiling,10_boiling
-Dr. Rossi said the walk-in cooler felt frigid,01_frigid
-Dr. Smith measured the soil temperature as hot,07_hot
-The curing oven is running cold,02_cold
-The incubation environment should remain sweltering,08_sweltering
-Dr. Chen complained the office was hot,07_hot
-Sarah complained the office was sweltering,08_sweltering
-The fermentation tank is currently freezing,00_freezing
-Outside it is absolutely cold,02_cold
-Sarah measured the soil temperature as warm,06_warm
-Prof. Kim measured the soil temperature as sweltering,08_sweltering
-Fatima measured the soil temperature as chilly,03_chilly
-Surface readings indicate conditions are boiling,10_boiling
-the coordinator said the walk-in cooler felt frigid,01_frigid
-Fatima reported the autoclave room as chilly,03_chilly
-The reagent shelf area felt freezing,00_freezing
-Dr. Smith said the walk-in cooler felt cold,02_cold
-Maria flagged that the freezer felt warm,06_warm
-the nurse described the cleanroom as boiling,10_boiling
-Outside it is absolutely boiling,10_boiling
-the postdoc flagged that the freezer felt cool,04_cool
-the postdoc adjusted the thermostat because it was freezing,00_freezing
-Prof. Wang complained the office was chilly,03_chilly
-the technician complained the office was cool,04_cool
-the postdoc complained the office was cold,02_cold
-Alice reported the autoclave room as mild,05_mild
-The bioreactor jacket temperature is mild,05_mild
-Charlie flagged that the freezer felt boiling,10_boiling
-the supervisor complained the office was sweltering,08_sweltering
-Fatima reported the autoclave room as sweltering,08_sweltering
-the analyst noted the sample chamber felt mild,05_mild
-Yuki flagged that the freezer felt warm,06_warm
-Prof. Wang said the walk-in cooler felt freezing,00_freezing
-the postdoc described the cleanroom as sweltering,08_sweltering
-The reactor core temperature reads cold,02_cold
-James complained the office was sweltering,08_sweltering
-the coordinator complained the office was mild,05_mild
-The server room is dangerously frigid,01_frigid
-Yuki described the cleanroom as boiling,10_boiling
-The climate chamber was set to warm,06_warm
-Outside it is absolutely chilly,03_chilly
-Prof. Müller complained the office was hot,07_hot
-Charlie said the walk-in cooler felt freezing,00_freezing
-Omar flagged that the freezer felt frigid,01_frigid
-Morning readings showed the habitat was frigid,01_frigid
-The reactor core temperature reads freezing,00_freezing
-the intern reported the autoclave room as boiling,10_boiling
-Elena flagged that the freezer felt boiling,10_boiling
-Omar noted the sample chamber felt cold,02_cold
-Field conditions were frigid during collection,01_frigid
-the analyst adjusted the thermostat because it was mild,05_mild
-Liam complained the office was cool,04_cool
-Dr. Chen noted the sample chamber felt cool,04_cool
-Dr. Smith complained the office was frigid,01_frigid
-The climate chamber was set to cool,04_cool
-Patients reported feeling mild during the trial,05_mild
-Dr. Rossi measured the soil temperature as cool,04_cool
-Liam flagged that the freezer felt hot,07_hot
-the coordinator noted the sample chamber felt cold,02_cold
-Maria adjusted the thermostat because it was boiling,10_boiling
-Kevin flagged that the freezer felt freezing,00_freezing
-Liam flagged that the freezer felt cool,04_cool
-Prof. Kim adjusted the thermostat because it was chilly,03_chilly
-Alice described the cleanroom as hot,07_hot
-the intern measured the soil temperature as boiling,10_boiling
-Raj adjusted the thermostat because it was boiling,10_boiling
-the postdoc complained the office was cool,04_cool
-Amara flagged that the freezer felt cold,02_cold
-the technician measured the soil temperature as frigid,01_frigid
-The greenhouse environment is warm,06_warm
-Prof. Wang noted the sample chamber felt boiling,10_boiling
-Yuki reported the autoclave room as scorching,09_scorching
-The reactor core temperature reads sweltering,08_sweltering
-the technician noted the sample chamber felt sweltering,08_sweltering
-The fermentation tank is currently warm,06_warm
-the coordinator flagged that the freezer felt freezing,00_freezing
-Raj said the walk-in cooler felt warm,06_warm
-Prof. Müller described the cleanroom as scorching,09_scorching
-Liam said the walk-in cooler felt mild,05_mild
-Sarah described the cleanroom as frigid,01_frigid
-The incubation environment should remain boiling,10_boiling
-the nurse recorded that the growth chamber felt frigid,01_frigid
-The drying chamber atmosphere is warm,06_warm
-Prof. Müller adjusted the thermostat because it was warm,06_warm
-Surface readings indicate conditions are warm,06_warm
-Prof. Kim flagged that the freezer felt mild,05_mild
-Ambient conditions in the corridor are boiling,10_boiling
-The server room is dangerously boiling,10_boiling
-the technician measured the soil temperature as chilly,03_chilly
-Alice recorded that the growth chamber felt cold,02_cold
-the PI said the walk-in cooler felt freezing,00_freezing
-the nurse complained the office was hot,07_hot
-the analyst flagged that the freezer felt freezing,00_freezing
+Sentence,Label,target_temp_f,target_log_temp_f
+The lab conditions today measured 12°F,12,12.0,2.5649493574615367
+Patients reported feeling uncomfortable when the room reached 63°F,63,63.0,4.1588830833596715
+The fermentation tank held at 132°F,132,132.0,4.890349128221754
+Dr. Patel reported the autoclave room at 199°F,199,199.0,5.298317366548036
+Elena said the walk-in cooler was holding at 61°F,61,61.0,4.127134385045092
+Surface readings indicated conditions were 68°F,68,68.0,4.23410650459726
+The curing oven was running at 48°F,48,48.0,3.8918202981106265
+Volunteers noted the testing room registered 161°F,161,161.0,5.087596335232384
+The drying chamber atmosphere registered 187°F,187,187.0,5.236441962829949
+The storage unit is running at 25°F,25,25.0,3.258096538021482
+The climate chamber was set to 76°F,76,76.0,4.343805421853684
+The ventilation output measured 179°F,179,179.0,5.19295685089021
+Surface readings indicated conditions were 58°F,58,58.0,4.07753744390572
+The greenhouse environment stabilized at 194°F,194,194.0,5.272999558563747
+Dr. Rossi recorded the growth chamber at 189°F,189,189.0,5.247024072160486
+Field conditions were recorded at 106°F during collection,106,106.0,4.672828834461906
+The climate chamber was set to 206°F,206,206.0,5.332718793265369
+Morning readings showed the habitat at 75°F,75,75.0,4.330733340286331
+The bioreactor jacket temperature read 88°F,88,88.0,4.48863636973214
+Morning readings showed the habitat at 158°F,158,158.0,5.0689042022202315
+Sarah described the cleanroom as holding steady at 73°F,73,73.0,4.30406509320417
+the PI flagged that the freezer was reading 146°F,146,146.0,4.990432586778736
+Fatima described the cleanroom as holding steady at 127°F,127,127.0,4.852030263919617
+The ventilation output measured 138°F,138,138.0,4.9344739331306915
+Liam said the walk-in cooler was holding at 72°F,72,72.0,4.290459441148391
+Ambient conditions in the corridor measured 46°F,46,46.0,3.8501476017100584
+The reactor core temperature read 1°F,1,1.0,0.6931471805599453
+Ambient conditions in the corridor measured 163°F,163,163.0,5.099866427824199
+Volunteers noted the testing room registered 139°F,139,139.0,4.941642422609304
+James noted the sample chamber registered 205°F,205,205.0,5.327876168789581
+Volunteers noted the testing room registered 105°F,105,105.0,4.663439094112067
+Patients reported feeling uncomfortable when the room reached 137°F,137,137.0,4.927253685157205
+The storage unit is running at 99°F,99,99.0,4.605170185988092
+The climate chamber was set to 187°F,187,187.0,5.236441962829949
+Patients reported feeling uncomfortable when the room reached 69°F,69,69.0,4.248495242049359
+Amara described the cleanroom as holding steady at 69°F,69,69.0,4.248495242049359
+Charlie said the walk-in cooler was holding at 100°F,100,100.0,4.61512051684126
+the coordinator noted the sample chamber registered 94°F,94,94.0,4.553876891600541
+The server room alarm triggered at 141°F,141,141.0,4.955827057601261
+the supervisor noted the sample chamber registered 155°F,155,155.0,5.049856007249537
+Bob reported the autoclave room at 191°F,191,191.0,5.2574953720277815
+Fatima adjusted the thermostat after the room hit 64°F,64,64.0,4.174387269895637
+Dr. Patel complained the office was showing 196°F on the thermostat,196,196.0,5.2832037287379885
+The climate chamber was set to 199°F,199,199.0,5.298317366548036
+The lab conditions today measured 95°F,95,95.0,4.564348191467836
+The fermentation tank held at 18°F,18,18.0,2.9444389791664403
+The storage unit is running at 196°F,196,196.0,5.2832037287379885
+The curing oven was running at 64°F,64,64.0,4.174387269895637
+Patients reported feeling uncomfortable when the room reached 44°F,44,44.0,3.8066624897703196
+The storage unit is running at 180°F,180,180.0,5.198497031265826
+Bob complained the office was showing 165°F on the thermostat,165,165.0,5.111987788356544
+Patients reported feeling uncomfortable when the room reached 180°F,180,180.0,5.198497031265826
+The server room alarm triggered at 145°F,145,145.0,4.983606621708336
+The curing oven was running at 141°F,141,141.0,4.955827057601261
+The drying chamber atmosphere registered 196°F,196,196.0,5.2832037287379885
+Morning readings showed the habitat at 31°F,31,31.0,3.4657359027997265
+The drying chamber atmosphere registered 163°F,163,163.0,5.099866427824199
+The drying chamber atmosphere registered 100°F,100,100.0,4.61512051684126
+Volunteers noted the testing room registered 189°F,189,189.0,5.247024072160486
+Bob noted the sample chamber registered 49°F,49,49.0,3.912023005428146
+Dr. Chen adjusted the thermostat after the room hit 59°F,59,59.0,4.0943445622221
+The water bath measured 37°F,37,37.0,3.6375861597263857
+Field conditions were recorded at 171°F during collection,171,171.0,5.147494476813453
+The drying chamber atmosphere registered 140°F,140,140.0,4.948759890378168
+The drying chamber atmosphere registered 27°F,27,27.0,3.332204510175204
+The bioreactor jacket temperature read 159°F,159,159.0,5.075173815233827
+The reagent shelf area registered 44°F,44,44.0,3.8066624897703196
+Maria said the walk-in cooler was holding at 35°F,35,35.0,3.58351893845611
+The water bath measured 102°F,102,102.0,4.634728988229636
+the technician said the walk-in cooler was holding at 99°F,99,99.0,4.605170185988092
+Volunteers noted the testing room registered 55°F,55,55.0,4.02535169073515
+Maria complained the office was showing 96°F on the thermostat,96,96.0,4.574710978503383
+the supervisor described the cleanroom as holding steady at 178°F,178,178.0,5.187385805840755
+Omar measured the soil temperature as 199°F,199,199.0,5.298317366548036
+Morning readings showed the habitat at 140°F,140,140.0,4.948759890378168
+The incubation environment was maintained at 41°F,41,41.0,3.7376696182833684
+Dr. Rossi reported the autoclave room at 195°F,195,195.0,5.278114659230517
+The reagent shelf area registered 38°F,38,38.0,3.6635616461296463
+The ventilation output measured 187°F,187,187.0,5.236441962829949
+Bob said the walk-in cooler was holding at 148°F,148,148.0,5.003946305945459
+Field conditions were recorded at 76°F during collection,76,76.0,4.343805421853684
+The reagent shelf area registered 66°F,66,66.0,4.204692619390966
+the supervisor measured the soil temperature as 135°F,135,135.0,4.912654885736052
+The incubation environment was maintained at 64°F,64,64.0,4.174387269895637
+The reactor core temperature read 21°F,21,21.0,3.091042453358316
+Morning readings showed the habitat at 111°F,111,111.0,4.718498871295094
+Dr. Rossi recorded the growth chamber at 170°F,170,170.0,5.14166355650266
+Volunteers noted the testing room registered 159°F,159,159.0,5.075173815233827
+Bob noted the sample chamber registered 189°F,189,189.0,5.247024072160486
+The water bath measured 41°F,41,41.0,3.7376696182833684
+Field conditions were recorded at 22°F during collection,22,22.0,3.1354942159291497
+The ventilation output measured 176°F,176,176.0,5.176149732573829
+The climate chamber was set to 173°F,173,173.0,5.159055299214529
+Prof. Wang flagged that the freezer was reading 5°F,5,5.0,1.791759469228055
+Alice complained the office was showing 162°F on the thermostat,162,162.0,5.093750200806762
+The server room alarm triggered at 134°F,134,134.0,4.90527477843843
+Outside the thermometer read 166°F,166,166.0,5.117993812416755
+Surface readings indicated conditions were 102°F,102,102.0,4.634728988229636
+Surface readings indicated conditions were 134°F,134,134.0,4.90527477843843
+Ambient conditions in the corridor measured 118°F,118,118.0,4.77912349311153
+Patients reported feeling uncomfortable when the room reached 160°F,160,160.0,5.081404364984463
+Prof. Wang reported the autoclave room at 35°F,35,35.0,3.58351893845611
+The water bath measured 109°F,109,109.0,4.700480365792417
+Volunteers noted the testing room registered 58°F,58,58.0,4.07753744390572
+The incubation environment was maintained at 55°F,55,55.0,4.02535169073515
+the postdoc measured the soil temperature as 63°F,63,63.0,4.1588830833596715
+The reactor core temperature read 37°F,37,37.0,3.6375861597263857
+Yuki reported the autoclave room at 64°F,64,64.0,4.174387269895637
+The drying chamber atmosphere registered 89°F,89,89.0,4.499809670330265
+The climate chamber was set to 5°F,5,5.0,1.791759469228055
+Ambient conditions in the corridor measured 180°F,180,180.0,5.198497031265826
+Volunteers noted the testing room registered 82°F,82,82.0,4.418840607796598
+The water bath measured 211°F,211,211.0,5.356586274672012
+The curing oven was running at 131°F,131,131.0,4.882801922586371
+Sarah measured the soil temperature as 111°F,111,111.0,4.718498871295094
+The drying chamber atmosphere registered 203°F,203,203.0,5.318119993844216
+The water bath measured 55°F,55,55.0,4.02535169073515
+Surface readings indicated conditions were 4°F,4,4.0,1.6094379124341003
+The incubation environment was maintained at 82°F,82,82.0,4.418840607796598
+Morning readings showed the habitat at 98°F,98,98.0,4.59511985013459
+the analyst noted the sample chamber registered 53°F,53,53.0,3.9889840465642745
+Omar said the walk-in cooler was holding at 196°F,196,196.0,5.2832037287379885
+The climate chamber was set to 175°F,175,175.0,5.170483995038151
+Ambient conditions in the corridor measured 160°F,160,160.0,5.081404364984463
+The ventilation output measured 68°F,68,68.0,4.23410650459726
+Volunteers noted the testing room registered 5°F,5,5.0,1.791759469228055
+The fermentation tank held at 53°F,53,53.0,3.9889840465642745
+The fermentation tank held at 67°F,67,67.0,4.219507705176107
+the PI flagged that the freezer was reading 211°F,211,211.0,5.356586274672012
+The bioreactor jacket temperature read 104°F,104,104.0,4.653960350157523
+The lab conditions today measured 52°F,52,52.0,3.970291913552122
+The water bath measured 144°F,144,144.0,4.976733742420574
+Ambient conditions in the corridor measured 9°F,9,9.0,2.302585092994046
+Omar measured the soil temperature as 19°F,19,19.0,2.995732273553991
+James said the walk-in cooler was holding at 116°F,116,116.0,4.762173934797756
+Alice complained the office was showing 163°F on the thermostat,163,163.0,5.099866427824199
+Charlie measured the soil temperature as 146°F,146,146.0,4.990432586778736
+Surface readings indicated conditions were 150°F,150,150.0,5.017279836814924
+Volunteers noted the testing room registered 177°F,177,177.0,5.181783550292085
+Prof. Wang complained the office was showing 19°F on the thermostat,19,19.0,2.995732273553991
+The reactor core temperature read 153°F,153,153.0,5.0369526024136295
+Liam said the walk-in cooler was holding at 106°F,106,106.0,4.672828834461906
+The lab conditions today measured 170°F,170,170.0,5.14166355650266
+Volunteers noted the testing room registered 192°F,192,192.0,5.262690188904886
+Morning readings showed the habitat at 188°F,188,188.0,5.241747015059643
+The server room alarm triggered at 66°F,66,66.0,4.204692619390966
+James complained the office was showing 147°F on the thermostat,147,147.0,4.997212273764115
+The ventilation output measured 196°F,196,196.0,5.2832037287379885
+Prof. Müller adjusted the thermostat after the room hit 24°F,24,24.0,3.2188758248682006
+Volunteers noted the testing room registered 0°F,0,0.0,0.0
+The climate chamber was set to 139°F,139,139.0,4.941642422609304
+The reactor core temperature read 31°F,31,31.0,3.4657359027997265
+Omar recorded the growth chamber at 203°F,203,203.0,5.318119993844216
+Outside the thermometer read 138°F,138,138.0,4.9344739331306915
+the analyst complained the office was showing 119°F on the thermostat,119,119.0,4.787491742782046
+Omar noted the sample chamber registered 10°F,10,10.0,2.3978952727983707
+The server room alarm triggered at 116°F,116,116.0,4.762173934797756
+Omar said the walk-in cooler was holding at 99°F,99,99.0,4.605170185988092
+The reactor core temperature read 96°F,96,96.0,4.574710978503383
+Field conditions were recorded at 37°F during collection,37,37.0,3.6375861597263857
+Field conditions were recorded at 145°F during collection,145,145.0,4.983606621708336
+The storage unit is running at 47°F,47,47.0,3.871201010907891
+The curing oven was running at 40°F,40,40.0,3.713572066704308
+The lab conditions today measured 153°F,153,153.0,5.0369526024136295
+The storage unit is running at 128°F,128,128.0,4.859812404361672
+the PI said the walk-in cooler was holding at 12°F,12,12.0,2.5649493574615367
+the analyst flagged that the freezer was reading 43°F,43,43.0,3.784189633918261
+Ambient conditions in the corridor measured 144°F,144,144.0,4.976733742420574
+The climate chamber was set to 107°F,107,107.0,4.68213122712422
+The water bath measured 25°F,25,25.0,3.258096538021482
+Elena recorded the growth chamber at 20°F,20,20.0,3.044522437723423
+Dr. Rossi noted the sample chamber registered 2°F,2,2.0,1.0986122886681098
+Ambient conditions in the corridor measured 33°F,33,33.0,3.5263605246161616
+Patients reported feeling uncomfortable when the room reached 115°F,115,115.0,4.7535901911063645
+Maria noted the sample chamber registered 55°F,55,55.0,4.02535169073515
+The reactor core temperature read 101°F,101,101.0,4.624972813284271
+The reagent shelf area registered 194°F,194,194.0,5.272999558563747
+The fermentation tank held at 196°F,196,196.0,5.2832037287379885
+The fermentation tank held at 25°F,25,25.0,3.258096538021482
+Dr. Okafor described the cleanroom as holding steady at 107°F,107,107.0,4.68213122712422
+Patients reported feeling uncomfortable when the room reached 133°F,133,133.0,4.897839799950911
+Fatima recorded the growth chamber at 176°F,176,176.0,5.176149732573829
+The ventilation output measured 107°F,107,107.0,4.68213122712422
+The server room alarm triggered at 17°F,17,17.0,2.8903717578961645
+The storage unit is running at 109°F,109,109.0,4.700480365792417
+The climate chamber was set to 186°F,186,186.0,5.231108616854587
+Surface readings indicated conditions were 23°F,23,23.0,3.1780538303479458
+The ventilation output measured 206°F,206,206.0,5.332718793265369
+the PI recorded the growth chamber at 13°F,13,13.0,2.6390573296152584
+Ambient conditions in the corridor measured 181°F,181,181.0,5.204006687076795
+Elena reported the autoclave room at 210°F,210,210.0,5.351858133476067
+the supervisor recorded the growth chamber at 141°F,141,141.0,4.955827057601261
+Field conditions were recorded at 108°F during collection,108,108.0,4.6913478822291435
+The ventilation output measured 24°F,24,24.0,3.2188758248682006
+Amara measured the soil temperature as 196°F,196,196.0,5.2832037287379885
+the technician flagged that the freezer was reading 160°F,160,160.0,5.081404364984463
+Kevin measured the soil temperature as 174°F,174,174.0,5.1647859739235145
+The lab conditions today measured 144°F,144,144.0,4.976733742420574
+The curing oven was running at 21°F,21,21.0,3.091042453358316
+The server room alarm triggered at 78°F,78,78.0,4.3694478524670215
+Volunteers noted the testing room registered 163°F,163,163.0,5.099866427824199
+Field conditions were recorded at 148°F during collection,148,148.0,5.003946305945459
+The ventilation output measured 90°F,90,90.0,4.51085950651685
+The fermentation tank held at 161°F,161,161.0,5.087596335232384
+Prof. Kim reported the autoclave room at 180°F,180,180.0,5.198497031265826
+Sarah measured the soil temperature as 95°F,95,95.0,4.564348191467836
+The lab conditions today measured 78°F,78,78.0,4.3694478524670215
+The drying chamber atmosphere registered 86°F,86,86.0,4.465908118654584
+Kevin flagged that the freezer was reading 76°F,76,76.0,4.343805421853684
+The lab conditions today measured 198°F,198,198.0,5.293304824724492
+The greenhouse environment stabilized at 151°F,151,151.0,5.0238805208462765
+Morning readings showed the habitat at 11°F,11,11.0,2.4849066497880004
+Dr. Rossi described the cleanroom as holding steady at 21°F,21,21.0,3.091042453358316
+Ambient conditions in the corridor measured 204°F,204,204.0,5.3230099791384085
+Charlie adjusted the thermostat after the room hit 3°F,3,3.0,1.3862943611198906
+Field conditions were recorded at 192°F during collection,192,192.0,5.262690188904886
+Morning readings showed the habitat at 12°F,12,12.0,2.5649493574615367
+Field conditions were recorded at 7°F during collection,7,7.0,2.0794415416798357
+Field conditions were recorded at 64°F during collection,64,64.0,4.174387269895637
+Dr. Rossi measured the soil temperature as 53°F,53,53.0,3.9889840465642745
+The water bath measured 92°F,92,92.0,4.532599493153256
+Patients reported feeling uncomfortable when the room reached 64°F,64,64.0,4.174387269895637
+The fermentation tank held at 212°F,212,212.0,5.3612921657094255
+Alice noted the sample chamber registered 120°F,120,120.0,4.795790545596741
+The server room alarm triggered at 4°F,4,4.0,1.6094379124341003
+the intern described the cleanroom as holding steady at 12°F,12,12.0,2.5649493574615367
+Liam adjusted the thermostat after the room hit 210°F,210,210.0,5.351858133476067
+Charlie said the walk-in cooler was holding at 170°F,170,170.0,5.14166355650266
+The water bath measured 32°F,32,32.0,3.4965075614664802
+The reagent shelf area registered 182°F,182,182.0,5.209486152841421
+Bob reported the autoclave room at 152°F,152,152.0,5.030437921392435
+The storage unit is running at 181°F,181,181.0,5.204006687076795
+The server room alarm triggered at 102°F,102,102.0,4.634728988229636
+the coordinator complained the office was showing 94°F on the thermostat,94,94.0,4.553876891600541
+Volunteers noted the testing room registered 164°F,164,164.0,5.10594547390058
+The curing oven was running at 127°F,127,127.0,4.852030263919617
+The curing oven was running at 156°F,156,156.0,5.056245805348308
+The curing oven was running at 111°F,111,111.0,4.718498871295094
+the technician reported the autoclave room at 120°F,120,120.0,4.795790545596741
+the postdoc complained the office was showing 128°F on the thermostat,128,128.0,4.859812404361672
+The water bath measured 19°F,19,19.0,2.995732273553991
+the intern flagged that the freezer was reading 123°F,123,123.0,4.820281565605037
+The lab conditions today measured 197°F,197,197.0,5.288267030694535
+The server room alarm triggered at 51°F,51,51.0,3.9512437185814275
+Fatima adjusted the thermostat after the room hit 98°F,98,98.0,4.59511985013459
+Volunteers noted the testing room registered 7°F,7,7.0,2.0794415416798357
+Bob flagged that the freezer was reading 79°F,79,79.0,4.382026634673881
+Ambient conditions in the corridor measured 201°F,201,201.0,5.308267697401205
+The drying chamber atmosphere registered 37°F,37,37.0,3.6375861597263857
+Fatima described the cleanroom as holding steady at 183°F,183,183.0,5.214935757608986
+The bioreactor jacket temperature read 196°F,196,196.0,5.2832037287379885
+The water bath measured 135°F,135,135.0,4.912654885736052
+The fermentation tank held at 174°F,174,174.0,5.1647859739235145
+The incubation environment was maintained at 97°F,97,97.0,4.584967478670572
+the PI described the cleanroom as holding steady at 152°F,152,152.0,5.030437921392435
+Dr. Rossi complained the office was showing 39°F on the thermostat,39,39.0,3.6888794541139363
+Dr. Patel flagged that the freezer was reading 207°F,207,207.0,5.337538079701318
+The water bath measured 210°F,210,210.0,5.351858133476067
+The greenhouse environment stabilized at 8°F,8,8.0,2.1972245773362196
+The server room alarm triggered at 157°F,157,157.0,5.062595033026967
+Volunteers noted the testing room registered 81°F,81,81.0,4.406719247264253
+The lab conditions today measured 63°F,63,63.0,4.1588830833596715
+The storage unit is running at 158°F,158,158.0,5.0689042022202315
+The drying chamber atmosphere registered 190°F,190,190.0,5.25227342804663
+The lab conditions today measured 172°F,172,172.0,5.153291594497779
+Field conditions were recorded at 32°F during collection,32,32.0,3.4965075614664802
+The climate chamber was set to 33°F,33,33.0,3.5263605246161616
+Liam measured the soil temperature as 122°F,122,122.0,4.812184355372417
+Raj adjusted the thermostat after the room hit 182°F,182,182.0,5.209486152841421
+Ambient conditions in the corridor measured 164°F,164,164.0,5.10594547390058
+Morning readings showed the habitat at 177°F,177,177.0,5.181783550292085
+Ambient conditions in the corridor measured 43°F,43,43.0,3.784189633918261
+Ambient conditions in the corridor measured 70°F,70,70.0,4.2626798770413155
+Alice recorded the growth chamber at 2°F,2,2.0,1.0986122886681098
+Ambient conditions in the corridor measured 211°F,211,211.0,5.356586274672012
+Patients reported feeling uncomfortable when the room reached 132°F,132,132.0,4.890349128221754
+Fatima described the cleanroom as holding steady at 55°F,55,55.0,4.02535169073515
+Alice recorded the growth chamber at 182°F,182,182.0,5.209486152841421
+The reagent shelf area registered 87°F,87,87.0,4.477336814478207
+The climate chamber was set to 172°F,172,172.0,5.153291594497779
+Liam measured the soil temperature as 37°F,37,37.0,3.6375861597263857
+Dr. Smith adjusted the thermostat after the room hit 16°F,16,16.0,2.833213344056216
+the coordinator reported the autoclave room at 115°F,115,115.0,4.7535901911063645
+The climate chamber was set to 190°F,190,190.0,5.25227342804663
+The water bath measured 132°F,132,132.0,4.890349128221754
+The bioreactor jacket temperature read 22°F,22,22.0,3.1354942159291497
+Volunteers noted the testing room registered 126°F,126,126.0,4.844187086458591
+Volunteers noted the testing room registered 190°F,190,190.0,5.25227342804663
+Omar noted the sample chamber registered 184°F,184,184.0,5.220355825078324
+Surface readings indicated conditions were 46°F,46,46.0,3.8501476017100584
+Patients reported feeling uncomfortable when the room reached 53°F,53,53.0,3.9889840465642745
+The greenhouse environment stabilized at 205°F,205,205.0,5.327876168789581
+Bob measured the soil temperature as 24°F,24,24.0,3.2188758248682006
+Volunteers noted the testing room registered 157°F,157,157.0,5.062595033026967
+The reagent shelf area registered 189°F,189,189.0,5.247024072160486
+The fermentation tank held at 66°F,66,66.0,4.204692619390966
+The fermentation tank held at 85°F,85,85.0,4.454347296253507
+Ambient conditions in the corridor measured 188°F,188,188.0,5.241747015059643
+The reagent shelf area registered 89°F,89,89.0,4.499809670330265
+Ambient conditions in the corridor measured 24°F,24,24.0,3.2188758248682006
+Raj recorded the growth chamber at 56°F,56,56.0,4.04305126783455
+The fermentation tank held at 22°F,22,22.0,3.1354942159291497
+The drying chamber atmosphere registered 132°F,132,132.0,4.890349128221754
+the PI described the cleanroom as holding steady at 53°F,53,53.0,3.9889840465642745
+the technician recorded the growth chamber at 45°F,45,45.0,3.828641396489095
+the supervisor noted the sample chamber registered 4°F,4,4.0,1.6094379124341003
+The storage unit is running at 157°F,157,157.0,5.062595033026967
+Dr. Okafor reported the autoclave room at 111°F,111,111.0,4.718498871295094
+Ambient conditions in the corridor measured 96°F,96,96.0,4.574710978503383
+The reactor core temperature read 3°F,3,3.0,1.3862943611198906
+The storage unit is running at 66°F,66,66.0,4.204692619390966
+Prof. Wang reported the autoclave room at 78°F,78,78.0,4.3694478524670215
+The curing oven was running at 96°F,96,96.0,4.574710978503383
+the PI flagged that the freezer was reading 55°F,55,55.0,4.02535169073515
+Prof. Müller noted the sample chamber registered 151°F,151,151.0,5.0238805208462765
+Raj described the cleanroom as holding steady at 162°F,162,162.0,5.093750200806762
+The ventilation output measured 53°F,53,53.0,3.9889840465642745
+Omar reported the autoclave room at 174°F,174,174.0,5.1647859739235145
+The fermentation tank held at 47°F,47,47.0,3.871201010907891
+Alice measured the soil temperature as 70°F,70,70.0,4.2626798770413155
+Dr. Smith recorded the growth chamber at 15°F,15,15.0,2.772588722239781
+Morning readings showed the habitat at 104°F,104,104.0,4.653960350157523
+The incubation environment was maintained at 33°F,33,33.0,3.5263605246161616
+The fermentation tank held at 49°F,49,49.0,3.912023005428146
+The curing oven was running at 37°F,37,37.0,3.6375861597263857
+The reagent shelf area registered 14°F,14,14.0,2.70805020110221
+Alice recorded the growth chamber at 165°F,165,165.0,5.111987788356544
+Ambient conditions in the corridor measured 19°F,19,19.0,2.995732273553991
+Prof. Wang reported the autoclave room at 36°F,36,36.0,3.6109179126442243
+Morning readings showed the habitat at 7°F,7,7.0,2.0794415416798357
+Surface readings indicated conditions were 38°F,38,38.0,3.6635616461296463
+the PI measured the soil temperature as 141°F,141,141.0,4.955827057601261
+Surface readings indicated conditions were 39°F,39,39.0,3.6888794541139363
+Outside the thermometer read 95°F,95,95.0,4.564348191467836
+the coordinator complained the office was showing 168°F on the thermostat,168,168.0,5.1298987149230735
+Outside the thermometer read 192°F,192,192.0,5.262690188904886
+Patients reported feeling uncomfortable when the room reached 27°F,27,27.0,3.332204510175204
+Surface readings indicated conditions were 10°F,10,10.0,2.3978952727983707
+the PI reported the autoclave room at 34°F,34,34.0,3.5553480614894135
+The lab conditions today measured 68°F,68,68.0,4.23410650459726
+The reagent shelf area registered 99°F,99,99.0,4.605170185988092
+The fermentation tank held at 100°F,100,100.0,4.61512051684126
+Amara said the walk-in cooler was holding at 104°F,104,104.0,4.653960350157523
+Field conditions were recorded at 73°F during collection,73,73.0,4.30406509320417
+Field conditions were recorded at 140°F during collection,140,140.0,4.948759890378168
+The fermentation tank held at 182°F,182,182.0,5.209486152841421
+Patients reported feeling uncomfortable when the room reached 22°F,22,22.0,3.1354942159291497
+Surface readings indicated conditions were 105°F,105,105.0,4.663439094112067
+Yuki reported the autoclave room at 126°F,126,126.0,4.844187086458591
+the postdoc measured the soil temperature as 106°F,106,106.0,4.672828834461906
+Raj recorded the growth chamber at 81°F,81,81.0,4.406719247264253
+Patients reported feeling uncomfortable when the room reached 165°F,165,165.0,5.111987788356544
+The climate chamber was set to 27°F,27,27.0,3.332204510175204
+Elena flagged that the freezer was reading 188°F,188,188.0,5.241747015059643
+The lab conditions today measured 161°F,161,161.0,5.087596335232384
+Surface readings indicated conditions were 86°F,86,86.0,4.465908118654584
+The server room alarm triggered at 152°F,152,152.0,5.030437921392435
+The reagent shelf area registered 186°F,186,186.0,5.231108616854587
+The fermentation tank held at 165°F,165,165.0,5.111987788356544
+The lab conditions today measured 22°F,22,22.0,3.1354942159291497
+Morning readings showed the habitat at 117°F,117,117.0,4.770684624465665
+Ambient conditions in the corridor measured 127°F,127,127.0,4.852030263919617
+Patients reported feeling uncomfortable when the room reached 51°F,51,51.0,3.9512437185814275
+Raj recorded the growth chamber at 18°F,18,18.0,2.9444389791664403
+Dr. Patel said the walk-in cooler was holding at 52°F,52,52.0,3.970291913552122
+Prof. Müller described the cleanroom as holding steady at 157°F,157,157.0,5.062595033026967
+Outside the thermometer read 200°F,200,200.0,5.303304908059076
+Omar complained the office was showing 206°F on the thermostat,206,206.0,5.332718793265369
+Maria recorded the growth chamber at 210°F,210,210.0,5.351858133476067
+Ambient conditions in the corridor measured 130°F,130,130.0,4.875197323201151
+Liam reported the autoclave room at 58°F,58,58.0,4.07753744390572
+The reagent shelf area registered 80°F,80,80.0,4.394449154672439
+Raj said the walk-in cooler was holding at 36°F,36,36.0,3.6109179126442243
+The bioreactor jacket temperature read 166°F,166,166.0,5.117993812416755
+The curing oven was running at 120°F,120,120.0,4.795790545596741
+Prof. Wang recorded the growth chamber at 70°F,70,70.0,4.2626798770413155
+The bioreactor jacket temperature read 41°F,41,41.0,3.7376696182833684
+The fermentation tank held at 30°F,30,30.0,3.4339872044851463
+The lab conditions today measured 154°F,154,154.0,5.043425116919247
+Outside the thermometer read 121°F,121,121.0,4.804021044733257
+The drying chamber atmosphere registered 64°F,64,64.0,4.174387269895637
+Kevin recorded the growth chamber at 95°F,95,95.0,4.564348191467836
+The climate chamber was set to 53°F,53,53.0,3.9889840465642745
+Dr. Chen complained the office was showing 97°F on the thermostat,97,97.0,4.584967478670572
+The storage unit is running at 88°F,88,88.0,4.48863636973214
+The climate chamber was set to 146°F,146,146.0,4.990432586778736
+The lab conditions today measured 81°F,81,81.0,4.406719247264253
+Patients reported feeling uncomfortable when the room reached 176°F,176,176.0,5.176149732573829
+Bob measured the soil temperature as 1°F,1,1.0,0.6931471805599453
+Morning readings showed the habitat at 101°F,101,101.0,4.624972813284271
+Surface readings indicated conditions were 24°F,24,24.0,3.2188758248682006
+Prof. Müller said the walk-in cooler was holding at 65°F,65,65.0,4.189654742026425
+Surface readings indicated conditions were 43°F,43,43.0,3.784189633918261
+The fermentation tank held at 154°F,154,154.0,5.043425116919247
+Field conditions were recorded at 49°F during collection,49,49.0,3.912023005428146
+Outside the thermometer read 47°F,47,47.0,3.871201010907891
+Dr. Patel noted the sample chamber registered 83°F,83,83.0,4.430816798843313
+Volunteers noted the testing room registered 125°F,125,125.0,4.836281906951478
+The bioreactor jacket temperature read 157°F,157,157.0,5.062595033026967
+The ventilation output measured 188°F,188,188.0,5.241747015059643
+The server room alarm triggered at 175°F,175,175.0,5.170483995038151
+Elena complained the office was showing 168°F on the thermostat,168,168.0,5.1298987149230735
+The curing oven was running at 103°F,103,103.0,4.6443908991413725
+The bioreactor jacket temperature read 116°F,116,116.0,4.762173934797756
+Charlie recorded the growth chamber at 90°F,90,90.0,4.51085950651685
+the technician said the walk-in cooler was holding at 8°F,8,8.0,2.1972245773362196
+The reactor core temperature read 61°F,61,61.0,4.127134385045092
+The climate chamber was set to 132°F,132,132.0,4.890349128221754
+The lab conditions today measured 17°F,17,17.0,2.8903717578961645
+The ventilation output measured 21°F,21,21.0,3.091042453358316
+The curing oven was running at 0°F,0,0.0,0.0
+The curing oven was running at 133°F,133,133.0,4.897839799950911
+Yuki measured the soil temperature as 165°F,165,165.0,5.111987788356544
+Prof. Kim measured the soil temperature as 0°F,0,0.0,0.0
+Prof. Müller adjusted the thermostat after the room hit 36°F,36,36.0,3.6109179126442243
+Prof. Wang complained the office was showing 37°F on the thermostat,37,37.0,3.6375861597263857
+Outside the thermometer read 9°F,9,9.0,2.302585092994046
+The ventilation output measured 133°F,133,133.0,4.897839799950911
+Field conditions were recorded at 46°F during collection,46,46.0,3.8501476017100584
+The reagent shelf area registered 46°F,46,46.0,3.8501476017100584
+Prof. Kim adjusted the thermostat after the room hit 163°F,163,163.0,5.099866427824199
+Dr. Rossi measured the soil temperature as 179°F,179,179.0,5.19295685089021
+The fermentation tank held at 81°F,81,81.0,4.406719247264253
+The reactor core temperature read 67°F,67,67.0,4.219507705176107
+The fermentation tank held at 166°F,166,166.0,5.117993812416755
+Surface readings indicated conditions were 96°F,96,96.0,4.574710978503383
+The greenhouse environment stabilized at 82°F,82,82.0,4.418840607796598
+The lab conditions today measured 119°F,119,119.0,4.787491742782046
+Sarah flagged that the freezer was reading 169°F,169,169.0,5.135798437050262
+The ventilation output measured 191°F,191,191.0,5.2574953720277815
+The lab conditions today measured 208°F,208,208.0,5.342334251964811
+the technician adjusted the thermostat after the room hit 0°F,0,0.0,0.0
+The water bath measured 110°F,110,110.0,4.709530201312334
+Volunteers noted the testing room registered 129°F,129,129.0,4.867534450455582
+James flagged that the freezer was reading 162°F,162,162.0,5.093750200806762
+The climate chamber was set to 21°F,21,21.0,3.091042453358316
+Volunteers noted the testing room registered 154°F,154,154.0,5.043425116919247
+The reactor core temperature read 15°F,15,15.0,2.772588722239781
+Charlie adjusted the thermostat after the room hit 129°F,129,129.0,4.867534450455582
+the intern reported the autoclave room at 34°F,34,34.0,3.5553480614894135
+The curing oven was running at 105°F,105,105.0,4.663439094112067
+Amara measured the soil temperature as 129°F,129,129.0,4.867534450455582
+The incubation environment was maintained at 100°F,100,100.0,4.61512051684126
+Surface readings indicated conditions were 207°F,207,207.0,5.337538079701318
+the PI measured the soil temperature as 15°F,15,15.0,2.772588722239781
+The bioreactor jacket temperature read 210°F,210,210.0,5.351858133476067
+The fermentation tank held at 8°F,8,8.0,2.1972245773362196
+The server room alarm triggered at 63°F,63,63.0,4.1588830833596715
+Prof. Kim adjusted the thermostat after the room hit 15°F,15,15.0,2.772588722239781
+The water bath measured 113°F,113,113.0,4.736198448394496
+Prof. Kim recorded the growth chamber at 57°F,57,57.0,4.060443010546419
+Yuki adjusted the thermostat after the room hit 211°F,211,211.0,5.356586274672012
+Dr. Chen recorded the growth chamber at 75°F,75,75.0,4.330733340286331
+The incubation environment was maintained at 148°F,148,148.0,5.003946305945459
+The server room alarm triggered at 110°F,110,110.0,4.709530201312334
+The lab conditions today measured 31°F,31,31.0,3.4657359027997265
+Ambient conditions in the corridor measured 165°F,165,165.0,5.111987788356544
+Field conditions were recorded at 175°F during collection,175,175.0,5.170483995038151
+The drying chamber atmosphere registered 69°F,69,69.0,4.248495242049359
+Dr. Smith adjusted the thermostat after the room hit 135°F,135,135.0,4.912654885736052
+The fermentation tank held at 145°F,145,145.0,4.983606621708336
+The drying chamber atmosphere registered 178°F,178,178.0,5.187385805840755
+Raj measured the soil temperature as 45°F,45,45.0,3.828641396489095
+The water bath measured 154°F,154,154.0,5.043425116919247
+The greenhouse environment stabilized at 182°F,182,182.0,5.209486152841421
+The storage unit is running at 111°F,111,111.0,4.718498871295094
+The fermentation tank held at 96°F,96,96.0,4.574710978503383
+The climate chamber was set to 178°F,178,178.0,5.187385805840755
+Omar said the walk-in cooler was holding at 31°F,31,31.0,3.4657359027997265
+The bioreactor jacket temperature read 4°F,4,4.0,1.6094379124341003
+The lab conditions today measured 24°F,24,24.0,3.2188758248682006
+Surface readings indicated conditions were 185°F,185,185.0,5.225746673713202
+Charlie measured the soil temperature as 178°F,178,178.0,5.187385805840755
+Volunteers noted the testing room registered 42°F,42,42.0,3.7612001156935624
+Dr. Chen flagged that the freezer was reading 93°F,93,93.0,4.543294782270004
+The greenhouse environment stabilized at 72°F,72,72.0,4.290459441148391
+Ambient conditions in the corridor measured 175°F,175,175.0,5.170483995038151
+The bioreactor jacket temperature read 151°F,151,151.0,5.0238805208462765
+Bob described the cleanroom as holding steady at 174°F,174,174.0,5.1647859739235145
+Prof. Müller noted the sample chamber registered 107°F,107,107.0,4.68213122712422
+The fermentation tank held at 138°F,138,138.0,4.9344739331306915
+Outside the thermometer read 61°F,61,61.0,4.127134385045092
+The curing oven was running at 163°F,163,163.0,5.099866427824199
+The reactor core temperature read 200°F,200,200.0,5.303304908059076
+Raj complained the office was showing 1°F on the thermostat,1,1.0,0.6931471805599453
+The water bath measured 166°F,166,166.0,5.117993812416755
+The ventilation output measured 2°F,2,2.0,1.0986122886681098
+The reagent shelf area registered 177°F,177,177.0,5.181783550292085
+Fatima said the walk-in cooler was holding at 210°F,210,210.0,5.351858133476067
+The reactor core temperature read 152°F,152,152.0,5.030437921392435
+Prof. Kim flagged that the freezer was reading 156°F,156,156.0,5.056245805348308
+Surface readings indicated conditions were 154°F,154,154.0,5.043425116919247
+the intern described the cleanroom as holding steady at 0°F,0,0.0,0.0
+The ventilation output measured 204°F,204,204.0,5.3230099791384085
+The server room alarm triggered at 49°F,49,49.0,3.912023005428146
+Ambient conditions in the corridor measured 207°F,207,207.0,5.337538079701318
+Dr. Chen reported the autoclave room at 194°F,194,194.0,5.272999558563747
+The reactor core temperature read 10°F,10,10.0,2.3978952727983707
+Outside the thermometer read 100°F,100,100.0,4.61512051684126
+The storage unit is running at 189°F,189,189.0,5.247024072160486
+Prof. Kim noted the sample chamber registered 75°F,75,75.0,4.330733340286331
+Omar adjusted the thermostat after the room hit 31°F,31,31.0,3.4657359027997265
+Charlie noted the sample chamber registered 41°F,41,41.0,3.7376696182833684
+Prof. Müller noted the sample chamber registered 207°F,207,207.0,5.337538079701318
+Alice noted the sample chamber registered 44°F,44,44.0,3.8066624897703196
+The greenhouse environment stabilized at 112°F,112,112.0,4.727387818712341
+The curing oven was running at 130°F,130,130.0,4.875197323201151
+The lab conditions today measured 147°F,147,147.0,4.997212273764115
+Maria measured the soil temperature as 154°F,154,154.0,5.043425116919247
+The drying chamber atmosphere registered 171°F,171,171.0,5.147494476813453
+The greenhouse environment stabilized at 207°F,207,207.0,5.337538079701318
+The ventilation output measured 180°F,180,180.0,5.198497031265826
+The drying chamber atmosphere registered 137°F,137,137.0,4.927253685157205
+Raj adjusted the thermostat after the room hit 118°F,118,118.0,4.77912349311153
+Omar described the cleanroom as holding steady at 2°F,2,2.0,1.0986122886681098
+The reagent shelf area registered 146°F,146,146.0,4.990432586778736
+the analyst adjusted the thermostat after the room hit 79°F,79,79.0,4.382026634673881
+the PI recorded the growth chamber at 135°F,135,135.0,4.912654885736052
+Morning readings showed the habitat at 65°F,65,65.0,4.189654742026425
+Ambient conditions in the corridor measured 52°F,52,52.0,3.970291913552122
+The bioreactor jacket temperature read 102°F,102,102.0,4.634728988229636
+The curing oven was running at 45°F,45,45.0,3.828641396489095
+Liam recorded the growth chamber at 76°F,76,76.0,4.343805421853684
+Outside the thermometer read 115°F,115,115.0,4.7535901911063645
+The incubation environment was maintained at 5°F,5,5.0,1.791759469228055
+The storage unit is running at 210°F,210,210.0,5.351858133476067
+Alice adjusted the thermostat after the room hit 143°F,143,143.0,4.969813299576001
+Surface readings indicated conditions were 111°F,111,111.0,4.718498871295094
+Ambient conditions in the corridor measured 34°F,34,34.0,3.5553480614894135
+the technician adjusted the thermostat after the room hit 82°F,82,82.0,4.418840607796598
+The greenhouse environment stabilized at 36°F,36,36.0,3.6109179126442243
+Patients reported feeling uncomfortable when the room reached 188°F,188,188.0,5.241747015059643
+Outside the thermometer read 165°F,165,165.0,5.111987788356544
+The server room alarm triggered at 97°F,97,97.0,4.584967478670572
+Bob said the walk-in cooler was holding at 32°F,32,32.0,3.4965075614664802
+Morning readings showed the habitat at 127°F,127,127.0,4.852030263919617
+the technician reported the autoclave room at 63°F,63,63.0,4.1588830833596715
+The reagent shelf area registered 193°F,193,193.0,5.267858159063328
+The water bath measured 54°F,54,54.0,4.007333185232471
+Prof. Wang noted the sample chamber registered 91°F,91,91.0,4.5217885770490405
+The storage unit is running at 117°F,117,117.0,4.770684624465665
+Charlie measured the soil temperature as 165°F,165,165.0,5.111987788356544
+Sarah measured the soil temperature as 79°F,79,79.0,4.382026634673881
+The drying chamber atmosphere registered 26°F,26,26.0,3.295836866004329
+The fermentation tank held at 35°F,35,35.0,3.58351893845611
+The water bath measured 98°F,98,98.0,4.59511985013459
+Omar reported the autoclave room at 197°F,197,197.0,5.288267030694535
+The greenhouse environment stabilized at 24°F,24,24.0,3.2188758248682006
+Liam reported the autoclave room at 70°F,70,70.0,4.2626798770413155
+Surface readings indicated conditions were 14°F,14,14.0,2.70805020110221
+Outside the thermometer read 77°F,77,77.0,4.356708826689592
+Dr. Chen measured the soil temperature as 74°F,74,74.0,4.31748811353631
+Dr. Patel described the cleanroom as holding steady at 176°F,176,176.0,5.176149732573829
+Volunteers noted the testing room registered 171°F,171,171.0,5.147494476813453
+Fatima adjusted the thermostat after the room hit 147°F,147,147.0,4.997212273764115
+Patients reported feeling uncomfortable when the room reached 99°F,99,99.0,4.605170185988092
+The curing oven was running at 175°F,175,175.0,5.170483995038151
+The bioreactor jacket temperature read 108°F,108,108.0,4.6913478822291435
+Outside the thermometer read 26°F,26,26.0,3.295836866004329
+Prof. Kim flagged that the freezer was reading 194°F,194,194.0,5.272999558563747
+Dr. Rossi flagged that the freezer was reading 182°F,182,182.0,5.209486152841421
+Surface readings indicated conditions were 201°F,201,201.0,5.308267697401205
+the nurse reported the autoclave room at 171°F,171,171.0,5.147494476813453
+The drying chamber atmosphere registered 15°F,15,15.0,2.772588722239781
+The lab conditions today measured 105°F,105,105.0,4.663439094112067
+The server room alarm triggered at 35°F,35,35.0,3.58351893845611
+The lab conditions today measured 175°F,175,175.0,5.170483995038151
+Outside the thermometer read 186°F,186,186.0,5.231108616854587
+the analyst measured the soil temperature as 81°F,81,81.0,4.406719247264253
+Dr. Rossi recorded the growth chamber at 171°F,171,171.0,5.147494476813453
+The storage unit is running at 80°F,80,80.0,4.394449154672439
+The greenhouse environment stabilized at 152°F,152,152.0,5.030437921392435
+The lab conditions today measured 82°F,82,82.0,4.418840607796598
+Maria said the walk-in cooler was holding at 48°F,48,48.0,3.8918202981106265
+The curing oven was running at 172°F,172,172.0,5.153291594497779
+Field conditions were recorded at 205°F during collection,205,205.0,5.327876168789581
+The reactor core temperature read 211°F,211,211.0,5.356586274672012
+The curing oven was running at 8°F,8,8.0,2.1972245773362196
+The lab conditions today measured 15°F,15,15.0,2.772588722239781
+The reagent shelf area registered 117°F,117,117.0,4.770684624465665
+the analyst measured the soil temperature as 105°F,105,105.0,4.663439094112067
+Elena complained the office was showing 166°F on the thermostat,166,166.0,5.117993812416755
+the intern measured the soil temperature as 179°F,179,179.0,5.19295685089021
+Ambient conditions in the corridor measured 26°F,26,26.0,3.295836866004329
+Yuki noted the sample chamber registered 38°F,38,38.0,3.6635616461296463
+Surface readings indicated conditions were 80°F,80,80.0,4.394449154672439
+Prof. Wang recorded the growth chamber at 103°F,103,103.0,4.6443908991413725
+The drying chamber atmosphere registered 28°F,28,28.0,3.367295829986474
+The greenhouse environment stabilized at 68°F,68,68.0,4.23410650459726
+the coordinator complained the office was showing 184°F on the thermostat,184,184.0,5.220355825078324
+Charlie said the walk-in cooler was holding at 33°F,33,33.0,3.5263605246161616
+The fermentation tank held at 169°F,169,169.0,5.135798437050262
+The ventilation output measured 106°F,106,106.0,4.672828834461906
+The lab conditions today measured 61°F,61,61.0,4.127134385045092
+The reagent shelf area registered 28°F,28,28.0,3.367295829986474
+Alice described the cleanroom as holding steady at 60°F,60,60.0,4.110873864173311
+Liam said the walk-in cooler was holding at 13°F,13,13.0,2.6390573296152584
+The reactor core temperature read 5°F,5,5.0,1.791759469228055
+The server room alarm triggered at 125°F,125,125.0,4.836281906951478
+The lab conditions today measured 106°F,106,106.0,4.672828834461906
+Fatima flagged that the freezer was reading 118°F,118,118.0,4.77912349311153
+Outside the thermometer read 85°F,85,85.0,4.454347296253507
+The climate chamber was set to 133°F,133,133.0,4.897839799950911
+The reagent shelf area registered 185°F,185,185.0,5.225746673713202
+Surface readings indicated conditions were 183°F,183,183.0,5.214935757608986
+Field conditions were recorded at 82°F during collection,82,82.0,4.418840607796598
+Patients reported feeling uncomfortable when the room reached 12°F,12,12.0,2.5649493574615367
+The lab conditions today measured 212°F,212,212.0,5.3612921657094255
+Elena adjusted the thermostat after the room hit 92°F,92,92.0,4.532599493153256
+Volunteers noted the testing room registered 204°F,204,204.0,5.3230099791384085
+The bioreactor jacket temperature read 193°F,193,193.0,5.267858159063328
+The drying chamber atmosphere registered 186°F,186,186.0,5.231108616854587
+Morning readings showed the habitat at 170°F,170,170.0,5.14166355650266
+Morning readings showed the habitat at 88°F,88,88.0,4.48863636973214
+The greenhouse environment stabilized at 211°F,211,211.0,5.356586274672012
+The curing oven was running at 137°F,137,137.0,4.927253685157205
+Sarah adjusted the thermostat after the room hit 96°F,96,96.0,4.574710978503383
+Kevin complained the office was showing 205°F on the thermostat,205,205.0,5.327876168789581
+The bioreactor jacket temperature read 35°F,35,35.0,3.58351893845611
+The curing oven was running at 170°F,170,170.0,5.14166355650266
+The lab conditions today measured 62°F,62,62.0,4.143134726391533
+the analyst reported the autoclave room at 190°F,190,190.0,5.25227342804663
+The climate chamber was set to 138°F,138,138.0,4.9344739331306915
+James flagged that the freezer was reading 201°F,201,201.0,5.308267697401205
+The greenhouse environment stabilized at 159°F,159,159.0,5.075173815233827
+Outside the thermometer read 120°F,120,120.0,4.795790545596741
+The climate chamber was set to 88°F,88,88.0,4.48863636973214
+Field conditions were recorded at 162°F during collection,162,162.0,5.093750200806762
+The bioreactor jacket temperature read 128°F,128,128.0,4.859812404361672
+Omar complained the office was showing 52°F on the thermostat,52,52.0,3.970291913552122
+Dr. Smith said the walk-in cooler was holding at 131°F,131,131.0,4.882801922586371
+the supervisor recorded the growth chamber at 134°F,134,134.0,4.90527477843843
+The ventilation output measured 32°F,32,32.0,3.4965075614664802
+The incubation environment was maintained at 111°F,111,111.0,4.718498871295094
+Patients reported feeling uncomfortable when the room reached 24°F,24,24.0,3.2188758248682006
+The greenhouse environment stabilized at 161°F,161,161.0,5.087596335232384
+The lab conditions today measured 21°F,21,21.0,3.091042453358316
+Dr. Chen reported the autoclave room at 93°F,93,93.0,4.543294782270004
+Raj reported the autoclave room at 83°F,83,83.0,4.430816798843313
+Liam described the cleanroom as holding steady at 96°F,96,96.0,4.574710978503383
+The curing oven was running at 201°F,201,201.0,5.308267697401205
+The fermentation tank held at 193°F,193,193.0,5.267858159063328
+The incubation environment was maintained at 70°F,70,70.0,4.2626798770413155
+The server room alarm triggered at 138°F,138,138.0,4.9344739331306915
+Kevin noted the sample chamber registered 111°F,111,111.0,4.718498871295094
+the intern complained the office was showing 92°F on the thermostat,92,92.0,4.532599493153256
+Field conditions were recorded at 77°F during collection,77,77.0,4.356708826689592
+Ambient conditions in the corridor measured 86°F,86,86.0,4.465908118654584
+The reactor core temperature read 108°F,108,108.0,4.6913478822291435
+The incubation environment was maintained at 152°F,152,152.0,5.030437921392435
+Sarah reported the autoclave room at 17°F,17,17.0,2.8903717578961645
+Dr. Smith reported the autoclave room at 154°F,154,154.0,5.043425116919247
+Volunteers noted the testing room registered 112°F,112,112.0,4.727387818712341
+The fermentation tank held at 208°F,208,208.0,5.342334251964811
+Outside the thermometer read 183°F,183,183.0,5.214935757608986
+The water bath measured 21°F,21,21.0,3.091042453358316
+Ambient conditions in the corridor measured 29°F,29,29.0,3.4011973816621555
+The lab conditions today measured 55°F,55,55.0,4.02535169073515
+Volunteers noted the testing room registered 130°F,130,130.0,4.875197323201151
+Alice described the cleanroom as holding steady at 89°F,89,89.0,4.499809670330265
+Volunteers noted the testing room registered 33°F,33,33.0,3.5263605246161616
+Dr. Rossi noted the sample chamber registered 27°F,27,27.0,3.332204510175204
+Dr. Smith recorded the growth chamber at 50°F,50,50.0,3.9318256327243257
+Volunteers noted the testing room registered 89°F,89,89.0,4.499809670330265
+The reagent shelf area registered 90°F,90,90.0,4.51085950651685
+The curing oven was running at 122°F,122,122.0,4.812184355372417
+Surface readings indicated conditions were 50°F,50,50.0,3.9318256327243257
+Amara adjusted the thermostat after the room hit 26°F,26,26.0,3.295836866004329
+the nurse described the cleanroom as holding steady at 105°F,105,105.0,4.663439094112067
+Patients reported feeling uncomfortable when the room reached 2°F,2,2.0,1.0986122886681098
+Kevin flagged that the freezer was reading 193°F,193,193.0,5.267858159063328
+Raj reported the autoclave room at 107°F,107,107.0,4.68213122712422
+the postdoc flagged that the freezer was reading 116°F,116,116.0,4.762173934797756
+The incubation environment was maintained at 187°F,187,187.0,5.236441962829949
+The drying chamber atmosphere registered 40°F,40,40.0,3.713572066704308
+Morning readings showed the habitat at 210°F,210,210.0,5.351858133476067
+Ambient conditions in the corridor measured 131°F,131,131.0,4.882801922586371
+The greenhouse environment stabilized at 125°F,125,125.0,4.836281906951478
+The bioreactor jacket temperature read 145°F,145,145.0,4.983606621708336
+The greenhouse environment stabilized at 201°F,201,201.0,5.308267697401205
+Kevin recorded the growth chamber at 192°F,192,192.0,5.262690188904886
+Liam described the cleanroom as holding steady at 164°F,164,164.0,5.10594547390058
+Surface readings indicated conditions were 120°F,120,120.0,4.795790545596741
+The lab conditions today measured 42°F,42,42.0,3.7612001156935624
+Volunteers noted the testing room registered 138°F,138,138.0,4.9344739331306915
+the nurse noted the sample chamber registered 211°F,211,211.0,5.356586274672012
+Dr. Smith reported the autoclave room at 78°F,78,78.0,4.3694478524670215
+The greenhouse environment stabilized at 181°F,181,181.0,5.204006687076795
+Outside the thermometer read 65°F,65,65.0,4.189654742026425
+Patients reported feeling uncomfortable when the room reached 55°F,55,55.0,4.02535169073515
+The incubation environment was maintained at 63°F,63,63.0,4.1588830833596715
+The climate chamber was set to 161°F,161,161.0,5.087596335232384
+The climate chamber was set to 32°F,32,32.0,3.4965075614664802
+The storage unit is running at 55°F,55,55.0,4.02535169073515
+Surface readings indicated conditions were 78°F,78,78.0,4.3694478524670215
+The curing oven was running at 3°F,3,3.0,1.3862943611198906
+The storage unit is running at 140°F,140,140.0,4.948759890378168
+The incubation environment was maintained at 126°F,126,126.0,4.844187086458591
+James reported the autoclave room at 190°F,190,190.0,5.25227342804663
+The drying chamber atmosphere registered 3°F,3,3.0,1.3862943611198906
+The curing oven was running at 33°F,33,33.0,3.5263605246161616
+The drying chamber atmosphere registered 205°F,205,205.0,5.327876168789581
+The water bath measured 147°F,147,147.0,4.997212273764115
+Dr. Smith flagged that the freezer was reading 204°F,204,204.0,5.3230099791384085
+Dr. Smith reported the autoclave room at 29°F,29,29.0,3.4011973816621555
+The water bath measured 23°F,23,23.0,3.1780538303479458
+the intern measured the soil temperature as 141°F,141,141.0,4.955827057601261
+The reagent shelf area registered 83°F,83,83.0,4.430816798843313
+Volunteers noted the testing room registered 80°F,80,80.0,4.394449154672439
+Volunteers noted the testing room registered 93°F,93,93.0,4.543294782270004
+The ventilation output measured 69°F,69,69.0,4.248495242049359
+The water bath measured 198°F,198,198.0,5.293304824724492
+Maria flagged that the freezer was reading 39°F,39,39.0,3.6888794541139363
+Surface readings indicated conditions were 191°F,191,191.0,5.2574953720277815
+Morning readings showed the habitat at 54°F,54,54.0,4.007333185232471
+Morning readings showed the habitat at 41°F,41,41.0,3.7376696182833684
+Sarah adjusted the thermostat after the room hit 25°F,25,25.0,3.258096538021482
+The reagent shelf area registered 95°F,95,95.0,4.564348191467836
+The water bath measured 163°F,163,163.0,5.099866427824199
+The server room alarm triggered at 99°F,99,99.0,4.605170185988092
+the technician complained the office was showing 212°F on the thermostat,212,212.0,5.3612921657094255
+Kevin flagged that the freezer was reading 120°F,120,120.0,4.795790545596741
+The server room alarm triggered at 106°F,106,106.0,4.672828834461906
+The fermentation tank held at 10°F,10,10.0,2.3978952727983707
+Liam said the walk-in cooler was holding at 144°F,144,144.0,4.976733742420574
+Kevin described the cleanroom as holding steady at 155°F,155,155.0,5.049856007249537
+Dr. Okafor said the walk-in cooler was holding at 195°F,195,195.0,5.278114659230517
+The water bath measured 13°F,13,13.0,2.6390573296152584
+the technician noted the sample chamber registered 103°F,103,103.0,4.6443908991413725
+Patients reported feeling uncomfortable when the room reached 1°F,1,1.0,0.6931471805599453
+The reactor core temperature read 13°F,13,13.0,2.6390573296152584
+Morning readings showed the habitat at 90°F,90,90.0,4.51085950651685
+The bioreactor jacket temperature read 50°F,50,50.0,3.9318256327243257
+The drying chamber atmosphere registered 53°F,53,53.0,3.9889840465642745
+Ambient conditions in the corridor measured 159°F,159,159.0,5.075173815233827
+Field conditions were recorded at 55°F during collection,55,55.0,4.02535169073515
+The reagent shelf area registered 153°F,153,153.0,5.0369526024136295
+Prof. Wang flagged that the freezer was reading 104°F,104,104.0,4.653960350157523
+The fermentation tank held at 164°F,164,164.0,5.10594547390058
+The greenhouse environment stabilized at 145°F,145,145.0,4.983606621708336
+The server room alarm triggered at 34°F,34,34.0,3.5553480614894135
+The climate chamber was set to 170°F,170,170.0,5.14166355650266
+Ambient conditions in the corridor measured 28°F,28,28.0,3.367295829986474
+Morning readings showed the habitat at 164°F,164,164.0,5.10594547390058
+The server room alarm triggered at 21°F,21,21.0,3.091042453358316
+Outside the thermometer read 188°F,188,188.0,5.241747015059643
+Surface readings indicated conditions were 61°F,61,61.0,4.127134385045092
+Surface readings indicated conditions were 9°F,9,9.0,2.302585092994046
+Outside the thermometer read 174°F,174,174.0,5.1647859739235145
+the nurse noted the sample chamber registered 64°F,64,64.0,4.174387269895637
+Fatima complained the office was showing 51°F on the thermostat,51,51.0,3.9512437185814275
+The fermentation tank held at 116°F,116,116.0,4.762173934797756
+The drying chamber atmosphere registered 11°F,11,11.0,2.4849066497880004
+the PI noted the sample chamber registered 86°F,86,86.0,4.465908118654584
+Volunteers noted the testing room registered 20°F,20,20.0,3.044522437723423
+Ambient conditions in the corridor measured 37°F,37,37.0,3.6375861597263857
+The drying chamber atmosphere registered 1°F,1,1.0,0.6931471805599453
+The fermentation tank held at 42°F,42,42.0,3.7612001156935624
+The water bath measured 107°F,107,107.0,4.68213122712422
+The fermentation tank held at 123°F,123,123.0,4.820281565605037
+The incubation environment was maintained at 167°F,167,167.0,5.123963979403259
+Dr. Rossi recorded the growth chamber at 161°F,161,161.0,5.087596335232384
+The lab conditions today measured 157°F,157,157.0,5.062595033026967
+Outside the thermometer read 145°F,145,145.0,4.983606621708336
+The storage unit is running at 95°F,95,95.0,4.564348191467836
+Yuki noted the sample chamber registered 141°F,141,141.0,4.955827057601261
+The greenhouse environment stabilized at 200°F,200,200.0,5.303304908059076
+Surface readings indicated conditions were 26°F,26,26.0,3.295836866004329
+Dr. Okafor reported the autoclave room at 63°F,63,63.0,4.1588830833596715
+Surface readings indicated conditions were 77°F,77,77.0,4.356708826689592
+The incubation environment was maintained at 195°F,195,195.0,5.278114659230517
+Alice measured the soil temperature as 53°F,53,53.0,3.9889840465642745
+Omar measured the soil temperature as 166°F,166,166.0,5.117993812416755
+The climate chamber was set to 197°F,197,197.0,5.288267030694535
+Fatima flagged that the freezer was reading 195°F,195,195.0,5.278114659230517
+The storage unit is running at 169°F,169,169.0,5.135798437050262
+The reagent shelf area registered 164°F,164,164.0,5.10594547390058
+The server room alarm triggered at 190°F,190,190.0,5.25227342804663
+Field conditions were recorded at 170°F during collection,170,170.0,5.14166355650266
+The bioreactor jacket temperature read 44°F,44,44.0,3.8066624897703196
+The climate chamber was set to 16°F,16,16.0,2.833213344056216
+Elena complained the office was showing 192°F on the thermostat,192,192.0,5.262690188904886
+The lab conditions today measured 118°F,118,118.0,4.77912349311153
+The incubation environment was maintained at 34°F,34,34.0,3.5553480614894135
+Volunteers noted the testing room registered 52°F,52,52.0,3.970291913552122
+The ventilation output measured 190°F,190,190.0,5.25227342804663
+Bob said the walk-in cooler was holding at 39°F,39,39.0,3.6888794541139363
+The fermentation tank held at 20°F,20,20.0,3.044522437723423
+Outside the thermometer read 57°F,57,57.0,4.060443010546419
+the supervisor measured the soil temperature as 115°F,115,115.0,4.7535901911063645
+The bioreactor jacket temperature read 58°F,58,58.0,4.07753744390572
+Dr. Chen measured the soil temperature as 99°F,99,99.0,4.605170185988092
+Alice complained the office was showing 3°F on the thermostat,3,3.0,1.3862943611198906
+Ambient conditions in the corridor measured 81°F,81,81.0,4.406719247264253
+The drying chamber atmosphere registered 198°F,198,198.0,5.293304824724492
+The server room alarm triggered at 100°F,100,100.0,4.61512051684126
+The reagent shelf area registered 103°F,103,103.0,4.6443908991413725
+Omar measured the soil temperature as 57°F,57,57.0,4.060443010546419
+The lab conditions today measured 150°F,150,150.0,5.017279836814924
+the technician recorded the growth chamber at 102°F,102,102.0,4.634728988229636
+Yuki complained the office was showing 210°F on the thermostat,210,210.0,5.351858133476067
+The lab conditions today measured 0°F,0,0.0,0.0
+James described the cleanroom as holding steady at 51°F,51,51.0,3.9512437185814275
+the PI said the walk-in cooler was holding at 101°F,101,101.0,4.624972813284271
+the PI adjusted the thermostat after the room hit 147°F,147,147.0,4.997212273764115
+Sarah noted the sample chamber registered 193°F,193,193.0,5.267858159063328
+Volunteers noted the testing room registered 87°F,87,87.0,4.477336814478207
+Morning readings showed the habitat at 193°F,193,193.0,5.267858159063328
+Liam recorded the growth chamber at 167°F,167,167.0,5.123963979403259
+The ventilation output measured 183°F,183,183.0,5.214935757608986
+The reactor core temperature read 65°F,65,65.0,4.189654742026425
+The lab conditions today measured 60°F,60,60.0,4.110873864173311
+Elena said the walk-in cooler was holding at 163°F,163,163.0,5.099866427824199
+The climate chamber was set to 31°F,31,31.0,3.4657359027997265
+the analyst said the walk-in cooler was holding at 102°F,102,102.0,4.634728988229636
+The reactor core temperature read 143°F,143,143.0,4.969813299576001
+the PI complained the office was showing 121°F on the thermostat,121,121.0,4.804021044733257
+Bob reported the autoclave room at 138°F,138,138.0,4.9344739331306915
+The reactor core temperature read 167°F,167,167.0,5.123963979403259
+The reactor core temperature read 100°F,100,100.0,4.61512051684126
+The greenhouse environment stabilized at 160°F,160,160.0,5.081404364984463
+Dr. Rossi measured the soil temperature as 86°F,86,86.0,4.465908118654584
+Dr. Rossi complained the office was showing 185°F on the thermostat,185,185.0,5.225746673713202
+The bioreactor jacket temperature read 170°F,170,170.0,5.14166355650266
+The curing oven was running at 88°F,88,88.0,4.48863636973214
+The greenhouse environment stabilized at 31°F,31,31.0,3.4657359027997265
+The reagent shelf area registered 63°F,63,63.0,4.1588830833596715
+Ambient conditions in the corridor measured 54°F,54,54.0,4.007333185232471
+The water bath measured 12°F,12,12.0,2.5649493574615367
+Patients reported feeling uncomfortable when the room reached 100°F,100,100.0,4.61512051684126
+the technician measured the soil temperature as 133°F,133,133.0,4.897839799950911
+The lab conditions today measured 97°F,97,97.0,4.584967478670572
+The climate chamber was set to 181°F,181,181.0,5.204006687076795
+The water bath measured 177°F,177,177.0,5.181783550292085
+The climate chamber was set to 36°F,36,36.0,3.6109179126442243
+The server room alarm triggered at 71°F,71,71.0,4.276666119016055
+Morning readings showed the habitat at 49°F,49,49.0,3.912023005428146
+The ventilation output measured 49°F,49,49.0,3.912023005428146
+Omar recorded the growth chamber at 17°F,17,17.0,2.8903717578961645
+The water bath measured 80°F,80,80.0,4.394449154672439
+Kevin described the cleanroom as holding steady at 140°F,140,140.0,4.948759890378168
+Surface readings indicated conditions were 109°F,109,109.0,4.700480365792417
+Field conditions were recorded at 154°F during collection,154,154.0,5.043425116919247
+the supervisor adjusted the thermostat after the room hit 127°F,127,127.0,4.852030263919617
+The water bath measured 100°F,100,100.0,4.61512051684126
+The lab conditions today measured 152°F,152,152.0,5.030437921392435
+The drying chamber atmosphere registered 150°F,150,150.0,5.017279836814924
+James recorded the growth chamber at 108°F,108,108.0,4.6913478822291435
+Kevin noted the sample chamber registered 94°F,94,94.0,4.553876891600541
+Prof. Kim flagged that the freezer was reading 207°F,207,207.0,5.337538079701318
+the postdoc noted the sample chamber registered 173°F,173,173.0,5.159055299214529
+The reactor core temperature read 142°F,142,142.0,4.962844630259907
+The greenhouse environment stabilized at 96°F,96,96.0,4.574710978503383
+Ambient conditions in the corridor measured 2°F,2,2.0,1.0986122886681098
+The reagent shelf area registered 6°F,6,6.0,1.9459101490553132
+The storage unit is running at 202°F,202,202.0,5.313205979041787
+The water bath measured 44°F,44,44.0,3.8066624897703196
+Liam said the walk-in cooler was holding at 131°F,131,131.0,4.882801922586371
+The fermentation tank held at 63°F,63,63.0,4.1588830833596715
+Fatima adjusted the thermostat after the room hit 73°F,73,73.0,4.30406509320417
+The incubation environment was maintained at 87°F,87,87.0,4.477336814478207
+The drying chamber atmosphere registered 65°F,65,65.0,4.189654742026425
+The lab conditions today measured 44°F,44,44.0,3.8066624897703196
+Morning readings showed the habitat at 205°F,205,205.0,5.327876168789581
+The drying chamber atmosphere registered 173°F,173,173.0,5.159055299214529
+Dr. Patel flagged that the freezer was reading 10°F,10,10.0,2.3978952727983707
+the technician complained the office was showing 177°F on the thermostat,177,177.0,5.181783550292085
+Morning readings showed the habitat at 80°F,80,80.0,4.394449154672439
+Outside the thermometer read 11°F,11,11.0,2.4849066497880004
+The storage unit is running at 207°F,207,207.0,5.337538079701318
+The reactor core temperature read 181°F,181,181.0,5.204006687076795
+Dr. Chen noted the sample chamber registered 105°F,105,105.0,4.663439094112067
+The drying chamber atmosphere registered 122°F,122,122.0,4.812184355372417
+Field conditions were recorded at 138°F during collection,138,138.0,4.9344739331306915
+Ambient conditions in the corridor measured 101°F,101,101.0,4.624972813284271
+Dr. Smith adjusted the thermostat after the room hit 83°F,83,83.0,4.430816798843313
+The fermentation tank held at 102°F,102,102.0,4.634728988229636
+Volunteers noted the testing room registered 84°F,84,84.0,4.442651256490317
+The bioreactor jacket temperature read 46°F,46,46.0,3.8501476017100584
+Volunteers noted the testing room registered 102°F,102,102.0,4.634728988229636
+Patients reported feeling uncomfortable when the room reached 91°F,91,91.0,4.5217885770490405
+The fermentation tank held at 171°F,171,171.0,5.147494476813453
+Maria complained the office was showing 92°F on the thermostat,92,92.0,4.532599493153256
+The server room alarm triggered at 159°F,159,159.0,5.075173815233827
+The reagent shelf area registered 144°F,144,144.0,4.976733742420574
+The water bath measured 70°F,70,70.0,4.2626798770413155
+The incubation environment was maintained at 138°F,138,138.0,4.9344739331306915
+Surface readings indicated conditions were 22°F,22,22.0,3.1354942159291497
+Amara reported the autoclave room at 92°F,92,92.0,4.532599493153256
+The fermentation tank held at 69°F,69,69.0,4.248495242049359
+Alice flagged that the freezer was reading 101°F,101,101.0,4.624972813284271
+The greenhouse environment stabilized at 89°F,89,89.0,4.499809670330265
+the supervisor adjusted the thermostat after the room hit 42°F,42,42.0,3.7612001156935624
+The incubation environment was maintained at 113°F,113,113.0,4.736198448394496
+The drying chamber atmosphere registered 165°F,165,165.0,5.111987788356544
+The ventilation output measured 139°F,139,139.0,4.941642422609304
+The ventilation output measured 11°F,11,11.0,2.4849066497880004
+The server room alarm triggered at 199°F,199,199.0,5.298317366548036
+Dr. Patel noted the sample chamber registered 25°F,25,25.0,3.258096538021482
+The incubation environment was maintained at 131°F,131,131.0,4.882801922586371
+The reagent shelf area registered 200°F,200,200.0,5.303304908059076
+Morning readings showed the habitat at 199°F,199,199.0,5.298317366548036
+The curing oven was running at 17°F,17,17.0,2.8903717578961645
+The fermentation tank held at 118°F,118,118.0,4.77912349311153
+The water bath measured 111°F,111,111.0,4.718498871295094
+The fermentation tank held at 120°F,120,120.0,4.795790545596741
+Field conditions were recorded at 6°F during collection,6,6.0,1.9459101490553132
+The greenhouse environment stabilized at 208°F,208,208.0,5.342334251964811
+Surface readings indicated conditions were 160°F,160,160.0,5.081404364984463
+The lab conditions today measured 53°F,53,53.0,3.9889840465642745
+Morning readings showed the habitat at 69°F,69,69.0,4.248495242049359
+the intern complained the office was showing 60°F on the thermostat,60,60.0,4.110873864173311
+the supervisor noted the sample chamber registered 23°F,23,23.0,3.1780538303479458
+Omar recorded the growth chamber at 176°F,176,176.0,5.176149732573829
+James recorded the growth chamber at 22°F,22,22.0,3.1354942159291497
+The curing oven was running at 43°F,43,43.0,3.784189633918261
+The bioreactor jacket temperature read 147°F,147,147.0,4.997212273764115
+The climate chamber was set to 77°F,77,77.0,4.356708826689592
+The curing oven was running at 29°F,29,29.0,3.4011973816621555
+The reagent shelf area registered 59°F,59,59.0,4.0943445622221
+The server room alarm triggered at 119°F,119,119.0,4.787491742782046
+Field conditions were recorded at 177°F during collection,177,177.0,5.181783550292085
+Raj noted the sample chamber registered 116°F,116,116.0,4.762173934797756
+The greenhouse environment stabilized at 59°F,59,59.0,4.0943445622221
+Outside the thermometer read 36°F,36,36.0,3.6109179126442243
+The drying chamber atmosphere registered 50°F,50,50.0,3.9318256327243257
+The curing oven was running at 186°F,186,186.0,5.231108616854587
+the nurse noted the sample chamber registered 114°F,114,114.0,4.74493212836325
+The fermentation tank held at 176°F,176,176.0,5.176149732573829
+Ambient conditions in the corridor measured 22°F,22,22.0,3.1354942159291497
+Prof. Müller recorded the growth chamber at 49°F,49,49.0,3.912023005428146
+The water bath measured 65°F,65,65.0,4.189654742026425
+Fatima measured the soil temperature as 36°F,36,36.0,3.6109179126442243
+the analyst said the walk-in cooler was holding at 156°F,156,156.0,5.056245805348308
+The fermentation tank held at 64°F,64,64.0,4.174387269895637
+Kevin reported the autoclave room at 102°F,102,102.0,4.634728988229636
+The climate chamber was set to 24°F,24,24.0,3.2188758248682006
+The bioreactor jacket temperature read 200°F,200,200.0,5.303304908059076
+the nurse recorded the growth chamber at 175°F,175,175.0,5.170483995038151
+The water bath measured 99°F,99,99.0,4.605170185988092
+The drying chamber atmosphere registered 108°F,108,108.0,4.6913478822291435
+Field conditions were recorded at 44°F during collection,44,44.0,3.8066624897703196
+The drying chamber atmosphere registered 2°F,2,2.0,1.0986122886681098
+Dr. Patel said the walk-in cooler was holding at 57°F,57,57.0,4.060443010546419
+Kevin reported the autoclave room at 164°F,164,164.0,5.10594547390058
+Morning readings showed the habitat at 129°F,129,129.0,4.867534450455582
+the PI adjusted the thermostat after the room hit 143°F,143,143.0,4.969813299576001
+The ventilation output measured 175°F,175,175.0,5.170483995038151
+the intern noted the sample chamber registered 152°F,152,152.0,5.030437921392435
+The fermentation tank held at 71°F,71,71.0,4.276666119016055
+Dr. Rossi flagged that the freezer was reading 13°F,13,13.0,2.6390573296152584
+Yuki recorded the growth chamber at 174°F,174,174.0,5.1647859739235145
+The bioreactor jacket temperature read 179°F,179,179.0,5.19295685089021
+Prof. Kim flagged that the freezer was reading 172°F,172,172.0,5.153291594497779
+The curing oven was running at 176°F,176,176.0,5.176149732573829
+Field conditions were recorded at 144°F during collection,144,144.0,4.976733742420574
+The water bath measured 20°F,20,20.0,3.044522437723423
+Sarah said the walk-in cooler was holding at 98°F,98,98.0,4.59511985013459
+The lab conditions today measured 171°F,171,171.0,5.147494476813453
+The climate chamber was set to 108°F,108,108.0,4.6913478822291435
+Dr. Patel described the cleanroom as holding steady at 70°F,70,70.0,4.2626798770413155
+Patients reported feeling uncomfortable when the room reached 118°F,118,118.0,4.77912349311153
+Dr. Smith recorded the growth chamber at 134°F,134,134.0,4.90527477843843
+The server room alarm triggered at 149°F,149,149.0,5.0106352940962555
+The curing oven was running at 154°F,154,154.0,5.043425116919247
+The bioreactor jacket temperature read 79°F,79,79.0,4.382026634673881
+Field conditions were recorded at 172°F during collection,172,172.0,5.153291594497779
+Volunteers noted the testing room registered 174°F,174,174.0,5.1647859739235145
+The drying chamber atmosphere registered 157°F,157,157.0,5.062595033026967
+Ambient conditions in the corridor measured 115°F,115,115.0,4.7535901911063645
+The bioreactor jacket temperature read 185°F,185,185.0,5.225746673713202
+The lab conditions today measured 57°F,57,57.0,4.060443010546419
+The greenhouse environment stabilized at 185°F,185,185.0,5.225746673713202
+Outside the thermometer read 148°F,148,148.0,5.003946305945459
+The storage unit is running at 6°F,6,6.0,1.9459101490553132
+Outside the thermometer read 139°F,139,139.0,4.941642422609304
+The reagent shelf area registered 4°F,4,4.0,1.6094379124341003
+The server room alarm triggered at 0°F,0,0.0,0.0
+Maria complained the office was showing 148°F on the thermostat,148,148.0,5.003946305945459
+The lab conditions today measured 85°F,85,85.0,4.454347296253507
+The ventilation output measured 48°F,48,48.0,3.8918202981106265
+The server room alarm triggered at 174°F,174,174.0,5.1647859739235145
+the coordinator flagged that the freezer was reading 146°F,146,146.0,4.990432586778736
+the supervisor measured the soil temperature as 40°F,40,40.0,3.713572066704308
+Maria flagged that the freezer was reading 52°F,52,52.0,3.970291913552122
+Yuki recorded the growth chamber at 27°F,27,27.0,3.332204510175204
+The drying chamber atmosphere registered 148°F,148,148.0,5.003946305945459
+Volunteers noted the testing room registered 70°F,70,70.0,4.2626798770413155
+The drying chamber atmosphere registered 191°F,191,191.0,5.2574953720277815
+Liam measured the soil temperature as 195°F,195,195.0,5.278114659230517
+Volunteers noted the testing room registered 178°F,178,178.0,5.187385805840755
+Patients reported feeling uncomfortable when the room reached 121°F,121,121.0,4.804021044733257
+The lab conditions today measured 210°F,210,210.0,5.351858133476067
+Field conditions were recorded at 130°F during collection,130,130.0,4.875197323201151
+Morning readings showed the habitat at 27°F,27,27.0,3.332204510175204
+Raj complained the office was showing 58°F on the thermostat,58,58.0,4.07753744390572
+Fatima complained the office was showing 47°F on the thermostat,47,47.0,3.871201010907891
+Surface readings indicated conditions were 168°F,168,168.0,5.1298987149230735
+The water bath measured 31°F,31,31.0,3.4657359027997265
+The ventilation output measured 154°F,154,154.0,5.043425116919247

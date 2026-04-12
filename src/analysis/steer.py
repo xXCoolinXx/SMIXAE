@@ -268,7 +268,7 @@ def main(
 
     # ── 2. Expert discovery via hours probing ─────────────────────────
     print(f"\nDiscovering experts from {hours_dataset}…")
-    acts, _str_tokens, labels, label_names, last_positions, n_classes = collect_activations(
+    acts, _str_tokens, labels, label_names, last_positions, n_classes, _ = collect_activations(
         model=model,
         tokenizer=tokenizer,
         hook_name=hook_point,

@@ -59,6 +59,7 @@ class DatasetConfig:
     n_input_samples: int | None = None  # overrides CLI --n-input-samples when set
     max_points: int | None = None  # overrides CLI --max-points when set (0 = no cap)
     show_labels: bool = False  # annotate class means with text labels
+    regression_hypotheses: list[dict] | None = None  # list of hypothesis specs for regression probing
 
     @property
     def effective_continuous_color(self) -> bool:
@@ -149,7 +150,17 @@ def run_pipeline(
     print(f"{'=' * 60}")
 
     # ── 1. Collect LLM activations ────────────────────────────────────
-    llm_acts, str_tokens, labels, label_names, last_token_positions, n_classes = collect_activations(
+    # Build the deduplicated list of target columns required by regression hypotheses.
+    all_target_cols: list[str] = []
+    if cfg.regression_hypotheses:
+        seen_cols: set[str] = set()
+        for hyp in cfg.regression_hypotheses:
+            for col in hyp.get("target_columns", []):
+                if col not in seen_cols:
+                    all_target_cols.append(col)
+                    seen_cols.add(col)
+
+    llm_acts, str_tokens, labels, label_names, last_token_positions, n_classes, reg_targets = collect_activations(
         model=model,
         tokenizer=tokenizer,
         hook_name=hook_point,
@@ -161,6 +172,7 @@ def run_pipeline(
         dataframe_path=cfg.dataframe_path or None,
         text_column=cfg.text_column,
         label_column=cfg.label_column,
+        regression_target_columns=all_target_cols if all_target_cols else None,
     )
 
     is_labelled = labels is not None
@@ -178,9 +190,10 @@ def run_pipeline(
         last_token_only=is_labelled,
         last_token_positions=last_token_positions,
         n_classes=n_classes,
+        regression_targets=reg_targets,
     )
 
-    del llm_acts, labels
+    del llm_acts, labels, reg_targets
 
     if not experts:
         print("No experts fired enough times to exceed the min_points threshold.")
@@ -196,7 +209,7 @@ def run_pipeline(
         for expert in tqdm(experts):
             expert.evaluate_manifold(k_neighbors=k_neighbors, device=device)
 
-    # ── 4. Sort ───────────────────────────────────────────────────────
+    # ── 4. Sort (Stage 1: Fisher / continuity) ────────────────────────
     effective_sort_by = sort_by
     if sort_by == "auto":
         effective_sort_by = ("adjusted_fisher" if adjusted_fisher else "fisher") if is_labelled else "continuity"
@@ -207,14 +220,38 @@ def run_pipeline(
         reverse=not sort_ascending,
     )
 
-    # ── 5. Plot ───────────────────────────────────────────────────────
+    # ── 4b. Regression probing on top-N experts (Stage 2) ────────────
     n_to_plot = min(n_interesting_experts_to_plot, len(experts))
+    top_experts = experts[:n_to_plot]
+
+    # Attach column indices to each hypothesis before running
+    hypotheses_with_indices: list[dict] = []
+    if cfg.regression_hypotheses and all_target_cols:
+        col_to_idx = {col: i for i, col in enumerate(all_target_cols)}
+        for hyp in cfg.regression_hypotheses:
+            h = dict(hyp)
+            h["target_indices"] = [col_to_idx[c] for c in hyp["target_columns"] if c in col_to_idx]
+            if h["target_indices"]:
+                hypotheses_with_indices.append(h)
+
+    if hypotheses_with_indices:
+        print(f"\nRunning regression probing ({len(hypotheses_with_indices)} hypotheses) on top {n_to_plot} experts…")
+        for expert in tqdm(top_experts, desc="Regression probing"):
+            expert.evaluate_regression(hypotheses_with_indices)
+
+        # Stage 2 re-sort: best regression score descending
+        top_experts.sort(key=lambda e: e.sort_key("regression"), reverse=True)
+        final_sort_label = "regression"
+        print("Re-sorted by best regression score.")
+    else:
+        final_sort_label = effective_sort_by
+
+    # ── 5. Plot ───────────────────────────────────────────────────────
     print(f"\nBuilding HTML for top {n_to_plot} experts…")
 
-    expert_entries: list[tuple[str, Figure, Figure | None]] = []
-    for i in range(n_to_plot):
-        expert = experts[i]
-        score_val = expert.sort_key(effective_sort_by)
+    expert_entries: list[tuple[str, Figure, Figure | None, dict[str, float]]] = []
+    for i, expert in enumerate(top_experts):
+        fisher_val = expert.sort_key(effective_sort_by)
 
         parts = [
             f"Rank {i + 1:02d}",
@@ -230,6 +267,8 @@ def run_pipeline(
             parts.append(f"Adj-Fisher: {expert.adjusted_fisher_score:.4f}")
         if expert.mean_continuity is not None:
             parts.append(f"Cont: {expert.mean_continuity:.4f}")
+        if expert.best_regression_name is not None:
+            parts.append(f"Best-Reg: {expert.best_regression_name}={expert.best_regression_score:.4f}")
         parts.append(f"Points: {expert.expert_activations.shape[0]}")
         print(" | ".join(parts))
 
@@ -254,8 +293,12 @@ def run_pipeline(
             show_labels=cfg.show_labels,
         )
         l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
-        tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"
-        expert_entries.append((tab_label, scatter_fig, mean_fig))
+        if expert.best_regression_name is not None and expert.best_regression_score is not None:
+            reg_str = f" [{expert.best_regression_name}={expert.best_regression_score:.2f}]"
+        else:
+            reg_str = f" ({effective_sort_by}={fisher_val:.3f})"
+        tab_label = f"#{i + 1} E{expert.expert_id}{l0_str}{reg_str}"
+        expert_entries.append((tab_label, scatter_fig, mean_fig, expert.regression_scores))
 
     html_str = build_dataset_html(expert_entries, f"{subdir} — Expert Analysis")
     output_path = os.path.join(output_dir, "experts.html")

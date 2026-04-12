@@ -77,7 +77,7 @@ _HTML_TEMPLATE = """\
 
 
 def build_dataset_html(
-    expert_entries: list[tuple[str, Figure, Figure | None]],
+    expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]]],
     dataset_title: str,
 ) -> str:
     """Build a self-contained tabbed HTML page containing Plotly figures for each expert.
@@ -87,9 +87,11 @@ def build_dataset_html(
     bundle is inlined so the file is fully standalone — no internet connection required.
 
     Args:
-        expert_entries: List of ``(tab_label, scatter_fig, mean_fig)`` tuples.
+        expert_entries: List of ``(tab_label, scatter_fig, mean_fig)`` or
+            ``(tab_label, scatter_fig, mean_fig, regression_scores)`` tuples.
             ``scatter_fig`` is the per-token 3D scatter; ``mean_fig`` is the class-mean
-            plot (``None`` if labels are unavailable and the mean plot was skipped).
+            plot (``None`` if labels are unavailable); ``regression_scores`` is an
+            optional ``{hypothesis_name: score}`` dict rendered as a summary table.
         dataset_title: String shown as the page ``<h2>`` heading and ``<title>``.
 
     Returns:
@@ -99,13 +101,36 @@ def build_dataset_html(
     tab_panes: list[str] = []
     figures_json_parts: list[str] = []
 
-    for idx, (tab_label, scatter_fig, mean_fig) in enumerate(expert_entries):
+    for idx, entry in enumerate(expert_entries):
+        tab_label, scatter_fig, mean_fig = entry[0], entry[1], entry[2]
+        reg_scores: dict[str, float] = entry[3] if len(entry) > 3 else {}  # type: ignore[misc]
+
         scatter_id = f"scatter_{idx}"
         active_cls = " active" if idx == 0 else ""
 
         tab_buttons.append(f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">{tab_label}</button>')
 
-        plot_divs = f'<div class="plot-box" id="{scatter_id}"></div>'
+        reg_table_html = ""
+        if reg_scores:
+            sorted_scores = sorted(reg_scores.items(), key=lambda kv: -(kv[1] if kv[1] == kv[1] else float("-inf")))
+            rows_html = "".join(
+                f"<tr><td style='padding:2px 8px;border:1px solid #ccc'>{n}</td>"
+                f"<td style='padding:2px 8px;border:1px solid #ccc'>"
+                f"{'%.4f' % v if v == v else 'nan'}</td></tr>"
+                for n, v in sorted_scores
+            )
+            reg_table_html = (
+                "<details style='margin-top:6px;font-size:12px'>"
+                "<summary style='cursor:pointer'>Regression scores</summary>"
+                "<table style='border-collapse:collapse;margin-top:4px'>"
+                "<thead><tr>"
+                "<th style='padding:2px 8px;border:1px solid #ccc'>Hypothesis</th>"
+                "<th style='padding:2px 8px;border:1px solid #ccc'>Score</th>"
+                "</tr></thead>"
+                f"<tbody>{rows_html}</tbody></table></details>"
+            )
+
+        plot_divs = f'{reg_table_html}\n    <div class="plot-box" id="{scatter_id}"></div>'
         if mean_fig is not None:
             mean_id = f"mean_{idx}"
             plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
@@ -315,6 +340,7 @@ class Expert:
         seq_positions: torch.Tensor | None = None,
         n_classes: int = 0,
         mean_latent_l0: float | None = None,
+        regression_targets: torch.Tensor | None = None,
     ):
         self.expert_activations = expert_activations[active_mask].float().cpu()
         self.llm_activations = llm_activations[active_mask].float().cpu() if llm_activations is not None else None
@@ -326,9 +352,19 @@ class Expert:
         self.active_indices = active_mask.nonzero().cpu().tolist()
         self.mean_latent_l0 = mean_latent_l0
 
+        # Regression targets: (B, S, n_targets) → masked to (n_active, n_targets)
+        if regression_targets is not None:
+            rt_exp = regression_targets.unsqueeze(1).expand(-1, active_mask.shape[1], -1)
+            self.regression_targets: torch.Tensor | None = rt_exp[active_mask].float().cpu()
+        else:
+            self.regression_targets = None
+
         # Metrics
         self.local_continuity_scores: torch.Tensor | None = None
         self.fisher_score: float | None = None
+        self.regression_scores: dict[str, float] = {}
+        self.best_regression_score: float | None = None
+        self.best_regression_name: str | None = None
 
     # ── accessors ─────────────────────────────────────────────────────
     @property
@@ -356,7 +392,8 @@ class Expert:
         """Return the numeric value of the requested metric, or ``-inf`` if not yet computed.
 
         Args:
-            sort_by: One of ``"fisher"``, ``"adjusted_fisher"``, or ``"continuity"``.
+            sort_by: One of ``"fisher"``, ``"adjusted_fisher"``, ``"continuity"``,
+                or ``"regression"`` (best score across all regression hypotheses).
 
         Returns:
             The metric value as a float, or ``float("-inf")`` if the metric is ``None``.
@@ -368,6 +405,7 @@ class Expert:
             "fisher": self.fisher_score,
             "adjusted_fisher": self.adjusted_fisher_score,
             "continuity": self.mean_continuity,
+            "regression": self.best_regression_score,
         }
         if sort_by not in mapping:
             raise ValueError(f"Unknown sort_by: {sort_by}. Options: {', '.join(mapping.keys())}")
@@ -472,6 +510,111 @@ class Expert:
 
         return self.fisher_score
 
+    # ── regression probing (labelled) ─────────────────────────────────
+    def evaluate_regression(self, hypotheses: list[dict]) -> dict[str, float]:
+        """Fit sklearn regression probes along each hypothesis and return CV scores.
+
+        Each hypothesis is a dict with keys:
+            - ``name`` (str): identifier used as the score key.
+            - ``target_indices`` (list[int]): column indices into
+              ``self.regression_targets`` forming Y.
+            - ``regression_type`` (str): ``"linear"``, ``"logistic"``,
+              or ``"multinomial"``.
+
+        Bottleneck activations are scalar-normalised before fitting by dividing
+        all samples by the mean L2 norm of the expert (preserves geometry).
+        Cross-validation uses 5 folds; multinomial uses :class:`StratifiedKFold`
+        with the fold count clamped to the minimum class count.
+
+        Scores stored in ``self.regression_scores``; the hypothesis with the
+        highest finite score is stored in ``self.best_regression_name`` /
+        ``self.best_regression_score``.
+
+        Args:
+            hypotheses: List of hypothesis dicts as described above.
+
+        Returns:
+            ``{name: score}`` dict (NaN for any hypothesis that failed).
+        """
+        from joblib import Parallel, delayed
+        from sklearn.linear_model import LinearRegression, LogisticRegression
+        from sklearn.metrics import make_scorer, r2_score
+        from sklearn.model_selection import StratifiedKFold, cross_val_score
+        from sklearn.pipeline import Pipeline
+        from sklearn.preprocessing import StandardScaler
+
+        if self.regression_targets is None or not hypotheses:
+            return {}
+
+        X = self.expert_activations.numpy()  # (n_active, d_bottleneck)
+        # Per-expert scalar normalisation: divide all samples by mean L2 norm
+        # (scalar, not per-sample) so geometry is preserved across experts.
+        mean_norm = float(np.linalg.norm(X, axis=1).mean())
+        if mean_norm > 1e-8:
+            X = X / mean_norm
+
+        reg_targets = self.regression_targets.numpy()
+
+        def _fit_one(hyp: dict) -> tuple[str, float]:
+            name = hyp["name"]
+            idxs: list[int] = hyp["target_indices"]
+            reg_type: str = hyp["regression_type"]
+
+            Y = reg_targets[:, idxs]
+            if Y.shape[1] == 1:
+                Y = Y.ravel()
+
+            try:
+                if reg_type == "linear":
+                    pipe = Pipeline([("sc", StandardScaler()), ("reg", LinearRegression())])
+                    scorer = make_scorer(r2_score, multioutput="uniform_average")
+                    cv_s = cross_val_score(pipe, X, Y, cv=5, scoring=scorer, n_jobs=-1)
+                    return name, float(np.mean(cv_s))
+
+                elif reg_type == "logistic":
+                    pipe = Pipeline([
+                        ("sc", StandardScaler()),
+                        ("clf", LogisticRegression(max_iter=1000, class_weight="balanced")),
+                    ])
+                    cv_s = cross_val_score(pipe, X, Y.astype(int), cv=5,
+                                           scoring="balanced_accuracy", n_jobs=-1)
+                    return name, float(np.mean(cv_s))
+
+                elif reg_type == "multinomial":
+                    y_int = Y.astype(int)
+                    classes, counts = np.unique(y_int, return_counts=True)
+                    if len(classes) < 2:
+                        return name, float("nan")
+                    n_splits = max(2, min(5, int(counts.min())))
+                    skf = StratifiedKFold(n_splits=n_splits)
+                    pipe = Pipeline([
+                        ("sc", StandardScaler()),
+                        ("clf", LogisticRegression(multi_class="multinomial", max_iter=1000)),
+                    ])
+                    cv_s = cross_val_score(pipe, X, y_int, cv=skf,
+                                           scoring="f1_macro", n_jobs=-1)
+                    return name, float(np.mean(cv_s))
+
+                else:
+                    return name, float("nan")
+
+            except Exception:
+                return name, float("nan")
+
+        # Run all hypotheses in parallel (thread-based; each cross_val_score
+        # also uses n_jobs=-1 for fold-level parallelism via the loky backend)
+        results: list[tuple[str, float]] = Parallel(n_jobs=-1, prefer="threads")(
+            delayed(_fit_one)(hyp) for hyp in hypotheses
+        )
+
+        scores: dict[str, float] = dict(results)  # type: ignore[arg-type]
+        self.regression_scores = scores
+        valid = {k: v for k, v in scores.items() if np.isfinite(v)}
+        if valid:
+            self.best_regression_name = max(valid, key=valid.__getitem__)
+            self.best_regression_score = valid[self.best_regression_name]
+        return scores
+
     # ── context windows ───────────────────────────────────────────────
     def get_context_windows(self, str_tokens: list[list[str]], context_window: int = 10) -> list[str]:
         """Build HTML-formatted context window strings for each active token.
@@ -516,6 +659,8 @@ class Expert:
             parts.append(f"adj_fisher={self.adjusted_fisher_score:.3f}")
         if self.mean_continuity is not None:
             parts.append(f"cont={self.mean_continuity:.3f}")
+        if self.best_regression_name is not None and self.best_regression_score is not None:
+            parts.append(f"best_reg={self.best_regression_name}({self.best_regression_score:.3f})")
         return ", ".join(parts) + ")"
 
     def get_plot(
@@ -676,6 +821,7 @@ def collect_activations(
     dataframe_path: str | None = None,
     text_column: str = "text",
     label_column: str | None = None,
+    regression_target_columns: list[str] | None = None,
 ) -> tuple[
     torch.Tensor,
     list[list[str]],
@@ -683,6 +829,7 @@ def collect_activations(
     dict[int, str] | None,
     torch.Tensor,
     int,
+    torch.Tensor | None,
 ]:
     """Load texts + labels, tokenize, collect LLM residual-stream activations.
 
@@ -693,9 +840,11 @@ def collect_activations(
         label_names:          ``dict[int, str]`` id→label mapping, or ``None``
         last_token_positions: ``(B,)`` long tensor — last non-pad position per sequence
         n_classes:            number of unique labels (0 if unlabelled)
+        regression_targets:   ``(B, n_targets)`` float32 tensor, or ``None``
     """
     texts: list[str] = []
     raw_labels: list[str | int] | None = [] if label_column else None
+    raw_regression_targets: list[list[float]] | None = None
 
     if dataframe_path is not None:
         print(f"Loading data from {dataframe_path}")
@@ -711,6 +860,9 @@ def collect_activations(
         texts = df[text_column].tolist()[:n_input_samples]
         if raw_labels is not None:
             raw_labels = df[label_column].tolist()[:n_input_samples]  # type: ignore[index]
+        if regression_target_columns:
+            reg_df = df[regression_target_columns].iloc[:n_input_samples].fillna(0.0)
+            raw_regression_targets = reg_df.values.tolist()
     elif dataset_name is not None:
         print(f"Streaming {dataset_name}")
         dataset = load_dataset(dataset_name, streaming=True, split="train")
@@ -775,6 +927,10 @@ def collect_activations(
     del all_acts
     str_tokens: list[list[str]] = [list(tokenizer.convert_ids_to_tokens(tokenized[i].tolist()) or []) for i in range(B)]
 
+    regression_targets_tensor: torch.Tensor | None = None
+    if raw_regression_targets is not None:
+        regression_targets_tensor = torch.tensor(raw_regression_targets[:B], dtype=torch.float32)
+
     return (
         activations,
         str_tokens,
@@ -782,6 +938,7 @@ def collect_activations(
         label_names,
         last_token_positions,
         n_classes,
+        regression_targets_tensor,
     )
 
 
@@ -797,6 +954,7 @@ def get_sae_activations(
     last_token_only: bool = False,
     last_token_positions: torch.Tensor | None = None,
     n_classes: int = 0,
+    regression_targets: torch.Tensor | None = None,
 ) -> list[Expert]:
     """Encode LLM activations through SMIXAE and return a list of active ``Expert`` objects.
 
@@ -812,6 +970,8 @@ def get_sae_activations(
         last_token_only:      If True, only encode the last non-pad token per sequence.
         last_token_positions: Required when ``last_token_only=True``.
         n_classes:            Total number of label classes (passed through to ``Expert``).
+        regression_targets:   ``(B, n_targets)`` float32 tensor of numeric regression
+            targets, one row per input sequence.  Passed through to each ``Expert``.
 
     Returns:
         List of ``Expert`` objects for all experts that meet the activity threshold.
@@ -865,6 +1025,7 @@ def get_sae_activations(
             activations,
             expert_pts,
             labels=labels,
+            regression_targets=regression_targets,
             seq_positions=seq_positions,
             n_classes=n_classes,
             mean_latent_l0=mean_latent_l0,
