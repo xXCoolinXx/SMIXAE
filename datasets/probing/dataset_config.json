@@ -16,7 +16,7 @@
     "violet": "#8f00ff",
     "pink":   "#ff69b4"
   }},
-  {"dataframe_path": "emotions.csv",     "n_input_samples": 5000, "color_map": {
+  {"dataframe_path": "emotions.csv",     "n_input_samples": 5000, "show_labels": true, "color_map": {
     "admiration":    "#1a6fcc",
     "amusement":     "#1a6fcc",
     "approval":      "#1a6fcc",
