@@ -6,4 +6,5 @@ bash "$(dirname "$0")/run.sh" \
     --model             google/gemma-2-2b \
     --hook              model.layers.12 \
     --d-in              2304 \
-    --tokenized-dataset datasets/tokenized/pile-uncopyrighted-gemma2
+    --tokenized-dataset datasets/tokenized/pile-uncopyrighted-gemma2 \
+    --steps probe,newline
