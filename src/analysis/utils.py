@@ -439,6 +439,7 @@ class Expert:
         color_scale: str = "Plasma",
         color_map: dict[str, str] | None = None,
         connect_means: bool | None = None,
+        show_labels: bool = False,
     ) -> Figure:
         # Lazy-evaluate continuity
         if self.local_continuity_scores is None:
@@ -468,6 +469,7 @@ class Expert:
                 label_names=lnames,
                 colorscale=color_scale if continuous_color else cscale,
                 connect_means=_connect_means,
+                show_labels=show_labels,
                 title=self._make_title(),
             )
             # Inject per-token context windows into the scatter trace hover
@@ -497,6 +499,7 @@ class Expert:
         continuous_color: bool = False,
         color_map: dict[str, str] | None = None,
         connect_means: bool | None = None,
+        show_labels: bool = False,
     ) -> Figure | None:
         if self.labels is None or label_names is None:
             return None
@@ -523,6 +526,7 @@ class Expert:
             colorscale=color_scale if continuous_color else cscale,
             scatter_alpha=0.0,
             connect_means=_connect_means,
+            show_labels=show_labels,
             title=self._make_title() + " [class means]",
         )
 

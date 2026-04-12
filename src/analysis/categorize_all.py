@@ -28,6 +28,7 @@ class DatasetConfig:
     output_subdir: str | None = None
     color_map: dict[str, str] | None = None  # label → CSS color for 1:1 color schemes
     n_input_samples: int | None = None  # overrides CLI --n-input-samples when set
+    show_labels: bool = False  # annotate class means with text labels
 
     @property
     def effective_continuous_color(self) -> bool:
@@ -167,6 +168,7 @@ def run_pipeline(
             color_scale=cfg.effective_color_scale,
             color_map=cfg.color_map,
             connect_means=False,
+            show_labels=cfg.show_labels,
         )
         mean_fig = expert.get_mean_plot(
             label_names=label_names,
@@ -174,6 +176,7 @@ def run_pipeline(
             continuous_color=cfg.effective_continuous_color,
             color_map=cfg.color_map,
             connect_means=False,
+            show_labels=cfg.show_labels,
         )
         l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
         tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"

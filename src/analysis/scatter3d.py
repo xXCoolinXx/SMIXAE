@@ -720,6 +720,8 @@ def plot_3d_scatter(
     show_legend: bool = True,
     colorbar_title: str = "",
     colorbar_tick_increment: Optional[float] = 20,
+    # ── annotations ──────────────────────────────────────────────────────────
+    show_labels: bool = False,
     # ── origin marker ────────────────────────────────────────────────────────
     show_origin: bool = True,
     # ── layout ───────────────────────────────────────────────────────────────
@@ -872,6 +874,14 @@ def plot_3d_scatter(
         **legend_kwargs,
         margin=dict(l=0, r=right_margin, t=40 if title else 10, b=0),
     )
+
+    if show_labels and not _colorscale_is_named:
+        eye_tuple = (camera_eye["x"], camera_eye["y"], camera_eye["z"])
+        add_label_annotations(
+            fig, mean_xyz, classes, cmap, names,
+            fig_w=width, fig_h=height,
+            camera_eye=eye_tuple,
+        )
 
     if show:
         fig.show()
