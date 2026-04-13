@@ -264,10 +264,64 @@
         "fisher": {
           "sort_by": "continuity",
           "top1_expert_id": 462,
-          "top1_score": 0.40511685609817505,
-          "top5_mean": 0.38538205027580263,
-          "top10_mean": 0.3820528000593185
+          "top1_score": 0.3969275951385498,
+          "top5_mean": 0.3846897482872009,
+          "top10_mean": 0.3817907840013504
         }
+      }
+    },
+    "newline": {
+      "newline_150": {
+        "hook_name": "model.layers.11",
+        "n_experts": 2048,
+        "d_bottleneck": 3,
+        "n_harmonics": 3,
+        "line_length": 150,
+        "n_tokens": 49443,
+        "n_classes": 150,
+        "threshold": 3.54109787940979,
+        "top1_decode_r2_expert": 1204,
+        "top1_decode_r2": 0.7293111091601496,
+        "top5_mean_decode_r2": 0.349803186795675,
+        "top10_mean_decode_r2": 0.20885336357825848,
+        "top1_encode_linear_r2_expert": 1204,
+        "top1_encode_linear_r2": 0.36332668289857134,
+        "top5_mean_encode_linear_r2": 0.17039937530126364,
+        "top10_mean_encode_linear_r2": 0.09868824486920275,
+        "top1_encode_periodic_r2_expert": 1521,
+        "top1_encode_periodic_r2": 0.7482497841450853,
+        "top5_mean_encode_periodic_r2": 0.46210883716172624,
+        "top10_mean_encode_periodic_r2": 0.2545402891023751,
+        "top1_periodic_gain_expert": 541,
+        "top1_periodic_gain": 0.5668366890394717,
+        "top5_mean_periodic_gain": 0.30116091897257263,
+        "top10_mean_periodic_gain": 0.16295599921256157
+      },
+      "newline_80": {
+        "hook_name": "model.layers.11",
+        "n_experts": 2048,
+        "d_bottleneck": 3,
+        "n_harmonics": 3,
+        "line_length": 80,
+        "n_tokens": 36860,
+        "n_classes": 80,
+        "threshold": 3.54109787940979,
+        "top1_decode_r2_expert": 541,
+        "top1_decode_r2": 0.7091202697593226,
+        "top5_mean_decode_r2": 0.35461246119809137,
+        "top10_mean_decode_r2": 0.1961716596165879,
+        "top1_encode_linear_r2_expert": 1204,
+        "top1_encode_linear_r2": 0.2837945977707083,
+        "top5_mean_encode_linear_r2": 0.15580178709420878,
+        "top10_mean_encode_linear_r2": 0.08494882031895955,
+        "top1_encode_periodic_r2_expert": 541,
+        "top1_encode_periodic_r2": 0.8011722008267356,
+        "top5_mean_encode_periodic_r2": 0.44214112452964144,
+        "top10_mean_encode_periodic_r2": 0.23939799258082686,
+        "top1_periodic_gain_expert": 541,
+        "top1_periodic_gain": 0.5575785247219435,
+        "top5_mean_periodic_gain": 0.29580404579560426,
+        "top10_mean_periodic_gain": 0.15718842129812854
       }
     }
   }
