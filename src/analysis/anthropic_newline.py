@@ -17,6 +17,7 @@ import os
 import re
 import textwrap
 from itertools import islice
+from pathlib import Path
 from typing import Any
 
 import numpy as np
