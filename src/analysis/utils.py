@@ -79,24 +79,67 @@ _HTML_TEMPLATE = """\
 def build_dataset_html(
     expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]]],
     dataset_title: str,
+    per_hypothesis_entries: "dict[str, tuple[str, list[tuple[str, Figure, Figure | None, dict[str, float]]]]] | None" = None,
 ) -> str:
-    """Build a self-contained tabbed HTML page containing Plotly figures for each expert.
+    """Build a self-contained HTML page containing Plotly figures for experts.
 
-    Each expert occupies one tab.  Figures are embedded as JSON and rendered lazily
-    (only when the tab is first selected) to keep the initial load fast.  The Plotly.js
-    bundle is inlined so the file is fully standalone — no internet connection required.
+    Two rendering modes:
+
+    **Per-hypothesis mode** (when ``per_hypothesis_entries`` is provided):
+        Renders one row-section per regression hypothesis, each containing a
+        horizontal tab strip of the top-10 experts for that hypothesis.  The
+        page scrolls vertically through the hypothesis rows.
+
+    **Flat mode** (fallback):
+        Renders all experts as a single horizontal tab strip (original behaviour).
+
+    Figures are embedded as JSON and rendered lazily (only when the tab is first
+    selected).  The Plotly.js bundle is inlined so the file is fully standalone.
 
     Args:
-        expert_entries: List of ``(tab_label, scatter_fig, mean_fig)`` or
-            ``(tab_label, scatter_fig, mean_fig, regression_scores)`` tuples.
-            ``scatter_fig`` is the per-token 3D scatter; ``mean_fig`` is the class-mean
-            plot (``None`` if labels are unavailable); ``regression_scores`` is an
-            optional ``{hypothesis_name: score}`` dict rendered as a summary table.
+        expert_entries: Flat list of ``(tab_label, scatter_fig, mean_fig[, reg_scores])``
+            tuples used in flat mode.  Pass an empty list when using
+            ``per_hypothesis_entries``.
         dataset_title: String shown as the page ``<h2>`` heading and ``<title>``.
+        per_hypothesis_entries: Optional dict mapping hypothesis name →
+            ``(description, [(tab_label, scatter_fig, mean_fig, reg_scores), ...])``.
+            When provided, the per-hypothesis row layout is used instead of
+            the flat tab strip.
 
     Returns:
         A complete UTF-8 HTML document as a string.
     """
+    if per_hypothesis_entries:
+        return _build_per_hypothesis_html(per_hypothesis_entries, dataset_title)
+    return _build_flat_html(expert_entries, dataset_title)
+
+
+def _reg_scores_table(reg_scores: dict[str, float]) -> str:
+    """Return an HTML ``<details>`` block listing hypothesis scores, or empty string."""
+    if not reg_scores:
+        return ""
+    sorted_scores = sorted(reg_scores.items(), key=lambda kv: -(kv[1] if kv[1] == kv[1] else float("-inf")))
+    rows_html = "".join(
+        f"<tr><td style='padding:2px 8px;border:1px solid #ccc'>{n}</td>"
+        f"<td style='padding:2px 8px;border:1px solid #ccc'>{'%.4f' % v if v == v else 'nan'}</td></tr>"
+        for n, v in sorted_scores
+    )
+    return (
+        "<details style='margin-top:6px;font-size:12px'>"
+        "<summary style='cursor:pointer'>Regression scores</summary>"
+        "<table style='border-collapse:collapse;margin-top:4px'>"
+        "<thead><tr>"
+        "<th style='padding:2px 8px;border:1px solid #ccc'>Hypothesis</th>"
+        "<th style='padding:2px 8px;border:1px solid #ccc'>Score</th>"
+        "</tr></thead>"
+        f"<tbody>{rows_html}</tbody></table></details>"
+    )
+
+
+def _build_flat_html(
+    expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]]],
+    dataset_title: str,
+) -> str:
     tab_buttons: list[str] = []
     tab_panes: list[str] = []
     figures_json_parts: list[str] = []
@@ -110,27 +153,7 @@ def build_dataset_html(
 
         tab_buttons.append(f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">{tab_label}</button>')
 
-        reg_table_html = ""
-        if reg_scores:
-            sorted_scores = sorted(reg_scores.items(), key=lambda kv: -(kv[1] if kv[1] == kv[1] else float("-inf")))
-            rows_html = "".join(
-                f"<tr><td style='padding:2px 8px;border:1px solid #ccc'>{n}</td>"
-                f"<td style='padding:2px 8px;border:1px solid #ccc'>"
-                f"{'%.4f' % v if v == v else 'nan'}</td></tr>"
-                for n, v in sorted_scores
-            )
-            reg_table_html = (
-                "<details style='margin-top:6px;font-size:12px'>"
-                "<summary style='cursor:pointer'>Regression scores</summary>"
-                "<table style='border-collapse:collapse;margin-top:4px'>"
-                "<thead><tr>"
-                "<th style='padding:2px 8px;border:1px solid #ccc'>Hypothesis</th>"
-                "<th style='padding:2px 8px;border:1px solid #ccc'>Score</th>"
-                "</tr></thead>"
-                f"<tbody>{rows_html}</tbody></table></details>"
-            )
-
-        plot_divs = f'{reg_table_html}\n    <div class="plot-box" id="{scatter_id}"></div>'
+        plot_divs = f'{_reg_scores_table(reg_scores)}\n    <div class="plot-box" id="{scatter_id}"></div>'
         if mean_fig is not None:
             mean_id = f"mean_{idx}"
             plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
@@ -145,6 +168,103 @@ def build_dataset_html(
         tab_panes="\n  ".join(tab_panes),
         figures_json=",\n    ".join(figures_json_parts),
     )
+    return html.replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
+
+
+def _build_per_hypothesis_html(
+    per_hypothesis_entries: "dict[str, tuple[str, list[tuple[str, Figure, Figure | None, dict[str, float]]]]]",
+    dataset_title: str,
+) -> str:
+    """Render one horizontal tab-row per hypothesis, each showing its top-10 experts."""
+    figures_json_parts: list[str] = []
+    sections_html: list[str] = []
+
+    for hyp_name, (hyp_desc, entries) in per_hypothesis_entries.items():
+        section_id = f"hyp-{hyp_name}"
+        tab_buttons: list[str] = []
+        tab_panes: list[str] = []
+
+        for rank, entry in enumerate(entries):
+            tab_label, scatter_fig, mean_fig = entry[0], entry[1], entry[2]
+            reg_scores: dict[str, float] = entry[3] if len(entry) > 3 else {}  # type: ignore[misc]
+
+            scatter_id = f"scatter_{hyp_name}_{rank}"
+            active_cls = " active" if rank == 0 else ""
+
+            tab_buttons.append(
+                f'<button class="tab-btn{active_cls}" onclick="switchTab(\'{section_id}\',{rank})">{tab_label}</button>'
+            )
+
+            plot_divs = f'{_reg_scores_table(reg_scores)}\n    <div class="plot-box" id="{scatter_id}"></div>'
+            if mean_fig is not None:
+                mean_id = f"mean_{hyp_name}_{rank}"
+                plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
+                figures_json_parts.append(f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}')
+
+            tab_panes.append(f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>')
+            figures_json_parts.append(f'"{scatter_id}": {pio.to_json(scatter_fig, engine="json")}')
+
+        sections_html.append(
+            f'<div class="hyp-section" id="{section_id}">\n'
+            f'  <h3>{hyp_name} — {hyp_desc}</h3>\n'
+            f'  <div class="tab-strip">{"".join(tab_buttons)}</div>\n'
+            + "".join(f"  {p}\n" for p in tab_panes)
+            + "</div>"
+        )
+
+    figures_json = ",\n    ".join(figures_json_parts)
+    sections_combined = "\n\n  ".join(sections_html)
+
+    html = f"""\
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{dataset_title}</title>
+  <script>__PLOTLYJS__</script>
+  <style>
+    body {{ font-family: sans-serif; margin: 8px; }}
+    .hyp-section {{ margin-bottom: 32px; border-top: 2px solid #ccc; padding-top: 10px; }}
+    .hyp-section h3 {{ margin: 0 0 6px; font-size: 15px; color: #333; }}
+    .tab-strip {{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }}
+    .tab-btn {{ padding:4px 10px; cursor:pointer; border:1px solid #aaa;
+                border-radius:3px; background:#f0f0f0; font-size:13px; }}
+    .tab-btn.active {{ background:#333; color:#fff; }}
+    .tab-pane {{ display:none; flex-direction:column; gap:8px; }}
+    .tab-pane.active {{ display:flex; }}
+    .plot-box {{ width:100%; height:650px; }}
+  </style>
+</head>
+<body>
+  <h2>{dataset_title}</h2>
+  {sections_combined}
+  <script>
+    const FIGURES = {{{figures_json}}};
+    const rendered = new Set();
+    function switchTab(sectionId, idx) {{
+      const sec = document.getElementById(sectionId);
+      sec.querySelectorAll(':scope > .tab-strip > .tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+      sec.querySelectorAll(':scope > .tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
+      renderSection(sectionId, idx);
+    }}
+    function renderSection(sectionId, idx) {{
+      const sec = document.getElementById(sectionId);
+      const pane = sec.querySelectorAll(':scope > .tab-pane')[idx];
+      if (!pane) return;
+      pane.querySelectorAll('.plot-box').forEach(box => {{
+        if (!rendered.has(box.id)) {{
+          Plotly.newPlot(box.id, FIGURES[box.id].data, FIGURES[box.id].layout, {{responsive: true}});
+          rendered.add(box.id);
+        }} else {{
+          Plotly.Plots.resize(box);
+        }}
+      }});
+    }}
+    document.querySelectorAll('.hyp-section').forEach(s => renderSection(s.id, 0));
+  </script>
+</body>
+</html>"""
+
     return html.replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
 
 
@@ -822,6 +942,8 @@ def collect_activations(
     text_column: str = "text",
     label_column: str | None = None,
     regression_target_columns: list[str] | None = None,
+    bucket_column: str | None = None,
+    n_buckets: int = 10,
 ) -> tuple[
     torch.Tensor,
     list[list[str]],
@@ -833,6 +955,10 @@ def collect_activations(
 ]:
     """Load texts + labels, tokenize, collect LLM residual-stream activations.
 
+    When ``label_column`` is ``None`` but ``bucket_column`` is provided, the
+    specified continuous column is discretised into ``n_buckets`` equal-width
+    bins and those bucket indices are used as labels for Fisher scoring.
+
     Returns:
         activations:          ``(B, S, d_model)`` CPU tensor
         str_tokens:           list of token-string lists, one per sequence
@@ -843,7 +969,7 @@ def collect_activations(
         regression_targets:   ``(B, n_targets)`` float32 tensor, or ``None``
     """
     texts: list[str] = []
-    raw_labels: list[str | int] | None = [] if label_column else None
+    raw_labels: list[str | int] | None = [] if (label_column is not None or bucket_column is not None) else None
     raw_regression_targets: list[list[float]] | None = None
 
     if dataframe_path is not None:
@@ -858,8 +984,12 @@ def collect_activations(
         else:
             raise ValueError(f"Unsupported file extension: {ext}")
         texts = df[text_column].tolist()[:n_input_samples]
-        if raw_labels is not None:
-            raw_labels = df[label_column].tolist()[:n_input_samples]  # type: ignore[index]
+        if label_column is not None:
+            raw_labels = df[label_column].tolist()[:n_input_samples]
+        elif bucket_column is not None:
+            bucket_series = pd.cut(df[bucket_column].iloc[:n_input_samples], bins=n_buckets, labels=False)
+            raw_labels = [str(int(b)) if not pd.isna(b) else "0" for b in bucket_series]
+            print(f"Bucketed '{bucket_column}' into {n_buckets} bins for Fisher scoring.")
         if regression_target_columns:
             reg_df = df[regression_target_columns].iloc[:n_input_samples].fillna(0.0)
             raw_regression_targets = reg_df.values.tolist()

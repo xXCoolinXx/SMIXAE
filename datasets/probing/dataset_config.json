@@ -3,10 +3,9 @@
     "dataframe_path": "weekdays.csv",
     "color_scale": "phase",
     "regression_hypotheses": [
-      {"name": "cyc_7d",      "description": "7-day cyclical ring",       "target_columns": ["target_sin_7d", "target_cos_7d"],  "regression_type": "linear"},
-      {"name": "is_weekend",  "description": "Weekend vs weekday",        "target_columns": ["target_is_weekend"],               "regression_type": "logistic"},
-      {"name": "is_weekday",  "description": "Weekday vs weekend",        "target_columns": ["target_is_weekday"],               "regression_type": "logistic"},
-      {"name": "ordinal",     "description": "Day ordinal (Mon=0)",       "target_columns": ["target_day"],                      "regression_type": "linear"}
+      {"name": "cyc_7d",         "description": "7-day cyclical ring",       "target_columns": ["target_sin_7d", "target_cos_7d"], "regression_type": "linear"},
+      {"name": "weekday_weekend","description": "Weekday vs weekend",        "target_columns": ["target_is_weekend"],              "regression_type": "logistic"},
+      {"name": "ordinal",        "description": "Day ordinal (Mon=0)",       "target_columns": ["target_day"],                     "regression_type": "linear"}
     ]
   },
   {
@@ -15,15 +14,16 @@
     "regression_hypotheses": [
       {"name": "cyc_24h",  "description": "24-hour cyclical ring",  "target_columns": ["target_sin_24h", "target_cos_24h"], "regression_type": "linear"},
       {"name": "cyc_12h",  "description": "12-hour cyclical ring",  "target_columns": ["target_sin_12h", "target_cos_12h"], "regression_type": "linear"},
-      {"name": "is_pm",    "description": "PM vs AM",               "target_columns": ["target_is_pm"],                    "regression_type": "logistic"},
-      {"name": "is_am",    "description": "AM vs PM",               "target_columns": ["target_is_am"],                    "regression_type": "logistic"},
-      {"name": "ordinal",  "description": "Hour ordinal (0–23)",    "target_columns": ["target_hour"],                     "regression_type": "linear"}
+      {"name": "am_pm",    "description": "AM vs PM",               "target_columns": ["target_is_pm"],                    "regression_type": "logistic"},
+      {"name": "ordinal",  "description": "Hour ordinal (0-23)",    "target_columns": ["target_hour"],                     "regression_type": "linear"}
     ]
   },
   {
     "dataframe_path": "temperatures.csv",
     "color_scale": "thermal",
     "label_column": null,
+    "bucket_column": "target_temp_f",
+    "n_buckets": 20,
     "regression_hypotheses": [
       {"name": "linear_f",  "description": "Linear Fahrenheit",          "target_columns": ["target_temp_f"],     "regression_type": "linear"},
       {"name": "log_f",     "description": "Log-compressed Fahrenheit",  "target_columns": ["target_log_temp_f"], "regression_type": "linear"}
@@ -44,17 +44,17 @@
     "dataframe_path": "living_things.csv",
     "continuous_color": false,
     "regression_hypotheses": [
-      {"name": "plant_animal",  "description": "Plant (0) vs Animal (1)",   "target_columns": ["target_is_animal"], "regression_type": "logistic"},
-      {"name": "taxonomy",      "description": "Taxonomic group (7 classes)", "target_columns": ["target_taxon"],   "regression_type": "multinomial"}
+      {"name": "plant_animal",  "description": "Plant (0) vs Animal (1)",    "target_columns": ["target_is_animal"], "regression_type": "logistic"},
+      {"name": "taxonomy",      "description": "Taxonomic group (7 classes)", "target_columns": ["target_taxon"],    "regression_type": "multinomial"}
     ]
   },
   {
     "dataframe_path": "months.csv",
     "color_scale": "Phase",
     "regression_hypotheses": [
-      {"name": "cyc_12m",   "description": "12-month cyclical ring",     "target_columns": ["target_sin_12m", "target_cos_12m"], "regression_type": "linear"},
-      {"name": "season",    "description": "Season (4 classes, NH)",     "target_columns": ["target_season"],                   "regression_type": "multinomial"},
-      {"name": "ordinal",   "description": "Month ordinal (Jan=0)",      "target_columns": ["target_month"],                    "regression_type": "linear"}
+      {"name": "cyc_12m",  "description": "12-month cyclical ring",     "target_columns": ["target_sin_12m", "target_cos_12m"], "regression_type": "linear"},
+      {"name": "season",   "description": "Season (4 classes, NH)",     "target_columns": ["target_season"],                   "regression_type": "multinomial"},
+      {"name": "ordinal",  "description": "Month ordinal (Jan=0)",      "target_columns": ["target_month"],                    "regression_type": "linear"}
     ]
   },
   {
@@ -70,9 +70,9 @@
       "pink":   "#ff69b4"
     },
     "regression_hypotheses": [
-      {"name": "hue_wheel",   "description": "Cyclical hue on color wheel", "target_columns": ["target_hue_sin", "target_hue_cos"],  "regression_type": "linear"},
-      {"name": "rgb",         "description": "Normalized RGB",              "target_columns": ["target_r", "target_g", "target_b"], "regression_type": "linear"},
-      {"name": "warm_nat_cool","description": "Warm / Natural / Cool",      "target_columns": ["target_color_cat"],                  "regression_type": "multinomial"}
+      {"name": "hue_wheel",    "description": "Cyclical hue on color wheel", "target_columns": ["target_hue_sin", "target_hue_cos"],  "regression_type": "linear"},
+      {"name": "rgb",          "description": "Normalized RGB",              "target_columns": ["target_r", "target_g", "target_b"],  "regression_type": "linear"},
+      {"name": "warm_nat_cool","description": "Warm / Natural / Cool",       "target_columns": ["target_color_cat"],                  "regression_type": "multinomial"}
     ]
   },
   {

@@ -60,6 +60,8 @@ class DatasetConfig:
     max_points: int | None = None  # overrides CLI --max-points when set (0 = no cap)
     show_labels: bool = False  # annotate class means with text labels
     regression_hypotheses: list[dict] | None = None  # list of hypothesis specs for regression probing
+    bucket_column: str | None = None  # continuous column to bucket into Fisher labels when label_column is None
+    n_buckets: int = 10  # number of equal-width bins for bucket_column
 
     @property
     def effective_continuous_color(self) -> bool:
@@ -173,6 +175,8 @@ def run_pipeline(
         text_column=cfg.text_column,
         label_column=cfg.label_column,
         regression_target_columns=all_target_cols if all_target_cols else None,
+        bucket_column=cfg.bucket_column,
+        n_buckets=cfg.n_buckets,
     )
 
     is_labelled = labels is not None
@@ -249,10 +253,9 @@ def run_pipeline(
     # ── 5. Plot ───────────────────────────────────────────────────────
     print(f"\nBuilding HTML for top {n_to_plot} experts…")
 
-    expert_entries: list[tuple[str, Figure, Figure | None, dict[str, float]]] = []
+    # Console summary
     for i, expert in enumerate(top_experts):
         fisher_val = expert.sort_key(effective_sort_by)
-
         parts = [
             f"Rank {i + 1:02d}",
             f"Expert {expert.expert_id:4d}",
@@ -272,7 +275,11 @@ def run_pipeline(
         parts.append(f"Points: {expert.expert_activations.shape[0]}")
         print(" | ".join(parts))
 
-        scatter_fig = expert.get_plot(
+    # Helper: build one (tab_label, scatter_fig, mean_fig, reg_scores) entry
+    def _make_plot_entry(expert, rank: int, score_str: str) -> tuple:
+        l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
+        tab_label = f"#{rank + 1} E{expert.expert_id}{l0_str}{score_str}"
+        s_fig = expert.get_plot(
             str_tokens=str_tokens,  # type: ignore[arg-type]
             k_neighbors=k_neighbors,
             context_window=context_window_display,
@@ -284,7 +291,7 @@ def run_pipeline(
             connect_means=False,
             show_labels=cfg.show_labels,
         )
-        mean_fig = expert.get_mean_plot(
+        m_fig = expert.get_mean_plot(
             label_names=label_names,
             color_scale=cfg.effective_color_scale,
             continuous_color=cfg.effective_continuous_color,
@@ -292,15 +299,42 @@ def run_pipeline(
             connect_means=False,
             show_labels=cfg.show_labels,
         )
-        l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
-        if expert.best_regression_name is not None and expert.best_regression_score is not None:
-            reg_str = f" [{expert.best_regression_name}={expert.best_regression_score:.2f}]"
-        else:
-            reg_str = f" ({effective_sort_by}={fisher_val:.3f})"
-        tab_label = f"#{i + 1} E{expert.expert_id}{l0_str}{reg_str}"
-        expert_entries.append((tab_label, scatter_fig, mean_fig, expert.regression_scores))
+        return (tab_label, s_fig, m_fig, expert.regression_scores)
 
-    html_str = build_dataset_html(expert_entries, f"{subdir} — Expert Analysis")
+    # Build per-hypothesis top-10 rows (when regression hypotheses exist)
+    per_hypothesis_entries: dict[str, tuple[str, list]] = {}
+    expert_entries: list = []
+
+    if hypotheses_with_indices:
+        print("Building per-hypothesis top-10 plots…")
+        for hyp in hypotheses_with_indices:
+            name = hyp["name"]
+            desc = hyp.get("description", name)
+            sorted_for_hyp = sorted(
+                top_experts,
+                key=lambda e, n=name: e.regression_scores.get(n, float("-inf")),
+                reverse=True,
+            )[:10]
+            hyp_entries = []
+            for rank, expert in enumerate(sorted_for_hyp):
+                hyp_score = expert.regression_scores.get(name, float("nan"))
+                fisher_val = expert.fisher_score or 0.0
+                score_str = f" {name}={'%.3f' % hyp_score} F={'%.2f' % fisher_val}"
+                hyp_entries.append(_make_plot_entry(expert, rank, score_str))
+            per_hypothesis_entries[name] = (desc, hyp_entries)
+    else:
+        # No regression — flat tab strip sorted by Fisher/continuity
+        for i, expert in enumerate(top_experts):
+            fisher_val = expert.sort_key(effective_sort_by)
+            l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
+            score_str = f" ({effective_sort_by}={fisher_val:.3f})"
+            expert_entries.append(_make_plot_entry(expert, i, score_str))
+
+    html_str = build_dataset_html(
+        expert_entries,
+        f"{subdir} — Expert Analysis",
+        per_hypothesis_entries=per_hypothesis_entries or None,
+    )
     output_path = os.path.join(output_dir, "experts.html")
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_str)
