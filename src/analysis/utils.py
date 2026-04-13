@@ -172,48 +172,71 @@ def _build_flat_html(
 
 
 def _build_per_hypothesis_html(
-    per_hypothesis_entries: "dict[str, tuple[str, list[tuple[str, Figure, Figure | None, dict[str, float]]]]]",
+    per_hypothesis_entries: "dict[str, tuple[str, list]]",
     dataset_title: str,
 ) -> str:
-    """Render one horizontal tab-row per hypothesis, each showing its top-10 experts."""
+    """All hypothesis tab-rows at top; single shared plot area below.
+
+    Entry format per expert: ``(button_label, scatter_fig, mean_fig, reg_scores[, expert_meta])``.
+    ``expert_meta`` is an optional 5th element dict with keys ``expert_id``,
+    ``hyp_name``, ``hyp_score``, ``fisher_score``, ``n_points``.
+    """
+    import json as _json
+
     figures_json_parts: list[str] = []
-    sections_html: list[str] = []
+    meta_entries: dict[str, dict] = {}
+    hyp_rows_html: list[str] = []
+    first_hyp: str | None = None
 
     for hyp_name, (hyp_desc, entries) in per_hypothesis_entries.items():
-        section_id = f"hyp-{hyp_name}"
-        tab_buttons: list[str] = []
-        tab_panes: list[str] = []
+        if first_hyp is None:
+            first_hyp = hyp_name
 
+        btn_parts: list[str] = []
         for rank, entry in enumerate(entries):
-            tab_label, scatter_fig, mean_fig = entry[0], entry[1], entry[2]
-            reg_scores: dict[str, float] = entry[3] if len(entry) > 3 else {}  # type: ignore[misc]
+            button_label: str = entry[0]
+            scatter_fig: Figure = entry[1]
+            mean_fig: "Figure | None" = entry[2]
+            reg_scores: dict = entry[3] if len(entry) > 3 else {}  # type: ignore[misc]
+            expert_meta: dict = entry[4] if len(entry) > 4 else {}  # type: ignore[misc]
 
-            scatter_id = f"scatter_{hyp_name}_{rank}"
-            active_cls = " active" if rank == 0 else ""
+            key = f"{hyp_name}_{rank}"
+            figures_json_parts.append(f'"scatter_{key}": {pio.to_json(scatter_fig, engine="json")}')
+            has_mean = mean_fig is not None
+            if has_mean:
+                figures_json_parts.append(f'"mean_{key}": {pio.to_json(mean_fig, engine="json")}')
 
-            tab_buttons.append(
-                f'<button class="tab-btn{active_cls}" onclick="switchTab(\'{section_id}\',{rank})">{tab_label}</button>'
+            # Strip NaN from reg_scores so json.dumps doesn't choke
+            clean_scores = {k: v for k, v in reg_scores.items() if v == v}
+
+            meta_entries[key] = {
+                "expert_id":   expert_meta.get("expert_id", "?"),
+                "hyp_name":    expert_meta.get("hyp_name", hyp_name),
+                "hyp_score":   expert_meta.get("hyp_score"),
+                "fisher_score": expert_meta.get("fisher_score"),
+                "n_points":    expert_meta.get("n_points"),
+                "has_mean":    has_mean,
+                "reg_scores":  clean_scores,
+            }
+
+            is_first = (rank == 0 and hyp_name == first_hyp)
+            active_cls = " active" if is_first else ""
+            btn_parts.append(
+                f'<button class="tab-btn{active_cls}" '
+                f'data-hyp="{hyp_name}" data-rank="{rank}" '
+                f'onclick="showExpert(\'{hyp_name}\',{rank})">{button_label}</button>'
             )
 
-            plot_divs = f'{_reg_scores_table(reg_scores)}\n    <div class="plot-box" id="{scatter_id}"></div>'
-            if mean_fig is not None:
-                mean_id = f"mean_{hyp_name}_{rank}"
-                plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
-                figures_json_parts.append(f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}')
-
-            tab_panes.append(f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>')
-            figures_json_parts.append(f'"{scatter_id}": {pio.to_json(scatter_fig, engine="json")}')
-
-        sections_html.append(
-            f'<div class="hyp-section" id="{section_id}">\n'
-            f'  <h3>{hyp_name} — {hyp_desc}</h3>\n'
-            f'  <div class="tab-strip">{"".join(tab_buttons)}</div>\n'
-            + "".join(f"  {p}\n" for p in tab_panes)
-            + "</div>"
+        hyp_rows_html.append(
+            f'<div class="hyp-row">'
+            f'<span class="hyp-label"><b>{hyp_name}</b> — {hyp_desc}</span>'
+            f'<div class="tab-strip">{"".join(btn_parts)}</div>'
+            f'</div>'
         )
 
     figures_json = ",\n    ".join(figures_json_parts)
-    sections_combined = "\n\n  ".join(sections_html)
+    meta_json = _json.dumps(meta_entries)
+    rows_html = "\n  ".join(hyp_rows_html)
 
     html = f"""\
 <!DOCTYPE html>
@@ -224,43 +247,90 @@ def _build_per_hypothesis_html(
   <script>__PLOTLYJS__</script>
   <style>
     body {{ font-family: sans-serif; margin: 8px; }}
-    .hyp-section {{ margin-bottom: 32px; border-top: 2px solid #ccc; padding-top: 10px; }}
-    .hyp-section h3 {{ margin: 0 0 6px; font-size: 15px; color: #333; }}
-    .tab-strip {{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }}
-    .tab-btn {{ padding:4px 10px; cursor:pointer; border:1px solid #aaa;
-                border-radius:3px; background:#f0f0f0; font-size:13px; }}
-    .tab-btn.active {{ background:#333; color:#fff; }}
-    .tab-pane {{ display:none; flex-direction:column; gap:8px; }}
-    .tab-pane.active {{ display:flex; }}
+    #hyp-rows {{ margin-bottom: 0; }}
+    .hyp-row {{ display:flex; align-items:flex-start; gap:10px;
+                padding:5px 0; border-bottom:1px solid #e0e0e0; }}
+    .hyp-label {{ min-width:200px; max-width:200px; font-size:13px;
+                  color:#444; padding-top:3px; line-height:1.4; }}
+    .tab-strip {{ display:flex; flex-wrap:wrap; gap:3px; flex:1; }}
+    .tab-btn {{ padding:3px 8px; cursor:pointer; border:1px solid #bbb;
+                border-radius:3px; background:#f4f4f4; font-size:12px;
+                white-space:nowrap; }}
+    .tab-btn.active {{ background:#333; color:#fff; border-color:#333; }}
+    #plot-area {{ margin-top:16px; padding-top:10px; border-top:2px solid #888; }}
+    #expert-header {{ font-size:14px; color:#222; margin-bottom:6px;
+                      padding:4px 0; }}
     .plot-box {{ width:100%; height:650px; }}
   </style>
 </head>
 <body>
   <h2>{dataset_title}</h2>
-  {sections_combined}
+  <div id="hyp-rows">
+  {rows_html}
+  </div>
+  <div id="plot-area">
+    <div id="expert-header"></div>
+    <div id="reg-scores-container"></div>
+    <div class="plot-box" id="active-scatter"></div>
+    <div class="plot-box" id="active-mean" style="display:none"></div>
+  </div>
   <script>
     const FIGURES = {{{figures_json}}};
-    const rendered = new Set();
-    function switchTab(sectionId, idx) {{
-      const sec = document.getElementById(sectionId);
-      sec.querySelectorAll(':scope > .tab-strip > .tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-      sec.querySelectorAll(':scope > .tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
-      renderSection(sectionId, idx);
+    const META = {meta_json};
+
+    function buildRegTable(scores) {{
+      if (!scores || !Object.keys(scores).length) return '';
+      const rows = Object.entries(scores)
+        .sort((a, b) => b[1] - a[1])
+        .map(([k, v]) =>
+          '<tr>' +
+          '<td style="padding:2px 8px;border:1px solid #ccc">' + k + '</td>' +
+          '<td style="padding:2px 8px;border:1px solid #ccc">' +
+            (isNaN(v) ? 'nan' : v.toFixed(4)) + '</td></tr>'
+        ).join('');
+      return '<details style="margin-bottom:8px;font-size:12px">' +
+             '<summary style="cursor:pointer">All regression scores</summary>' +
+             '<table style="border-collapse:collapse;margin-top:4px">' +
+             '<thead><tr>' +
+             '<th style="padding:2px 8px;border:1px solid #ccc">Hypothesis</th>' +
+             '<th style="padding:2px 8px;border:1px solid #ccc">Score</th>' +
+             '</tr></thead><tbody>' + rows + '</tbody></table></details>';
     }}
-    function renderSection(sectionId, idx) {{
-      const sec = document.getElementById(sectionId);
-      const pane = sec.querySelectorAll(':scope > .tab-pane')[idx];
-      if (!pane) return;
-      pane.querySelectorAll('.plot-box').forEach(box => {{
-        if (!rendered.has(box.id)) {{
-          Plotly.newPlot(box.id, FIGURES[box.id].data, FIGURES[box.id].layout, {{responsive: true}});
-          rendered.add(box.id);
-        }} else {{
-          Plotly.Plots.resize(box);
-        }}
-      }});
+
+    function showExpert(hyp, rank) {{
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      const btn = document.querySelector('[data-hyp="' + hyp + '"][data-rank="' + rank + '"]');
+      if (btn) btn.classList.add('active');
+
+      const key = hyp + '_' + rank;
+      const m = META[key];
+      if (!m) return;
+
+      const parts = ['<b>Expert ' + m.expert_id + '</b>'];
+      if (m.hyp_score != null) parts.push(m.hyp_name + ' = ' + m.hyp_score.toFixed(3));
+      if (m.fisher_score != null) parts.push('Fisher = ' + m.fisher_score.toFixed(2));
+      if (m.n_points != null) parts.push(m.n_points + ' points');
+      document.getElementById('expert-header').innerHTML = parts.join(' &nbsp;|&nbsp; ');
+      document.getElementById('reg-scores-container').innerHTML = buildRegTable(m.reg_scores);
+
+      Plotly.newPlot('active-scatter',
+        FIGURES['scatter_' + key].data,
+        FIGURES['scatter_' + key].layout,
+        {{responsive: true}});
+
+      const meanBox = document.getElementById('active-mean');
+      if (m.has_mean && FIGURES['mean_' + key]) {{
+        meanBox.style.display = 'block';
+        Plotly.newPlot('active-mean',
+          FIGURES['mean_' + key].data,
+          FIGURES['mean_' + key].layout,
+          {{responsive: true}});
+      }} else {{
+        meanBox.style.display = 'none';
+      }}
     }}
-    document.querySelectorAll('.hyp-section').forEach(s => renderSection(s.id, 0));
+
+    showExpert('{first_hyp}', 0);
   </script>
 </body>
 </html>"""
@@ -461,10 +531,15 @@ class Expert:
         n_classes: int = 0,
         mean_latent_l0: float | None = None,
         regression_targets: torch.Tensor | None = None,
+        fisher_labels: torch.Tensor | None = None,
     ):
         self.expert_activations = expert_activations[active_mask].float().cpu()
         self.llm_activations = llm_activations[active_mask].float().cpu() if llm_activations is not None else None
         self.labels = labels[active_mask].long().cpu() if labels is not None else None
+        # fisher_labels: separate label tensor used only for Fisher scoring (e.g. bucket IDs).
+        # When None, Fisher falls back to self.labels.
+        _fl_mask = active_mask[:, 0] if active_mask.dim() == 2 else active_mask
+        self.fisher_labels = fisher_labels[_fl_mask].long().cpu() if fisher_labels is not None else None
         self.seq_positions = seq_positions
         self.n_classes = n_classes
 
@@ -495,11 +570,17 @@ class Expert:
         return float(self.local_continuity_scores.mean().item())
 
     @property
+    def _effective_fisher_labels(self) -> torch.Tensor | None:
+        """Labels to use for Fisher scoring: fisher_labels if set, else display labels."""
+        return self.fisher_labels if self.fisher_labels is not None else self.labels
+
+    @property
     def n_unique_labels(self) -> int | None:
-        """Number of distinct label values seen in active samples, or ``None`` if labels are absent."""
-        if self.labels is None:
+        """Number of distinct label values seen in active samples (uses Fisher labels), or ``None``."""
+        lbl = self._effective_fisher_labels
+        if lbl is None:
             return None
-        return int(self.labels.unique().numel())
+        return int(lbl.unique().numel())
 
     @property
     def adjusted_fisher_score(self) -> float | None:
@@ -583,12 +664,12 @@ class Expert:
         Works for clusters, ordered clusters, and rings — anything
         where different labels occupy different regions of the space.
         """
-        if self.labels is None:
+        y = self._effective_fisher_labels
+        if y is None:
             self.fisher_score = 0.0
             return 0.0
 
         X = self.expert_activations  # (N, D)
-        y = self.labels  # (N,)
         _, D = X.shape
 
         overall_mean = X.mean(dim=0)  # (D,)
@@ -656,7 +737,6 @@ class Expert:
         Returns:
             ``{name: score}`` dict (NaN for any hypothesis that failed).
         """
-        from joblib import Parallel, delayed
         from sklearn.linear_model import LinearRegression, LogisticRegression
         from sklearn.metrics import make_scorer, r2_score
         from sklearn.model_selection import StratifiedKFold, cross_val_score
@@ -667,12 +747,8 @@ class Expert:
             return {}
 
         X = self.expert_activations.numpy()  # (n_active, d_bottleneck)
-        # Per-expert scalar normalisation: divide all samples by mean L2 norm
-        # (scalar, not per-sample) so geometry is preserved across experts.
-        mean_norm = float(np.linalg.norm(X, axis=1).mean())
-        if mean_norm > 1e-8:
-            X = X / mean_norm
-
+        # No global pre-scaling: StandardScaler inside each Pipeline fold handles
+        # normalization on the training split only, preventing any data leakage.
         reg_targets = self.regression_targets.numpy()
 
         def _fit_one(hyp: dict) -> tuple[str, float]:
@@ -688,7 +764,7 @@ class Expert:
                 if reg_type == "linear":
                     pipe = Pipeline([("sc", StandardScaler()), ("reg", LinearRegression())])
                     scorer = make_scorer(r2_score, multioutput="uniform_average")
-                    cv_s = cross_val_score(pipe, X, Y, cv=5, scoring=scorer, n_jobs=-1)
+                    cv_s = cross_val_score(pipe, X, Y, cv=5, scoring=scorer)
                     return name, float(np.mean(cv_s))
 
                 elif reg_type == "logistic":
@@ -697,7 +773,7 @@ class Expert:
                         ("clf", LogisticRegression(max_iter=1000, class_weight="balanced")),
                     ])
                     cv_s = cross_val_score(pipe, X, Y.astype(int), cv=5,
-                                           scoring="balanced_accuracy", n_jobs=-1)
+                                           scoring="balanced_accuracy")
                     return name, float(np.mean(cv_s))
 
                 elif reg_type == "multinomial":
@@ -707,12 +783,14 @@ class Expert:
                         return name, float("nan")
                     n_splits = max(2, min(5, int(counts.min())))
                     skf = StratifiedKFold(n_splits=n_splits)
+                    # solver='lbfgs' handles multi-class natively; multi_class param
+                    # was removed in sklearn 1.7.
                     pipe = Pipeline([
                         ("sc", StandardScaler()),
-                        ("clf", LogisticRegression(multi_class="multinomial", max_iter=1000)),
+                        ("clf", LogisticRegression(solver="lbfgs", max_iter=1000)),
                     ])
                     cv_s = cross_val_score(pipe, X, y_int, cv=skf,
-                                           scoring="f1_macro", n_jobs=-1)
+                                           scoring="f1_macro")
                     return name, float(np.mean(cv_s))
 
                 else:
@@ -721,11 +799,9 @@ class Expert:
             except Exception:
                 return name, float("nan")
 
-        # Run all hypotheses in parallel (thread-based; each cross_val_score
-        # also uses n_jobs=-1 for fold-level parallelism via the loky backend)
-        results: list[tuple[str, float]] = Parallel(n_jobs=-1, prefer="threads")(
-            delayed(_fit_one)(hyp) for hyp in hypotheses
-        )
+        # Run hypotheses sequentially; sklearn's cross_val_score already
+        # parallelises folds internally, so no additional nesting is needed.
+        results: list[tuple[str, float]] = [_fit_one(hyp) for hyp in hypotheses]
 
         scores: dict[str, float] = dict(results)  # type: ignore[arg-type]
         self.regression_scores = scores
@@ -952,24 +1028,29 @@ def collect_activations(
     torch.Tensor,
     int,
     torch.Tensor | None,
+    torch.Tensor | None,
 ]:
     """Load texts + labels, tokenize, collect LLM residual-stream activations.
 
-    When ``label_column`` is ``None`` but ``bucket_column`` is provided, the
-    specified continuous column is discretised into ``n_buckets`` equal-width
-    bins and those bucket indices are used as labels for Fisher scoring.
+    When ``bucket_column`` is provided, that continuous column is discretised
+    into ``n_buckets`` equal-width bins used **only** for Fisher scoring.
+    If ``label_column`` is also provided, its values are used for display /
+    coloring and the bucket IDs are kept internal (``fisher_labels_tensor``).
+    If only ``bucket_column`` is provided, display labels are ``None``.
 
     Returns:
-        activations:          ``(B, S, d_model)`` CPU tensor
-        str_tokens:           list of token-string lists, one per sequence
-        labels_tensor:        ``(B, S)`` long tensor of class ids, or ``None``
-        label_names:          ``dict[int, str]`` id→label mapping, or ``None``
-        last_token_positions: ``(B,)`` long tensor — last non-pad position per sequence
-        n_classes:            number of unique labels (0 if unlabelled)
-        regression_targets:   ``(B, n_targets)`` float32 tensor, or ``None``
+        activations:           ``(B, S, d_model)`` CPU tensor
+        str_tokens:            list of token-string lists, one per sequence
+        labels_tensor:         ``(B, S)`` long tensor of class ids for display, or ``None``
+        label_names:           ``dict[int, str]`` id→label mapping, or ``None``
+        last_token_positions:  ``(B,)`` long tensor — last non-pad position per sequence
+        n_classes:             number of unique display labels (or Fisher buckets if no display labels)
+        regression_targets:    ``(B, n_targets)`` float32 tensor, or ``None``
+        fisher_labels_tensor:  ``(B,)`` long tensor of bucket IDs for Fisher scoring, or ``None``
     """
     texts: list[str] = []
-    raw_labels: list[str | int] | None = [] if (label_column is not None or bucket_column is not None) else None
+    raw_labels: list[str] | None = [] if label_column is not None else None
+    raw_fisher_labels: list[int] | None = None  # bucket IDs — Fisher only, never displayed
     raw_regression_targets: list[list[float]] | None = None
 
     if dataframe_path is not None:
@@ -985,11 +1066,11 @@ def collect_activations(
             raise ValueError(f"Unsupported file extension: {ext}")
         texts = df[text_column].tolist()[:n_input_samples]
         if label_column is not None:
-            raw_labels = df[label_column].tolist()[:n_input_samples]
-        elif bucket_column is not None:
+            raw_labels = [str(v) for v in df[label_column].tolist()[:n_input_samples]]
+        if bucket_column is not None:
             bucket_series = pd.cut(df[bucket_column].iloc[:n_input_samples], bins=n_buckets, labels=False)
-            raw_labels = [str(int(b)) if not pd.isna(b) else "0" for b in bucket_series]
-            print(f"Bucketed '{bucket_column}' into {n_buckets} bins for Fisher scoring.")
+            raw_fisher_labels = [int(b) if not pd.isna(b) else 0 for b in bucket_series]
+            print(f"Bucketed '{bucket_column}' into {n_buckets} bins for Fisher scoring only.")
         if regression_target_columns:
             reg_df = df[regression_target_columns].iloc[:n_input_samples].fillna(0.0)
             raw_regression_targets = reg_df.values.tolist()
@@ -1001,26 +1082,45 @@ def collect_activations(
                 break
             texts.append(sample[text_column])
             if raw_labels is not None:
-                raw_labels.append(sample[label_column])  # type: ignore[index]
+                raw_labels.append(str(sample[label_column]))  # type: ignore[index]
     else:
         raise ValueError("Provide either dataset_name or dataframe_path.")
 
     labels_tensor: torch.Tensor | None = None
     label_names: dict[int, str] | None = None
     n_classes: int = 0
+    fisher_labels_tensor: torch.Tensor | None = None
+
+    def _make_label_tensor(raw: list[str]) -> tuple[torch.Tensor, dict[int, str], int]:
+        """Sort labels, preferring numeric order when all labels parse as numbers."""
+        unique_strs = list({lbl for lbl in raw})
+        try:
+            unique_sorted = sorted(unique_strs, key=lambda x: float(x))
+        except ValueError:
+            unique_sorted = sorted(unique_strs)
+        label_to_id = {lbl: i for i, lbl in enumerate(unique_sorted)}
+        names = {i: lbl for lbl, i in label_to_id.items()}
+        ids = torch.tensor([label_to_id[lbl] for lbl in raw], dtype=torch.long)
+        return ids, names, len(unique_sorted)
 
     if raw_labels is not None and len(raw_labels) > 0:
-        unique = sorted({str(lbl) for lbl in raw_labels})
-        n_classes = len(unique)
-        label_to_id = {lbl: i for i, lbl in enumerate(unique)}
-        label_names = {i: lbl for lbl, i in label_to_id.items()}
-        label_ids = torch.tensor([label_to_id[str(lbl)] for lbl in raw_labels], dtype=torch.long)
+        label_ids, label_names, n_classes = _make_label_tensor(raw_labels)
+        unique_display = [label_names[i] for i in range(n_classes)]
         print(
-            f"Found {n_classes} unique labels (sorted → ordinal ids): "
-            f"{', '.join(unique[:10])}{'…' if n_classes > 10 else ''}"
+            f"Found {n_classes} unique labels (numerically sorted): "
+            f"{', '.join(unique_display[:10])}{'…' if n_classes > 10 else ''}"
         )
     else:
         label_ids = None
+
+    if raw_fisher_labels is not None:
+        # Fisher labels are already integer bucket IDs; keep n_classes for Fisher as n_buckets.
+        fisher_labels_tensor = torch.tensor(raw_fisher_labels, dtype=torch.long)
+        if label_ids is None:
+            # No display labels — Fisher n_classes = number of non-empty buckets
+            n_classes = len(set(raw_fisher_labels))
+            print(f"Fisher-only mode: {n_classes} non-empty buckets (no display labels)")
+        print(f"Fisher bucket labels: min={min(raw_fisher_labels)} max={max(raw_fisher_labels)}")
 
     print("Collecting activations...")
     enc = tokenizer(
@@ -1069,6 +1169,7 @@ def collect_activations(
         last_token_positions,
         n_classes,
         regression_targets_tensor,
+        fisher_labels_tensor,
     )
 
 
@@ -1078,13 +1179,14 @@ def get_sae_activations(
     activations: torch.Tensor,
     sae_batch_size: int,
     active_threshold: float = 1e-5,
-    min_points: int = 100,
+    min_active_fraction: float = 0.10,
     max_points: int = 1000,
     labels: torch.Tensor | None = None,
     last_token_only: bool = False,
     last_token_positions: torch.Tensor | None = None,
     n_classes: int = 0,
     regression_targets: torch.Tensor | None = None,
+    fisher_labels: torch.Tensor | None = None,
 ) -> list[Expert]:
     """Encode LLM activations through SMIXAE and return a list of active ``Expert`` objects.
 
@@ -1094,7 +1196,8 @@ def get_sae_activations(
         activations:          ``(B, S, d_model)`` CPU tensor from ``collect_activations``.
         sae_batch_size:       Tokens per SAE forward pass.
         active_threshold:     L2 norm threshold to consider an expert active.
-        min_points:           Skip experts with fewer active tokens than this.
+        min_active_fraction:  Skip experts active on fewer than this fraction of total tokens
+                              (0–1, e.g. 0.10 = 10%).
         max_points:           Randomly downsample experts exceeding this count (0 = no cap).
         labels:               ``(B, S)`` long tensor of class ids, or ``None``.
         last_token_only:      If True, only encode the last non-pad token per sequence.
@@ -1125,11 +1228,15 @@ def get_sae_activations(
     else:
         S = S_full
 
-    activations_flat = activations.reshape(B * S, D)
+    # When last_token_only=True, S=1 so B*S = B (number of samples); otherwise all tokens.
+    n_total = B * S
+    min_points_abs = max(1, int(min_active_fraction * n_total))
+    activations_flat = activations.reshape(n_total, D)
 
     sae_activations_cat, mean_latent_l0 = encode_sae_batched(sae, activations_flat, sae_batch_size, return_latent_l0=True)  # type: ignore[misc]
     sae_activations_cat = sae_activations_cat.view(B, S, sae_activations_cat.shape[1], sae_activations_cat.shape[2])
     print(f"Mean latent L0 (pre-bottleneck dims > 0 per token): {mean_latent_l0:.2f}")
+    print(f"min_active_fraction={min_active_fraction:.2%} → min_points={min_points_abs} / {n_total} tokens")
 
     experts: list[Expert] = []
     n_experts = sae_activations_cat.shape[-2]
@@ -1139,7 +1246,7 @@ def get_sae_activations(
         active_mask = torch.norm(expert_pts, p=2, dim=-1) > active_threshold
         n_active = int(active_mask.sum().item())
 
-        if n_active < min_points:
+        if n_active < min_points_abs:
             continue
         if max_points and n_active > max_points:
             active_indices = active_mask.nonzero(as_tuple=False)
@@ -1159,8 +1266,57 @@ def get_sae_activations(
             seq_positions=seq_positions,
             n_classes=n_classes,
             mean_latent_l0=mean_latent_l0,
+            fisher_labels=fisher_labels,
         )
         experts.append(expert)
 
     del sae_activations_cat
     return experts
+
+
+def update_results_json(
+    path: str | Path,
+    run_name: str,
+    model_name: str,
+    hook_name: str,
+    section: str,
+    key: str,
+    data: dict,
+) -> None:
+    """Read-modify-write the combined results JSON.
+
+    Structure::
+
+        {
+          "<run_name>": {
+            "model_name": "...",
+            "hook_name": "...",
+            "<section>": {
+              "<key>": { ...data... }
+            }
+          }
+        }
+
+    Missing keys at any level are created; existing ones are overwritten.
+    The file is created if it does not exist.
+    """
+    import json as _json
+
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    existing: dict = {}
+    if path.exists():
+        with open(path, encoding="utf-8") as f:
+            try:
+                existing = _json.load(f)
+            except _json.JSONDecodeError:
+                existing = {}
+
+    run_entry = existing.setdefault(run_name, {})
+    run_entry["model_name"] = model_name
+    run_entry["hook_name"] = hook_name
+    run_entry.setdefault(section, {})[key] = data
+
+    with open(path, "w", encoding="utf-8") as f:
+        _json.dump(existing, f, indent=2)
