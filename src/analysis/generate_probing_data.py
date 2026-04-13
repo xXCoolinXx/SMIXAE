@@ -850,40 +850,32 @@ def generate_months(n_samples=1000):
 
 
 # ── Valence/Arousal lookup for GoEmotions labels ─────────────────────────────
-# Derived from the NRC Valence-Arousal-Dominance Lexicon (Mohammad 2018) and
-# Warriner et al. (2013) word norms, cross-checked against Russell's circumplex
-# model.  Scores are approximations; no authoritative per-label mapping exists
-# for the full 28-class GoEmotions taxonomy.
-EMOTION_VA: dict[str, tuple[float, float]] = {
-    "admiration":     ( 0.70,  0.40),
-    "amusement":      ( 0.80,  0.50),
-    "anger":          (-0.80,  0.80),
-    "annoyance":      (-0.50,  0.40),
-    "approval":       ( 0.60,  0.20),
-    "caring":         ( 0.75,  0.30),
-    "confusion":      (-0.20,  0.40),
-    "curiosity":      ( 0.40,  0.60),
-    "desire":         ( 0.60,  0.70),
-    "disappointment": (-0.65, -0.20),
-    "disapproval":    (-0.55,  0.30),
-    "disgust":        (-0.80,  0.45),
-    "embarrassment":  (-0.55,  0.45),
-    "excitement":     ( 0.80,  0.90),
-    "fear":           (-0.80,  0.85),
-    "gratitude":      ( 0.85,  0.35),
-    "grief":          (-0.90, -0.10),
-    "joy":            ( 0.90,  0.70),
-    "love":           ( 0.90,  0.60),
-    "nervousness":    (-0.45,  0.75),
-    "optimism":       ( 0.75,  0.50),
-    "pride":          ( 0.70,  0.55),
-    "realization":    ( 0.20,  0.40),
-    "relief":         ( 0.70, -0.20),
-    "remorse":        (-0.70, -0.10),
-    "sadness":        (-0.80, -0.30),
-    "surprise":       ( 0.15,  0.80),
-    "neutral":        ( 0.00,  0.00),
-}
+# Valence-Arousal scores sourced from the ANEW lexicon (Bradley & Lang 1999) via
+# spaCy en_core_web_lg cosine-similarity matching in ANEW_Processing/match_emotions.py.
+# Scores are normalised from the ANEW 1-9 scale to [-1, 1] via (x - 5) / 4.
+# "neutral" is hardcoded to (0.0, 0.0) — no ANEW word captures a neutral baseline.
+_ANEW_SCORES_PATH = Path(__file__).parent.parent.parent / "ANEW_Processing" / "emotion_va_scores.csv"
+
+
+def _load_emotion_va() -> dict[str, tuple[float, float]]:
+    if not _ANEW_SCORES_PATH.exists():
+        raise FileNotFoundError(
+            f"ANEW emotion scores not found at {_ANEW_SCORES_PATH}. "
+            "Edit ANEW_Processing/emotion_va_scores.csv to add scores."
+        )
+    df = pd.read_csv(_ANEW_SCORES_PATH)
+    # Normalise ANEW 1-9 scale to [-1, 1] via (x - 5) / 4
+    va: dict[str, tuple[float, float]] = {
+        str(row["emotion"]).strip(): (
+            (float(row["valence_raw"]) - 5.0) / 4.0,
+            (float(row["arousal_raw"]) - 5.0) / 4.0,
+        )
+        for _, row in df.iterrows()
+    }
+    return va
+
+
+EMOTION_VA: dict[str, tuple[float, float]] = _load_emotion_va()
 
 
 def generate_emotions() -> pd.DataFrame:
