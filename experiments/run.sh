@@ -65,6 +65,7 @@ done
 : "${D_IN:?--d-in is required}"
 
 RESULTS_DIR="results/${EXPERIMENT_NAME}"
+RESULTS_JSON="results/results.json"
 
 _has_step() { [[ ",${STEPS}," == *",${1},"* ]]; }
 
@@ -103,7 +104,8 @@ if _has_step probe; then
         --hook-point "${HOOK}" \
         --datasets-config "${DATASETS_CONFIG}" \
         --output-dir "${RESULTS_DIR}/probe" \
-        --min-points 750
+        --min-active-fraction 0.75 \
+        --results-json "${RESULTS_JSON}"
 fi
 
 # --------------------------------------------------------------------------- #
@@ -115,14 +117,16 @@ if _has_step newline; then
         --model-name "${MODEL}" \
         --hook-name "${HOOK}" \
         --output-path "${RESULTS_DIR}/newline_150" \
-        --line-length 150
+        --line-length 150 \
+        --results-json "${RESULTS_JSON}"
 
     smixae newline main \
         --smixae-path "${RESULTS_DIR}/model" \
         --model-name "${MODEL}" \
         --hook-name "${HOOK}" \
         --output-path "${RESULTS_DIR}/newline_80" \
-        --line-length 80
+        --line-length 80 \
+        --results-json "${RESULTS_JSON}"
 fi
 
 # =========================================================================== #

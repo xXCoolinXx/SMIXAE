@@ -21,7 +21,8 @@
   {
     "dataframe_path": "temperatures.csv",
     "color_scale": "thermal",
-    "label_column": null,
+    "label_column": "Label",
+    "continuous_color": true,
     "bucket_column": "target_temp_f",
     "n_buckets": 20,
     "regression_hypotheses": [
