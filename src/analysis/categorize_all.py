@@ -94,11 +94,14 @@ def run_pipeline(
     adjusted_fisher: bool,
     k_neighbors: int,
     active_threshold: float,
-    min_points: int,
+    min_active_fraction: float,
     max_points: int,
     n_interesting_experts_to_plot: int,
     context_window_display: int,
     dataset_name: str | None = None,
+    results_json_path: str | None = None,
+    run_name: str | None = None,
+    model_name_for_json: str = "",
 ) -> None:
     """Run the full analysis pipeline for a single dataset and write an HTML report.
 
@@ -107,7 +110,7 @@ def run_pipeline(
     1. **Collect LLM activations** — tokenise the dataset and register a forward hook
        at ``hook_point`` to capture residual stream activations.
     2. **SAE encoding** — run SMIXAE on the activations in batches; filter experts
-       by ``active_threshold`` and ``min_points``.
+       by ``active_threshold`` and ``min_active_fraction``.
     3. **Evaluate experts** — score by Fisher discriminant ratio (labelled data) or
        manifold continuity (unlabelled data).
     4. **Sort** — rank experts by the chosen metric (``sort_by``).
@@ -136,7 +139,7 @@ def run_pipeline(
         adjusted_fisher: If ``True``, multiply Fisher score by class coverage fraction.
         k_neighbors: Neighbourhood size for manifold continuity scoring.
         active_threshold: Minimum L2 norm for an expert to be considered active.
-        min_points: Minimum number of active tokens required to include an expert.
+        min_active_fraction: Minimum fraction of total tokens an expert must be active on (0–1).
         max_points: Cap on active tokens per expert (``0`` = no cap).
         n_interesting_experts_to_plot: Number of top-ranked experts to include in the
             HTML report.
@@ -162,7 +165,7 @@ def run_pipeline(
                     all_target_cols.append(col)
                     seen_cols.add(col)
 
-    llm_acts, str_tokens, labels, label_names, last_token_positions, n_classes, reg_targets = collect_activations(
+    llm_acts, str_tokens, labels, label_names, last_token_positions, n_classes, reg_targets, fisher_labels = collect_activations(
         model=model,
         tokenizer=tokenizer,
         hook_name=hook_point,
@@ -179,7 +182,8 @@ def run_pipeline(
         n_buckets=cfg.n_buckets,
     )
 
-    is_labelled = labels is not None
+    # is_labelled = True when we have display labels OR fisher-only bucket labels
+    is_labelled = labels is not None or fisher_labels is not None
 
     # ── 2. SAE encoding ───────────────────────────────────────────────
     experts = get_sae_activations(
@@ -188,19 +192,20 @@ def run_pipeline(
         activations=llm_acts,
         sae_batch_size=sae_batch_size,
         active_threshold=active_threshold,
-        min_points=min_points,
+        min_active_fraction=min_active_fraction,
         max_points=max_points,
         labels=labels,
         last_token_only=is_labelled,
         last_token_positions=last_token_positions,
         n_classes=n_classes,
         regression_targets=reg_targets,
+        fisher_labels=fisher_labels,
     )
 
-    del llm_acts, labels, reg_targets
+    del llm_acts, labels, reg_targets, fisher_labels
 
     if not experts:
-        print("No experts fired enough times to exceed the min_points threshold.")
+        print("No experts fired enough times to exceed the min_active_fraction threshold.")
         return
 
     # ── 3. Evaluate ───────────────────────────────────────────────────
@@ -275,10 +280,8 @@ def run_pipeline(
         parts.append(f"Points: {expert.expert_activations.shape[0]}")
         print(" | ".join(parts))
 
-    # Helper: build one (tab_label, scatter_fig, mean_fig, reg_scores) entry
-    def _make_plot_entry(expert, rank: int, score_str: str) -> tuple:
-        l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
-        tab_label = f"#{rank + 1} E{expert.expert_id}{l0_str}{score_str}"
+    # Helper: build one plot entry tuple
+    def _make_plot_entry(expert, tab_label: str, expert_meta: dict | None = None) -> tuple:
         s_fig = expert.get_plot(
             str_tokens=str_tokens,  # type: ignore[arg-type]
             k_neighbors=k_neighbors,
@@ -299,7 +302,10 @@ def run_pipeline(
             connect_means=False,
             show_labels=cfg.show_labels,
         )
-        return (tab_label, s_fig, m_fig, expert.regression_scores)
+        entry: tuple = (tab_label, s_fig, m_fig, expert.regression_scores)
+        if expert_meta is not None:
+            entry = entry + (expert_meta,)
+        return entry
 
     # Build per-hypothesis top-10 rows (when regression hypotheses exist)
     per_hypothesis_entries: dict[str, tuple[str, list]] = {}
@@ -318,17 +324,25 @@ def run_pipeline(
             hyp_entries = []
             for rank, expert in enumerate(sorted_for_hyp):
                 hyp_score = expert.regression_scores.get(name, float("nan"))
-                fisher_val = expert.fisher_score or 0.0
-                score_str = f" {name}={'%.3f' % hyp_score} F={'%.2f' % fisher_val}"
-                hyp_entries.append(_make_plot_entry(expert, rank, score_str))
+                # Short label for the button; full metadata goes in expert_meta
+                btn_label = f"E{expert.expert_id} ({hyp_score:.3f})"
+                fisher_val = expert.fisher_score
+                expert_meta = {
+                    "expert_id": expert.expert_id,
+                    "hyp_name": name,
+                    "hyp_score": None if (hyp_score != hyp_score) else hyp_score,
+                    "fisher_score": None if fisher_val is None or fisher_val != fisher_val else fisher_val,
+                    "n_points": expert.expert_activations.shape[0],
+                }
+                hyp_entries.append(_make_plot_entry(expert, btn_label, expert_meta))
             per_hypothesis_entries[name] = (desc, hyp_entries)
     else:
         # No regression — flat tab strip sorted by Fisher/continuity
         for i, expert in enumerate(top_experts):
             fisher_val = expert.sort_key(effective_sort_by)
             l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
-            score_str = f" ({effective_sort_by}={fisher_val:.3f})"
-            expert_entries.append(_make_plot_entry(expert, i, score_str))
+            tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={fisher_val:.3f})"
+            expert_entries.append(_make_plot_entry(expert, tab_label))
 
     html_str = build_dataset_html(
         expert_entries,
@@ -339,6 +353,55 @@ def run_pipeline(
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_str)
     print(f"Saved: {output_path}")
+
+    # ── Write structured results into shared results JSON ─────────────
+    if results_json_path and run_name:
+        dataset_results: dict[str, Any] = {}
+
+        # Fisher stats (re-sort top_experts by Fisher score)
+        fisher_sorted = sorted(top_experts, key=lambda e: e.sort_key(effective_sort_by), reverse=True)
+        if fisher_sorted and fisher_sorted[0].sort_key(effective_sort_by) > float("-inf"):
+            scores_f = [e.sort_key(effective_sort_by) for e in fisher_sorted]
+            dataset_results["fisher"] = {
+                "sort_by": effective_sort_by,
+                "top1_expert_id": fisher_sorted[0].expert_id,
+                "top1_score": scores_f[0],
+                "top5_mean": float(sum(scores_f[:5]) / min(5, len(scores_f))),
+                "top10_mean": float(sum(scores_f[:10]) / min(10, len(scores_f))),
+            }
+
+        # Per-hypothesis regression stats
+        if per_hypothesis_entries:
+            dataset_results["hypotheses"] = {}
+            for hyp_name, (hyp_desc, hyp_entries) in per_hypothesis_entries.items():
+                metas = [entry[4] for entry in hyp_entries]  # expert_meta dicts
+                hyp_scores = [m["hyp_score"] for m in metas if m.get("hyp_score") is not None]
+                if not hyp_scores:
+                    continue
+                reg_type = next(
+                    (h.get("regression_type", "unknown") for h in hypotheses_with_indices if h["name"] == hyp_name),
+                    "unknown",
+                )
+                dataset_results["hypotheses"][hyp_name] = {
+                    "description": hyp_desc,
+                    "regression_type": reg_type,
+                    "top1_expert_id": metas[0]["expert_id"],
+                    "top1_score": hyp_scores[0],
+                    "top5_mean": float(sum(hyp_scores[:5]) / min(5, len(hyp_scores))),
+                    "top10_mean": float(sum(hyp_scores[:10]) / min(10, len(hyp_scores))),
+                }
+
+        from analysis.utils import update_results_json
+        update_results_json(
+            path=results_json_path,
+            run_name=run_name,
+            model_name=model_name_for_json,
+            hook_name=hook_point,
+            section="probe",
+            key=subdir,
+            data=dataset_results,
+        )
+        print(f"Updated results JSON: {results_json_path} [{run_name}/probe/{subdir}]")
 
 
 # ======================================================================
@@ -363,7 +426,7 @@ _SHARED_OPTIONS = dict(
     sae_batch_size=typer.Option(2048, help="Batch size for SAE inference"),
     k_neighbors=typer.Option(10, help="Number of neighbors for continuity"),
     active_threshold=typer.Option(1e-5, help="L2 norm threshold to consider an expert active"),
-    min_points=typer.Option(100, help="Minimum active tokens required to evaluate an expert"),
+    min_active_fraction=typer.Option(0.10, help="Minimum fraction of tokens an expert must fire on (0–1, e.g. 0.10 = 10%)"),
     max_points=typer.Option(1000, help="Max active tokens per expert (0 = no cap)"),
     adjusted_fisher=typer.Option(
         False,
@@ -399,7 +462,7 @@ def single(
     sae_batch_size: int = typer.Option(2048, help="Batch size for SAE inference"),
     k_neighbors: int = typer.Option(10, help="Number of neighbors for continuity"),
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold to consider an expert active"),
-    min_points: int = typer.Option(100, help="Minimum active tokens required to evaluate an expert"),
+    min_active_fraction: float = typer.Option(0.10, help="Minimum fraction of tokens an expert must fire on (0–1, e.g. 0.10 = 10%)"),
     max_points: int = typer.Option(1000, help="Max active tokens per expert (0 = no cap)"),
     adjusted_fisher: bool = typer.Option(
         False,
@@ -464,7 +527,7 @@ def single(
         adjusted_fisher=adjusted_fisher,
         k_neighbors=k_neighbors,
         active_threshold=active_threshold,
-        min_points=min_points,
+        min_active_fraction=min_active_fraction,
         max_points=max_points,
         n_interesting_experts_to_plot=n_interesting_experts_to_plot,
         context_window_display=context_window_display,
@@ -504,7 +567,7 @@ def all_datasets(
     sae_batch_size: int = typer.Option(2048, help="Batch size for SAE inference"),
     k_neighbors: int = typer.Option(10, help="Number of neighbors for continuity"),
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold to consider an expert active"),
-    min_points: int = typer.Option(100, help="Minimum active tokens required to evaluate an expert"),
+    min_active_fraction: float = typer.Option(0.10, help="Minimum fraction of tokens an expert must fire on (0–1, e.g. 0.10 = 10%)"),
     max_points: int = typer.Option(1000, help="Max active tokens per expert (0 = no cap)"),
     adjusted_fisher: bool = typer.Option(
         False,
@@ -514,6 +577,12 @@ def all_datasets(
     continuity_dataset: str = typer.Option(
         "monology/pile-uncopyrighted",
         help="HuggingFace dataset to stream for the unlabelled continuity pass",
+    ),
+    results_json: str = typer.Option(
+        "",
+        help="Path to the shared results JSON (e.g. results/results.json). "
+        "When set, probe results for each dataset are merged into this file keyed by run name. "
+        "Leave empty to skip.",
     ),
 ):
     """Probe all datasets listed in a JSON config file, then run an unlabelled continuity pass.
@@ -551,6 +620,10 @@ def all_datasets(
     os.makedirs(final_output_dir, exist_ok=True)
     print(f"All plots will be saved under: {final_output_dir}")
 
+    # The run name for the shared results JSON is the checkpoint's parent dir name
+    # (e.g. "gemma_2_9b_l11" for results/gemma_2_9b_l11/model).
+    results_json_path: str | None = results_json.strip() or None
+
     # Load model and SAE once
     model, tokenizer = load_llm(base_model_name, device)
     tokenizer.padding_side = "right"
@@ -571,10 +644,13 @@ def all_datasets(
         adjusted_fisher=adjusted_fisher,
         k_neighbors=k_neighbors,
         active_threshold=active_threshold,
-        min_points=min_points,
+        min_active_fraction=min_active_fraction,
         max_points=max_points,
         n_interesting_experts_to_plot=n_interesting_experts_to_plot,
         context_window_display=context_window_display,
+        results_json_path=results_json_path,
+        run_name=run_hash,
+        model_name_for_json=base_model_name,
     )
 
     for cfg in dataset_cfgs:

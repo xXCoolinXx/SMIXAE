@@ -249,7 +249,7 @@ def main(
     sae_batch_size: int = typer.Option(2048, help="Batch size for SAE encoding"),
     gen_batch_size: int = typer.Option(32, help="Batch size for text generation"),
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold for expert activity"),
-    min_points: int = typer.Option(50, help="Minimum active tokens to keep an expert"),
+    min_active_fraction: float = typer.Option(0.05, help="Minimum fraction of samples an expert must fire on (0–1)"),
     expert_ids: Optional[str] = typer.Option(
         None,
         help="Comma-separated expert IDs to steer (e.g. '42,137,512'). "
@@ -268,7 +268,7 @@ def main(
 
     # ── 2. Expert discovery via hours probing ─────────────────────────
     print(f"\nDiscovering experts from {hours_dataset}…")
-    acts, _str_tokens, labels, label_names, last_positions, n_classes, _ = collect_activations(
+    acts, _str_tokens, labels, label_names, last_positions, n_classes, _, _fisher = collect_activations(
         model=model,
         tokenizer=tokenizer,
         hook_name=hook_point,
@@ -287,7 +287,7 @@ def main(
         activations=acts,
         sae_batch_size=sae_batch_size,
         active_threshold=active_threshold,
-        min_points=min_points,
+        min_active_fraction=min_active_fraction,
         max_points=0,  # no cap — keep all points for accurate means
         labels=labels,
         last_token_only=True,
@@ -306,7 +306,7 @@ def main(
         found_map = {e.expert_id: e for e in experts if e.expert_id in id_set}
         missing = id_set - set(found_map)
         if missing:
-            print(f"Warning: the following expert IDs were not active (below threshold or min_points): {sorted(missing)}")
+            print(f"Warning: the following expert IDs were not active (below threshold or min_active_fraction): {sorted(missing)}")
         top_experts = [found_map[i] for i in id_list if i in found_map]
         print(
             f"\nUsing {len(top_experts)} manually specified expert(s):"

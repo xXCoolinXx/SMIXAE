@@ -680,6 +680,12 @@ def main(
     dim_analysis_top_n: int = typer.Option(3, help="Generate dim analysis for top N experts per method."),
     # Misc
     seed: int = typer.Option(42),
+    results_json: str = typer.Option(
+        "",
+        help="Path to the shared results JSON (e.g. results/results.json). "
+        "When set, newline results are merged into this file keyed by run name derived from output_path. "
+        "Leave empty to skip.",
+    ),
 ) -> None:
     """Analyse SMIXAE experts for newline-position manifold structure."""
     set_seed(seed)
@@ -868,6 +874,24 @@ def main(
     )
     logger.info(f"\nResults saved to {out_dir}")
     logger.info(f"Summary: {json.dumps(summary, indent=2)}")
+
+    if results_json.strip():
+        from analysis.utils import update_results_json
+        # Derive run name from output_path (e.g. results/gemma_2_9b_l11/newline_150 → gemma_2_9b_l11)
+        _op = Path(output_path)
+        _run_name = _op.parent.name
+        # Newline key is the leaf of output_path (e.g. newline_150, newline_80)
+        _newline_key = _op.name
+        update_results_json(
+            path=results_json.strip(),
+            run_name=_run_name,
+            model_name=model_name,
+            hook_name=hook_name,
+            section="newline",
+            key=_newline_key,
+            data=summary,
+        )
+        logger.info(f"Updated results JSON: {results_json} [{_run_name}/newline/{_newline_key}]")
 
 
 if __name__ == "__main__":
