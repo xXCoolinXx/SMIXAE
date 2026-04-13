@@ -324,5 +324,657 @@
         "top10_mean_periodic_gain": 0.15718842129812854
       }
     }
+  },
+  "gemma_2_9b_l20": {
+    "model_name": "google/gemma-2-9b",
+    "hook_name": "model.layers.20",
+    "probe": {
+      "weekdays": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 592,
+          "top1_score": 146.14913940429688,
+          "top5_mean": 114.80863952636719,
+          "top10_mean": 88.61570625305175
+        },
+        "hypotheses": {
+          "cyc_7d": {
+            "description": "7-day cyclical ring",
+            "regression_type": "linear",
+            "top1_expert_id": 592,
+            "top1_score": 0.7864110469818115,
+            "top5_mean": 0.7498053073883056,
+            "top10_mean": 0.708219472169876
+          },
+          "weekday_weekend": {
+            "description": "Weekday vs weekend",
+            "regression_type": "logistic",
+            "top1_expert_id": 592,
+            "top1_score": 1.0,
+            "top5_mean": 0.9917803249382198,
+            "top10_mean": 0.9788117204618427
+          },
+          "ordinal": {
+            "description": "Day ordinal (Mon=0)",
+            "regression_type": "linear",
+            "top1_expert_id": 1808,
+            "top1_score": 0.8806626081466675,
+            "top5_mean": 0.8487809181213379,
+            "top10_mean": 0.7529187905788421
+          }
+        }
+      },
+      "hours": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 1000,
+          "top1_score": 337.0754699707031,
+          "top5_mean": 100.52601051330566,
+          "top10_mean": 62.32013759613037
+        },
+        "hypotheses": {
+          "cyc_24h": {
+            "description": "24-hour cyclical ring",
+            "regression_type": "linear",
+            "top1_expert_id": 691,
+            "top1_score": 0.6402444005012512,
+            "top5_mean": 0.6141234660148621,
+            "top10_mean": 0.5854424035549164
+          },
+          "cyc_12h": {
+            "description": "12-hour cyclical ring",
+            "regression_type": "linear",
+            "top1_expert_id": 1289,
+            "top1_score": 0.6067972779273987,
+            "top5_mean": 0.5388946783542633,
+            "top10_mean": 0.4724546563625336
+          },
+          "am_pm": {
+            "description": "AM vs PM",
+            "regression_type": "logistic",
+            "top1_expert_id": 1000,
+            "top1_score": 1.0,
+            "top5_mean": 0.9949498767459163,
+            "top10_mean": 0.9749047676068658
+          },
+          "ordinal": {
+            "description": "Hour ordinal (0-23)",
+            "regression_type": "linear",
+            "top1_expert_id": 1000,
+            "top1_score": 0.8899943947792053,
+            "top5_mean": 0.8158487701416016,
+            "top10_mean": 0.733039219379425
+          }
+        }
+      },
+      "temperatures": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 1716,
+          "top1_score": 6.779737949371338,
+          "top5_mean": 4.68381085395813,
+          "top10_mean": 3.7944027900695803
+        },
+        "hypotheses": {
+          "linear_f": {
+            "description": "Linear Fahrenheit",
+            "regression_type": "linear",
+            "top1_expert_id": 1716,
+            "top1_score": 0.838001799583435,
+            "top5_mean": 0.6405267238616943,
+            "top10_mean": 0.5856644773483277
+          },
+          "log_f": {
+            "description": "Log-compressed Fahrenheit",
+            "regression_type": "linear",
+            "top1_expert_id": 1716,
+            "top1_score": 0.7393365502357483,
+            "top5_mean": 0.6234427356719972,
+            "top10_mean": 0.5716260540485382
+          }
+        }
+      },
+      "time_units": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 592,
+          "top1_score": 52.82719802856445,
+          "top5_mean": 41.82728805541992,
+          "top10_mean": 34.39912738800049
+        },
+        "hypotheses": {
+          "log_duration": {
+            "description": "Log10 of actual duration in seconds",
+            "regression_type": "linear",
+            "top1_expert_id": 923,
+            "top1_score": 0.8686203241348267,
+            "top5_mean": 0.7612409377098084,
+            "top10_mean": 0.6819255733489991
+          }
+        }
+      },
+      "body_parts": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 1000,
+          "top1_score": 130.2223358154297,
+          "top5_mean": 115.019677734375,
+          "top10_mean": 100.52115936279297
+        }
+      },
+      "living_things": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 1808,
+          "top1_score": 216.68185424804688,
+          "top5_mean": 166.1607421875,
+          "top10_mean": 123.69988098144532
+        },
+        "hypotheses": {
+          "plant_animal": {
+            "description": "Plant (0) vs Animal (1)",
+            "regression_type": "logistic",
+            "top1_expert_id": 1630,
+            "top1_score": 0.9765052615525394,
+            "top5_mean": 0.9378107303826102,
+            "top10_mean": 0.8879109436663051
+          },
+          "taxonomy": {
+            "description": "Taxonomic group (7 classes)",
+            "regression_type": "multinomial",
+            "top1_expert_id": 297,
+            "top1_score": 0.8982864043146102,
+            "top5_mean": 0.8591765692304791,
+            "top10_mean": 0.8178830264540705
+          }
+        }
+      },
+      "months": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 1000,
+          "top1_score": 154.87155151367188,
+          "top5_mean": 112.62317962646485,
+          "top10_mean": 84.71659355163574
+        },
+        "hypotheses": {
+          "cyc_12m": {
+            "description": "12-month cyclical ring",
+            "regression_type": "linear",
+            "top1_expert_id": 1808,
+            "top1_score": 0.5795732617378235,
+            "top5_mean": 0.471396666765213,
+            "top10_mean": 0.4319114649295807
+          },
+          "season": {
+            "description": "Season (4 classes, NH)",
+            "regression_type": "multinomial",
+            "top1_expert_id": 1000,
+            "top1_score": 0.9139538671494642,
+            "top5_mean": 0.8056254221214971,
+            "top10_mean": 0.7458229952069744
+          },
+          "ordinal": {
+            "description": "Month ordinal (Jan=0)",
+            "regression_type": "linear",
+            "top1_expert_id": 1406,
+            "top1_score": 0.7422984480857849,
+            "top5_mean": 0.6260322999954224,
+            "top10_mean": 0.5358530461788178
+          }
+        }
+      },
+      "colors": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 764,
+          "top1_score": 131.8607940673828,
+          "top5_mean": 109.53094177246093,
+          "top10_mean": 85.73119316101074
+        },
+        "hypotheses": {
+          "hue_wheel": {
+            "description": "Cyclical hue on color wheel",
+            "regression_type": "linear",
+            "top1_expert_id": 1808,
+            "top1_score": 0.6061246156692505,
+            "top5_mean": 0.5864614605903625,
+            "top10_mean": 0.5484828978776932
+          },
+          "rgb": {
+            "description": "Normalized RGB",
+            "regression_type": "linear",
+            "top1_expert_id": 411,
+            "top1_score": 0.5848067045211792,
+            "top5_mean": 0.5467190396785736,
+            "top10_mean": 0.5130125027894974
+          },
+          "warm_nat_cool": {
+            "description": "Warm / Natural / Cool",
+            "regression_type": "multinomial",
+            "top1_expert_id": 1721,
+            "top1_score": 0.970394809626978,
+            "top5_mean": 0.938220730138384,
+            "top10_mean": 0.9068126382479
+          }
+        }
+      },
+      "emotions": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 113,
+          "top1_score": 0.42016395926475525,
+          "top5_mean": 0.2410607695579529,
+          "top10_mean": 0.20262859761714935
+        },
+        "hypotheses": {
+          "valence_arousal": {
+            "description": "VA circumplex (multi-output linear)",
+            "regression_type": "linear",
+            "top1_expert_id": 113,
+            "top1_score": 0.06408842802047729,
+            "top5_mean": 0.04113725185394287,
+            "top10_mean": 0.029185749888420105
+          },
+          "quadrant": {
+            "description": "Affective quadrant (4 classes)",
+            "regression_type": "multinomial",
+            "top1_expert_id": 1011,
+            "top1_score": 0.23414709793409233,
+            "top5_mean": 0.2298389373430388,
+            "top10_mean": 0.22456818252568053
+          }
+        }
+      },
+      "continuity": {
+        "fisher": {
+          "sort_by": "continuity",
+          "top1_expert_id": 1903,
+          "top1_score": 0.5239759087562561,
+          "top5_mean": 0.5159605741500854,
+          "top10_mean": 0.5124547958374024
+        }
+      }
+    },
+    "newline": {
+      "newline_150": {
+        "hook_name": "model.layers.20",
+        "n_experts": 2048,
+        "d_bottleneck": 3,
+        "n_harmonics": 3,
+        "line_length": 150,
+        "n_tokens": 49443,
+        "n_classes": 150,
+        "threshold": 3.212310791015625,
+        "top1_decode_r2_expert": 1749,
+        "top1_decode_r2": 0.4410488856485123,
+        "top5_mean_decode_r2": 0.183444509576243,
+        "top10_mean_decode_r2": 0.09880274532002462,
+        "top1_encode_linear_r2_expert": 1749,
+        "top1_encode_linear_r2": 0.25785490621549695,
+        "top5_mean_encode_linear_r2": 0.1016372374414728,
+        "top10_mean_encode_linear_r2": 0.053536559407827235,
+        "top1_encode_periodic_r2_expert": 1749,
+        "top1_encode_periodic_r2": 0.5779479555700516,
+        "top5_mean_encode_periodic_r2": 0.23433644937781914,
+        "top10_mean_encode_periodic_r2": 0.12918370356821296,
+        "top1_periodic_gain_expert": 1749,
+        "top1_periodic_gain": 0.3200930493545547,
+        "top5_mean_periodic_gain": 0.13782044508734786,
+        "top10_mean_periodic_gain": 0.07809634829109414
+      },
+      "newline_80": {
+        "hook_name": "model.layers.20",
+        "n_experts": 2048,
+        "d_bottleneck": 3,
+        "n_harmonics": 3,
+        "line_length": 80,
+        "n_tokens": 36860,
+        "n_classes": 80,
+        "threshold": 3.212310791015625,
+        "top1_decode_r2_expert": 1749,
+        "top1_decode_r2": 0.5843555932017881,
+        "top5_mean_decode_r2": 0.24462052247823002,
+        "top10_mean_decode_r2": 0.13747791337091456,
+        "top1_encode_linear_r2_expert": 1749,
+        "top1_encode_linear_r2": 0.3758383808051691,
+        "top5_mean_encode_linear_r2": 0.12803461796792803,
+        "top10_mean_encode_linear_r2": 0.06891737651883147,
+        "top1_encode_periodic_r2_expert": 1520,
+        "top1_encode_periodic_r2": 0.7044312268925509,
+        "top5_mean_encode_periodic_r2": 0.30652116583735756,
+        "top10_mean_encode_periodic_r2": 0.16718405931575175,
+        "top1_periodic_gain_expert": 1520,
+        "top1_periodic_gain": 0.4903605173741399,
+        "top5_mean_periodic_gain": 0.17979627546864854,
+        "top10_mean_periodic_gain": 0.0996650950959152
+      }
+    }
+  },
+  "gemma_2_2b_l12": {
+    "model_name": "google/gemma-2-2b",
+    "hook_name": "model.layers.12",
+    "probe": {
+      "weekdays": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 327,
+          "top1_score": 199.6894073486328,
+          "top5_mean": 130.44024353027345,
+          "top10_mean": 92.25578575134277
+        },
+        "hypotheses": {
+          "cyc_7d": {
+            "description": "7-day cyclical ring",
+            "regression_type": "linear",
+            "top1_expert_id": 858,
+            "top1_score": 0.6821266651153565,
+            "top5_mean": 0.6100073742866516,
+            "top10_mean": 0.5753787183761597
+          },
+          "weekday_weekend": {
+            "description": "Weekday vs weekend",
+            "regression_type": "logistic",
+            "top1_expert_id": 1951,
+            "top1_score": 1.0,
+            "top5_mean": 0.9940947344241156,
+            "top10_mean": 0.9824139416707249
+          },
+          "ordinal": {
+            "description": "Day ordinal (Mon=0)",
+            "regression_type": "linear",
+            "top1_expert_id": 1951,
+            "top1_score": 0.8620553493499756,
+            "top5_mean": 0.790104866027832,
+            "top10_mean": 0.7523271369934083
+          }
+        }
+      },
+      "hours": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 342,
+          "top1_score": 99.96015930175781,
+          "top5_mean": 60.915120697021486,
+          "top10_mean": 49.845574951171876
+        },
+        "hypotheses": {
+          "cyc_24h": {
+            "description": "24-hour cyclical ring",
+            "regression_type": "linear",
+            "top1_expert_id": 234,
+            "top1_score": 0.8013741374015808,
+            "top5_mean": 0.7429992175102234,
+            "top10_mean": 0.6803667235374451
+          },
+          "cyc_12h": {
+            "description": "12-hour cyclical ring",
+            "regression_type": "linear",
+            "top1_expert_id": 1488,
+            "top1_score": 0.547760272026062,
+            "top5_mean": 0.4673960053920746,
+            "top10_mean": 0.40467104613780974
+          },
+          "am_pm": {
+            "description": "AM vs PM",
+            "regression_type": "logistic",
+            "top1_expert_id": 342,
+            "top1_score": 1.0,
+            "top5_mean": 0.9989979797979798,
+            "top10_mean": 0.9949830224810997
+          },
+          "ordinal": {
+            "description": "Hour ordinal (0-23)",
+            "regression_type": "linear",
+            "top1_expert_id": 1434,
+            "top1_score": 0.8720615148544312,
+            "top5_mean": 0.8430909776687623,
+            "top10_mean": 0.8070667219161987
+          }
+        }
+      },
+      "temperatures": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 560,
+          "top1_score": 8.33884048461914,
+          "top5_mean": 6.179708862304688,
+          "top10_mean": 4.682123136520386
+        },
+        "hypotheses": {
+          "linear_f": {
+            "description": "Linear Fahrenheit",
+            "regression_type": "linear",
+            "top1_expert_id": 719,
+            "top1_score": 0.7422849535942078,
+            "top5_mean": 0.6750013351440429,
+            "top10_mean": 0.6182517755031586
+          },
+          "log_f": {
+            "description": "Log-compressed Fahrenheit",
+            "regression_type": "linear",
+            "top1_expert_id": 135,
+            "top1_score": 0.7518063187599182,
+            "top5_mean": 0.7079582905769348,
+            "top10_mean": 0.6504133629798889
+          }
+        }
+      },
+      "time_units": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 819,
+          "top1_score": 30.325172424316406,
+          "top5_mean": 27.123780059814454,
+          "top10_mean": 23.761113739013673
+        },
+        "hypotheses": {
+          "log_duration": {
+            "description": "Log10 of actual duration in seconds",
+            "regression_type": "linear",
+            "top1_expert_id": 1325,
+            "top1_score": 0.7219597458839416,
+            "top5_mean": 0.694536862373352,
+            "top10_mean": 0.6530203354358673
+          }
+        }
+      },
+      "body_parts": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 1868,
+          "top1_score": 111.4615249633789,
+          "top5_mean": 80.44216461181641,
+          "top10_mean": 69.30945663452148
+        }
+      },
+      "living_things": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 794,
+          "top1_score": 153.77047729492188,
+          "top5_mean": 106.07706604003906,
+          "top10_mean": 89.08111572265625
+        },
+        "hypotheses": {
+          "plant_animal": {
+            "description": "Plant (0) vs Animal (1)",
+            "regression_type": "logistic",
+            "top1_expert_id": 289,
+            "top1_score": 0.9241363000435635,
+            "top5_mean": 0.907453556324741,
+            "top10_mean": 0.8834033209718916
+          },
+          "taxonomy": {
+            "description": "Taxonomic group (7 classes)",
+            "regression_type": "multinomial",
+            "top1_expert_id": 1434,
+            "top1_score": 0.8965283461555685,
+            "top5_mean": 0.8640620430969232,
+            "top10_mean": 0.8145855830586439
+          }
+        }
+      },
+      "months": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 859,
+          "top1_score": 82.67186737060547,
+          "top5_mean": 75.43490753173828,
+          "top10_mean": 58.70890159606934
+        },
+        "hypotheses": {
+          "cyc_12m": {
+            "description": "12-month cyclical ring",
+            "regression_type": "linear",
+            "top1_expert_id": 1639,
+            "top1_score": 0.5954505801200867,
+            "top5_mean": 0.5758476638793946,
+            "top10_mean": 0.5293714779615402
+          },
+          "season": {
+            "description": "Season (4 classes, NH)",
+            "regression_type": "multinomial",
+            "top1_expert_id": 1966,
+            "top1_score": 0.9001769428712997,
+            "top5_mean": 0.8330795497312742,
+            "top10_mean": 0.7908052747817976
+          },
+          "ordinal": {
+            "description": "Month ordinal (Jan=0)",
+            "regression_type": "linear",
+            "top1_expert_id": 859,
+            "top1_score": 0.7213114380836487,
+            "top5_mean": 0.609046483039856,
+            "top10_mean": 0.5595252776145936
+          }
+        }
+      },
+      "colors": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 1868,
+          "top1_score": 103.1733627319336,
+          "top5_mean": 67.65651168823243,
+          "top10_mean": 57.61142539978027
+        },
+        "hypotheses": {
+          "hue_wheel": {
+            "description": "Cyclical hue on color wheel",
+            "regression_type": "linear",
+            "top1_expert_id": 1732,
+            "top1_score": 0.6790223598480225,
+            "top5_mean": 0.5833216929435731,
+            "top10_mean": 0.5497966527938842
+          },
+          "rgb": {
+            "description": "Normalized RGB",
+            "regression_type": "linear",
+            "top1_expert_id": 1732,
+            "top1_score": 0.6184096932411194,
+            "top5_mean": 0.5956222319602966,
+            "top10_mean": 0.5474035519361495
+          },
+          "warm_nat_cool": {
+            "description": "Warm / Natural / Cool",
+            "regression_type": "multinomial",
+            "top1_expert_id": 1771,
+            "top1_score": 0.9617265725072907,
+            "top5_mean": 0.9177857326846525,
+            "top10_mean": 0.8841145732652154
+          }
+        }
+      },
+      "emotions": {
+        "fisher": {
+          "sort_by": "fisher",
+          "top1_expert_id": 373,
+          "top1_score": 0.3726903200149536,
+          "top5_mean": 0.26596089005470275,
+          "top10_mean": 0.21729987263679504
+        },
+        "hypotheses": {
+          "valence_arousal": {
+            "description": "VA circumplex (multi-output linear)",
+            "regression_type": "linear",
+            "top1_expert_id": 1004,
+            "top1_score": 0.06120690703392029,
+            "top5_mean": 0.03979318141937256,
+            "top10_mean": 0.03105491459369659
+          },
+          "quadrant": {
+            "description": "Affective quadrant (4 classes)",
+            "regression_type": "multinomial",
+            "top1_expert_id": 373,
+            "top1_score": 0.24597613419904799,
+            "top5_mean": 0.23441732902308593,
+            "top10_mean": 0.2222737983500321
+          }
+        }
+      },
+      "continuity": {
+        "fisher": {
+          "sort_by": "continuity",
+          "top1_expert_id": 69,
+          "top1_score": 0.4448281526565552,
+          "top5_mean": 0.40844874978065493,
+          "top10_mean": 0.40070307850837705
+        }
+      }
+    },
+    "newline": {
+      "newline_150": {
+        "hook_name": "model.layers.12",
+        "n_experts": 2048,
+        "d_bottleneck": 3,
+        "n_harmonics": 3,
+        "line_length": 150,
+        "n_tokens": 49443,
+        "n_classes": 150,
+        "threshold": 2.9003052711486816,
+        "top1_decode_r2_expert": 647,
+        "top1_decode_r2": 0.6482710819133202,
+        "top5_mean_decode_r2": 0.37274676961461994,
+        "top10_mean_decode_r2": 0.2118965591016468,
+        "top1_encode_linear_r2_expert": 647,
+        "top1_encode_linear_r2": 0.43916603856713143,
+        "top5_mean_encode_linear_r2": 0.22051703562150776,
+        "top10_mean_encode_linear_r2": 0.12109435180942126,
+        "top1_encode_periodic_r2_expert": 1895,
+        "top1_encode_periodic_r2": 0.7352066667385385,
+        "top5_mean_encode_periodic_r2": 0.3830209418590949,
+        "top10_mean_encode_periodic_r2": 0.2154279716284228,
+        "top1_periodic_gain_expert": 1895,
+        "top1_periodic_gain": 0.40981347900089293,
+        "top5_mean_periodic_gain": 0.16971852597141276,
+        "top10_mean_periodic_gain": 0.09758280174184383
+      },
+      "newline_80": {
+        "hook_name": "model.layers.12",
+        "n_experts": 2048,
+        "d_bottleneck": 3,
+        "n_harmonics": 3,
+        "line_length": 80,
+        "n_tokens": 36860,
+        "n_classes": 80,
+        "threshold": 2.9003052711486816,
+        "top1_decode_r2_expert": 647,
+        "top1_decode_r2": 0.7631833500501232,
+        "top5_mean_decode_r2": 0.33454161656927484,
+        "top10_mean_decode_r2": 0.18066620195681868,
+        "top1_encode_linear_r2_expert": 647,
+        "top1_encode_linear_r2": 0.3818267934107049,
+        "top5_mean_encode_linear_r2": 0.16547004700941065,
+        "top10_mean_encode_linear_r2": 0.08833731587977142,
+        "top1_encode_periodic_r2_expert": 647,
+        "top1_encode_periodic_r2": 0.7619091676315016,
+        "top5_mean_encode_periodic_r2": 0.3232360835497826,
+        "top10_mean_encode_periodic_r2": 0.17829724400533203,
+        "top1_periodic_gain_expert": 647,
+        "top1_periodic_gain": 0.3800823742207967,
+        "top5_mean_periodic_gain": 0.16378774888879233,
+        "top10_mean_periodic_gain": 0.09296261309785693
+      }
+    }
   }
 }
