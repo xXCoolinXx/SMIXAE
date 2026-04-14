@@ -1062,12 +1062,11 @@ class Expert:
             int_labels = self.labels.numpy()
             lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
             cscale = _resolve_colorscale(cfg.color_map, label_names, int_labels)
-            _connect_means = cfg.effective_continuous_color
             fig = plot_3d_scatter(
                 pts, int_labels,
                 label_names=lnames,
                 colorscale=cfg.effective_color_scale if cfg.effective_continuous_color else cscale,
-                connect_means=_connect_means,
+                connect_means=False,
                 show_labels=cfg.show_labels,
                 title=self._make_title(),
             )
@@ -1116,13 +1115,12 @@ class Expert:
         int_labels = self.labels.numpy()
         lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
         cscale = _resolve_colorscale(cfg.color_map, label_names, int_labels)
-        _connect_means = cfg.effective_continuous_color
         return plot_3d_scatter(
             pts, int_labels,
             label_names=lnames,
             colorscale=cfg.effective_color_scale if cfg.effective_continuous_color else cscale,
             scatter_alpha=0.0,
-            connect_means=_connect_means,
+            connect_means=False,
             show_labels=cfg.show_labels,
             title=self._make_title() + " [class means]",
         )

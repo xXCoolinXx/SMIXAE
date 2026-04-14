@@ -1,0 +1,58 @@
+% Required packages: booktabs, multirow
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Probing results across tasks and models. For each hypothesis the top-1 score and mean over the top-5 experts are reported. $R^2$ = coefficient of determination; Acc.\ = classification accuracy.}
+\label{tab:probing}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{ll ll rr rr rr}
+\toprule
+\multicolumn{4}{l}{Gemma 2} & \multicolumn{2}{c}{9B, Layer 11} & \multicolumn{2}{c}{9B, Layer 20} & \multicolumn{2}{c}{2B, Layer 12} \\
+\cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10}
+Task & Hypothesis & Regression & Score & Top-1 & Top-5$_{\mu}$ & Top-1 & Top-5$_{\mu}$ & Top-1 & Top-5$_{\mu}$ \\
+\midrule
+\multirow{2}{*}{Weekdays} & 7-day cyclical ring & Linear & $R^2$ & 0.855 & 0.783 & 0.787 & 0.752 & 0.686 & 0.612 \\
+ & Weekday vs weekend & Logistic & Acc. & 1.000 & 0.999 & 1.000 & 0.991 & 1.000 & 0.994 \\
+\midrule
+\multirow{3}{*}{Hours} & 24-hour cyclical ring & Linear & $R^2$ & 0.693 & 0.648 & 0.632 & 0.612 & 0.800 & 0.739 \\
+ & 12-hour cyclical ring & Linear & $R^2$ & 0.708 & 0.577 & 0.616 & 0.540 & 0.557 & 0.479 \\
+ & AM vs PM & Logistic & Acc. & 1.000 & 1.000 & 1.000 & 0.993 & 1.000 & 0.999 \\
+\midrule
+\multirow{2}{*}{Temperature} & Linear Fahrenheit & Linear & $R^2$ & 0.848 & 0.713 & 0.810 & 0.627 & 0.722 & 0.672 \\
+ & Log-compressed Fahrenheit & Linear & $R^2$ & 0.731 & 0.617 & 0.713 & 0.605 & 0.704 & 0.668 \\
+\midrule
+Time Units & Log10 of actual duration in seconds & Linear & $R^2$ & 0.839 & 0.785 & 0.857 & 0.755 & 0.745 & 0.698 \\
+\midrule
+\multirow{2}{*}{Living Things} & Plant (0) vs Animal (1) & Logistic & Acc. & 0.927 & 0.924 & 0.984 & 0.934 & 0.932 & 0.912 \\
+ & Taxonomic group (7 classes) & Multinomial & Acc. & 0.930 & 0.865 & 0.880 & 0.856 & 0.878 & 0.845 \\
+\midrule
+\multirow{2}{*}{Months} & 12-month cyclical ring & Linear & $R^2$ & 0.637 & 0.591 & 0.585 & 0.499 & 0.612 & 0.581 \\
+ & Season (4 classes, NH) & Multinomial & Acc. & 0.926 & 0.864 & 0.925 & 0.809 & 0.909 & 0.834 \\
+\midrule
+\multirow{3}{*}{Colors} & Cyclical hue on color wheel & Linear & $R^2$ & 0.785 & 0.719 & 0.606 & 0.586 & 0.662 & 0.577 \\
+ & Normalized RGB & Linear & $R^2$ & 0.686 & 0.621 & 0.592 & 0.547 & 0.604 & 0.592 \\
+ & Warm / Natural / Cool & Multinomial & Acc. & 0.979 & 0.957 & 0.963 & 0.933 & 0.966 & 0.915 \\
+\midrule
+\multirow{2}{*}{Emotions} & VA circumplex (multi-output ridge) & Ridge & $R^2$ & 0.032 & 0.023 & 0.083 & 0.046 & 0.057 & 0.033 \\
+ & Affective quadrant (4 classes) & Multinomial & Acc. & 0.212 & 0.207 & 0.222 & 0.214 & 0.219 & 0.215 \\
+\bottomrule
+\end{tabular}
+}% end resizebox
+\end{table*}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Newline position encoding results (Gemma 2 9B). Periodic gain $= R^2_{\text{periodic}} - R^2_{\text{linear}}$ on the bottleneck; positive values indicate ring or spiral geometry. Top-1 and mean over top-5 experts reported.}
+\label{tab:newline}
+\begin{tabular}{l rr rr}
+\toprule
+\multicolumn{1}{l}{Gemma 2 9B} & \multicolumn{2}{c}{Layer 11} & \multicolumn{2}{c}{Layer 20} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+Line length & Top-1 gain & Top-5$_{\mu}$ gain & Top-1 gain & Top-5$_{\mu}$ gain \\
+\midrule
+150 chars & 0.567 & 0.301 & 0.320 & 0.138 \\
+80 chars & 0.558 & 0.296 & 0.490 & 0.180 \\
+\bottomrule
+\end{tabular}
+\end{table}
