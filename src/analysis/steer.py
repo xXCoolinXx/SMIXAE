@@ -270,7 +270,7 @@ def main(
     device: str = typer.Option("cuda", help="Device"),
     llm_batch_size: int = typer.Option(16, help="Batch size for probing LLM forward pass"),
     sae_batch_size: int = typer.Option(2048, help="Batch size for SAE encoding"),
-    gen_batch_size: int = typer.Option(32, help="Batch size for text generation"),
+    gen_batch_size: int = typer.Option(128, help="Batch size for text generation"),
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold for expert activity"),
     min_active_fraction: float = typer.Option(0.05, help="Minimum fraction of samples an expert must fire on"),
     # ── Cross-layer sweep ──

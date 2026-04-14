@@ -54,7 +54,7 @@ while [[ $# -gt 0 ]]; do
         --hours-dataset)      HOURS_DATASET="$2";      shift 2 ;;
         --tokenized-dataset)  TOKENIZED_DATASET="$2";  shift 2 ;;
         --use-affine-smixae) USE_AFFINE_SMIXAE="$2";   shift 2 ;;
-        --sweep-layers)      SWEEP_LAYERS="$2";        shift 2 ;;
+        --sweep-layers)      SWEEP_LAYERS=true;         shift 1 ;;
         --layer-start)       LAYER_START="$2";          shift 2 ;;
         --layer-end)         LAYER_END="$2";            shift 2 ;;
         --steps)             STEPS="$2";              shift 2 ;;
