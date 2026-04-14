@@ -63,7 +63,7 @@
         },
         "hypotheses": {
           "cyc_7d": {
-            "description": "7-day cyclical ring",
+            "description": "7-Day Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -121,7 +121,7 @@
             "top10_mean": 0.7362399399280548
           },
           "weekday_weekend": {
-            "description": "Weekday vs weekend",
+            "description": "Weekday vs Weekend",
             "regression_type": "logistic",
             "top10_experts": [
               {
@@ -179,7 +179,7 @@
             "top10_mean": 0.9969154684425561
           },
           "ordinal": {
-            "description": "Day ordinal (Mon=0)",
+            "description": "Day Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -298,7 +298,7 @@
         },
         "hypotheses": {
           "cyc_24h": {
-            "description": "24-hour cyclical ring",
+            "description": "24-Hour Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -356,7 +356,7 @@
             "top10_mean": 0.5997780197858811
           },
           "cyc_12h": {
-            "description": "12-hour cyclical ring",
+            "description": "12-Hour Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -472,7 +472,7 @@
             "top10_mean": 0.9960231557947191
           },
           "ordinal": {
-            "description": "Hour ordinal (0-23)",
+            "description": "Hour Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -649,7 +649,7 @@
             "top10_mean": 0.6614414179325104
           },
           "log_f": {
-            "description": "Log-compressed Fahrenheit",
+            "description": "$\\log$-Compressed Fahrenheit",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -768,7 +768,7 @@
         },
         "hypotheses": {
           "log_duration": {
-            "description": "Log10 of actual duration in seconds",
+            "description": "$\\log_{10}$ Duration",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -946,7 +946,7 @@
         },
         "hypotheses": {
           "plant_animal": {
-            "description": "Plant (0) vs Animal (1)",
+            "description": "Plant vs Animal",
             "regression_type": "logistic",
             "top10_experts": [
               {
@@ -1004,7 +1004,7 @@
             "top10_mean": 0.8881362347877346
           },
           "taxonomy": {
-            "description": "Taxonomic group (7 classes)",
+            "description": "Taxonomic Group",
             "regression_type": "multinomial",
             "top10_experts": [
               {
@@ -1123,7 +1123,7 @@
         },
         "hypotheses": {
           "cyc_12m": {
-            "description": "12-month cyclical ring",
+            "description": "12-Month Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -1181,7 +1181,7 @@
             "top10_mean": 0.5472214907407761
           },
           "season": {
-            "description": "Season (4 classes, NH)",
+            "description": "Season",
             "regression_type": "multinomial",
             "top10_experts": [
               {
@@ -1239,7 +1239,7 @@
             "top10_mean": 0.8161688915405405
           },
           "ordinal": {
-            "description": "Month ordinal (Jan=0)",
+            "description": "Month Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -1358,7 +1358,7 @@
         },
         "hypotheses": {
           "hue_wheel": {
-            "description": "Cyclical hue on color wheel",
+            "description": "Hue Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -1593,7 +1593,7 @@
         },
         "hypotheses": {
           "valence_arousal": {
-            "description": "VA circumplex (multi-output ridge)",
+            "description": "Valence-Arousal Circumplex",
             "regression_type": "ridge",
             "top10_experts": [
               {
@@ -1651,7 +1651,7 @@
             "top10_mean": 0.019133511185646056
           },
           "quadrant": {
-            "description": "Affective quadrant (4 classes)",
+            "description": "Affective Quadrant",
             "regression_type": "multinomial",
             "top10_experts": [
               {
@@ -1717,56 +1717,56 @@
             {
               "rank": 1,
               "expert_id": 462,
-              "score": 0.4051845669746399
+              "score": 0.4003748297691345
             },
             {
               "rank": 2,
-              "expert_id": 1021,
-              "score": 0.390552818775177
+              "expert_id": 1842,
+              "score": 0.3889261782169342
             },
             {
               "rank": 3,
-              "expert_id": 647,
-              "score": 0.3871311545372009
+              "expert_id": 606,
+              "score": 0.38239219784736633
             },
             {
               "rank": 4,
-              "expert_id": 739,
-              "score": 0.385662317276001
+              "expert_id": 599,
+              "score": 0.38179507851600647
             },
             {
               "rank": 5,
-              "expert_id": 66,
-              "score": 0.38439711928367615
+              "expert_id": 270,
+              "score": 0.3817373216152191
             },
             {
               "rank": 6,
-              "expert_id": 329,
-              "score": 0.3811575770378113
+              "expert_id": 456,
+              "score": 0.3792160153388977
             },
             {
               "rank": 7,
-              "expert_id": 456,
-              "score": 0.38060078024864197
+              "expert_id": 1640,
+              "score": 0.37877795100212097
             },
             {
               "rank": 8,
-              "expert_id": 636,
-              "score": 0.38035881519317627
+              "expert_id": 66,
+              "score": 0.3784792423248291
             },
             {
               "rank": 9,
-              "expert_id": 1730,
-              "score": 0.3778679668903351
+              "expert_id": 695,
+              "score": 0.37805283069610596
             },
             {
               "rank": 10,
-              "expert_id": 870,
-              "score": 0.3770548701286316
+              "expert_id": 1021,
+              "score": 0.37788647413253784
             }
           ],
-          "top5_mean": 0.390585595369339,
-          "top10_mean": 0.3849967986345291
+          "top5_mean": 0.3870451211929321,
+          "top10_mean": 0.38276381194591524
         }
       }
     },
@@ -1969,7 +1969,7 @@
         },
         "hypotheses": {
           "cyc_7d": {
-            "description": "7-day cyclical ring",
+            "description": "7-Day Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -2027,7 +2027,7 @@
             "top10_mean": 0.7105242633819581
           },
           "weekday_weekend": {
-            "description": "Weekday vs weekend",
+            "description": "Weekday vs Weekend",
             "regression_type": "logistic",
             "top10_experts": [
               {
@@ -2085,7 +2085,7 @@
             "top10_mean": 0.9793522657145898
           },
           "ordinal": {
-            "description": "Day ordinal (Mon=0)",
+            "description": "Day Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -2204,7 +2204,7 @@
         },
         "hypotheses": {
           "cyc_24h": {
-            "description": "24-hour cyclical ring",
+            "description": "24-Hour Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -2262,7 +2262,7 @@
             "top10_mean": 0.5832273083925247
           },
           "cyc_12h": {
-            "description": "12-hour cyclical ring",
+            "description": "12-Hour Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -2378,7 +2378,7 @@
             "top10_mean": 0.9747346949816306
           },
           "ordinal": {
-            "description": "Hour ordinal (0-23)",
+            "description": "Hour Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -2555,7 +2555,7 @@
             "top10_mean": 0.5778124582767487
           },
           "log_f": {
-            "description": "Log-compressed Fahrenheit",
+            "description": "$\\log$-Compressed Fahrenheit",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -2674,7 +2674,7 @@
         },
         "hypotheses": {
           "log_duration": {
-            "description": "Log10 of actual duration in seconds",
+            "description": "$\\log_{10}$ Duration",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -2852,7 +2852,7 @@
         },
         "hypotheses": {
           "plant_animal": {
-            "description": "Plant (0) vs Animal (1)",
+            "description": "Plant vs Animal",
             "regression_type": "logistic",
             "top10_experts": [
               {
@@ -2910,7 +2910,7 @@
             "top10_mean": 0.8889357302676067
           },
           "taxonomy": {
-            "description": "Taxonomic group (7 classes)",
+            "description": "Taxonomic Group",
             "regression_type": "multinomial",
             "top10_experts": [
               {
@@ -3029,7 +3029,7 @@
         },
         "hypotheses": {
           "cyc_12m": {
-            "description": "12-month cyclical ring",
+            "description": "12-Month Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -3087,7 +3087,7 @@
             "top10_mean": 0.45107420861721037
           },
           "season": {
-            "description": "Season (4 classes, NH)",
+            "description": "Season",
             "regression_type": "multinomial",
             "top10_experts": [
               {
@@ -3145,7 +3145,7 @@
             "top10_mean": 0.7552886992319451
           },
           "ordinal": {
-            "description": "Month ordinal (Jan=0)",
+            "description": "Month Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -3264,7 +3264,7 @@
         },
         "hypotheses": {
           "hue_wheel": {
-            "description": "Cyclical hue on color wheel",
+            "description": "Hue Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -3499,7 +3499,7 @@
         },
         "hypotheses": {
           "valence_arousal": {
-            "description": "VA circumplex (multi-output ridge)",
+            "description": "Valence-Arousal Circumplex",
             "regression_type": "ridge",
             "top10_experts": [
               {
@@ -3557,7 +3557,7 @@
             "top10_mean": 0.03787772595882416
           },
           "quadrant": {
-            "description": "Affective quadrant (4 classes)",
+            "description": "Affective Quadrant",
             "regression_type": "multinomial",
             "top10_experts": [
               {
@@ -3623,56 +3623,56 @@
             {
               "rank": 1,
               "expert_id": 1903,
-              "score": 0.5306269526481628
+              "score": 0.5208288431167603
             },
             {
               "rank": 2,
               "expert_id": 611,
-              "score": 0.5147776007652283
+              "score": 0.5182233452796936
             },
             {
               "rank": 3,
               "expert_id": 309,
-              "score": 0.5147513151168823
+              "score": 0.5152742266654968
             },
             {
               "rank": 4,
-              "expert_id": 430,
-              "score": 0.5128909945487976
+              "expert_id": 261,
+              "score": 0.5134668350219727
             },
             {
               "rank": 5,
-              "expert_id": 1008,
-              "score": 0.5117354989051819
+              "expert_id": 1125,
+              "score": 0.5106974244117737
             },
             {
               "rank": 6,
-              "expert_id": 1125,
-              "score": 0.5105411410331726
+              "expert_id": 1364,
+              "score": 0.5089558959007263
             },
             {
               "rank": 7,
-              "expert_id": 1849,
-              "score": 0.510062575340271
+              "expert_id": 1710,
+              "score": 0.5083104968070984
             },
             {
               "rank": 8,
-              "expert_id": 1100,
-              "score": 0.5099486112594604
+              "expert_id": 764,
+              "score": 0.508297860622406
             },
             {
               "rank": 9,
-              "expert_id": 1547,
-              "score": 0.5089948773384094
+              "expert_id": 1466,
+              "score": 0.5080215930938721
             },
             {
               "rank": 10,
-              "expert_id": 133,
-              "score": 0.5084741115570068
+              "expert_id": 925,
+              "score": 0.5080043077468872
             }
           ],
-          "top5_mean": 0.5169564723968506,
-          "top10_mean": 0.5132803678512573
+          "top5_mean": 0.5156981348991394,
+          "top10_mean": 0.5120080828666687
         }
       }
     },
@@ -3875,7 +3875,7 @@
         },
         "hypotheses": {
           "cyc_7d": {
-            "description": "7-day cyclical ring",
+            "description": "7-Day Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -3933,7 +3933,7 @@
             "top10_mean": 0.5756079876422883
           },
           "weekday_weekend": {
-            "description": "Weekday vs weekend",
+            "description": "Weekday vs Weekend",
             "regression_type": "logistic",
             "top10_experts": [
               {
@@ -3991,7 +3991,7 @@
             "top10_mean": 0.982759628598861
           },
           "ordinal": {
-            "description": "Day ordinal (Mon=0)",
+            "description": "Day Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -4110,7 +4110,7 @@
         },
         "hypotheses": {
           "cyc_24h": {
-            "description": "24-hour cyclical ring",
+            "description": "24-Hour Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -4168,7 +4168,7 @@
             "top10_mean": 0.6861691021919251
           },
           "cyc_12h": {
-            "description": "12-hour cyclical ring",
+            "description": "12-Hour Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -4284,7 +4284,7 @@
             "top10_mean": 0.9955575815177173
           },
           "ordinal": {
-            "description": "Hour ordinal (0-23)",
+            "description": "Hour Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -4461,7 +4461,7 @@
             "top10_mean": 0.6270674324035644
           },
           "log_f": {
-            "description": "Log-compressed Fahrenheit",
+            "description": "$\\log$-Compressed Fahrenheit",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -4580,7 +4580,7 @@
         },
         "hypotheses": {
           "log_duration": {
-            "description": "Log10 of actual duration in seconds",
+            "description": "$\\log_{10}$ Duration",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -4935,7 +4935,7 @@
         },
         "hypotheses": {
           "cyc_12m": {
-            "description": "12-month cyclical ring",
+            "description": "12-Month Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -4993,7 +4993,7 @@
             "top10_mean": 0.5348670399188995
           },
           "season": {
-            "description": "Season (4 classes, NH)",
+            "description": "Season",
             "regression_type": "multinomial",
             "top10_experts": [
               {
@@ -5051,7 +5051,7 @@
             "top10_mean": 0.7940686146782835
           },
           "ordinal": {
-            "description": "Month ordinal (Jan=0)",
+            "description": "Month Ordinal",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -5170,7 +5170,7 @@
         },
         "hypotheses": {
           "hue_wheel": {
-            "description": "Cyclical hue on color wheel",
+            "description": "Hue Ring",
             "regression_type": "linear",
             "top10_experts": [
               {
@@ -5405,7 +5405,7 @@
         },
         "hypotheses": {
           "valence_arousal": {
-            "description": "VA circumplex (multi-output ridge)",
+            "description": "Valence-Arousal Circumplex",
             "regression_type": "ridge",
             "top10_experts": [
               {
@@ -5463,7 +5463,7 @@
             "top10_mean": 0.026725983023643495
           },
           "quadrant": {
-            "description": "Affective quadrant (4 classes)",
+            "description": "Affective Quadrant",
             "regression_type": "multinomial",
             "top10_experts": [
               {
@@ -5529,56 +5529,56 @@
             {
               "rank": 1,
               "expert_id": 69,
-              "score": 0.4378805458545685
+              "score": 0.4383082389831543
             },
             {
               "rank": 2,
-              "expert_id": 287,
-              "score": 0.4003124535083771
+              "expert_id": 1212,
+              "score": 0.39641064405441284
             },
             {
               "rank": 3,
-              "expert_id": 1868,
-              "score": 0.39845097064971924
+              "expert_id": 62,
+              "score": 0.39620262384414673
             },
             {
               "rank": 4,
-              "expert_id": 961,
-              "score": 0.3980405330657959
+              "expert_id": 1289,
+              "score": 0.393523633480072
             },
             {
               "rank": 5,
-              "expert_id": 1289,
-              "score": 0.39796340465545654
+              "expert_id": 916,
+              "score": 0.39309161901474
             },
             {
               "rank": 6,
-              "expert_id": 1921,
-              "score": 0.39449170231819153
+              "expert_id": 1936,
+              "score": 0.3928927481174469
             },
             {
               "rank": 7,
-              "expert_id": 1883,
-              "score": 0.39305371046066284
+              "expert_id": 1951,
+              "score": 0.3927362263202667
             },
             {
               "rank": 8,
-              "expert_id": 342,
-              "score": 0.39252471923828125
+              "expert_id": 287,
+              "score": 0.3901306092739105
             },
             {
               "rank": 9,
-              "expert_id": 325,
-              "score": 0.39247050881385803
+              "expert_id": 794,
+              "score": 0.3899676501750946
             },
             {
               "rank": 10,
-              "expert_id": 749,
-              "score": 0.3913434147834778
+              "expert_id": 540,
+              "score": 0.3898704946041107
             }
           ],
-          "top5_mean": 0.4065295815467834,
-          "top10_mean": 0.39965319633483887
+          "top5_mean": 0.4035073518753052,
+          "top10_mean": 0.3973134487867355
         }
       }
     },

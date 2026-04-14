@@ -285,16 +285,17 @@ def run_pipeline(
 
     _log_expert_summary(top_experts, batch.n_classes, effective_sort_by)
 
-    def _make_plot_entry(expert, tab_label: str, expert_meta: dict | None = None) -> tuple:
+    def _make_plot_entry(expert, tab_label: str, expert_meta: dict | None = None, hypothesis_name: str | None = None) -> tuple:
         s_fig = expert.get_plot(
             str_tokens=batch.str_tokens,
             cfg=cfg,
             label_names=batch.label_names,
+            hypothesis_name=hypothesis_name,
             k_neighbors=run_cfg.k_neighbors,
             context_window=run_cfg.context_window_display,
             device=run_cfg.device,
         )
-        m_fig = expert.get_mean_plot(cfg=cfg, label_names=batch.label_names)
+        m_fig = expert.get_mean_plot(cfg=cfg, label_names=batch.label_names, hypothesis_name=hypothesis_name)
         entry: tuple = (tab_label, s_fig, m_fig, expert.regression_scores)
         if expert_meta is not None:
             entry = entry + (expert_meta,)
@@ -326,7 +327,7 @@ def run_pipeline(
                     "fisher_score": None if fisher_val is None or fisher_val != fisher_val else fisher_val,
                     "n_points": expert.expert_activations.shape[0],
                 }
-                hyp_entries.append(_make_plot_entry(expert, btn_label, expert_meta))
+                hyp_entries.append(_make_plot_entry(expert, btn_label, expert_meta, hypothesis_name=name))
             per_hypothesis_entries[name] = (desc, hyp_entries)
     else:
         # No regression — flat tab strip sorted by Fisher/continuity

@@ -254,7 +254,7 @@ def build_newline_table(results: dict) -> str:
     rows.append(r"\small")
     rows.append(
         r"\caption{Newline position encoding results (Gemma 2 9B). "
-        r"Periodic gain $= R^2_{\text{periodic}} - R^2_{\text{linear}}$ on the bottleneck; "
+        r"$\Delta R^2_{\text{periodic}} = R^2_{\text{periodic}} - R^2_{\text{linear}}$ on the bottleneck; "
         r"positive values indicate ring or spiral geometry. "
         r"Top-1 and mean over top-5 experts reported.}"
     )
@@ -281,7 +281,7 @@ def build_newline_table(results: dict) -> str:
     # Header row 2
     h2_parts = ["Line length"]
     for _ in nine_b_models:
-        h2_parts += ["Top-1 gain", r"Top-5$_{\mu}$ gain"]
+        h2_parts += [r"Top-1 $\Delta R^2_{\text{periodic}}$", r"Top-5$_{\mu}$ $\Delta R^2_{\text{periodic}}$"]
     rows.append(" & ".join(h2_parts) + r" \\")
     rows.append(r"\midrule")
 

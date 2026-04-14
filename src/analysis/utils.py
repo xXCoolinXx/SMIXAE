@@ -553,6 +553,7 @@ class DatasetConfig:
     color_scale: str | None = None
     continuous_color: bool = False
     color_map: dict[str, str] | None = None
+    hypothesis_color_overrides: dict[str, dict[str, str]] | None = None
     show_labels: bool = False
 
     @property
@@ -1029,6 +1030,7 @@ class Expert:
         cfg: DatasetConfig = DatasetConfig(),
         label_names: "dict[int, str] | None" = None,
         *,
+        hypothesis_name: str | None = None,
         k_neighbors: int = 10,
         context_window: int = 10,
         device: str = "cuda",
@@ -1061,7 +1063,12 @@ class Expert:
         if self.labels is not None and label_names is not None:
             int_labels = self.labels.numpy()
             lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
-            cscale = _resolve_colorscale(cfg.color_map, label_names, int_labels)
+            effective_color_map = (
+                cfg.hypothesis_color_overrides.get(hypothesis_name)
+                if hypothesis_name and cfg.hypothesis_color_overrides
+                else cfg.color_map
+            )
+            cscale = _resolve_colorscale(effective_color_map, label_names, int_labels)
             fig = plot_3d_scatter(
                 pts, int_labels,
                 label_names=lnames,
@@ -1094,6 +1101,7 @@ class Expert:
         self,
         cfg: DatasetConfig = DatasetConfig(),
         label_names: "dict[int, str] | None" = None,
+        hypothesis_name: str | None = None,
     ) -> "Figure | None":
         """Generate a 3D scatter showing only per-class mean bottleneck activations.
 
@@ -1114,7 +1122,12 @@ class Expert:
         pts = self.expert_activations.numpy()
         int_labels = self.labels.numpy()
         lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
-        cscale = _resolve_colorscale(cfg.color_map, label_names, int_labels)
+        effective_color_map = (
+            cfg.hypothesis_color_overrides.get(hypothesis_name)
+            if hypothesis_name and cfg.hypothesis_color_overrides
+            else cfg.color_map
+        )
+        cscale = _resolve_colorscale(effective_color_map, label_names, int_labels)
         return plot_3d_scatter(
             pts, int_labels,
             label_names=lnames,
