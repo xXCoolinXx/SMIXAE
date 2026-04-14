@@ -1,1001 +1,1001 @@
 Sentence,Label,target_is_animal,target_taxon
-Fatima confirmed the endangered status of the arachnid,07_arachnid,1,1
-the supervisor documented the habitat of the amphibian,10_amphibian,1,3
-James spent the summer studying a local flower,03_flower,0,0
-Dr. Chen tagged and released the captured fish,09_fish,1,2
-the PI observed the behavior of a wild mammal,13_mammal,1,6
-Dr. Rossi spent the summer studying a local insect,06_insect,1,1
-Prof. Müller spent the summer studying a local tree,05_tree,0,0
-Elena documented the habitat of the fish,09_fish,1,2
-Conservation efforts focused on preserving the tree,05_tree,0,0
-Fatima spent the summer studying a local tree,05_tree,0,0
-Environmental impact was assessed for the mammal,13_mammal,1,6
-The ecosystem depends heavily on the amphibian,10_amphibian,1,3
-Dr. Smith tagged and released the captured crustacean,08_crustacean,1,1
-Fatima observed the behavior of a wild reptile,11_reptile,1,4
-Charlie trained for years on identifying a amphibian,10_amphibian,1,3
-Charlie trained for years on identifying a flower,03_flower,0,0
-Omar documented the habitat of the shrub,04_shrub,0,0
-the analyst extracted RNA from the tissue of a moss,00_moss,0,0
-the intern spent the summer studying a local insect,06_insect,1,1
-The fossil record shows evidence of the ancient mammal,13_mammal,1,6
-Liam photographed what appeared to be a insect,06_insect,1,1
-Prof. Kim trained for years on identifying a flower,03_flower,0,0
-The ecosystem depends heavily on the insect,06_insect,1,1
-the technician spent the summer studying a local shrub,04_shrub,0,0
-the coordinator extracted RNA from the tissue of a fish,09_fish,1,2
-The biology textbook chapter covered the flower,03_flower,0,0
-Maria trained for years on identifying a moss,00_moss,0,0
-The ecosystem depends heavily on the moss,00_moss,0,0
-Prof. Wang tagged and released the captured fish,09_fish,1,2
-The grant funded a three-year study of the insect,06_insect,1,1
-Prof. Kim tagged and released the captured amphibian,10_amphibian,1,3
-DNA sequencing confirmed the sample came from a grass,02_grass,0,0
-Alice noted that the diet study examined a grass,02_grass,0,0
-Kevin spent the summer studying a local fish,09_fish,1,2
-Dr. Okafor cultured a colony derived from a fish,09_fish,1,2
-Prof. Wang noted that the diet study examined a crustacean,08_crustacean,1,1
-Omar cultured a colony derived from a moss,00_moss,0,0
-Dr. Smith photographed what appeared to be a amphibian,10_amphibian,1,3
-DNA sequencing confirmed the sample came from a fish,09_fish,1,2
-Dr. Chen extracted RNA from the tissue of a bird,12_bird,1,5
-James noted that the diet study examined a shrub,04_shrub,0,0
-The biodiversity index recorded the presence of a bird,12_bird,1,5
-the technician confirmed the endangered status of the mammal,13_mammal,1,6
-the technician extracted RNA from the tissue of a fish,09_fish,1,2
-the technician extracted RNA from the tissue of a reptile,11_reptile,1,4
-the coordinator cultured a colony derived from a shrub,04_shrub,0,0
-Kevin cultured a colony derived from a crustacean,08_crustacean,1,1
-The sanctuary was established to protect the fern,01_fern,0,0
-The biome is dominated by the flower,03_flower,0,0
-the intern observed the behavior of a wild fern,01_fern,0,0
-Dr. Rossi observed the behavior of a wild moss,00_moss,0,0
-Liam spent the summer studying a local flower,03_flower,0,0
-The fossil record shows evidence of the ancient moss,00_moss,0,0
-Bob trained for years on identifying a fish,09_fish,1,2
-Kevin extracted RNA from the tissue of a reptile,11_reptile,1,4
-the postdoc photographed what appeared to be a crustacean,08_crustacean,1,1
-Prof. Wang extracted RNA from the tissue of a tree,05_tree,0,0
-Charlie extracted RNA from the tissue of a tree,05_tree,0,0
-the PI extracted RNA from the tissue of a reptile,11_reptile,1,4
-The museum exhibit featured a preserved arachnid,07_arachnid,1,1
-Children in the class were asked to draw a tree,05_tree,0,0
-The ecosystem depends heavily on the reptile,11_reptile,1,4
-Prof. Müller noted that the diet study examined a fern,01_fern,0,0
-The museum exhibit featured a preserved amphibian,10_amphibian,1,3
-Prof. Wang noted that the diet study examined a reptile,11_reptile,1,4
-the analyst spent the summer studying a local arachnid,07_arachnid,1,1
-Samples were collected from a living flower,03_flower,0,0
-Maria noted that the diet study examined a reptile,11_reptile,1,4
-Sarah confirmed the endangered status of the crustacean,08_crustacean,1,1
-the nurse extracted RNA from the tissue of a insect,06_insect,1,1
-The grant funded a three-year study of the fern,01_fern,0,0
-Fatima photographed what appeared to be a grass,02_grass,0,0
-The field guide confirmed the find was a mammal,13_mammal,1,6
-Dr. Chen extracted RNA from the tissue of a fish,09_fish,1,2
-The nature documentary featured the remarkable arachnid,07_arachnid,1,1
-Dr. Patel extracted RNA from the tissue of a reptile,11_reptile,1,4
-Bob trained for years on identifying a fern,01_fern,0,0
-the technician observed the behavior of a wild insect,06_insect,1,1
-Dr. Okafor extracted RNA from the tissue of a tree,05_tree,0,0
-the technician documented the habitat of the bird,12_bird,1,5
-Environmental impact was assessed for the flower,03_flower,0,0
-The museum exhibit featured a preserved insect,06_insect,1,1
-Elena observed the behavior of a wild crustacean,08_crustacean,1,1
-Liam extracted RNA from the tissue of a fish,09_fish,1,2
-James noted that the diet study examined a arachnid,07_arachnid,1,1
-Bob extracted RNA from the tissue of a bird,12_bird,1,5
-Amara observed the behavior of a wild flower,03_flower,0,0
-Fatima observed the behavior of a wild tree,05_tree,0,0
-the technician noted that the diet study examined a fern,01_fern,0,0
-Prof. Müller observed the behavior of a wild mammal,13_mammal,1,6
-Dr. Smith cultured a colony derived from a grass,02_grass,0,0
-Dr. Patel cultured a colony derived from a mammal,13_mammal,1,6
-Biochemists extracted compounds from the flower,03_flower,0,0
-Yuki cultured a colony derived from a tree,05_tree,0,0
-Dr. Rossi documented the habitat of the moss,00_moss,0,0
-Yuki noted that the diet study examined a fish,09_fish,1,2
-the postdoc noted that the diet study examined a fern,01_fern,0,0
-Amara spent the summer studying a local moss,00_moss,0,0
-Charlie noted that the diet study examined a grass,02_grass,0,0
-Charlie photographed what appeared to be a grass,02_grass,0,0
-the coordinator extracted RNA from the tissue of a grass,02_grass,0,0
-Bob observed the behavior of a wild mammal,13_mammal,1,6
-The grant funded a three-year study of the shrub,04_shrub,0,0
-the technician trained for years on identifying a fern,01_fern,0,0
-Omar documented the habitat of the grass,02_grass,0,0
-Sarah trained for years on identifying a fern,01_fern,0,0
-The invasive species turned out to be a shrub,04_shrub,0,0
-Charlie confirmed the endangered status of the fish,09_fish,1,2
-Raj photographed what appeared to be a grass,02_grass,0,0
-The invasive species turned out to be a tree,05_tree,0,0
-the nurse spent the summer studying a local bird,12_bird,1,5
-Dr. Okafor extracted RNA from the tissue of a shrub,04_shrub,0,0
-Charlie spent the summer studying a local crustacean,08_crustacean,1,1
-Liam spent the summer studying a local insect,06_insect,1,1
-The biology textbook chapter covered the grass,02_grass,0,0
-the supervisor cultured a colony derived from a fern,01_fern,0,0
-The biodiversity index recorded the presence of a grass,02_grass,0,0
-The researcher identified the specimen as a reptile,11_reptile,1,4
-Maria extracted RNA from the tissue of a tree,05_tree,0,0
-Dr. Okafor extracted RNA from the tissue of a moss,00_moss,0,0
-The biodiversity index recorded the presence of a insect,06_insect,1,1
-The fossil record shows evidence of the ancient shrub,04_shrub,0,0
-Liam noted that the diet study examined a moss,00_moss,0,0
-The invasive species turned out to be a crustacean,08_crustacean,1,1
-Dr. Chen noted that the diet study examined a flower,03_flower,0,0
-Children in the class were asked to draw a flower,03_flower,0,0
-the coordinator tagged and released the captured moss,00_moss,0,0
-Dr. Chen observed the behavior of a wild bird,12_bird,1,5
-the technician observed the behavior of a wild tree,05_tree,0,0
-Yuki confirmed the endangered status of the fish,09_fish,1,2
-Prof. Müller extracted RNA from the tissue of a shrub,04_shrub,0,0
-Amara cultured a colony derived from a fish,09_fish,1,2
-Liam spent the summer studying a local arachnid,07_arachnid,1,1
-Prof. Wang extracted RNA from the tissue of a flower,03_flower,0,0
-Sarah noted that the diet study examined a crustacean,08_crustacean,1,1
-The biodiversity index recorded the presence of a arachnid,07_arachnid,1,1
-Biochemists extracted compounds from the fish,09_fish,1,2
-The biology textbook chapter covered the fish,09_fish,1,2
-the analyst cultured a colony derived from a fish,09_fish,1,2
-Alice confirmed the endangered status of the moss,00_moss,0,0
-The museum exhibit featured a preserved reptile,11_reptile,1,4
-The nature documentary featured the remarkable crustacean,08_crustacean,1,1
-the coordinator cultured a colony derived from a bird,12_bird,1,5
-Prof. Kim tagged and released the captured bird,12_bird,1,5
-Charlie confirmed the endangered status of the arachnid,07_arachnid,1,1
-Prof. Kim photographed what appeared to be a mammal,13_mammal,1,6
-Dr. Chen spent the summer studying a local insect,06_insect,1,1
-Conservation efforts focused on preserving the shrub,04_shrub,0,0
-The biodiversity index recorded the presence of a reptile,11_reptile,1,4
-Fatima cultured a colony derived from a tree,05_tree,0,0
-Raj photographed what appeared to be a mammal,13_mammal,1,6
-The genome was successfully sequenced from a crustacean,08_crustacean,1,1
-the coordinator extracted RNA from the tissue of a arachnid,07_arachnid,1,1
-Bob spent the summer studying a local flower,03_flower,0,0
-James trained for years on identifying a shrub,04_shrub,0,0
-James confirmed the endangered status of the insect,06_insect,1,1
-the technician spent the summer studying a local insect,06_insect,1,1
-Elena documented the habitat of the bird,12_bird,1,5
-Samples were collected from a living mammal,13_mammal,1,6
-the postdoc extracted RNA from the tissue of a amphibian,10_amphibian,1,3
-Biochemists extracted compounds from the mammal,13_mammal,1,6
-the postdoc photographed what appeared to be a grass,02_grass,0,0
-Prof. Müller extracted RNA from the tissue of a fern,01_fern,0,0
-Omar extracted RNA from the tissue of a grass,02_grass,0,0
-Raj trained for years on identifying a grass,02_grass,0,0
-The nature documentary featured the remarkable bird,12_bird,1,5
-the technician extracted RNA from the tissue of a bird,12_bird,1,5
-Prof. Kim tagged and released the captured flower,03_flower,0,0
-The grant funded a three-year study of the grass,02_grass,0,0
-Dr. Okafor documented the habitat of the insect,06_insect,1,1
-the PI extracted RNA from the tissue of a shrub,04_shrub,0,0
-Liam extracted RNA from the tissue of a grass,02_grass,0,0
-the intern trained for years on identifying a grass,02_grass,0,0
-the PI observed the behavior of a wild tree,05_tree,0,0
-The grant funded a three-year study of the crustacean,08_crustacean,1,1
-DNA sequencing confirmed the sample came from a fern,01_fern,0,0
-Amara noted that the diet study examined a fern,01_fern,0,0
-the PI documented the habitat of the mammal,13_mammal,1,6
-Alice documented the habitat of the bird,12_bird,1,5
-Elena spent the summer studying a local tree,05_tree,0,0
-Alice extracted RNA from the tissue of a fish,09_fish,1,2
-the intern confirmed the endangered status of the moss,00_moss,0,0
-the intern observed the behavior of a wild fish,09_fish,1,2
-Liam photographed what appeared to be a crustacean,08_crustacean,1,1
-Maria observed the behavior of a wild grass,02_grass,0,0
-Prof. Kim tagged and released the captured tree,05_tree,0,0
-Dr. Rossi extracted RNA from the tissue of a crustacean,08_crustacean,1,1
-the nurse trained for years on identifying a crustacean,08_crustacean,1,1
-Dr. Smith cultured a colony derived from a tree,05_tree,0,0
-the postdoc tagged and released the captured grass,02_grass,0,0
-Prof. Kim noted that the diet study examined a shrub,04_shrub,0,0
-the nurse spent the summer studying a local tree,05_tree,0,0
-Yuki trained for years on identifying a insect,06_insect,1,1
-the nurse trained for years on identifying a moss,00_moss,0,0
-the analyst noted that the diet study examined a tree,05_tree,0,0
-Elena documented the habitat of the crustacean,08_crustacean,1,1
-Yuki photographed what appeared to be a mammal,13_mammal,1,6
-the technician tagged and released the captured reptile,11_reptile,1,4
-Prof. Wang noted that the diet study examined a grass,02_grass,0,0
-Prof. Kim cultured a colony derived from a tree,05_tree,0,0
-Dr. Okafor observed the behavior of a wild tree,05_tree,0,0
-Yuki cultured a colony derived from a arachnid,07_arachnid,1,1
-Omar observed the behavior of a wild grass,02_grass,0,0
-the PI cultured a colony derived from a arachnid,07_arachnid,1,1
-the technician observed the behavior of a wild fish,09_fish,1,2
-James cultured a colony derived from a reptile,11_reptile,1,4
-Amara extracted RNA from the tissue of a bird,12_bird,1,5
-Dr. Patel trained for years on identifying a fish,09_fish,1,2
-the nurse observed the behavior of a wild moss,00_moss,0,0
-James extracted RNA from the tissue of a tree,05_tree,0,0
-Sarah spent the summer studying a local bird,12_bird,1,5
-Dr. Smith confirmed the endangered status of the amphibian,10_amphibian,1,3
-Fatima extracted RNA from the tissue of a tree,05_tree,0,0
-Alice observed the behavior of a wild crustacean,08_crustacean,1,1
-Sarah documented the habitat of the shrub,04_shrub,0,0
-Liam observed the behavior of a wild grass,02_grass,0,0
-The field guide confirmed the find was a flower,03_flower,0,0
-The sanctuary was established to protect the moss,00_moss,0,0
-Fatima noted that the diet study examined a bird,12_bird,1,5
-Prof. Müller noted that the diet study examined a moss,00_moss,0,0
-Maria trained for years on identifying a shrub,04_shrub,0,0
-the intern spent the summer studying a local fish,09_fish,1,2
-The fossil record shows evidence of the ancient tree,05_tree,0,0
-The sanctuary was established to protect the amphibian,10_amphibian,1,3
-Raj photographed what appeared to be a fish,09_fish,1,2
-Dr. Smith noted that the diet study examined a fern,01_fern,0,0
-Dr. Patel tagged and released the captured bird,12_bird,1,5
-The biome is dominated by the shrub,04_shrub,0,0
-Biochemists extracted compounds from the arachnid,07_arachnid,1,1
-The grant funded a three-year study of the moss,00_moss,0,0
-The biome is dominated by the fish,09_fish,1,2
-Charlie observed the behavior of a wild fish,09_fish,1,2
-Dr. Patel confirmed the endangered status of the shrub,04_shrub,0,0
-Omar trained for years on identifying a bird,12_bird,1,5
-The biome is dominated by the bird,12_bird,1,5
-The ecosystem depends heavily on the grass,02_grass,0,0
-the technician confirmed the endangered status of the arachnid,07_arachnid,1,1
-The fossil record shows evidence of the ancient crustacean,08_crustacean,1,1
-The museum exhibit featured a preserved moss,00_moss,0,0
-Bob noted that the diet study examined a flower,03_flower,0,0
-The ecosystem depends heavily on the bird,12_bird,1,5
-James observed the behavior of a wild fern,01_fern,0,0
-Liam tagged and released the captured fish,09_fish,1,2
-James extracted RNA from the tissue of a grass,02_grass,0,0
-the supervisor spent the summer studying a local mammal,13_mammal,1,6
-Biochemists extracted compounds from the bird,12_bird,1,5
-Prof. Kim observed the behavior of a wild fish,09_fish,1,2
-The ecosystem depends heavily on the crustacean,08_crustacean,1,1
-Dr. Patel observed the behavior of a wild tree,05_tree,0,0
-Prof. Wang extracted RNA from the tissue of a moss,00_moss,0,0
-James confirmed the endangered status of the flower,03_flower,0,0
-the PI cultured a colony derived from a fish,09_fish,1,2
-Fatima documented the habitat of the bird,12_bird,1,5
-the nurse observed the behavior of a wild insect,06_insect,1,1
-DNA sequencing confirmed the sample came from a arachnid,07_arachnid,1,1
-Samples were collected from a living insect,06_insect,1,1
-Fatima trained for years on identifying a reptile,11_reptile,1,4
-Maria extracted RNA from the tissue of a fish,09_fish,1,2
-Alice extracted RNA from the tissue of a fern,01_fern,0,0
-The ecosystem depends heavily on the shrub,04_shrub,0,0
-Omar observed the behavior of a wild amphibian,10_amphibian,1,3
-Fatima observed the behavior of a wild shrub,04_shrub,0,0
-Liam confirmed the endangered status of the grass,02_grass,0,0
-The biology textbook chapter covered the tree,05_tree,0,0
-Prof. Müller cultured a colony derived from a tree,05_tree,0,0
-Alice extracted RNA from the tissue of a mammal,13_mammal,1,6
-The biome is dominated by the moss,00_moss,0,0
-Kevin extracted RNA from the tissue of a bird,12_bird,1,5
-Prof. Müller observed the behavior of a wild flower,03_flower,0,0
-Sarah confirmed the endangered status of the mammal,13_mammal,1,6
-Dr. Okafor observed the behavior of a wild moss,00_moss,0,0
-the technician observed the behavior of a wild flower,03_flower,0,0
-Samples were collected from a living fern,01_fern,0,0
-Sarah extracted RNA from the tissue of a flower,03_flower,0,0
-the coordinator photographed what appeared to be a insect,06_insect,1,1
-Yuki photographed what appeared to be a bird,12_bird,1,5
-The genome was successfully sequenced from a tree,05_tree,0,0
-The genome was successfully sequenced from a arachnid,07_arachnid,1,1
-Omar photographed what appeared to be a mammal,13_mammal,1,6
-DNA sequencing confirmed the sample came from a insect,06_insect,1,1
-Dr. Smith tagged and released the captured insect,06_insect,1,1
-The biology textbook chapter covered the reptile,11_reptile,1,4
-Environmental impact was assessed for the reptile,11_reptile,1,4
-Omar documented the habitat of the arachnid,07_arachnid,1,1
-the postdoc photographed what appeared to be a amphibian,10_amphibian,1,3
-Bob cultured a colony derived from a fern,01_fern,0,0
-the intern confirmed the endangered status of the crustacean,08_crustacean,1,1
-the nurse extracted RNA from the tissue of a fish,09_fish,1,2
-Children in the class were asked to draw a amphibian,10_amphibian,1,3
-Prof. Wang photographed what appeared to be a moss,00_moss,0,0
-Omar extracted RNA from the tissue of a shrub,04_shrub,0,0
-Yuki observed the behavior of a wild amphibian,10_amphibian,1,3
-Alice trained for years on identifying a fern,01_fern,0,0
-Sarah spent the summer studying a local crustacean,08_crustacean,1,1
-The researcher identified the specimen as a flower,03_flower,0,0
-the PI photographed what appeared to be a amphibian,10_amphibian,1,3
-DNA sequencing confirmed the sample came from a shrub,04_shrub,0,0
-Omar spent the summer studying a local arachnid,07_arachnid,1,1
-The researcher identified the specimen as a shrub,04_shrub,0,0
-Prof. Müller documented the habitat of the mammal,13_mammal,1,6
-The ecology report focused on the local crustacean,08_crustacean,1,1
-The field guide confirmed the find was a bird,12_bird,1,5
-The sanctuary was established to protect the crustacean,08_crustacean,1,1
-Kevin cultured a colony derived from a amphibian,10_amphibian,1,3
-Elena observed the behavior of a wild moss,00_moss,0,0
-the technician tagged and released the captured amphibian,10_amphibian,1,3
-Prof. Kim observed the behavior of a wild fern,01_fern,0,0
-Dr. Rossi noted that the diet study examined a mammal,13_mammal,1,6
-The invasive species turned out to be a arachnid,07_arachnid,1,1
-The sanctuary was established to protect the arachnid,07_arachnid,1,1
-The biodiversity index recorded the presence of a fish,09_fish,1,2
-The biodiversity index recorded the presence of a fern,01_fern,0,0
-The fossil record shows evidence of the ancient arachnid,07_arachnid,1,1
-the technician spent the summer studying a local moss,00_moss,0,0
-Alice confirmed the endangered status of the reptile,11_reptile,1,4
-Alice confirmed the endangered status of the crustacean,08_crustacean,1,1
-The nature documentary featured the remarkable insect,06_insect,1,1
-Kevin tagged and released the captured insect,06_insect,1,1
-Prof. Wang extracted RNA from the tissue of a reptile,11_reptile,1,4
-Yuki extracted RNA from the tissue of a bird,12_bird,1,5
-Children in the class were asked to draw a shrub,04_shrub,0,0
-Environmental impact was assessed for the crustacean,08_crustacean,1,1
-The biome is dominated by the reptile,11_reptile,1,4
-the nurse confirmed the endangered status of the fish,09_fish,1,2
-Dr. Rossi noted that the diet study examined a reptile,11_reptile,1,4
-Kevin spent the summer studying a local tree,05_tree,0,0
-Prof. Wang extracted RNA from the tissue of a fern,01_fern,0,0
-The sanctuary was established to protect the fish,09_fish,1,2
-Maria cultured a colony derived from a tree,05_tree,0,0
-the intern observed the behavior of a wild crustacean,08_crustacean,1,1
-Raj documented the habitat of the fern,01_fern,0,0
-Conservation efforts focused on preserving the moss,00_moss,0,0
-Bob noted that the diet study examined a tree,05_tree,0,0
-Prof. Wang photographed what appeared to be a bird,12_bird,1,5
-Sarah documented the habitat of the moss,00_moss,0,0
-The museum exhibit featured a preserved tree,05_tree,0,0
-Charlie trained for years on identifying a moss,00_moss,0,0
-Yuki spent the summer studying a local mammal,13_mammal,1,6
-Charlie confirmed the endangered status of the bird,12_bird,1,5
-Prof. Kim spent the summer studying a local flower,03_flower,0,0
-Omar confirmed the endangered status of the crustacean,08_crustacean,1,1
-Dr. Smith cultured a colony derived from a arachnid,07_arachnid,1,1
-the nurse cultured a colony derived from a crustacean,08_crustacean,1,1
-Biochemists extracted compounds from the moss,00_moss,0,0
-Maria observed the behavior of a wild fish,09_fish,1,2
-Dr. Chen observed the behavior of a wild shrub,04_shrub,0,0
-Omar noted that the diet study examined a fern,01_fern,0,0
-Dr. Rossi documented the habitat of the insect,06_insect,1,1
-Dr. Rossi tagged and released the captured insect,06_insect,1,1
-Alice tagged and released the captured fish,09_fish,1,2
-Biochemists extracted compounds from the insect,06_insect,1,1
-The biology textbook chapter covered the bird,12_bird,1,5
-Prof. Wang tagged and released the captured grass,02_grass,0,0
-Liam documented the habitat of the reptile,11_reptile,1,4
-the intern trained for years on identifying a flower,03_flower,0,0
-James observed the behavior of a wild tree,05_tree,0,0
-Maria observed the behavior of a wild fern,01_fern,0,0
-Raj documented the habitat of the arachnid,07_arachnid,1,1
-Raj extracted RNA from the tissue of a shrub,04_shrub,0,0
-Kevin photographed what appeared to be a bird,12_bird,1,5
-Prof. Wang cultured a colony derived from a bird,12_bird,1,5
-Dr. Rossi trained for years on identifying a moss,00_moss,0,0
-Amara documented the habitat of the bird,12_bird,1,5
-Dr. Rossi confirmed the endangered status of the tree,05_tree,0,0
-The field guide confirmed the find was a grass,02_grass,0,0
-Maria tagged and released the captured crustacean,08_crustacean,1,1
-the analyst documented the habitat of the crustacean,08_crustacean,1,1
-Children in the class were asked to draw a reptile,11_reptile,1,4
-Environmental impact was assessed for the moss,00_moss,0,0
-The nature documentary featured the remarkable reptile,11_reptile,1,4
-Prof. Wang trained for years on identifying a mammal,13_mammal,1,6
-The nature documentary featured the remarkable shrub,04_shrub,0,0
-Maria photographed what appeared to be a mammal,13_mammal,1,6
-Dr. Patel spent the summer studying a local crustacean,08_crustacean,1,1
-Yuki cultured a colony derived from a amphibian,10_amphibian,1,3
-Kevin tagged and released the captured flower,03_flower,0,0
-the supervisor tagged and released the captured moss,00_moss,0,0
-Dr. Okafor noted that the diet study examined a grass,02_grass,0,0
-Samples were collected from a living grass,02_grass,0,0
-Prof. Wang photographed what appeared to be a crustacean,08_crustacean,1,1
-Sarah tagged and released the captured flower,03_flower,0,0
-James tagged and released the captured flower,03_flower,0,0
-the nurse tagged and released the captured fish,09_fish,1,2
-Dr. Rossi confirmed the endangered status of the fish,09_fish,1,2
-the technician photographed what appeared to be a mammal,13_mammal,1,6
-Prof. Müller extracted RNA from the tissue of a reptile,11_reptile,1,4
-Dr. Smith observed the behavior of a wild mammal,13_mammal,1,6
-Bob documented the habitat of the amphibian,10_amphibian,1,3
-the intern photographed what appeared to be a amphibian,10_amphibian,1,3
-the analyst tagged and released the captured fern,01_fern,0,0
-Elena tagged and released the captured reptile,11_reptile,1,4
-The ecology report focused on the local bird,12_bird,1,5
-Sarah extracted RNA from the tissue of a fern,01_fern,0,0
-The biology textbook chapter covered the crustacean,08_crustacean,1,1
-Prof. Müller noted that the diet study examined a tree,05_tree,0,0
-Sarah spent the summer studying a local arachnid,07_arachnid,1,1
-Alice extracted RNA from the tissue of a flower,03_flower,0,0
+Elena tagged and released the captured insect,06_insect,1,1
+the PI cultured a colony derived from a insect,06_insect,1,1
 The biology textbook chapter covered the fern,01_fern,0,0
-Bob cultured a colony derived from a bird,12_bird,1,5
-Fatima observed the behavior of a wild bird,12_bird,1,5
-Children in the class were asked to draw a crustacean,08_crustacean,1,1
-the nurse extracted RNA from the tissue of a grass,02_grass,0,0
-Dr. Okafor cultured a colony derived from a flower,03_flower,0,0
-Elena spent the summer studying a local moss,00_moss,0,0
-Samples were collected from a living arachnid,07_arachnid,1,1
-Prof. Kim photographed what appeared to be a fern,01_fern,0,0
-the coordinator observed the behavior of a wild reptile,11_reptile,1,4
-Kevin trained for years on identifying a insect,06_insect,1,1
-Environmental impact was assessed for the tree,05_tree,0,0
-The grant funded a three-year study of the arachnid,07_arachnid,1,1
-the intern photographed what appeared to be a fern,01_fern,0,0
-Sarah cultured a colony derived from a mammal,13_mammal,1,6
-DNA sequencing confirmed the sample came from a tree,05_tree,0,0
-the intern noted that the diet study examined a shrub,04_shrub,0,0
-Dr. Rossi cultured a colony derived from a fern,01_fern,0,0
-Amara photographed what appeared to be a fern,01_fern,0,0
-Alice photographed what appeared to be a tree,05_tree,0,0
-the postdoc noted that the diet study examined a grass,02_grass,0,0
-the postdoc trained for years on identifying a flower,03_flower,0,0
-the intern extracted RNA from the tissue of a reptile,11_reptile,1,4
-Prof. Müller extracted RNA from the tissue of a insect,06_insect,1,1
-Liam extracted RNA from the tissue of a arachnid,07_arachnid,1,1
-The ecology report focused on the local tree,05_tree,0,0
-Dr. Patel cultured a colony derived from a arachnid,07_arachnid,1,1
-Charlie observed the behavior of a wild amphibian,10_amphibian,1,3
-The genome was successfully sequenced from a moss,00_moss,0,0
-The biodiversity index recorded the presence of a tree,05_tree,0,0
-the nurse spent the summer studying a local crustacean,08_crustacean,1,1
-James spent the summer studying a local arachnid,07_arachnid,1,1
-Maria photographed what appeared to be a shrub,04_shrub,0,0
-Omar spent the summer studying a local amphibian,10_amphibian,1,3
-Yuki tagged and released the captured tree,05_tree,0,0
-Fatima trained for years on identifying a moss,00_moss,0,0
-Sarah photographed what appeared to be a flower,03_flower,0,0
-The nature documentary featured the remarkable tree,05_tree,0,0
-the intern confirmed the endangered status of the arachnid,07_arachnid,1,1
-the nurse spent the summer studying a local fish,09_fish,1,2
-the coordinator documented the habitat of the arachnid,07_arachnid,1,1
-The genome was successfully sequenced from a bird,12_bird,1,5
-The nature documentary featured the remarkable fish,09_fish,1,2
-Charlie trained for years on identifying a fern,01_fern,0,0
-Sarah noted that the diet study examined a arachnid,07_arachnid,1,1
-The field guide confirmed the find was a fern,01_fern,0,0
-Dr. Chen extracted RNA from the tissue of a moss,00_moss,0,0
-Charlie trained for years on identifying a crustacean,08_crustacean,1,1
-Bob trained for years on identifying a bird,12_bird,1,5
-Alice tagged and released the captured tree,05_tree,0,0
-the coordinator documented the habitat of the crustacean,08_crustacean,1,1
-the analyst spent the summer studying a local amphibian,10_amphibian,1,3
-The researcher identified the specimen as a crustacean,08_crustacean,1,1
-Elena noted that the diet study examined a arachnid,07_arachnid,1,1
-Prof. Wang documented the habitat of the flower,03_flower,0,0
-Dr. Rossi tagged and released the captured crustacean,08_crustacean,1,1
-The invasive species turned out to be a mammal,13_mammal,1,6
-Omar noted that the diet study examined a moss,00_moss,0,0
-The nature documentary featured the remarkable flower,03_flower,0,0
-Conservation efforts focused on preserving the flower,03_flower,0,0
-The sanctuary was established to protect the flower,03_flower,0,0
-Dr. Okafor confirmed the endangered status of the grass,02_grass,0,0
-The grant funded a three-year study of the tree,05_tree,0,0
-The biome is dominated by the insect,06_insect,1,1
-Dr. Chen noted that the diet study examined a insect,06_insect,1,1
-the coordinator tagged and released the captured flower,03_flower,0,0
-Alice spent the summer studying a local tree,05_tree,0,0
-the intern extracted RNA from the tissue of a shrub,04_shrub,0,0
-Samples were collected from a living moss,00_moss,0,0
-the coordinator documented the habitat of the fern,01_fern,0,0
-Charlie trained for years on identifying a mammal,13_mammal,1,6
-The grant funded a three-year study of the bird,12_bird,1,5
-Maria documented the habitat of the moss,00_moss,0,0
-Fatima cultured a colony derived from a arachnid,07_arachnid,1,1
-Dr. Smith observed the behavior of a wild moss,00_moss,0,0
-Elena documented the habitat of the mammal,13_mammal,1,6
-the technician extracted RNA from the tissue of a mammal,13_mammal,1,6
-Charlie spent the summer studying a local grass,02_grass,0,0
-Children in the class were asked to draw a arachnid,07_arachnid,1,1
-DNA sequencing confirmed the sample came from a mammal,13_mammal,1,6
-the postdoc extracted RNA from the tissue of a mammal,13_mammal,1,6
-Liam photographed what appeared to be a mammal,13_mammal,1,6
-Dr. Patel confirmed the endangered status of the mammal,13_mammal,1,6
-Fatima tagged and released the captured fern,01_fern,0,0
-the technician tagged and released the captured insect,06_insect,1,1
-Maria extracted RNA from the tissue of a reptile,11_reptile,1,4
-Bob observed the behavior of a wild fern,01_fern,0,0
-Charlie spent the summer studying a local insect,06_insect,1,1
-Amara cultured a colony derived from a crustacean,08_crustacean,1,1
-The nature documentary featured the remarkable fern,01_fern,0,0
-Charlie tagged and released the captured bird,12_bird,1,5
-Fatima trained for years on identifying a bird,12_bird,1,5
-Prof. Wang photographed what appeared to be a shrub,04_shrub,0,0
-Dr. Patel confirmed the endangered status of the flower,03_flower,0,0
-the technician tagged and released the captured moss,00_moss,0,0
-Yuki spent the summer studying a local grass,02_grass,0,0
-the postdoc extracted RNA from the tissue of a reptile,11_reptile,1,4
-Alice spent the summer studying a local fern,01_fern,0,0
-The sanctuary was established to protect the grass,02_grass,0,0
-the analyst photographed what appeared to be a fern,01_fern,0,0
+Elena confirmed the endangered status of the reptile,11_reptile,1,4
+Omar documented the habitat of the reptile,11_reptile,1,4
+Prof. Kim noted that the diet study examined a mammal,13_mammal,1,6
 The ecology report focused on the local amphibian,10_amphibian,1,3
-Biochemists extracted compounds from the tree,05_tree,0,0
-Conservation efforts focused on preserving the arachnid,07_arachnid,1,1
-Maria spent the summer studying a local tree,05_tree,0,0
-Dr. Patel documented the habitat of the flower,03_flower,0,0
-Environmental impact was assessed for the fish,09_fish,1,2
-Raj tagged and released the captured arachnid,07_arachnid,1,1
-Elena documented the habitat of the amphibian,10_amphibian,1,3
-Charlie documented the habitat of the grass,02_grass,0,0
-the nurse observed the behavior of a wild arachnid,07_arachnid,1,1
-Dr. Rossi trained for years on identifying a crustacean,08_crustacean,1,1
-Alice trained for years on identifying a shrub,04_shrub,0,0
-Elena extracted RNA from the tissue of a fern,01_fern,0,0
-The grant funded a three-year study of the reptile,11_reptile,1,4
-the postdoc documented the habitat of the tree,05_tree,0,0
-Elena confirmed the endangered status of the amphibian,10_amphibian,1,3
-The sanctuary was established to protect the insect,06_insect,1,1
-The researcher identified the specimen as a arachnid,07_arachnid,1,1
-Amara tagged and released the captured insect,06_insect,1,1
-Alice tagged and released the captured grass,02_grass,0,0
-the nurse observed the behavior of a wild crustacean,08_crustacean,1,1
-the nurse cultured a colony derived from a moss,00_moss,0,0
-Liam observed the behavior of a wild fish,09_fish,1,2
-the postdoc extracted RNA from the tissue of a fern,01_fern,0,0
-Dr. Chen confirmed the endangered status of the arachnid,07_arachnid,1,1
-The field guide confirmed the find was a shrub,04_shrub,0,0
-Charlie cultured a colony derived from a fish,09_fish,1,2
-Dr. Rossi cultured a colony derived from a flower,03_flower,0,0
-the intern noted that the diet study examined a crustacean,08_crustacean,1,1
-Dr. Smith documented the habitat of the insect,06_insect,1,1
-Dr. Rossi photographed what appeared to be a amphibian,10_amphibian,1,3
-Prof. Kim confirmed the endangered status of the reptile,11_reptile,1,4
-Dr. Smith extracted RNA from the tissue of a shrub,04_shrub,0,0
-the technician trained for years on identifying a arachnid,07_arachnid,1,1
-the technician trained for years on identifying a mammal,13_mammal,1,6
-The ecology report focused on the local insect,06_insect,1,1
-The field guide confirmed the find was a amphibian,10_amphibian,1,3
-Biochemists extracted compounds from the crustacean,08_crustacean,1,1
-Kevin observed the behavior of a wild shrub,04_shrub,0,0
-Amara cultured a colony derived from a moss,00_moss,0,0
-Dr. Smith photographed what appeared to be a fern,01_fern,0,0
-Charlie tagged and released the captured amphibian,10_amphibian,1,3
-Alice noted that the diet study examined a insect,06_insect,1,1
-Prof. Wang observed the behavior of a wild arachnid,07_arachnid,1,1
-Dr. Okafor tagged and released the captured shrub,04_shrub,0,0
-The fossil record shows evidence of the ancient amphibian,10_amphibian,1,3
-the intern tagged and released the captured grass,02_grass,0,0
-Prof. Müller observed the behavior of a wild amphibian,10_amphibian,1,3
-the postdoc documented the habitat of the mammal,13_mammal,1,6
-The grant funded a three-year study of the fish,09_fish,1,2
-the nurse spent the summer studying a local arachnid,07_arachnid,1,1
-The field guide confirmed the find was a fish,09_fish,1,2
-Biochemists extracted compounds from the reptile,11_reptile,1,4
-Fatima noted that the diet study examined a shrub,04_shrub,0,0
-Biochemists extracted compounds from the shrub,04_shrub,0,0
-Dr. Patel tagged and released the captured grass,02_grass,0,0
-Prof. Müller noted that the diet study examined a amphibian,10_amphibian,1,3
-Dr. Smith cultured a colony derived from a flower,03_flower,0,0
-The sanctuary was established to protect the tree,05_tree,0,0
-The fossil record shows evidence of the ancient fish,09_fish,1,2
-Dr. Smith observed the behavior of a wild bird,12_bird,1,5
-Conservation efforts focused on preserving the crustacean,08_crustacean,1,1
-Bob spent the summer studying a local mammal,13_mammal,1,6
-Prof. Kim extracted RNA from the tissue of a flower,03_flower,0,0
-the PI spent the summer studying a local flower,03_flower,0,0
-The museum exhibit featured a preserved crustacean,08_crustacean,1,1
-the analyst tagged and released the captured fish,09_fish,1,2
-Biochemists extracted compounds from the fern,01_fern,0,0
-the postdoc trained for years on identifying a fern,01_fern,0,0
-Amara spent the summer studying a local fish,09_fish,1,2
-Dr. Okafor cultured a colony derived from a amphibian,10_amphibian,1,3
-Dr. Patel photographed what appeared to be a flower,03_flower,0,0
-Dr. Rossi cultured a colony derived from a crustacean,08_crustacean,1,1
-Dr. Chen tagged and released the captured insect,06_insect,1,1
-Liam tagged and released the captured crustacean,08_crustacean,1,1
-Prof. Wang noted that the diet study examined a amphibian,10_amphibian,1,3
-Amara cultured a colony derived from a insect,06_insect,1,1
-Prof. Kim trained for years on identifying a reptile,11_reptile,1,4
-Children in the class were asked to draw a bird,12_bird,1,5
-The field guide confirmed the find was a tree,05_tree,0,0
-the analyst photographed what appeared to be a arachnid,07_arachnid,1,1
-Prof. Kim spent the summer studying a local reptile,11_reptile,1,4
-Maria noted that the diet study examined a bird,12_bird,1,5
-the analyst spent the summer studying a local flower,03_flower,0,0
-Dr. Rossi tagged and released the captured reptile,11_reptile,1,4
-Samples were collected from a living bird,12_bird,1,5
-the supervisor photographed what appeared to be a mammal,13_mammal,1,6
-Dr. Chen noted that the diet study examined a shrub,04_shrub,0,0
-The biology textbook chapter covered the moss,00_moss,0,0
-Children in the class were asked to draw a mammal,13_mammal,1,6
-Raj spent the summer studying a local reptile,11_reptile,1,4
-The field guide confirmed the find was a crustacean,08_crustacean,1,1
-the analyst trained for years on identifying a fish,09_fish,1,2
-Omar photographed what appeared to be a fern,01_fern,0,0
-Prof. Kim cultured a colony derived from a moss,00_moss,0,0
-the supervisor confirmed the endangered status of the amphibian,10_amphibian,1,3
-Kevin cultured a colony derived from a moss,00_moss,0,0
-Prof. Wang spent the summer studying a local reptile,11_reptile,1,4
-James cultured a colony derived from a moss,00_moss,0,0
-Yuki cultured a colony derived from a crustacean,08_crustacean,1,1
-Omar observed the behavior of a wild fish,09_fish,1,2
-Dr. Chen tagged and released the captured shrub,04_shrub,0,0
-Dr. Smith documented the habitat of the flower,03_flower,0,0
-the nurse tagged and released the captured reptile,11_reptile,1,4
-Prof. Müller documented the habitat of the fern,01_fern,0,0
-the intern trained for years on identifying a shrub,04_shrub,0,0
-the nurse noted that the diet study examined a reptile,11_reptile,1,4
-Environmental impact was assessed for the fern,01_fern,0,0
-Raj photographed what appeared to be a reptile,11_reptile,1,4
-Sarah observed the behavior of a wild mammal,13_mammal,1,6
+Yuki cultured a colony derived from a tree,05_tree,0,0
+Bob trained for years on identifying a grass,02_grass,0,0
+The field guide confirmed the find was a mammal,13_mammal,1,6
+The invasive species turned out to be a grass,02_grass,0,0
+the technician confirmed the endangered status of the reptile,11_reptile,1,4
+Dr. Okafor documented the habitat of the fern,01_fern,0,0
+the PI extracted RNA from the tissue of a fish,09_fish,1,2
+the analyst tagged and released the captured arachnid,07_arachnid,1,1
+The fossil record shows evidence of the ancient crustacean,08_crustacean,1,1
+the supervisor extracted RNA from the tissue of a bird,12_bird,1,5
+Dr. Rossi spent the summer studying a local fish,09_fish,1,2
+the supervisor documented the habitat of the crustacean,08_crustacean,1,1
+Alice cultured a colony derived from a arachnid,07_arachnid,1,1
+Dr. Patel photographed what appeared to be a shrub,04_shrub,0,0
+the intern cultured a colony derived from a insect,06_insect,1,1
+Sarah observed the behavior of a wild shrub,04_shrub,0,0
 Bob observed the behavior of a wild shrub,04_shrub,0,0
-Omar cultured a colony derived from a reptile,11_reptile,1,4
-Prof. Wang spent the summer studying a local tree,05_tree,0,0
-Environmental impact was assessed for the arachnid,07_arachnid,1,1
-The grant funded a three-year study of the amphibian,10_amphibian,1,3
-Prof. Müller documented the habitat of the grass,02_grass,0,0
-Dr. Okafor documented the habitat of the tree,05_tree,0,0
-the technician tagged and released the captured crustacean,08_crustacean,1,1
-Sarah photographed what appeared to be a crustacean,08_crustacean,1,1
-the postdoc noted that the diet study examined a arachnid,07_arachnid,1,1
-Bob cultured a colony derived from a crustacean,08_crustacean,1,1
-the supervisor spent the summer studying a local grass,02_grass,0,0
-The sanctuary was established to protect the mammal,13_mammal,1,6
-The museum exhibit featured a preserved grass,02_grass,0,0
-The biome is dominated by the grass,02_grass,0,0
-Liam trained for years on identifying a fish,09_fish,1,2
-Fatima photographed what appeared to be a reptile,11_reptile,1,4
-Raj noted that the diet study examined a grass,02_grass,0,0
-the supervisor cultured a colony derived from a mammal,13_mammal,1,6
-The genome was successfully sequenced from a grass,02_grass,0,0
-Raj documented the habitat of the bird,12_bird,1,5
-The researcher identified the specimen as a moss,00_moss,0,0
-The ecology report focused on the local moss,00_moss,0,0
-James cultured a colony derived from a amphibian,10_amphibian,1,3
-James observed the behavior of a wild insect,06_insect,1,1
-Prof. Wang documented the habitat of the crustacean,08_crustacean,1,1
-Charlie noted that the diet study examined a mammal,13_mammal,1,6
-Yuki documented the habitat of the crustacean,08_crustacean,1,1
-The biology textbook chapter covered the shrub,04_shrub,0,0
-Prof. Müller documented the habitat of the amphibian,10_amphibian,1,3
-Charlie noted that the diet study examined a insect,06_insect,1,1
-The genome was successfully sequenced from a reptile,11_reptile,1,4
-Dr. Rossi confirmed the endangered status of the flower,03_flower,0,0
-The biology textbook chapter covered the mammal,13_mammal,1,6
-The invasive species turned out to be a fish,09_fish,1,2
-Alice photographed what appeared to be a crustacean,08_crustacean,1,1
-Environmental impact was assessed for the insect,06_insect,1,1
-Kevin extracted RNA from the tissue of a arachnid,07_arachnid,1,1
-Maria noted that the diet study examined a fern,01_fern,0,0
-the supervisor observed the behavior of a wild bird,12_bird,1,5
-Sarah confirmed the endangered status of the amphibian,10_amphibian,1,3
-DNA sequencing confirmed the sample came from a crustacean,08_crustacean,1,1
-Sarah spent the summer studying a local tree,05_tree,0,0
-the analyst observed the behavior of a wild reptile,11_reptile,1,4
-Alice noted that the diet study examined a amphibian,10_amphibian,1,3
-the analyst spent the summer studying a local tree,05_tree,0,0
-Omar cultured a colony derived from a mammal,13_mammal,1,6
-Conservation efforts focused on preserving the fern,01_fern,0,0
-Bob noted that the diet study examined a mammal,13_mammal,1,6
-the nurse trained for years on identifying a shrub,04_shrub,0,0
-Dr. Patel photographed what appeared to be a fish,09_fish,1,2
-the postdoc noted that the diet study examined a crustacean,08_crustacean,1,1
-Omar noted that the diet study examined a tree,05_tree,0,0
-Fatima extracted RNA from the tissue of a mammal,13_mammal,1,6
-Elena documented the habitat of the insect,06_insect,1,1
-James confirmed the endangered status of the moss,00_moss,0,0
-Prof. Wang observed the behavior of a wild fern,01_fern,0,0
-Bob photographed what appeared to be a fish,09_fish,1,2
-The sanctuary was established to protect the bird,12_bird,1,5
-The biodiversity index recorded the presence of a shrub,04_shrub,0,0
-Prof. Kim confirmed the endangered status of the grass,02_grass,0,0
-The fossil record shows evidence of the ancient bird,12_bird,1,5
-The invasive species turned out to be a moss,00_moss,0,0
-James extracted RNA from the tissue of a amphibian,10_amphibian,1,3
-Charlie spent the summer studying a local flower,03_flower,0,0
-The ecology report focused on the local reptile,11_reptile,1,4
-Charlie extracted RNA from the tissue of a fish,09_fish,1,2
-Kevin cultured a colony derived from a reptile,11_reptile,1,4
-The researcher identified the specimen as a insect,06_insect,1,1
-Dr. Chen trained for years on identifying a grass,02_grass,0,0
-Samples were collected from a living fish,09_fish,1,2
+Dr. Chen observed the behavior of a wild reptile,11_reptile,1,4
+Fatima tagged and released the captured mammal,13_mammal,1,6
+Bob noted that the diet study examined a bird,12_bird,1,5
+the coordinator trained for years on identifying a fish,09_fish,1,2
+Omar confirmed the endangered status of the crustacean,08_crustacean,1,1
+Maria spent the summer studying a local insect,06_insect,1,1
+Liam noted that the diet study examined a fish,09_fish,1,2
+The genome was successfully sequenced from a shrub,04_shrub,0,0
+Environmental impact was assessed for the mammal,13_mammal,1,6
+Prof. Wang cultured a colony derived from a reptile,11_reptile,1,4
+Dr. Okafor cultured a colony derived from a mammal,13_mammal,1,6
+The biology textbook chapter covered the moss,00_moss,0,0
+The researcher identified the specimen as a fern,01_fern,0,0
+Sarah photographed what appeared to be a insect,06_insect,1,1
+the postdoc documented the habitat of the bird,12_bird,1,5
+The sanctuary was established to protect the amphibian,10_amphibian,1,3
+Dr. Rossi tagged and released the captured arachnid,07_arachnid,1,1
+The field guide confirmed the find was a amphibian,10_amphibian,1,3
+Sarah documented the habitat of the fish,09_fish,1,2
+the nurse extracted RNA from the tissue of a fish,09_fish,1,2
 The biodiversity index recorded the presence of a moss,00_moss,0,0
-the coordinator observed the behavior of a wild tree,05_tree,0,0
-The sanctuary was established to protect the reptile,11_reptile,1,4
+the supervisor observed the behavior of a wild tree,05_tree,0,0
+Dr. Smith photographed what appeared to be a grass,02_grass,0,0
+The researcher identified the specimen as a flower,03_flower,0,0
+James tagged and released the captured reptile,11_reptile,1,4
+Prof. Wang noted that the diet study examined a amphibian,10_amphibian,1,3
+The grant funded a three-year study of the tree,05_tree,0,0
+Dr. Okafor noted that the diet study examined a insect,06_insect,1,1
+Dr. Okafor documented the habitat of the arachnid,07_arachnid,1,1
+Prof. Kim observed the behavior of a wild arachnid,07_arachnid,1,1
+the coordinator observed the behavior of a wild shrub,04_shrub,0,0
+Dr. Chen documented the habitat of the mammal,13_mammal,1,6
+Prof. Kim spent the summer studying a local arachnid,07_arachnid,1,1
+The ecology report focused on the local crustacean,08_crustacean,1,1
+the PI photographed what appeared to be a moss,00_moss,0,0
+the analyst observed the behavior of a wild reptile,11_reptile,1,4
+Charlie extracted RNA from the tissue of a fish,09_fish,1,2
+the nurse confirmed the endangered status of the tree,05_tree,0,0
+Biochemists extracted compounds from the amphibian,10_amphibian,1,3
+the postdoc cultured a colony derived from a fish,09_fish,1,2
+Samples were collected from a living arachnid,07_arachnid,1,1
+Sarah trained for years on identifying a shrub,04_shrub,0,0
+Bob trained for years on identifying a shrub,04_shrub,0,0
+the coordinator photographed what appeared to be a fish,09_fish,1,2
+The nature documentary featured the remarkable shrub,04_shrub,0,0
+the postdoc confirmed the endangered status of the flower,03_flower,0,0
+Dr. Rossi confirmed the endangered status of the grass,02_grass,0,0
+the coordinator spent the summer studying a local tree,05_tree,0,0
+Alice trained for years on identifying a fish,09_fish,1,2
+Charlie tagged and released the captured flower,03_flower,0,0
+The fossil record shows evidence of the ancient insect,06_insect,1,1
+The invasive species turned out to be a moss,00_moss,0,0
+The field guide confirmed the find was a insect,06_insect,1,1
+Charlie cultured a colony derived from a flower,03_flower,0,0
+Dr. Patel tagged and released the captured grass,02_grass,0,0
+the coordinator spent the summer studying a local fern,01_fern,0,0
+Maria extracted RNA from the tissue of a moss,00_moss,0,0
+Raj trained for years on identifying a amphibian,10_amphibian,1,3
+Kevin photographed what appeared to be a fern,01_fern,0,0
+Dr. Okafor confirmed the endangered status of the arachnid,07_arachnid,1,1
+Liam documented the habitat of the mammal,13_mammal,1,6
+the nurse noted that the diet study examined a arachnid,07_arachnid,1,1
+Dr. Smith tagged and released the captured fish,09_fish,1,2
+The fossil record shows evidence of the ancient mammal,13_mammal,1,6
+Bob observed the behavior of a wild bird,12_bird,1,5
+Dr. Okafor observed the behavior of a wild flower,03_flower,0,0
+Environmental impact was assessed for the arachnid,07_arachnid,1,1
+the nurse extracted RNA from the tissue of a tree,05_tree,0,0
+Dr. Chen spent the summer studying a local reptile,11_reptile,1,4
+Raj noted that the diet study examined a fish,09_fish,1,2
+Prof. Müller trained for years on identifying a mammal,13_mammal,1,6
+Biochemists extracted compounds from the bird,12_bird,1,5
+Fatima trained for years on identifying a arachnid,07_arachnid,1,1
+Charlie documented the habitat of the insect,06_insect,1,1
+The biome is dominated by the crustacean,08_crustacean,1,1
+Prof. Kim spent the summer studying a local amphibian,10_amphibian,1,3
+The biome is dominated by the mammal,13_mammal,1,6
+Dr. Smith observed the behavior of a wild shrub,04_shrub,0,0
+Dr. Okafor noted that the diet study examined a amphibian,10_amphibian,1,3
+Prof. Wang tagged and released the captured insect,06_insect,1,1
+Sarah spent the summer studying a local amphibian,10_amphibian,1,3
+the intern extracted RNA from the tissue of a arachnid,07_arachnid,1,1
+the coordinator cultured a colony derived from a arachnid,07_arachnid,1,1
+The biology textbook chapter covered the amphibian,10_amphibian,1,3
+The invasive species turned out to be a mammal,13_mammal,1,6
+The fossil record shows evidence of the ancient flower,03_flower,0,0
+Yuki extracted RNA from the tissue of a flower,03_flower,0,0
+the intern trained for years on identifying a mammal,13_mammal,1,6
+Biochemists extracted compounds from the mammal,13_mammal,1,6
+Dr. Rossi documented the habitat of the mammal,13_mammal,1,6
+James trained for years on identifying a tree,05_tree,0,0
+the coordinator tagged and released the captured arachnid,07_arachnid,1,1
+Raj spent the summer studying a local fern,01_fern,0,0
+Kevin trained for years on identifying a crustacean,08_crustacean,1,1
+Children in the class were asked to draw a insect,06_insect,1,1
+Environmental impact was assessed for the bird,12_bird,1,5
+the intern spent the summer studying a local bird,12_bird,1,5
+the nurse extracted RNA from the tissue of a reptile,11_reptile,1,4
+Charlie noted that the diet study examined a mammal,13_mammal,1,6
+Alice spent the summer studying a local fish,09_fish,1,2
+The invasive species turned out to be a amphibian,10_amphibian,1,3
+The ecosystem depends heavily on the moss,00_moss,0,0
+The fossil record shows evidence of the ancient bird,12_bird,1,5
+The researcher identified the specimen as a mammal,13_mammal,1,6
+Bob confirmed the endangered status of the bird,12_bird,1,5
+Prof. Müller trained for years on identifying a shrub,04_shrub,0,0
+DNA sequencing confirmed the sample came from a reptile,11_reptile,1,4
+Yuki photographed what appeared to be a fish,09_fish,1,2
+Prof. Kim confirmed the endangered status of the fish,09_fish,1,2
+Yuki tagged and released the captured fern,01_fern,0,0
+Yuki tagged and released the captured flower,03_flower,0,0
+Children in the class were asked to draw a crustacean,08_crustacean,1,1
+Alice spent the summer studying a local moss,00_moss,0,0
+James extracted RNA from the tissue of a bird,12_bird,1,5
+Environmental impact was assessed for the fish,09_fish,1,2
+Prof. Müller tagged and released the captured fish,09_fish,1,2
+Prof. Wang photographed what appeared to be a insect,06_insect,1,1
+Dr. Patel photographed what appeared to be a arachnid,07_arachnid,1,1
+The genome was successfully sequenced from a reptile,11_reptile,1,4
+the postdoc extracted RNA from the tissue of a insect,06_insect,1,1
+the PI documented the habitat of the tree,05_tree,0,0
+The ecosystem depends heavily on the arachnid,07_arachnid,1,1
+Raj noted that the diet study examined a amphibian,10_amphibian,1,3
+Samples were collected from a living flower,03_flower,0,0
+The sanctuary was established to protect the shrub,04_shrub,0,0
+DNA sequencing confirmed the sample came from a moss,00_moss,0,0
+Sarah spent the summer studying a local insect,06_insect,1,1
+The biology textbook chapter covered the bird,12_bird,1,5
+Prof. Wang extracted RNA from the tissue of a crustacean,08_crustacean,1,1
+The biome is dominated by the amphibian,10_amphibian,1,3
+DNA sequencing confirmed the sample came from a shrub,04_shrub,0,0
+Prof. Wang extracted RNA from the tissue of a mammal,13_mammal,1,6
+Liam cultured a colony derived from a grass,02_grass,0,0
+The biology textbook chapter covered the flower,03_flower,0,0
+Fatima observed the behavior of a wild amphibian,10_amphibian,1,3
+The biome is dominated by the insect,06_insect,1,1
+Children in the class were asked to draw a flower,03_flower,0,0
+Yuki confirmed the endangered status of the mammal,13_mammal,1,6
+Dr. Okafor trained for years on identifying a bird,12_bird,1,5
+Conservation efforts focused on preserving the amphibian,10_amphibian,1,3
+Sarah observed the behavior of a wild grass,02_grass,0,0
+Samples were collected from a living crustacean,08_crustacean,1,1
+Biochemists extracted compounds from the arachnid,07_arachnid,1,1
+The field guide confirmed the find was a fern,01_fern,0,0
+Sarah confirmed the endangered status of the amphibian,10_amphibian,1,3
+the postdoc noted that the diet study examined a insect,06_insect,1,1
+the postdoc extracted RNA from the tissue of a crustacean,08_crustacean,1,1
+Charlie trained for years on identifying a moss,00_moss,0,0
+The biome is dominated by the bird,12_bird,1,5
+Alice spent the summer studying a local arachnid,07_arachnid,1,1
+Yuki observed the behavior of a wild reptile,11_reptile,1,4
+Environmental impact was assessed for the amphibian,10_amphibian,1,3
+Dr. Okafor spent the summer studying a local fish,09_fish,1,2
+Dr. Smith noted that the diet study examined a bird,12_bird,1,5
+Conservation efforts focused on preserving the bird,12_bird,1,5
+the intern noted that the diet study examined a reptile,11_reptile,1,4
+Alice noted that the diet study examined a shrub,04_shrub,0,0
+the intern photographed what appeared to be a fern,01_fern,0,0
+The biology textbook chapter covered the tree,05_tree,0,0
+DNA sequencing confirmed the sample came from a crustacean,08_crustacean,1,1
+The fossil record shows evidence of the ancient fish,09_fish,1,2
+The invasive species turned out to be a insect,06_insect,1,1
+the nurse tagged and released the captured flower,03_flower,0,0
+The grant funded a three-year study of the bird,12_bird,1,5
+Prof. Müller spent the summer studying a local tree,05_tree,0,0
+the supervisor noted that the diet study examined a crustacean,08_crustacean,1,1
+Biochemists extracted compounds from the fish,09_fish,1,2
+Prof. Kim confirmed the endangered status of the arachnid,07_arachnid,1,1
+Alice cultured a colony derived from a moss,00_moss,0,0
+Prof. Wang photographed what appeared to be a reptile,11_reptile,1,4
+Elena extracted RNA from the tissue of a tree,05_tree,0,0
+Samples were collected from a living shrub,04_shrub,0,0
 DNA sequencing confirmed the sample came from a flower,03_flower,0,0
 Charlie trained for years on identifying a insect,06_insect,1,1
-Dr. Smith documented the habitat of the shrub,04_shrub,0,0
-The biology textbook chapter covered the insect,06_insect,1,1
-the coordinator tagged and released the captured fern,01_fern,0,0
-Dr. Rossi extracted RNA from the tissue of a arachnid,07_arachnid,1,1
-Charlie extracted RNA from the tissue of a shrub,04_shrub,0,0
-the PI noted that the diet study examined a bird,12_bird,1,5
-the postdoc photographed what appeared to be a tree,05_tree,0,0
-The nature documentary featured the remarkable amphibian,10_amphibian,1,3
-Elena noted that the diet study examined a grass,02_grass,0,0
-the PI confirmed the endangered status of the tree,05_tree,0,0
-Prof. Müller photographed what appeared to be a crustacean,08_crustacean,1,1
-Dr. Smith documented the habitat of the arachnid,07_arachnid,1,1
-the intern trained for years on identifying a tree,05_tree,0,0
-Maria confirmed the endangered status of the tree,05_tree,0,0
-Elena spent the summer studying a local amphibian,10_amphibian,1,3
-Elena photographed what appeared to be a bird,12_bird,1,5
-The field guide confirmed the find was a reptile,11_reptile,1,4
-Yuki noted that the diet study examined a reptile,11_reptile,1,4
-Fatima documented the habitat of the tree,05_tree,0,0
-Liam tagged and released the captured bird,12_bird,1,5
-Prof. Müller tagged and released the captured bird,12_bird,1,5
-Prof. Wang trained for years on identifying a fish,09_fish,1,2
-The genome was successfully sequenced from a fish,09_fish,1,2
-The invasive species turned out to be a fern,01_fern,0,0
-Omar tagged and released the captured bird,12_bird,1,5
-Raj observed the behavior of a wild bird,12_bird,1,5
-Samples were collected from a living amphibian,10_amphibian,1,3
-The genome was successfully sequenced from a mammal,13_mammal,1,6
-Liam tagged and released the captured flower,03_flower,0,0
-the PI cultured a colony derived from a grass,02_grass,0,0
-James tagged and released the captured amphibian,10_amphibian,1,3
-The nature documentary featured the remarkable grass,02_grass,0,0
-the supervisor trained for years on identifying a reptile,11_reptile,1,4
-the intern tagged and released the captured amphibian,10_amphibian,1,3
-Prof. Müller observed the behavior of a wild bird,12_bird,1,5
-Maria spent the summer studying a local fern,01_fern,0,0
-the nurse documented the habitat of the shrub,04_shrub,0,0
-Alice photographed what appeared to be a shrub,04_shrub,0,0
-James noted that the diet study examined a tree,05_tree,0,0
-the postdoc observed the behavior of a wild amphibian,10_amphibian,1,3
 Dr. Patel noted that the diet study examined a fish,09_fish,1,2
-Amara extracted RNA from the tissue of a mammal,13_mammal,1,6
-Dr. Okafor photographed what appeared to be a flower,03_flower,0,0
-Elena photographed what appeared to be a arachnid,07_arachnid,1,1
-the intern observed the behavior of a wild reptile,11_reptile,1,4
-James cultured a colony derived from a mammal,13_mammal,1,6
-Bob cultured a colony derived from a fish,09_fish,1,2
-Dr. Okafor noted that the diet study examined a crustacean,08_crustacean,1,1
-the postdoc photographed what appeared to be a flower,03_flower,0,0
-The museum exhibit featured a preserved fish,09_fish,1,2
-Alice confirmed the endangered status of the bird,12_bird,1,5
-Conservation efforts focused on preserving the grass,02_grass,0,0
-The invasive species turned out to be a amphibian,10_amphibian,1,3
-the intern cultured a colony derived from a fern,01_fern,0,0
-the postdoc spent the summer studying a local fish,09_fish,1,2
-Environmental impact was assessed for the grass,02_grass,0,0
-The ecology report focused on the local arachnid,07_arachnid,1,1
-Conservation efforts focused on preserving the amphibian,10_amphibian,1,3
-Children in the class were asked to draw a insect,06_insect,1,1
-the intern cultured a colony derived from a tree,05_tree,0,0
-Samples were collected from a living crustacean,08_crustacean,1,1
-Dr. Okafor noted that the diet study examined a reptile,11_reptile,1,4
-Dr. Patel extracted RNA from the tissue of a moss,00_moss,0,0
-Environmental impact was assessed for the bird,12_bird,1,5
-Omar cultured a colony derived from a fish,09_fish,1,2
-Prof. Wang spent the summer studying a local amphibian,10_amphibian,1,3
-the coordinator tagged and released the captured fish,09_fish,1,2
-Dr. Patel noted that the diet study examined a flower,03_flower,0,0
-Amara extracted RNA from the tissue of a reptile,11_reptile,1,4
-Amara photographed what appeared to be a fish,09_fish,1,2
-the analyst photographed what appeared to be a amphibian,10_amphibian,1,3
-The museum exhibit featured a preserved mammal,13_mammal,1,6
-Dr. Smith trained for years on identifying a shrub,04_shrub,0,0
-Conservation efforts focused on preserving the insect,06_insect,1,1
-the analyst cultured a colony derived from a grass,02_grass,0,0
-Children in the class were asked to draw a grass,02_grass,0,0
-Bob documented the habitat of the mammal,13_mammal,1,6
-Raj observed the behavior of a wild insect,06_insect,1,1
-Omar trained for years on identifying a fern,01_fern,0,0
-The fossil record shows evidence of the ancient insect,06_insect,1,1
-Conservation efforts focused on preserving the bird,12_bird,1,5
-Charlie photographed what appeared to be a crustacean,08_crustacean,1,1
-the PI spent the summer studying a local mammal,13_mammal,1,6
-Fatima observed the behavior of a wild arachnid,07_arachnid,1,1
-Maria extracted RNA from the tissue of a fern,01_fern,0,0
-The ecology report focused on the local fern,01_fern,0,0
-Fatima tagged and released the captured fish,09_fish,1,2
-The ecology report focused on the local fish,09_fish,1,2
-Sarah cultured a colony derived from a amphibian,10_amphibian,1,3
-Fatima noted that the diet study examined a fern,01_fern,0,0
-DNA sequencing confirmed the sample came from a amphibian,10_amphibian,1,3
-the intern spent the summer studying a local arachnid,07_arachnid,1,1
-Omar photographed what appeared to be a shrub,04_shrub,0,0
-Alice cultured a colony derived from a fern,01_fern,0,0
-the PI confirmed the endangered status of the bird,12_bird,1,5
-the PI documented the habitat of the grass,02_grass,0,0
-The ecology report focused on the local flower,03_flower,0,0
-Dr. Chen noted that the diet study examined a bird,12_bird,1,5
-Amara extracted RNA from the tissue of a arachnid,07_arachnid,1,1
-the technician extracted RNA from the tissue of a tree,05_tree,0,0
-the PI spent the summer studying a local insect,06_insect,1,1
-Fatima confirmed the endangered status of the moss,00_moss,0,0
-Environmental impact was assessed for the amphibian,10_amphibian,1,3
-Prof. Müller extracted RNA from the tissue of a amphibian,10_amphibian,1,3
-The biology textbook chapter covered the amphibian,10_amphibian,1,3
-Dr. Chen photographed what appeared to be a amphibian,10_amphibian,1,3
-Dr. Smith confirmed the endangered status of the bird,12_bird,1,5
-Conservation efforts focused on preserving the fish,09_fish,1,2
-The fossil record shows evidence of the ancient grass,02_grass,0,0
-Raj confirmed the endangered status of the fish,09_fish,1,2
-Elena trained for years on identifying a flower,03_flower,0,0
-Amara spent the summer studying a local arachnid,07_arachnid,1,1
-The invasive species turned out to be a flower,03_flower,0,0
-Raj tagged and released the captured insect,06_insect,1,1
-Dr. Smith cultured a colony derived from a mammal,13_mammal,1,6
-James trained for years on identifying a fish,09_fish,1,2
-The biodiversity index recorded the presence of a mammal,13_mammal,1,6
-DNA sequencing confirmed the sample came from a bird,12_bird,1,5
-The ecosystem depends heavily on the flower,03_flower,0,0
-The ecosystem depends heavily on the mammal,13_mammal,1,6
-the nurse documented the habitat of the flower,03_flower,0,0
-Raj cultured a colony derived from a grass,02_grass,0,0
-Environmental impact was assessed for the shrub,04_shrub,0,0
-the nurse documented the habitat of the tree,05_tree,0,0
-Fatima spent the summer studying a local shrub,04_shrub,0,0
-The invasive species turned out to be a bird,12_bird,1,5
-the technician noted that the diet study examined a grass,02_grass,0,0
-The grant funded a three-year study of the mammal,13_mammal,1,6
-Omar extracted RNA from the tissue of a fern,01_fern,0,0
-Charlie spent the summer studying a local mammal,13_mammal,1,6
-Fatima tagged and released the captured mammal,13_mammal,1,6
-Dr. Chen extracted RNA from the tissue of a shrub,04_shrub,0,0
-Children in the class were asked to draw a fish,09_fish,1,2
-the supervisor noted that the diet study examined a shrub,04_shrub,0,0
-The biome is dominated by the fern,01_fern,0,0
-Maria documented the habitat of the insect,06_insect,1,1
-The fossil record shows evidence of the ancient fern,01_fern,0,0
-Dr. Patel trained for years on identifying a grass,02_grass,0,0
-the PI extracted RNA from the tissue of a mammal,13_mammal,1,6
-James tagged and released the captured moss,00_moss,0,0
-The biome is dominated by the tree,05_tree,0,0
-The biodiversity index recorded the presence of a amphibian,10_amphibian,1,3
-Dr. Smith spent the summer studying a local grass,02_grass,0,0
-Alice observed the behavior of a wild fish,09_fish,1,2
-Amara trained for years on identifying a moss,00_moss,0,0
-the postdoc noted that the diet study examined a fish,09_fish,1,2
-The biome is dominated by the amphibian,10_amphibian,1,3
-Liam cultured a colony derived from a moss,00_moss,0,0
-Maria cultured a colony derived from a fish,09_fish,1,2
-Dr. Patel tagged and released the captured arachnid,07_arachnid,1,1
-Biochemists extracted compounds from the grass,02_grass,0,0
-The genome was successfully sequenced from a insect,06_insect,1,1
-Dr. Smith spent the summer studying a local amphibian,10_amphibian,1,3
 The genome was successfully sequenced from a flower,03_flower,0,0
-Dr. Chen observed the behavior of a wild grass,02_grass,0,0
-The grant funded a three-year study of the flower,03_flower,0,0
-the technician tagged and released the captured arachnid,07_arachnid,1,1
-Kevin documented the habitat of the insect,06_insect,1,1
-Prof. Kim documented the habitat of the amphibian,10_amphibian,1,3
-the nurse observed the behavior of a wild bird,12_bird,1,5
-Yuki photographed what appeared to be a arachnid,07_arachnid,1,1
-DNA sequencing confirmed the sample came from a moss,00_moss,0,0
-The biome is dominated by the arachnid,07_arachnid,1,1
-the postdoc spent the summer studying a local tree,05_tree,0,0
-Dr. Patel confirmed the endangered status of the insect,06_insect,1,1
-the postdoc trained for years on identifying a shrub,04_shrub,0,0
-Elena cultured a colony derived from a grass,02_grass,0,0
-the analyst observed the behavior of a wild amphibian,10_amphibian,1,3
-The ecosystem depends heavily on the tree,05_tree,0,0
-Charlie cultured a colony derived from a tree,05_tree,0,0
-Children in the class were asked to draw a moss,00_moss,0,0
-The museum exhibit featured a preserved fern,01_fern,0,0
-Liam photographed what appeared to be a flower,03_flower,0,0
-The nature documentary featured the remarkable mammal,13_mammal,1,6
-Yuki documented the habitat of the reptile,11_reptile,1,4
-Yuki observed the behavior of a wild crustacean,08_crustacean,1,1
-Raj observed the behavior of a wild mammal,13_mammal,1,6
-Elena cultured a colony derived from a bird,12_bird,1,5
-Bob documented the habitat of the shrub,04_shrub,0,0
-the intern documented the habitat of the bird,12_bird,1,5
-Prof. Müller spent the summer studying a local insect,06_insect,1,1
-Bob confirmed the endangered status of the mammal,13_mammal,1,6
-Conservation efforts focused on preserving the mammal,13_mammal,1,6
-Prof. Müller observed the behavior of a wild fern,01_fern,0,0
-Elena photographed what appeared to be a reptile,11_reptile,1,4
-Amara observed the behavior of a wild arachnid,07_arachnid,1,1
-The museum exhibit featured a preserved bird,12_bird,1,5
-The biodiversity index recorded the presence of a flower,03_flower,0,0
-Children in the class were asked to draw a fern,01_fern,0,0
-the supervisor noted that the diet study examined a moss,00_moss,0,0
-James tagged and released the captured fish,09_fish,1,2
-the intern observed the behavior of a wild grass,02_grass,0,0
-Samples were collected from a living shrub,04_shrub,0,0
-Prof. Kim confirmed the endangered status of the crustacean,08_crustacean,1,1
-the postdoc documented the habitat of the moss,00_moss,0,0
-The ecology report focused on the local mammal,13_mammal,1,6
-Charlie documented the habitat of the tree,05_tree,0,0
-the postdoc documented the habitat of the fish,09_fish,1,2
-the technician spent the summer studying a local fish,09_fish,1,2
-Dr. Rossi tagged and released the captured fern,01_fern,0,0
-The field guide confirmed the find was a insect,06_insect,1,1
-The sanctuary was established to protect the shrub,04_shrub,0,0
-James cultured a colony derived from a fish,09_fish,1,2
-The researcher identified the specimen as a fern,01_fern,0,0
-Charlie noted that the diet study examined a fish,09_fish,1,2
-Dr. Patel confirmed the endangered status of the arachnid,07_arachnid,1,1
-Alice noted that the diet study examined a fern,01_fern,0,0
-Prof. Müller photographed what appeared to be a tree,05_tree,0,0
-The ecosystem depends heavily on the arachnid,07_arachnid,1,1
-Maria trained for years on identifying a mammal,13_mammal,1,6
-Omar confirmed the endangered status of the moss,00_moss,0,0
-Sarah confirmed the endangered status of the insect,06_insect,1,1
-Bob extracted RNA from the tissue of a grass,02_grass,0,0
-the postdoc photographed what appeared to be a moss,00_moss,0,0
-Yuki tagged and released the captured shrub,04_shrub,0,0
-the PI cultured a colony derived from a crustacean,08_crustacean,1,1
-The invasive species turned out to be a reptile,11_reptile,1,4
-Dr. Rossi cultured a colony derived from a bird,12_bird,1,5
-The biome is dominated by the mammal,13_mammal,1,6
-Prof. Müller trained for years on identifying a moss,00_moss,0,0
-the analyst cultured a colony derived from a crustacean,08_crustacean,1,1
-Omar observed the behavior of a wild bird,12_bird,1,5
-Samples were collected from a living tree,05_tree,0,0
-the intern confirmed the endangered status of the grass,02_grass,0,0
-Liam cultured a colony derived from a fish,09_fish,1,2
-Prof. Kim confirmed the endangered status of the fish,09_fish,1,2
-Elena confirmed the endangered status of the tree,05_tree,0,0
-The invasive species turned out to be a insect,06_insect,1,1
-The researcher identified the specimen as a fish,09_fish,1,2
-Kevin documented the habitat of the reptile,11_reptile,1,4
-The museum exhibit featured a preserved flower,03_flower,0,0
-the nurse observed the behavior of a wild mammal,13_mammal,1,6
-Elena documented the habitat of the fern,01_fern,0,0
-the analyst noted that the diet study examined a amphibian,10_amphibian,1,3
-the supervisor confirmed the endangered status of the fern,01_fern,0,0
-Samples were collected from a living reptile,11_reptile,1,4
-Dr. Smith spent the summer studying a local shrub,04_shrub,0,0
-The field guide confirmed the find was a arachnid,07_arachnid,1,1
-The researcher identified the specimen as a amphibian,10_amphibian,1,3
-Maria observed the behavior of a wild reptile,11_reptile,1,4
-the technician photographed what appeared to be a grass,02_grass,0,0
-Raj noted that the diet study examined a tree,05_tree,0,0
-Charlie extracted RNA from the tissue of a insect,06_insect,1,1
-the supervisor extracted RNA from the tissue of a fish,09_fish,1,2
-The genome was successfully sequenced from a amphibian,10_amphibian,1,3
-The genome was successfully sequenced from a shrub,04_shrub,0,0
-the nurse cultured a colony derived from a mammal,13_mammal,1,6
-The biome is dominated by the crustacean,08_crustacean,1,1
-The fossil record shows evidence of the ancient flower,03_flower,0,0
-the analyst trained for years on identifying a grass,02_grass,0,0
-Dr. Okafor spent the summer studying a local arachnid,07_arachnid,1,1
-Kevin photographed what appeared to be a moss,00_moss,0,0
-Kevin cultured a colony derived from a bird,12_bird,1,5
-James spent the summer studying a local grass,02_grass,0,0
-the technician trained for years on identifying a amphibian,10_amphibian,1,3
-The genome was successfully sequenced from a fern,01_fern,0,0
-Fatima trained for years on identifying a tree,05_tree,0,0
-James spent the summer studying a local crustacean,08_crustacean,1,1
-Amara spent the summer studying a local insect,06_insect,1,1
-DNA sequencing confirmed the sample came from a reptile,11_reptile,1,4
-Dr. Patel extracted RNA from the tissue of a amphibian,10_amphibian,1,3
-The nature documentary featured the remarkable moss,00_moss,0,0
-the postdoc spent the summer studying a local amphibian,10_amphibian,1,3
-Dr. Chen documented the habitat of the amphibian,10_amphibian,1,3
-the intern documented the habitat of the amphibian,10_amphibian,1,3
-the supervisor observed the behavior of a wild fern,01_fern,0,0
-Prof. Wang noted that the diet study examined a fern,01_fern,0,0
-the PI documented the habitat of the crustacean,08_crustacean,1,1
-Prof. Kim tagged and released the captured reptile,11_reptile,1,4
-Omar confirmed the endangered status of the bird,12_bird,1,5
-Raj noted that the diet study examined a shrub,04_shrub,0,0
-Raj confirmed the endangered status of the moss,00_moss,0,0
-The ecology report focused on the local shrub,04_shrub,0,0
-the intern cultured a colony derived from a reptile,11_reptile,1,4
-Bob trained for years on identifying a amphibian,10_amphibian,1,3
-The field guide confirmed the find was a moss,00_moss,0,0
-The researcher identified the specimen as a mammal,13_mammal,1,6
-Raj trained for years on identifying a flower,03_flower,0,0
-the supervisor documented the habitat of the shrub,04_shrub,0,0
-Alice confirmed the endangered status of the fern,01_fern,0,0
-The biodiversity index recorded the presence of a crustacean,08_crustacean,1,1
-Kevin tagged and released the captured fern,01_fern,0,0
-the coordinator documented the habitat of the reptile,11_reptile,1,4
-the nurse photographed what appeared to be a fish,09_fish,1,2
-The ecosystem depends heavily on the fish,09_fish,1,2
-Bob photographed what appeared to be a tree,05_tree,0,0
+Dr. Rossi extracted RNA from the tissue of a shrub,04_shrub,0,0
+Alice noted that the diet study examined a mammal,13_mammal,1,6
+The biome is dominated by the shrub,04_shrub,0,0
+The genome was successfully sequenced from a grass,02_grass,0,0
+The invasive species turned out to be a fern,01_fern,0,0
 Conservation efforts focused on preserving the reptile,11_reptile,1,4
-Raj tagged and released the captured shrub,04_shrub,0,0
-Dr. Okafor documented the habitat of the moss,00_moss,0,0
-Biochemists extracted compounds from the amphibian,10_amphibian,1,3
-The researcher identified the specimen as a grass,02_grass,0,0
-the PI confirmed the endangered status of the moss,00_moss,0,0
-Alice spent the summer studying a local reptile,11_reptile,1,4
-Maria photographed what appeared to be a fish,09_fish,1,2
-The researcher identified the specimen as a bird,12_bird,1,5
-the analyst confirmed the endangered status of the arachnid,07_arachnid,1,1
-Kevin photographed what appeared to be a shrub,04_shrub,0,0
-Omar tagged and released the captured mammal,13_mammal,1,6
-The ecology report focused on the local grass,02_grass,0,0
-Alice photographed what appeared to be a mammal,13_mammal,1,6
-Yuki trained for years on identifying a shrub,04_shrub,0,0
+the intern documented the habitat of the arachnid,07_arachnid,1,1
+Liam photographed what appeared to be a shrub,04_shrub,0,0
+Maria noted that the diet study examined a moss,00_moss,0,0
+Liam cultured a colony derived from a amphibian,10_amphibian,1,3
+Maria noted that the diet study examined a grass,02_grass,0,0
+Environmental impact was assessed for the moss,00_moss,0,0
+the PI trained for years on identifying a moss,00_moss,0,0
+Kevin spent the summer studying a local tree,05_tree,0,0
+Children in the class were asked to draw a grass,02_grass,0,0
+the supervisor cultured a colony derived from a fish,09_fish,1,2
+Dr. Chen photographed what appeared to be a tree,05_tree,0,0
+Kevin observed the behavior of a wild shrub,04_shrub,0,0
+DNA sequencing confirmed the sample came from a mammal,13_mammal,1,6
 Bob confirmed the endangered status of the fish,09_fish,1,2
-Liam observed the behavior of a wild moss,00_moss,0,0
-Dr. Patel extracted RNA from the tissue of a mammal,13_mammal,1,6
-The fossil record shows evidence of the ancient reptile,11_reptile,1,4
-The researcher identified the specimen as a tree,05_tree,0,0
-Dr. Okafor photographed what appeared to be a grass,02_grass,0,0
-the postdoc tagged and released the captured reptile,11_reptile,1,4
-Prof. Müller noted that the diet study examined a flower,03_flower,0,0
-Kevin noted that the diet study examined a bird,12_bird,1,5
-The ecosystem depends heavily on the fern,01_fern,0,0
-The invasive species turned out to be a grass,02_grass,0,0
-Liam cultured a colony derived from a shrub,04_shrub,0,0
-the postdoc confirmed the endangered status of the amphibian,10_amphibian,1,3
-The biology textbook chapter covered the arachnid,07_arachnid,1,1
-Maria spent the summer studying a local bird,12_bird,1,5
+the technician confirmed the endangered status of the grass,02_grass,0,0
+Raj photographed what appeared to be a moss,00_moss,0,0
+Raj cultured a colony derived from a moss,00_moss,0,0
+The museum exhibit featured a preserved reptile,11_reptile,1,4
+the PI confirmed the endangered status of the moss,00_moss,0,0
+Maria confirmed the endangered status of the fern,01_fern,0,0
+James tagged and released the captured grass,02_grass,0,0
+The ecology report focused on the local insect,06_insect,1,1
+Amara noted that the diet study examined a fish,09_fish,1,2
+the coordinator noted that the diet study examined a shrub,04_shrub,0,0
+Sarah noted that the diet study examined a tree,05_tree,0,0
+Liam noted that the diet study examined a insect,06_insect,1,1
+Charlie cultured a colony derived from a tree,05_tree,0,0
+James photographed what appeared to be a bird,12_bird,1,5
+Prof. Müller trained for years on identifying a crustacean,08_crustacean,1,1
+the PI confirmed the endangered status of the shrub,04_shrub,0,0
+The fossil record shows evidence of the ancient arachnid,07_arachnid,1,1
+Kevin extracted RNA from the tissue of a bird,12_bird,1,5
+The fossil record shows evidence of the ancient fern,01_fern,0,0
+the intern photographed what appeared to be a crustacean,08_crustacean,1,1
+The ecosystem depends heavily on the fish,09_fish,1,2
+Charlie photographed what appeared to be a grass,02_grass,0,0
+the analyst observed the behavior of a wild amphibian,10_amphibian,1,3
+Prof. Müller documented the habitat of the arachnid,07_arachnid,1,1
+the postdoc noted that the diet study examined a mammal,13_mammal,1,6
+the postdoc tagged and released the captured amphibian,10_amphibian,1,3
+The grant funded a three-year study of the amphibian,10_amphibian,1,3
+Alice observed the behavior of a wild grass,02_grass,0,0
+The grant funded a three-year study of the grass,02_grass,0,0
+Kevin extracted RNA from the tissue of a flower,03_flower,0,0
+Prof. Wang extracted RNA from the tissue of a fern,01_fern,0,0
+the technician documented the habitat of the shrub,04_shrub,0,0
+The genome was successfully sequenced from a bird,12_bird,1,5
+The biodiversity index recorded the presence of a shrub,04_shrub,0,0
+Dr. Okafor spent the summer studying a local tree,05_tree,0,0
+Dr. Patel tagged and released the captured bird,12_bird,1,5
+Prof. Müller documented the habitat of the moss,00_moss,0,0
 Dr. Okafor documented the habitat of the amphibian,10_amphibian,1,3
+The biodiversity index recorded the presence of a insect,06_insect,1,1
+The nature documentary featured the remarkable flower,03_flower,0,0
+Prof. Müller spent the summer studying a local moss,00_moss,0,0
+the analyst extracted RNA from the tissue of a amphibian,10_amphibian,1,3
+Dr. Patel confirmed the endangered status of the shrub,04_shrub,0,0
+the intern noted that the diet study examined a arachnid,07_arachnid,1,1
+the PI tagged and released the captured crustacean,08_crustacean,1,1
+Fatima observed the behavior of a wild crustacean,08_crustacean,1,1
+the PI trained for years on identifying a arachnid,07_arachnid,1,1
+the nurse photographed what appeared to be a mammal,13_mammal,1,6
+Dr. Smith cultured a colony derived from a shrub,04_shrub,0,0
+the supervisor confirmed the endangered status of the grass,02_grass,0,0
+Fatima photographed what appeared to be a flower,03_flower,0,0
+the postdoc confirmed the endangered status of the bird,12_bird,1,5
+Dr. Rossi noted that the diet study examined a mammal,13_mammal,1,6
+Dr. Chen tagged and released the captured amphibian,10_amphibian,1,3
+Omar tagged and released the captured fish,09_fish,1,2
+Prof. Müller tagged and released the captured mammal,13_mammal,1,6
+Amara trained for years on identifying a mammal,13_mammal,1,6
+Dr. Smith extracted RNA from the tissue of a reptile,11_reptile,1,4
+The sanctuary was established to protect the tree,05_tree,0,0
+The researcher identified the specimen as a bird,12_bird,1,5
+Charlie noted that the diet study examined a fish,09_fish,1,2
+the PI spent the summer studying a local arachnid,07_arachnid,1,1
+Samples were collected from a living reptile,11_reptile,1,4
+The biodiversity index recorded the presence of a bird,12_bird,1,5
+James trained for years on identifying a fish,09_fish,1,2
+the PI extracted RNA from the tissue of a arachnid,07_arachnid,1,1
+Maria photographed what appeared to be a moss,00_moss,0,0
+Prof. Kim noted that the diet study examined a fish,09_fish,1,2
+Dr. Smith cultured a colony derived from a moss,00_moss,0,0
+The ecology report focused on the local arachnid,07_arachnid,1,1
+the analyst confirmed the endangered status of the grass,02_grass,0,0
+the PI documented the habitat of the grass,02_grass,0,0
+Prof. Müller noted that the diet study examined a moss,00_moss,0,0
+Dr. Patel extracted RNA from the tissue of a tree,05_tree,0,0
+Amara confirmed the endangered status of the arachnid,07_arachnid,1,1
+The field guide confirmed the find was a bird,12_bird,1,5
+the nurse spent the summer studying a local shrub,04_shrub,0,0
+Dr. Okafor tagged and released the captured flower,03_flower,0,0
+The nature documentary featured the remarkable fish,09_fish,1,2
+Elena documented the habitat of the amphibian,10_amphibian,1,3
+James photographed what appeared to be a shrub,04_shrub,0,0
+Dr. Smith observed the behavior of a wild fish,09_fish,1,2
+The field guide confirmed the find was a reptile,11_reptile,1,4
+Prof. Kim confirmed the endangered status of the insect,06_insect,1,1
+Kevin observed the behavior of a wild arachnid,07_arachnid,1,1
+the supervisor photographed what appeared to be a mammal,13_mammal,1,6
+Dr. Okafor confirmed the endangered status of the moss,00_moss,0,0
+Bob documented the habitat of the moss,00_moss,0,0
+Sarah documented the habitat of the arachnid,07_arachnid,1,1
+the intern trained for years on identifying a crustacean,08_crustacean,1,1
+Raj noted that the diet study examined a shrub,04_shrub,0,0
+The biome is dominated by the tree,05_tree,0,0
+Sarah photographed what appeared to be a arachnid,07_arachnid,1,1
+The museum exhibit featured a preserved arachnid,07_arachnid,1,1
+Yuki photographed what appeared to be a crustacean,08_crustacean,1,1
+The ecosystem depends heavily on the mammal,13_mammal,1,6
+The ecosystem depends heavily on the bird,12_bird,1,5
+Dr. Chen observed the behavior of a wild tree,05_tree,0,0
+Conservation efforts focused on preserving the insect,06_insect,1,1
+Dr. Okafor spent the summer studying a local insect,06_insect,1,1
+The genome was successfully sequenced from a arachnid,07_arachnid,1,1
+Dr. Chen documented the habitat of the amphibian,10_amphibian,1,3
+Fatima observed the behavior of a wild fish,09_fish,1,2
+Dr. Rossi confirmed the endangered status of the flower,03_flower,0,0
+Dr. Rossi spent the summer studying a local arachnid,07_arachnid,1,1
+The researcher identified the specimen as a arachnid,07_arachnid,1,1
+James cultured a colony derived from a moss,00_moss,0,0
+Omar noted that the diet study examined a grass,02_grass,0,0
+Fatima photographed what appeared to be a amphibian,10_amphibian,1,3
+The nature documentary featured the remarkable arachnid,07_arachnid,1,1
+Dr. Chen cultured a colony derived from a insect,06_insect,1,1
+The museum exhibit featured a preserved amphibian,10_amphibian,1,3
+the analyst trained for years on identifying a flower,03_flower,0,0
+the postdoc noted that the diet study examined a grass,02_grass,0,0
+the analyst documented the habitat of the fish,09_fish,1,2
+Dr. Patel photographed what appeared to be a flower,03_flower,0,0
+Environmental impact was assessed for the shrub,04_shrub,0,0
+Prof. Müller confirmed the endangered status of the bird,12_bird,1,5
+The researcher identified the specimen as a fish,09_fish,1,2
+Raj extracted RNA from the tissue of a moss,00_moss,0,0
+the postdoc extracted RNA from the tissue of a reptile,11_reptile,1,4
+Dr. Rossi cultured a colony derived from a shrub,04_shrub,0,0
+James trained for years on identifying a flower,03_flower,0,0
+Environmental impact was assessed for the insect,06_insect,1,1
+Dr. Smith tagged and released the captured grass,02_grass,0,0
+The biology textbook chapter covered the fish,09_fish,1,2
+the intern trained for years on identifying a amphibian,10_amphibian,1,3
+The museum exhibit featured a preserved tree,05_tree,0,0
+the PI spent the summer studying a local tree,05_tree,0,0
+Dr. Chen confirmed the endangered status of the insect,06_insect,1,1
+the coordinator confirmed the endangered status of the fern,01_fern,0,0
+the postdoc extracted RNA from the tissue of a tree,05_tree,0,0
+Dr. Smith noted that the diet study examined a arachnid,07_arachnid,1,1
+Prof. Müller observed the behavior of a wild fern,01_fern,0,0
+The ecology report focused on the local shrub,04_shrub,0,0
+Prof. Müller noted that the diet study examined a arachnid,07_arachnid,1,1
+the nurse observed the behavior of a wild shrub,04_shrub,0,0
+Charlie spent the summer studying a local amphibian,10_amphibian,1,3
+The biology textbook chapter covered the shrub,04_shrub,0,0
+the PI noted that the diet study examined a moss,00_moss,0,0
+the coordinator tagged and released the captured tree,05_tree,0,0
+Biochemists extracted compounds from the tree,05_tree,0,0
+the supervisor photographed what appeared to be a arachnid,07_arachnid,1,1
+Kevin observed the behavior of a wild amphibian,10_amphibian,1,3
+the coordinator observed the behavior of a wild fern,01_fern,0,0
+Alice confirmed the endangered status of the shrub,04_shrub,0,0
+Bob noted that the diet study examined a amphibian,10_amphibian,1,3
+Dr. Smith observed the behavior of a wild moss,00_moss,0,0
+Kevin documented the habitat of the moss,00_moss,0,0
+Samples were collected from a living fern,01_fern,0,0
+The genome was successfully sequenced from a crustacean,08_crustacean,1,1
+the postdoc observed the behavior of a wild arachnid,07_arachnid,1,1
+The nature documentary featured the remarkable grass,02_grass,0,0
+Prof. Wang tagged and released the captured fish,09_fish,1,2
+The biology textbook chapter covered the arachnid,07_arachnid,1,1
+Alice spent the summer studying a local amphibian,10_amphibian,1,3
+Yuki noted that the diet study examined a tree,05_tree,0,0
+The fossil record shows evidence of the ancient grass,02_grass,0,0
+The biodiversity index recorded the presence of a fern,01_fern,0,0
+The biome is dominated by the moss,00_moss,0,0
+The grant funded a three-year study of the fish,09_fish,1,2
+the supervisor documented the habitat of the reptile,11_reptile,1,4
+Charlie noted that the diet study examined a tree,05_tree,0,0
+Amara cultured a colony derived from a moss,00_moss,0,0
+The sanctuary was established to protect the arachnid,07_arachnid,1,1
+Dr. Okafor noted that the diet study examined a grass,02_grass,0,0
+the technician extracted RNA from the tissue of a tree,05_tree,0,0
+Dr. Okafor spent the summer studying a local moss,00_moss,0,0
+Raj documented the habitat of the mammal,13_mammal,1,6
+Prof. Kim photographed what appeared to be a moss,00_moss,0,0
+James cultured a colony derived from a tree,05_tree,0,0
+Charlie observed the behavior of a wild insect,06_insect,1,1
+Biochemists extracted compounds from the shrub,04_shrub,0,0
+Dr. Rossi cultured a colony derived from a fish,09_fish,1,2
+Yuki extracted RNA from the tissue of a mammal,13_mammal,1,6
+Sarah trained for years on identifying a crustacean,08_crustacean,1,1
+Yuki tagged and released the captured grass,02_grass,0,0
+The grant funded a three-year study of the arachnid,07_arachnid,1,1
+Elena cultured a colony derived from a amphibian,10_amphibian,1,3
+Kevin documented the habitat of the fish,09_fish,1,2
+the analyst tagged and released the captured fern,01_fern,0,0
+Sarah documented the habitat of the grass,02_grass,0,0
+Dr. Smith documented the habitat of the fern,01_fern,0,0
+Bob trained for years on identifying a crustacean,08_crustacean,1,1
+Omar cultured a colony derived from a flower,03_flower,0,0
+The sanctuary was established to protect the flower,03_flower,0,0
+Prof. Wang documented the habitat of the fern,01_fern,0,0
+the supervisor observed the behavior of a wild fern,01_fern,0,0
+Samples were collected from a living tree,05_tree,0,0
+Dr. Chen extracted RNA from the tissue of a arachnid,07_arachnid,1,1
+Biochemists extracted compounds from the grass,02_grass,0,0
+The ecology report focused on the local fern,01_fern,0,0
+Charlie documented the habitat of the grass,02_grass,0,0
+the analyst extracted RNA from the tissue of a moss,00_moss,0,0
+Elena noted that the diet study examined a moss,00_moss,0,0
+Sarah noted that the diet study examined a fish,09_fish,1,2
+Omar cultured a colony derived from a tree,05_tree,0,0
+The researcher identified the specimen as a insect,06_insect,1,1
+Yuki tagged and released the captured shrub,04_shrub,0,0
+Dr. Chen confirmed the endangered status of the grass,02_grass,0,0
+the intern observed the behavior of a wild tree,05_tree,0,0
+Yuki extracted RNA from the tissue of a fern,01_fern,0,0
+Prof. Kim confirmed the endangered status of the reptile,11_reptile,1,4
+the postdoc confirmed the endangered status of the amphibian,10_amphibian,1,3
+The ecology report focused on the local moss,00_moss,0,0
+The biodiversity index recorded the presence of a tree,05_tree,0,0
+Liam observed the behavior of a wild fish,09_fish,1,2
+the postdoc spent the summer studying a local tree,05_tree,0,0
+the nurse trained for years on identifying a shrub,04_shrub,0,0
+the intern spent the summer studying a local fern,01_fern,0,0
+The sanctuary was established to protect the insect,06_insect,1,1
+DNA sequencing confirmed the sample came from a bird,12_bird,1,5
+The sanctuary was established to protect the grass,02_grass,0,0
+The field guide confirmed the find was a moss,00_moss,0,0
+Amara extracted RNA from the tissue of a mammal,13_mammal,1,6
+The sanctuary was established to protect the moss,00_moss,0,0
+Yuki cultured a colony derived from a flower,03_flower,0,0
+Dr. Chen noted that the diet study examined a insect,06_insect,1,1
+James confirmed the endangered status of the flower,03_flower,0,0
+Raj tagged and released the captured arachnid,07_arachnid,1,1
+the intern documented the habitat of the tree,05_tree,0,0
+Environmental impact was assessed for the reptile,11_reptile,1,4
+Omar spent the summer studying a local fern,01_fern,0,0
+Dr. Rossi tagged and released the captured crustacean,08_crustacean,1,1
+DNA sequencing confirmed the sample came from a grass,02_grass,0,0
+Elena documented the habitat of the bird,12_bird,1,5
+Prof. Wang photographed what appeared to be a fern,01_fern,0,0
+the intern photographed what appeared to be a flower,03_flower,0,0
+Conservation efforts focused on preserving the grass,02_grass,0,0
+The biome is dominated by the reptile,11_reptile,1,4
+the postdoc tagged and released the captured insect,06_insect,1,1
+Amara cultured a colony derived from a insect,06_insect,1,1
+Prof. Kim cultured a colony derived from a reptile,11_reptile,1,4
+Conservation efforts focused on preserving the moss,00_moss,0,0
+Biochemists extracted compounds from the fern,01_fern,0,0
+Alice tagged and released the captured fish,09_fish,1,2
+the coordinator documented the habitat of the crustacean,08_crustacean,1,1
+Dr. Smith documented the habitat of the arachnid,07_arachnid,1,1
+Alice noted that the diet study examined a arachnid,07_arachnid,1,1
+Omar noted that the diet study examined a reptile,11_reptile,1,4
+The biome is dominated by the fern,01_fern,0,0
+Prof. Kim spent the summer studying a local fern,01_fern,0,0
+The biodiversity index recorded the presence of a amphibian,10_amphibian,1,3
+Kevin confirmed the endangered status of the fern,01_fern,0,0
+Elena noted that the diet study examined a mammal,13_mammal,1,6
+Prof. Kim confirmed the endangered status of the shrub,04_shrub,0,0
+Children in the class were asked to draw a fern,01_fern,0,0
+Bob spent the summer studying a local tree,05_tree,0,0
+Prof. Müller spent the summer studying a local mammal,13_mammal,1,6
+Prof. Müller trained for years on identifying a amphibian,10_amphibian,1,3
+The researcher identified the specimen as a tree,05_tree,0,0
+the supervisor extracted RNA from the tissue of a crustacean,08_crustacean,1,1
+the coordinator observed the behavior of a wild fish,09_fish,1,2
+The fossil record shows evidence of the ancient moss,00_moss,0,0
+Yuki confirmed the endangered status of the insect,06_insect,1,1
+the supervisor noted that the diet study examined a insect,06_insect,1,1
+The ecology report focused on the local tree,05_tree,0,0
+the nurse noted that the diet study examined a bird,12_bird,1,5
+Sarah confirmed the endangered status of the shrub,04_shrub,0,0
+Omar documented the habitat of the grass,02_grass,0,0
+Fatima noted that the diet study examined a shrub,04_shrub,0,0
+Charlie confirmed the endangered status of the fish,09_fish,1,2
+Fatima extracted RNA from the tissue of a grass,02_grass,0,0
+the postdoc extracted RNA from the tissue of a flower,03_flower,0,0
+Dr. Patel observed the behavior of a wild bird,12_bird,1,5
+Sarah documented the habitat of the bird,12_bird,1,5
+The biodiversity index recorded the presence of a grass,02_grass,0,0
+Maria extracted RNA from the tissue of a bird,12_bird,1,5
+Sarah extracted RNA from the tissue of a amphibian,10_amphibian,1,3
+Liam confirmed the endangered status of the amphibian,10_amphibian,1,3
+the nurse observed the behavior of a wild fern,01_fern,0,0
+Liam observed the behavior of a wild fern,01_fern,0,0
+The sanctuary was established to protect the mammal,13_mammal,1,6
+The field guide confirmed the find was a arachnid,07_arachnid,1,1
+The biodiversity index recorded the presence of a flower,03_flower,0,0
+The genome was successfully sequenced from a tree,05_tree,0,0
+The field guide confirmed the find was a fish,09_fish,1,2
+The biome is dominated by the grass,02_grass,0,0
+Kevin cultured a colony derived from a insect,06_insect,1,1
+The fossil record shows evidence of the ancient shrub,04_shrub,0,0
+Samples were collected from a living amphibian,10_amphibian,1,3
+The ecosystem depends heavily on the insect,06_insect,1,1
+Dr. Patel confirmed the endangered status of the amphibian,10_amphibian,1,3
+the intern trained for years on identifying a moss,00_moss,0,0
+Liam tagged and released the captured mammal,13_mammal,1,6
+The grant funded a three-year study of the flower,03_flower,0,0
+The grant funded a three-year study of the shrub,04_shrub,0,0
+Dr. Patel documented the habitat of the amphibian,10_amphibian,1,3
+The ecosystem depends heavily on the fern,01_fern,0,0
+The fossil record shows evidence of the ancient reptile,11_reptile,1,4
+Dr. Patel spent the summer studying a local arachnid,07_arachnid,1,1
+Dr. Patel trained for years on identifying a bird,12_bird,1,5
+Maria confirmed the endangered status of the mammal,13_mammal,1,6
+James documented the habitat of the reptile,11_reptile,1,4
+Charlie tagged and released the captured fern,01_fern,0,0
+Conservation efforts focused on preserving the mammal,13_mammal,1,6
+the intern cultured a colony derived from a shrub,04_shrub,0,0
+Bob trained for years on identifying a amphibian,10_amphibian,1,3
+Omar spent the summer studying a local tree,05_tree,0,0
+Dr. Patel photographed what appeared to be a moss,00_moss,0,0
+The genome was successfully sequenced from a fern,01_fern,0,0
+Sarah noted that the diet study examined a mammal,13_mammal,1,6
+The museum exhibit featured a preserved grass,02_grass,0,0
+The genome was successfully sequenced from a amphibian,10_amphibian,1,3
+Samples were collected from a living moss,00_moss,0,0
+the analyst trained for years on identifying a shrub,04_shrub,0,0
+Sarah tagged and released the captured flower,03_flower,0,0
+The ecology report focused on the local bird,12_bird,1,5
+Children in the class were asked to draw a reptile,11_reptile,1,4
+The biology textbook chapter covered the grass,02_grass,0,0
+the technician documented the habitat of the amphibian,10_amphibian,1,3
+Liam extracted RNA from the tissue of a bird,12_bird,1,5
+The museum exhibit featured a preserved crustacean,08_crustacean,1,1
+Prof. Wang documented the habitat of the moss,00_moss,0,0
+Yuki extracted RNA from the tissue of a grass,02_grass,0,0
+Omar extracted RNA from the tissue of a flower,03_flower,0,0
+The invasive species turned out to be a arachnid,07_arachnid,1,1
+Alice photographed what appeared to be a grass,02_grass,0,0
+Amara tagged and released the captured crustacean,08_crustacean,1,1
+Charlie documented the habitat of the amphibian,10_amphibian,1,3
+Alice extracted RNA from the tissue of a tree,05_tree,0,0
+Kevin cultured a colony derived from a reptile,11_reptile,1,4
+the PI trained for years on identifying a insect,06_insect,1,1
+Fatima tagged and released the captured grass,02_grass,0,0
+DNA sequencing confirmed the sample came from a amphibian,10_amphibian,1,3
+Maria photographed what appeared to be a amphibian,10_amphibian,1,3
+Environmental impact was assessed for the grass,02_grass,0,0
+James spent the summer studying a local shrub,04_shrub,0,0
+The fossil record shows evidence of the ancient tree,05_tree,0,0
+Charlie confirmed the endangered status of the amphibian,10_amphibian,1,3
+the coordinator documented the habitat of the reptile,11_reptile,1,4
+The biology textbook chapter covered the insect,06_insect,1,1
+The nature documentary featured the remarkable mammal,13_mammal,1,6
+Liam extracted RNA from the tissue of a amphibian,10_amphibian,1,3
+Amara confirmed the endangered status of the fish,09_fish,1,2
+Environmental impact was assessed for the flower,03_flower,0,0
+Yuki spent the summer studying a local mammal,13_mammal,1,6
+the technician trained for years on identifying a bird,12_bird,1,5
+Samples were collected from a living insect,06_insect,1,1
+The genome was successfully sequenced from a insect,06_insect,1,1
+James observed the behavior of a wild amphibian,10_amphibian,1,3
+Samples were collected from a living grass,02_grass,0,0
+Raj cultured a colony derived from a crustacean,08_crustacean,1,1
+the PI confirmed the endangered status of the insect,06_insect,1,1
+Kevin extracted RNA from the tissue of a moss,00_moss,0,0
+Prof. Kim tagged and released the captured shrub,04_shrub,0,0
+Conservation efforts focused on preserving the arachnid,07_arachnid,1,1
+Raj spent the summer studying a local moss,00_moss,0,0
+Dr. Rossi observed the behavior of a wild shrub,04_shrub,0,0
+Amara observed the behavior of a wild shrub,04_shrub,0,0
+James observed the behavior of a wild reptile,11_reptile,1,4
+Dr. Patel spent the summer studying a local moss,00_moss,0,0
+Dr. Rossi photographed what appeared to be a flower,03_flower,0,0
+The nature documentary featured the remarkable reptile,11_reptile,1,4
+James extracted RNA from the tissue of a moss,00_moss,0,0
+Conservation efforts focused on preserving the flower,03_flower,0,0
+the technician trained for years on identifying a flower,03_flower,0,0
+Dr. Okafor photographed what appeared to be a grass,02_grass,0,0
+the analyst observed the behavior of a wild mammal,13_mammal,1,6
+Omar tagged and released the captured grass,02_grass,0,0
+Environmental impact was assessed for the tree,05_tree,0,0
+The invasive species turned out to be a bird,12_bird,1,5
+Prof. Müller observed the behavior of a wild flower,03_flower,0,0
+Children in the class were asked to draw a amphibian,10_amphibian,1,3
+Raj tagged and released the captured insect,06_insect,1,1
+Prof. Wang spent the summer studying a local moss,00_moss,0,0
+Sarah observed the behavior of a wild bird,12_bird,1,5
+Elena observed the behavior of a wild arachnid,07_arachnid,1,1
+the supervisor observed the behavior of a wild flower,03_flower,0,0
+the intern observed the behavior of a wild fish,09_fish,1,2
+Dr. Patel extracted RNA from the tissue of a arachnid,07_arachnid,1,1
+Liam confirmed the endangered status of the reptile,11_reptile,1,4
+James extracted RNA from the tissue of a shrub,04_shrub,0,0
+the intern extracted RNA from the tissue of a grass,02_grass,0,0
+Dr. Chen confirmed the endangered status of the fern,01_fern,0,0
+Sarah trained for years on identifying a mammal,13_mammal,1,6
+The sanctuary was established to protect the fish,09_fish,1,2
+Prof. Kim extracted RNA from the tissue of a moss,00_moss,0,0
+Prof. Wang confirmed the endangered status of the insect,06_insect,1,1
+Alice cultured a colony derived from a crustacean,08_crustacean,1,1
+Prof. Wang observed the behavior of a wild shrub,04_shrub,0,0
+Yuki cultured a colony derived from a fish,09_fish,1,2
+Children in the class were asked to draw a moss,00_moss,0,0
+The grant funded a three-year study of the mammal,13_mammal,1,6
+Fatima noted that the diet study examined a moss,00_moss,0,0
+Raj documented the habitat of the bird,12_bird,1,5
+Omar tagged and released the captured flower,03_flower,0,0
+Liam trained for years on identifying a insect,06_insect,1,1
+the intern noted that the diet study examined a grass,02_grass,0,0
+the technician documented the habitat of the moss,00_moss,0,0
+Raj documented the habitat of the shrub,04_shrub,0,0
+Dr. Patel tagged and released the captured moss,00_moss,0,0
+the intern observed the behavior of a wild moss,00_moss,0,0
+The invasive species turned out to be a tree,05_tree,0,0
+Elena documented the habitat of the flower,03_flower,0,0
+Prof. Müller confirmed the endangered status of the moss,00_moss,0,0
+The ecosystem depends heavily on the grass,02_grass,0,0
+Prof. Kim tagged and released the captured fern,01_fern,0,0
+Dr. Patel observed the behavior of a wild arachnid,07_arachnid,1,1
+the PI cultured a colony derived from a fern,01_fern,0,0
+the postdoc tagged and released the captured shrub,04_shrub,0,0
+Yuki observed the behavior of a wild grass,02_grass,0,0
+The biome is dominated by the flower,03_flower,0,0
+Raj spent the summer studying a local insect,06_insect,1,1
+Charlie extracted RNA from the tissue of a tree,05_tree,0,0
+James photographed what appeared to be a crustacean,08_crustacean,1,1
+The researcher identified the specimen as a reptile,11_reptile,1,4
+the PI documented the habitat of the reptile,11_reptile,1,4
+Dr. Okafor observed the behavior of a wild crustacean,08_crustacean,1,1
+Kevin spent the summer studying a local amphibian,10_amphibian,1,3
+Liam cultured a colony derived from a flower,03_flower,0,0
+Amara photographed what appeared to be a crustacean,08_crustacean,1,1
+Yuki observed the behavior of a wild crustacean,08_crustacean,1,1
+Prof. Kim spent the summer studying a local insect,06_insect,1,1
+Dr. Chen noted that the diet study examined a fish,09_fish,1,2
+Samples were collected from a living bird,12_bird,1,5
+The museum exhibit featured a preserved flower,03_flower,0,0
+the technician tagged and released the captured bird,12_bird,1,5
+Children in the class were asked to draw a fish,09_fish,1,2
+Dr. Rossi cultured a colony derived from a flower,03_flower,0,0
+The ecology report focused on the local reptile,11_reptile,1,4
+Dr. Okafor noted that the diet study examined a shrub,04_shrub,0,0
+the PI tagged and released the captured flower,03_flower,0,0
+the supervisor photographed what appeared to be a bird,12_bird,1,5
+the nurse extracted RNA from the tissue of a amphibian,10_amphibian,1,3
+Dr. Chen trained for years on identifying a fern,01_fern,0,0
+Charlie documented the habitat of the fern,01_fern,0,0
+Alice extracted RNA from the tissue of a grass,02_grass,0,0
+The ecology report focused on the local fish,09_fish,1,2
+Maria tagged and released the captured reptile,11_reptile,1,4
+Dr. Patel extracted RNA from the tissue of a fern,01_fern,0,0
+Liam noted that the diet study examined a bird,12_bird,1,5
+Maria cultured a colony derived from a fern,01_fern,0,0
+the nurse extracted RNA from the tissue of a insect,06_insect,1,1
+the supervisor confirmed the endangered status of the fish,09_fish,1,2
+Fatima extracted RNA from the tissue of a shrub,04_shrub,0,0
+Dr. Chen observed the behavior of a wild fish,09_fish,1,2
+Charlie extracted RNA from the tissue of a crustacean,08_crustacean,1,1
+the supervisor extracted RNA from the tissue of a fern,01_fern,0,0
+Yuki tagged and released the captured reptile,11_reptile,1,4
+James confirmed the endangered status of the arachnid,07_arachnid,1,1
+Kevin trained for years on identifying a arachnid,07_arachnid,1,1
+Raj tagged and released the captured bird,12_bird,1,5
+The biodiversity index recorded the presence of a crustacean,08_crustacean,1,1
+Dr. Chen tagged and released the captured tree,05_tree,0,0
+the analyst confirmed the endangered status of the tree,05_tree,0,0
+the intern extracted RNA from the tissue of a insect,06_insect,1,1
+Elena observed the behavior of a wild mammal,13_mammal,1,6
+Kevin cultured a colony derived from a mammal,13_mammal,1,6
+Prof. Wang cultured a colony derived from a amphibian,10_amphibian,1,3
+Bob tagged and released the captured fish,09_fish,1,2
+Liam confirmed the endangered status of the tree,05_tree,0,0
+Prof. Wang trained for years on identifying a reptile,11_reptile,1,4
+Kevin tagged and released the captured arachnid,07_arachnid,1,1
+Dr. Okafor tagged and released the captured shrub,04_shrub,0,0
+Maria tagged and released the captured amphibian,10_amphibian,1,3
+Dr. Chen documented the habitat of the flower,03_flower,0,0
+Liam tagged and released the captured reptile,11_reptile,1,4
+Dr. Smith cultured a colony derived from a fish,09_fish,1,2
+The ecosystem depends heavily on the shrub,04_shrub,0,0
+The invasive species turned out to be a fish,09_fish,1,2
+the coordinator extracted RNA from the tissue of a insect,06_insect,1,1
+Alice cultured a colony derived from a tree,05_tree,0,0
+the coordinator tagged and released the captured shrub,04_shrub,0,0
+Prof. Wang photographed what appeared to be a crustacean,08_crustacean,1,1
+The genome was successfully sequenced from a mammal,13_mammal,1,6
+the supervisor observed the behavior of a wild crustacean,08_crustacean,1,1
+Omar observed the behavior of a wild moss,00_moss,0,0
+the nurse confirmed the endangered status of the shrub,04_shrub,0,0
+Kevin confirmed the endangered status of the flower,03_flower,0,0
+Liam cultured a colony derived from a crustacean,08_crustacean,1,1
+Yuki spent the summer studying a local fish,09_fish,1,2
+Kevin confirmed the endangered status of the reptile,11_reptile,1,4
+the technician cultured a colony derived from a grass,02_grass,0,0
+Prof. Kim trained for years on identifying a fern,01_fern,0,0
+Liam cultured a colony derived from a shrub,04_shrub,0,0
+Raj trained for years on identifying a fish,09_fish,1,2
+Dr. Patel cultured a colony derived from a moss,00_moss,0,0
+Yuki tagged and released the captured insect,06_insect,1,1
+Liam confirmed the endangered status of the arachnid,07_arachnid,1,1
+The museum exhibit featured a preserved fern,01_fern,0,0
+Maria tagged and released the captured insect,06_insect,1,1
+Dr. Patel confirmed the endangered status of the flower,03_flower,0,0
+Prof. Wang spent the summer studying a local crustacean,08_crustacean,1,1
+Dr. Rossi noted that the diet study examined a crustacean,08_crustacean,1,1
+the intern spent the summer studying a local amphibian,10_amphibian,1,3
+Dr. Smith trained for years on identifying a mammal,13_mammal,1,6
+Dr. Patel cultured a colony derived from a amphibian,10_amphibian,1,3
+Raj documented the habitat of the crustacean,08_crustacean,1,1
+Fatima confirmed the endangered status of the shrub,04_shrub,0,0
+Bob spent the summer studying a local fern,01_fern,0,0
+The ecosystem depends heavily on the reptile,11_reptile,1,4
+Environmental impact was assessed for the crustacean,08_crustacean,1,1
+Dr. Patel observed the behavior of a wild tree,05_tree,0,0
+Biochemists extracted compounds from the moss,00_moss,0,0
+Prof. Müller noted that the diet study examined a shrub,04_shrub,0,0
+the analyst documented the habitat of the crustacean,08_crustacean,1,1
+the supervisor extracted RNA from the tissue of a reptile,11_reptile,1,4
+The genome was successfully sequenced from a fish,09_fish,1,2
+Kevin trained for years on identifying a insect,06_insect,1,1
+Prof. Wang documented the habitat of the tree,05_tree,0,0
+Biochemists extracted compounds from the flower,03_flower,0,0
+the PI tagged and released the captured insect,06_insect,1,1
+the nurse cultured a colony derived from a grass,02_grass,0,0
+The field guide confirmed the find was a grass,02_grass,0,0
+Biochemists extracted compounds from the insect,06_insect,1,1
+Elena trained for years on identifying a grass,02_grass,0,0
+The sanctuary was established to protect the reptile,11_reptile,1,4
+The grant funded a three-year study of the insect,06_insect,1,1
+Dr. Rossi documented the habitat of the amphibian,10_amphibian,1,3
+Sarah cultured a colony derived from a fish,09_fish,1,2
+the supervisor confirmed the endangered status of the tree,05_tree,0,0
+the supervisor spent the summer studying a local mammal,13_mammal,1,6
+DNA sequencing confirmed the sample came from a fish,09_fish,1,2
+the technician trained for years on identifying a fern,01_fern,0,0
+Prof. Kim extracted RNA from the tissue of a reptile,11_reptile,1,4
+Prof. Müller observed the behavior of a wild arachnid,07_arachnid,1,1
+Children in the class were asked to draw a shrub,04_shrub,0,0
+the coordinator noted that the diet study examined a reptile,11_reptile,1,4
+The field guide confirmed the find was a shrub,04_shrub,0,0
+the coordinator cultured a colony derived from a bird,12_bird,1,5
+The genome was successfully sequenced from a moss,00_moss,0,0
+Kevin tagged and released the captured amphibian,10_amphibian,1,3
+Liam extracted RNA from the tissue of a fern,01_fern,0,0
+The biome is dominated by the arachnid,07_arachnid,1,1
+Prof. Wang confirmed the endangered status of the fish,09_fish,1,2
+Kevin cultured a colony derived from a moss,00_moss,0,0
+Raj cultured a colony derived from a mammal,13_mammal,1,6
+The field guide confirmed the find was a crustacean,08_crustacean,1,1
+Dr. Patel cultured a colony derived from a insect,06_insect,1,1
+the postdoc extracted RNA from the tissue of a grass,02_grass,0,0
+the technician documented the habitat of the mammal,13_mammal,1,6
+Dr. Rossi tagged and released the captured amphibian,10_amphibian,1,3
+DNA sequencing confirmed the sample came from a tree,05_tree,0,0
+Omar noted that the diet study examined a arachnid,07_arachnid,1,1
+Amara tagged and released the captured reptile,11_reptile,1,4
+Dr. Okafor trained for years on identifying a insect,06_insect,1,1
+Omar trained for years on identifying a flower,03_flower,0,0
+the postdoc tagged and released the captured fern,01_fern,0,0
+DNA sequencing confirmed the sample came from a arachnid,07_arachnid,1,1
+the intern photographed what appeared to be a tree,05_tree,0,0
+Prof. Wang confirmed the endangered status of the crustacean,08_crustacean,1,1
+Prof. Wang photographed what appeared to be a flower,03_flower,0,0
+Elena photographed what appeared to be a tree,05_tree,0,0
+the coordinator confirmed the endangered status of the arachnid,07_arachnid,1,1
+the intern cultured a colony derived from a crustacean,08_crustacean,1,1
+The ecosystem depends heavily on the tree,05_tree,0,0
+the nurse observed the behavior of a wild reptile,11_reptile,1,4
+Charlie tagged and released the captured insect,06_insect,1,1
+Sarah observed the behavior of a wild reptile,11_reptile,1,4
+Dr. Patel confirmed the endangered status of the moss,00_moss,0,0
+Omar documented the habitat of the crustacean,08_crustacean,1,1
+Maria spent the summer studying a local grass,02_grass,0,0
+Alice cultured a colony derived from a shrub,04_shrub,0,0
+Conservation efforts focused on preserving the tree,05_tree,0,0
+the analyst cultured a colony derived from a bird,12_bird,1,5
+the PI extracted RNA from the tissue of a crustacean,08_crustacean,1,1
+Fatima trained for years on identifying a shrub,04_shrub,0,0
+The biodiversity index recorded the presence of a arachnid,07_arachnid,1,1
+Children in the class were asked to draw a mammal,13_mammal,1,6
+the PI noted that the diet study examined a bird,12_bird,1,5
+the analyst photographed what appeared to be a bird,12_bird,1,5
+Fatima photographed what appeared to be a shrub,04_shrub,0,0
+The researcher identified the specimen as a grass,02_grass,0,0
+Charlie trained for years on identifying a fern,01_fern,0,0
+Dr. Smith spent the summer studying a local moss,00_moss,0,0
+the postdoc spent the summer studying a local fish,09_fish,1,2
+the coordinator spent the summer studying a local mammal,13_mammal,1,6
+DNA sequencing confirmed the sample came from a fern,01_fern,0,0
+Alice noted that the diet study examined a fish,09_fish,1,2
+Raj photographed what appeared to be a insect,06_insect,1,1
+Fatima extracted RNA from the tissue of a fish,09_fish,1,2
+Dr. Okafor confirmed the endangered status of the reptile,11_reptile,1,4
+Raj observed the behavior of a wild arachnid,07_arachnid,1,1
+Bob extracted RNA from the tissue of a arachnid,07_arachnid,1,1
+Dr. Patel photographed what appeared to be a tree,05_tree,0,0
+Environmental impact was assessed for the fern,01_fern,0,0
+the postdoc noted that the diet study examined a crustacean,08_crustacean,1,1
+Prof. Wang confirmed the endangered status of the grass,02_grass,0,0
+Dr. Smith trained for years on identifying a fish,09_fish,1,2
+Prof. Müller tagged and released the captured bird,12_bird,1,5
+Raj cultured a colony derived from a bird,12_bird,1,5
+the postdoc confirmed the endangered status of the tree,05_tree,0,0
+James trained for years on identifying a arachnid,07_arachnid,1,1
+Charlie observed the behavior of a wild mammal,13_mammal,1,6
+Prof. Müller spent the summer studying a local bird,12_bird,1,5
+the postdoc cultured a colony derived from a grass,02_grass,0,0
+the nurse confirmed the endangered status of the fern,01_fern,0,0
+the analyst spent the summer studying a local amphibian,10_amphibian,1,3
+Omar observed the behavior of a wild insect,06_insect,1,1
+the intern trained for years on identifying a arachnid,07_arachnid,1,1
+James cultured a colony derived from a amphibian,10_amphibian,1,3
+Elena documented the habitat of the mammal,13_mammal,1,6
+DNA sequencing confirmed the sample came from a insect,06_insect,1,1
+the PI documented the habitat of the amphibian,10_amphibian,1,3
+the supervisor noted that the diet study examined a mammal,13_mammal,1,6
+Bob documented the habitat of the fern,01_fern,0,0
+Elena observed the behavior of a wild insect,06_insect,1,1
+The grant funded a three-year study of the moss,00_moss,0,0
+Kevin spent the summer studying a local moss,00_moss,0,0
+Liam spent the summer studying a local mammal,13_mammal,1,6
+Omar noted that the diet study examined a moss,00_moss,0,0
+The biodiversity index recorded the presence of a fish,09_fish,1,2
+Dr. Smith tagged and released the captured crustacean,08_crustacean,1,1
+The ecosystem depends heavily on the flower,03_flower,0,0
+James documented the habitat of the insect,06_insect,1,1
+Dr. Rossi photographed what appeared to be a crustacean,08_crustacean,1,1
+Fatima photographed what appeared to be a fern,01_fern,0,0
+the technician documented the habitat of the crustacean,08_crustacean,1,1
+the supervisor cultured a colony derived from a arachnid,07_arachnid,1,1
+Sarah documented the habitat of the reptile,11_reptile,1,4
+the postdoc documented the habitat of the fish,09_fish,1,2
+Dr. Rossi photographed what appeared to be a shrub,04_shrub,0,0
+Kevin spent the summer studying a local insect,06_insect,1,1
+Maria noted that the diet study examined a fern,01_fern,0,0
+Dr. Rossi observed the behavior of a wild flower,03_flower,0,0
+the postdoc spent the summer studying a local crustacean,08_crustacean,1,1
+Charlie photographed what appeared to be a fern,01_fern,0,0
+the postdoc photographed what appeared to be a tree,05_tree,0,0
+The ecosystem depends heavily on the crustacean,08_crustacean,1,1
+the intern cultured a colony derived from a flower,03_flower,0,0
+the technician noted that the diet study examined a moss,00_moss,0,0
+Dr. Okafor spent the summer studying a local fern,01_fern,0,0
+Samples were collected from a living fish,09_fish,1,2
+Sarah observed the behavior of a wild fish,09_fish,1,2
+The nature documentary featured the remarkable fern,01_fern,0,0
+The museum exhibit featured a preserved shrub,04_shrub,0,0
+Dr. Okafor trained for years on identifying a tree,05_tree,0,0
+Prof. Kim documented the habitat of the tree,05_tree,0,0
+The field guide confirmed the find was a flower,03_flower,0,0
+Prof. Müller photographed what appeared to be a tree,05_tree,0,0
+The nature documentary featured the remarkable tree,05_tree,0,0
+The researcher identified the specimen as a shrub,04_shrub,0,0
+Dr. Chen confirmed the endangered status of the bird,12_bird,1,5
+The fossil record shows evidence of the ancient amphibian,10_amphibian,1,3
+Raj documented the habitat of the reptile,11_reptile,1,4
+The biome is dominated by the fish,09_fish,1,2
+The biodiversity index recorded the presence of a reptile,11_reptile,1,4
+the PI tagged and released the captured bird,12_bird,1,5
+Raj photographed what appeared to be a flower,03_flower,0,0
+the nurse documented the habitat of the fern,01_fern,0,0
+Dr. Rossi spent the summer studying a local insect,06_insect,1,1
+Children in the class were asked to draw a tree,05_tree,0,0
+Prof. Kim tagged and released the captured insect,06_insect,1,1
+The researcher identified the specimen as a amphibian,10_amphibian,1,3
+the technician tagged and released the captured tree,05_tree,0,0
+The nature documentary featured the remarkable crustacean,08_crustacean,1,1
+The ecology report focused on the local flower,03_flower,0,0
+Conservation efforts focused on preserving the fern,01_fern,0,0
+Maria observed the behavior of a wild crustacean,08_crustacean,1,1
+The invasive species turned out to be a crustacean,08_crustacean,1,1
+Dr. Patel spent the summer studying a local fish,09_fish,1,2
+the supervisor trained for years on identifying a fish,09_fish,1,2
+Prof. Müller documented the habitat of the fish,09_fish,1,2
+The museum exhibit featured a preserved mammal,13_mammal,1,6
+Dr. Smith noted that the diet study examined a grass,02_grass,0,0
+Prof. Wang extracted RNA from the tissue of a insect,06_insect,1,1
+Maria photographed what appeared to be a fish,09_fish,1,2
+Alice trained for years on identifying a fern,01_fern,0,0
+Omar tagged and released the captured arachnid,07_arachnid,1,1
+The grant funded a three-year study of the fern,01_fern,0,0
+Conservation efforts focused on preserving the shrub,04_shrub,0,0
+the analyst photographed what appeared to be a arachnid,07_arachnid,1,1
+Bob observed the behavior of a wild fern,01_fern,0,0
+Raj photographed what appeared to be a crustacean,08_crustacean,1,1
+Dr. Okafor documented the habitat of the tree,05_tree,0,0
+The invasive species turned out to be a shrub,04_shrub,0,0
+Dr. Patel trained for years on identifying a crustacean,08_crustacean,1,1
+The ecology report focused on the local mammal,13_mammal,1,6
+Amara spent the summer studying a local fish,09_fish,1,2
+the analyst spent the summer studying a local reptile,11_reptile,1,4
+Sarah confirmed the endangered status of the fish,09_fish,1,2
+Dr. Chen photographed what appeared to be a crustacean,08_crustacean,1,1
+Raj photographed what appeared to be a tree,05_tree,0,0
+the nurse extracted RNA from the tissue of a mammal,13_mammal,1,6
+Children in the class were asked to draw a arachnid,07_arachnid,1,1
+Omar extracted RNA from the tissue of a arachnid,07_arachnid,1,1
+Sarah confirmed the endangered status of the reptile,11_reptile,1,4
+The invasive species turned out to be a flower,03_flower,0,0
+The sanctuary was established to protect the fern,01_fern,0,0
+Dr. Patel spent the summer studying a local insect,06_insect,1,1
+Liam trained for years on identifying a amphibian,10_amphibian,1,3
+Dr. Chen documented the habitat of the insect,06_insect,1,1
+The museum exhibit featured a preserved bird,12_bird,1,5
+Alice cultured a colony derived from a mammal,13_mammal,1,6
+The nature documentary featured the remarkable bird,12_bird,1,5
+Dr. Patel observed the behavior of a wild amphibian,10_amphibian,1,3
+Dr. Rossi spent the summer studying a local crustacean,08_crustacean,1,1
+The sanctuary was established to protect the bird,12_bird,1,5
+Biochemists extracted compounds from the crustacean,08_crustacean,1,1
+Sarah noted that the diet study examined a amphibian,10_amphibian,1,3
+Yuki trained for years on identifying a insect,06_insect,1,1
+Conservation efforts focused on preserving the fish,09_fish,1,2
+The museum exhibit featured a preserved moss,00_moss,0,0
+the nurse spent the summer studying a local insect,06_insect,1,1
+the intern extracted RNA from the tissue of a flower,03_flower,0,0
+Prof. Wang cultured a colony derived from a grass,02_grass,0,0
+Raj extracted RNA from the tissue of a reptile,11_reptile,1,4
+the intern tagged and released the captured bird,12_bird,1,5
+Bob documented the habitat of the grass,02_grass,0,0
+The ecology report focused on the local grass,02_grass,0,0
+Amara confirmed the endangered status of the shrub,04_shrub,0,0
+The nature documentary featured the remarkable amphibian,10_amphibian,1,3
+Prof. Kim trained for years on identifying a crustacean,08_crustacean,1,1
+The biology textbook chapter covered the crustacean,08_crustacean,1,1
+Children in the class were asked to draw a bird,12_bird,1,5
+Amara observed the behavior of a wild reptile,11_reptile,1,4
+Charlie trained for years on identifying a tree,05_tree,0,0
+The museum exhibit featured a preserved fish,09_fish,1,2
+the PI trained for years on identifying a fern,01_fern,0,0
+the postdoc observed the behavior of a wild tree,05_tree,0,0
+the supervisor spent the summer studying a local insect,06_insect,1,1
+Bob photographed what appeared to be a fish,09_fish,1,2
+Dr. Chen noted that the diet study examined a grass,02_grass,0,0
+Alice observed the behavior of a wild tree,05_tree,0,0
+Dr. Rossi cultured a colony derived from a mammal,13_mammal,1,6
+The sanctuary was established to protect the crustacean,08_crustacean,1,1
+Maria spent the summer studying a local fish,09_fish,1,2
+the coordinator tagged and released the captured crustacean,08_crustacean,1,1
+The field guide confirmed the find was a tree,05_tree,0,0
+the PI photographed what appeared to be a shrub,04_shrub,0,0
+Dr. Chen spent the summer studying a local arachnid,07_arachnid,1,1
+Maria trained for years on identifying a reptile,11_reptile,1,4
+Dr. Patel photographed what appeared to be a mammal,13_mammal,1,6
+The invasive species turned out to be a reptile,11_reptile,1,4
+Amara observed the behavior of a wild crustacean,08_crustacean,1,1
+Amara trained for years on identifying a grass,02_grass,0,0
+Biochemists extracted compounds from the reptile,11_reptile,1,4
+Dr. Smith tagged and released the captured fern,01_fern,0,0
+Bob observed the behavior of a wild fish,09_fish,1,2
+Sarah extracted RNA from the tissue of a reptile,11_reptile,1,4
+The nature documentary featured the remarkable insect,06_insect,1,1
+the intern documented the habitat of the amphibian,10_amphibian,1,3
+Bob cultured a colony derived from a shrub,04_shrub,0,0
+Amara documented the habitat of the mammal,13_mammal,1,6
+Dr. Patel spent the summer studying a local grass,02_grass,0,0
+Kevin noted that the diet study examined a fish,09_fish,1,2
+Dr. Okafor photographed what appeared to be a bird,12_bird,1,5
+the supervisor noted that the diet study examined a shrub,04_shrub,0,0
+the intern extracted RNA from the tissue of a shrub,04_shrub,0,0
+Prof. Müller spent the summer studying a local insect,06_insect,1,1
+Prof. Wang spent the summer studying a local fern,01_fern,0,0
+the intern observed the behavior of a wild shrub,04_shrub,0,0
+Dr. Rossi trained for years on identifying a flower,03_flower,0,0
+The nature documentary featured the remarkable moss,00_moss,0,0
+Dr. Okafor trained for years on identifying a fern,01_fern,0,0
+The researcher identified the specimen as a crustacean,08_crustacean,1,1
+the technician confirmed the endangered status of the arachnid,07_arachnid,1,1
+James tagged and released the captured tree,05_tree,0,0
+Charlie noted that the diet study examined a grass,02_grass,0,0
+Liam photographed what appeared to be a grass,02_grass,0,0
+Dr. Smith cultured a colony derived from a insect,06_insect,1,1
+Samples were collected from a living mammal,13_mammal,1,6
+The biology textbook chapter covered the reptile,11_reptile,1,4
+The biodiversity index recorded the presence of a mammal,13_mammal,1,6
+Prof. Kim cultured a colony derived from a moss,00_moss,0,0
+Bob extracted RNA from the tissue of a flower,03_flower,0,0
+The biology textbook chapter covered the mammal,13_mammal,1,6
+James documented the habitat of the crustacean,08_crustacean,1,1
+The grant funded a three-year study of the crustacean,08_crustacean,1,1
+Conservation efforts focused on preserving the crustacean,08_crustacean,1,1
+Dr. Rossi cultured a colony derived from a tree,05_tree,0,0
+The grant funded a three-year study of the reptile,11_reptile,1,4
+The ecosystem depends heavily on the amphibian,10_amphibian,1,3
+Amara confirmed the endangered status of the bird,12_bird,1,5
+Dr. Chen cultured a colony derived from a shrub,04_shrub,0,0
+the intern documented the habitat of the insect,06_insect,1,1
+The museum exhibit featured a preserved insect,06_insect,1,1
+The researcher identified the specimen as a moss,00_moss,0,0
+Dr. Chen tagged and released the captured grass,02_grass,0,0
+the technician observed the behavior of a wild amphibian,10_amphibian,1,3
+Sarah spent the summer studying a local moss,00_moss,0,0
+Elena spent the summer studying a local grass,02_grass,0,0
+Sarah documented the habitat of the flower,03_flower,0,0
+Dr. Smith photographed what appeared to be a moss,00_moss,0,0
+Raj trained for years on identifying a tree,05_tree,0,0
+Sarah documented the habitat of the crustacean,08_crustacean,1,1
+Dr. Patel tagged and released the captured shrub,04_shrub,0,0
+Kevin confirmed the endangered status of the insect,06_insect,1,1
+the PI documented the habitat of the shrub,04_shrub,0,0

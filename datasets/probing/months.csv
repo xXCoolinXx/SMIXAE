@@ -1,1001 +1,1001 @@
 Sentence,Label,target_month,target_sin_12m,target_cos_12m,target_season
-The reagent stock is replenished every May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the intern confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Sample collection was completed in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Elena noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Alice presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Liam confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the nurse returned from fieldwork in January,00_January,0,0.0,1.0,0
-Elena confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Müller returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The lab renovation is planned for October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Smith will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Maria noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The pilot study wrapped up in April,03_April,3,1.0,6.123233995736766e-17,1
-Amara returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Liam presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The onboarding of new staff happens every May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The fellowship applications are due in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Amara will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Amara noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the intern confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the analyst plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Liam plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The breeding season peaks in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Raj noted the equipment arrived in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the postdoc confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Patel finalized the analysis in January,00_January,0,0.0,1.0,0
-Dr. Okafor returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Prof. Müller recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The reagent stock is replenished every March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Charlie will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Bob returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The conference is scheduled for October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Müller will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the analyst will submit the annual report in January,00_January,0,0.0,1.0,0
-Dr. Smith plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-the nurse will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Okafor noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The lab renovation is planned for December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The pilot study wrapped up in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Prof. Wang noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the coordinator will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
-Alice recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Amara recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the coordinator recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the coordinator finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-Maria presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The lab will be closed for two weeks in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the PI noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the technician returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Raj plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Field data collection begins in April,03_April,3,1.0,6.123233995736766e-17,1
-The grant deadline falls in July,06_July,6,1.2246467991473532e-16,-1.0,2
-James noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-Kevin finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Chen noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The funding cycle resets each April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Okafor confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-Dr. Patel recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Fatima finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The cohort study enrollment opens in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the supervisor confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Amara plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The protocol amendment was approved in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Maria returned from fieldwork in January,00_January,0,0.0,1.0,0
-Kevin will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Charlie noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Omar will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the intern recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Bob plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the PI noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Fatima noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Charlie returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Fatima recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The pilot study wrapped up in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The lab renovation is planned for April,03_April,3,1.0,6.123233995736766e-17,1
-The review board meets annually in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the postdoc confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Raj presented the interim findings in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the technician returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Amara confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Okafor plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The lab will be closed for two weeks in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Charlie recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The conference is scheduled for September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the analyst finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the nurse returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Yuki will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Charlie finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The seasonal survey is conducted each October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Smith finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the technician presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The lab will be closed for two weeks in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Liam confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Okafor presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Rossi returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Kim presented the interim findings in January,00_January,0,0.0,1.0,0
-Dr. Chen noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Fatima finalized the analysis in January,00_January,0,0.0,1.0,0
-Yuki noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The grant deadline falls in April,03_April,3,1.0,6.123233995736766e-17,1
-the intern presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the nurse finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Fatima noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the analyst confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-James returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Okafor will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Müller plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Yuki confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-The funding cycle resets each October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the postdoc finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Rossi finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-James returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Dr. Chen noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Dr. Rossi plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Smith confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Maria returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
-the technician finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Bob will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-James recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Animal migration peaks in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Alice plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The seasonal survey is conducted each August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the technician plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Rossi will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The pilot study wrapped up in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The breeding season peaks in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The pilot study wrapped up in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Alice recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Bob will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The conference is scheduled for May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Okafor recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Elena will submit the annual report in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the supervisor noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The funding cycle resets each May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Alice presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The symposium takes place every October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Amara will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the postdoc noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The protocol amendment was approved in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-James presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Kim will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The fellowship applications are due in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Charlie confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Fatima recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Rossi presented the interim findings in January,00_January,0,0.0,1.0,0
-Animal migration peaks in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The symposium takes place every May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Kevin noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Okafor returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Prof. Wang will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Smith finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The protocol amendment was approved in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the coordinator returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The breeding season peaks in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Rossi noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
-the nurse plans to defend the thesis in January,00_January,0,0.0,1.0,0
-The accreditation review is scheduled for April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Rossi plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The journal submission window opens in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Elena noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-the nurse plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Maria presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Patel noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
-Omar returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The cohort study enrollment opens in January,00_January,0,0.0,1.0,0
-Fatima will submit the annual report in January,00_January,0,0.0,1.0,0
-the analyst confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Smith noted the equipment arrived in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Raj noted the equipment arrived in April,03_April,3,1.0,6.123233995736766e-17,1
-the PI returned from fieldwork in January,00_January,0,0.0,1.0,0
-Alice returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Bob presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
-Bob noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Prof. Kim noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Alice noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Alice noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Sample collection was completed in April,03_April,3,1.0,6.123233995736766e-17,1
-Charlie recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the intern returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Elena returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Müller recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the coordinator noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The review board meets annually in January,00_January,0,0.0,1.0,0
-The pilot study wrapped up in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Rossi returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Prof. Wang plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Patel returned from fieldwork in January,00_January,0,0.0,1.0,0
-The lab renovation is planned for May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The review board meets annually in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the PI will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the technician recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Patel plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Animal migration peaks in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Smith presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Omar noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Elena returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Okafor recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the intern confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
 Omar finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The cohort study enrollment opens in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Bob recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The review board meets annually in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Omar noted the equipment arrived in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Yuki presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the technician presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Fatima noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The grant deadline falls in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Prof. Wang noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the postdoc will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Kim noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the coordinator noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Chen recorded the highest yield in January,00_January,0,0.0,1.0,0
-The protocol amendment was approved in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Kim recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
-The protocol amendment was approved in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The journal submission window opens in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The seasonal survey is conducted each June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Animal migration peaks in April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Chen will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Fatima noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Alice will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the supervisor recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Kim recorded the highest yield in January,00_January,0,0.0,1.0,0
-Maria finalized the analysis in January,00_January,0,0.0,1.0,0
-Maria presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The breeding season peaks in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Animal migration peaks in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the analyst noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Wang will submit the annual report in January,00_January,0,0.0,1.0,0
-the intern will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the analyst confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the intern finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-The pilot study wrapped up in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Bob noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Elena noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Animal migration peaks in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Prof. Müller presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Dr. Okafor plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Dr. Chen plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The journal submission window opens in April,03_April,3,1.0,6.123233995736766e-17,1
-Omar confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-The breeding season peaks in January,00_January,0,0.0,1.0,0
-the intern noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The protocol amendment was approved in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Charlie finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the PI returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Smith returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The review board meets annually in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The seasonal survey is conducted each July,06_July,6,1.2246467991473532e-16,-1.0,2
-Sample collection was completed in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the nurse presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Rossi noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Amara will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the supervisor finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Liam finalized the analysis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Field data collection begins in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Prof. Wang presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Field data collection begins in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The lab will be closed for two weeks in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the PI will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Fatima recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
-The funding cycle resets each September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Rossi finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Alice presented the interim findings in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Liam noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
-Dr. Rossi recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
-James finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Kevin will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Maria recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Field data collection begins in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The grant deadline falls in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Wang finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Chen recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-James noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Fatima recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Elena recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Smith presented the interim findings in January,00_January,0,0.0,1.0,0
-Elena will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The seasonal survey is conducted each November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the analyst recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Yuki presented the interim findings in January,00_January,0,0.0,1.0,0
-Dr. Patel finalized the analysis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Bob recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Omar presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
-The conference is scheduled for March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The accreditation review is scheduled for May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Rossi noted the equipment arrived in April,03_April,3,1.0,6.123233995736766e-17,1
-the analyst returned from fieldwork in January,00_January,0,0.0,1.0,0
-Yuki noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Okafor presented the interim findings in January,00_January,0,0.0,1.0,0
-the supervisor plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-James presented the interim findings in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The symposium takes place every January,00_January,0,0.0,1.0,0
-The conference is scheduled for February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Maria finalized the analysis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the coordinator will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Liam returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The review board meets annually in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the analyst noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the nurse returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Okafor returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Müller noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Yuki recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Liam plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The seasonal survey is conducted each September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the analyst noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Okafor presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
-Sample collection was completed in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The funding cycle resets each January,00_January,0,0.0,1.0,0
-Field data collection begins in January,00_January,0,0.0,1.0,0
-the analyst noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Fatima confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The onboarding of new staff happens every December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Charlie presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the analyst plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The cohort study enrollment opens in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Omar recorded the highest yield in January,00_January,0,0.0,1.0,0
-Alice will submit the annual report in January,00_January,0,0.0,1.0,0
-Dr. Chen noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the supervisor plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Prof. Wang finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Fatima will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the analyst plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The grant deadline falls in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the technician will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Prof. Wang finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-James finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The symposium takes place every July,06_July,6,1.2246467991473532e-16,-1.0,2
-Kevin recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the analyst confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Sarah plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Okafor returned from fieldwork in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the intern will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Smith noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the analyst finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Patel recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The conference is scheduled for December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The fiscal year closes at the end of January,00_January,0,0.0,1.0,0
-Dr. Chen noted the equipment arrived in April,03_April,3,1.0,6.123233995736766e-17,1
-Kevin finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The seasonal survey is conducted each April,03_April,3,1.0,6.123233995736766e-17,1
-The conference is scheduled for July,06_July,6,1.2246467991473532e-16,-1.0,2
-Amara confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Sarah finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Smith noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-Prof. Kim confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The funding cycle resets each November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the postdoc noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The seasonal survey is conducted each February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The funding cycle resets each February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The symposium takes place every May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The seasonal survey is conducted each March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Field data collection begins in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Rossi presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Prof. Müller will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the analyst plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Bob returned from fieldwork in January,00_January,0,0.0,1.0,0
+the postdoc plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The protocol amendment was approved in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Raj recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the PI noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Sample collection was completed in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
 The cohort study enrollment opens in April,03_April,3,1.0,6.123233995736766e-17,1
 The lab renovation is planned for January,00_January,0,0.0,1.0,0
-The accreditation review is scheduled for February,01_February,1,0.49999999999999994,0.8660254037844387,0
-James plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the coordinator presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Wang returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the nurse noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Fatima will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Elena presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Elena presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the technician returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the technician noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Dr. Chen plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The review board meets annually in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Elena confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Prof. Kim noted the equipment arrived in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Sarah recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Charlie noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-Charlie plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Wang confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
-Fatima plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Müller finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the postdoc presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Dr. Patel will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Liam noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the technician noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Sarah returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The breeding season peaks in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Liam presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Sample collection was completed in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Raj noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Patel finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Omar plans to defend the thesis in January,00_January,0,0.0,1.0,0
-Maria noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The fiscal year closes at the end of November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Amara will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the intern noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Charlie confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-Alice confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Okafor recorded the highest yield in January,00_January,0,0.0,1.0,0
-the analyst will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Patel recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Chen confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Omar confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the coordinator noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Amara noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Chen returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Wang will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Elena confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-The fiscal year closes at the end of February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Bob recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Yuki returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Elena finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The lab renovation is planned for June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Rossi will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
-the analyst plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Chen plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Wang noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-The pilot study wrapped up in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Patel confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Dr. Chen will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Smith recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Patel noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the postdoc plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Amara noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Okafor recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The fellowship applications are due in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Charlie confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The symposium takes place every April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Smith will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the supervisor noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Liam plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-The onboarding of new staff happens every October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Alice confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Omar noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Yuki noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the postdoc presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the nurse noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Fatima plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The accreditation review is scheduled for December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The conference is scheduled for April,03_April,3,1.0,6.123233995736766e-17,1
-Elena finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Dr. Chen confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Omar plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Liam noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Yuki will submit the annual report in January,00_January,0,0.0,1.0,0
-Fatima recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Rossi presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The onboarding of new staff happens every September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Omar recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Animal migration peaks in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the coordinator plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the nurse returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
-the analyst noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
-the intern recorded the highest yield in January,00_January,0,0.0,1.0,0
-Maria returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The cohort study enrollment opens in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The seasonal survey is conducted each December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the coordinator recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Kevin noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The symposium takes place every November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Raj noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the nurse presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the PI returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
 Field data collection begins in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the technician recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the analyst recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Raj finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The lab will be closed for two weeks in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Field data collection begins in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the postdoc returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Rossi noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Sarah presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The fiscal year closes at the end of December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Prof. Wang noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The lab renovation is planned for July,06_July,6,1.2246467991473532e-16,-1.0,2
-Liam confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Rossi returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+Prof. Kim finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Bob will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the PI will submit the annual report in January,00_January,0,0.0,1.0,0
+Dr. Patel returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Elena presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Amara confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Raj will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Kevin noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the analyst finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The lab renovation is planned for September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Maria noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the PI presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the nurse recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Dr. Okafor will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Patel noted the equipment arrived in January,00_January,0,0.0,1.0,0
+The fiscal year closes at the end of May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Kevin will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Smith recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the analyst returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Omar plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Amara returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Chen returned from fieldwork in January,00_January,0,0.0,1.0,0
+the PI presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The breeding season peaks in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Smith plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Bob returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The symposium takes place every June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Maria noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The pilot study wrapped up in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The pilot study wrapped up in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Amara presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The fellowship applications are due in April,03_April,3,1.0,6.123233995736766e-17,1
+the PI noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The onboarding of new staff happens every June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Prof. Müller confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Okafor confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Dr. Smith returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The reagent stock is replenished every January,00_January,0,0.0,1.0,0
+Prof. Müller noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the analyst finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Elena will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the technician plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The cohort study enrollment opens in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Müller presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Prof. Kim noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the coordinator presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Fatima presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Kevin returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Sarah presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the PI plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Omar will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Sarah plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The protocol amendment was approved in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The seasonal survey is conducted each September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the coordinator returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Charlie noted the equipment arrived in January,00_January,0,0.0,1.0,0
+Yuki noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Prof. Wang recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Fatima returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Patel will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Yuki will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Prof. Kim finalized the analysis in January,00_January,0,0.0,1.0,0
+The pilot study wrapped up in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Charlie presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Fatima recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Charlie finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Sarah noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+Raj will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The funding cycle resets each August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Prof. Wang recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The fiscal year closes at the end of November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Smith finalized the analysis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Kim returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the coordinator noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
+Charlie will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the postdoc noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Prof. Wang returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Yuki presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the nurse finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
+Prof. Müller confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the analyst finalized the analysis in January,00_January,0,0.0,1.0,0
+The fiscal year closes at the end of January,00_January,0,0.0,1.0,0
+Kevin will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Kevin recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
+Amara will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The conference is scheduled for October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The lab will be closed for two weeks in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Smith noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Bob plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the postdoc noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Liam plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the supervisor will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Müller will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Liam will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the analyst will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The protocol amendment was approved in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Dr. Rossi finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Dr. Patel presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Yuki recorded the highest yield in January,00_January,0,0.0,1.0,0
+the supervisor confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Smith plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The accreditation review is scheduled for December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Charlie confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
+the intern noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the postdoc returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the intern noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Kevin confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Amara noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the analyst recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The conference is scheduled for January,00_January,0,0.0,1.0,0
+Charlie plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Kim finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the nurse presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the PI finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The fellowship applications are due in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Sample collection was completed in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Prof. Müller presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
+the intern noted the equipment arrived in January,00_January,0,0.0,1.0,0
+The protocol amendment was approved in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Kim presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the postdoc finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Fatima recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
+Alice plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the nurse noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Bob returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The grant deadline falls in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Fatima confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
 Prof. Müller noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Animal migration peaks in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Amara will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Raj presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
-The lab renovation is planned for February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Prof. Müller confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Prof. Wang noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the supervisor plans to defend the thesis in January,00_January,0,0.0,1.0,0
-James finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The accreditation review is scheduled for November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the supervisor confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
-The lab will be closed for two weeks in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Patel returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Field data collection begins in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Fatima presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Dr. Smith recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Smith will submit the annual report in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Animal migration peaks in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the PI will submit the annual report in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Fatima noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Raj recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Prof. Wang noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the nurse presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Alice noted the equipment arrived in January,00_January,0,0.0,1.0,0
-Raj will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the coordinator plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Rossi will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the postdoc returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Patel will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
-Raj presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the postdoc confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Charlie confirmed the calibration was done in January,00_January,0,0.0,1.0,0
+The grant deadline falls in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the intern plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Rossi will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+The accreditation review is scheduled for February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Okafor plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Rossi plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Okafor noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The lab will be closed for two weeks in April,03_April,3,1.0,6.123233995736766e-17,1
+The fiscal year closes at the end of February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Chen plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the supervisor returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Raj confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Liam confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The lab will be closed for two weeks in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The cohort study enrollment opens in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the postdoc finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Prof. Wang presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+James presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the coordinator noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the supervisor will submit the annual report in January,00_January,0,0.0,1.0,0
+The funding cycle resets each October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the analyst returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The symposium takes place every October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Elena noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The accreditation review is scheduled for March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The breeding season peaks in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Patel noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the nurse confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Bob will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The symposium takes place every March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The review board meets annually in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Omar noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Okafor returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Charlie plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the coordinator noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The symposium takes place every July,06_July,6,1.2246467991473532e-16,-1.0,2
+Liam presented the interim findings in January,00_January,0,0.0,1.0,0
+The grant deadline falls in July,06_July,6,1.2246467991473532e-16,-1.0,2
+James recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The conference is scheduled for May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the nurse noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
 The reagent stock is replenished every September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The conference is scheduled for August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Bob noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Wang noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Amara plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the analyst noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Bob confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Alice presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the postdoc will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The grant deadline falls in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Patel noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Okafor noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Bob plans to defend the thesis in January,00_January,0,0.0,1.0,0
-The fiscal year closes at the end of April,03_April,3,1.0,6.123233995736766e-17,1
-Fatima plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-Amara returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Omar presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Omar plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-The lab will be closed for two weeks in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Fatima confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The journal submission window opens in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Elena noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The cohort study enrollment opens in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Alice confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The accreditation review is scheduled for June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Patel will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The fellowship applications are due in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Rossi will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Elena recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Sample collection was completed in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Sarah noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the supervisor recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the technician noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Fatima presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Smith will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Prof. Kim will submit the annual report in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Yuki will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The conference is scheduled for June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The protocol amendment was approved in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Liam noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Alice returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+James presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Okafor noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Kevin returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The seasonal survey is conducted each April,03_April,3,1.0,6.123233995736766e-17,1
+Yuki will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the coordinator confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Bob confirmed the calibration was done in January,00_January,0,0.0,1.0,0
+the intern presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Raj plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Maria noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Field data collection begins in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The cohort study enrollment opens in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Bob finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Prof. Wang will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Sarah noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Fatima noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The seasonal survey is conducted each November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Raj finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Sarah plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the PI presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
+Prof. Müller noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Prof. Wang noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The reagent stock is replenished every February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the technician plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Elena noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Prof. Kim plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the nurse confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the nurse will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the technician presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Amara returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Chen finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the postdoc plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Charlie finalized the analysis in January,00_January,0,0.0,1.0,0
+The onboarding of new staff happens every October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The review board meets annually in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the analyst confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The grant deadline falls in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
 The journal submission window opens in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Sarah confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Kevin returned from fieldwork in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Okafor noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
+Amara will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Okafor noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Yuki confirmed the calibration was done in January,00_January,0,0.0,1.0,0
 The accreditation review is scheduled for January,00_January,0,0.0,1.0,0
-Fatima will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Rossi recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the postdoc confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+James noted the equipment arrived in January,00_January,0,0.0,1.0,0
+Elena finalized the analysis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Liam noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the postdoc noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the technician noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Kim returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Charlie recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Maria will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the technician returned from fieldwork in January,00_January,0,0.0,1.0,0
+The protocol amendment was approved in April,03_April,3,1.0,6.123233995736766e-17,1
+Sarah recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Kevin returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+Charlie noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the technician plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the technician noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
+Maria confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The accreditation review is scheduled for September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The cohort study enrollment opens in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the technician noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Sample collection was completed in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The pilot study wrapped up in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Amara presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Yuki confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
+Alice noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Liam noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Kim recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The grant deadline falls in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Fatima confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
+The review board meets annually in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Prof. Müller returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Kim presented the interim findings in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The funding cycle resets each January,00_January,0,0.0,1.0,0
+the coordinator noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Field data collection begins in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Okafor presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Field data collection begins in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the technician noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Okafor recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the PI recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Rossi will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the coordinator confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the PI finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+James recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Yuki confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Amara finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the analyst confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The lab renovation is planned for August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Amara presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
+Dr. Chen noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the intern confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the nurse noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+Yuki returned from fieldwork in January,00_January,0,0.0,1.0,0
+Prof. Wang noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Animal migration peaks in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Maria returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Charlie returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Alice confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Raj confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Patel plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Wang will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Dr. Rossi presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The seasonal survey is conducted each August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Elena recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Animal migration peaks in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Sarah finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Sarah noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the technician returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Liam returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The fellowship applications are due in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Kim confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Okafor recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Chen finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the coordinator plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Elena will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+Sarah presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the intern noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Charlie recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The funding cycle resets each December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The cohort study enrollment opens in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Field data collection begins in April,03_April,3,1.0,6.123233995736766e-17,1
+Dr. Chen confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Amara returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The seasonal survey is conducted each July,06_July,6,1.2246467991473532e-16,-1.0,2
+Charlie noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The funding cycle resets each April,03_April,3,1.0,6.123233995736766e-17,1
+the intern confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Prof. Müller presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Yuki noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the supervisor noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Patel presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the supervisor presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Sarah recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Okafor presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the technician plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Dr. Smith confirmed the calibration was done in January,00_January,0,0.0,1.0,0
+the PI presented the interim findings in January,00_January,0,0.0,1.0,0
+the postdoc confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Maria presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Field data collection begins in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Müller recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Elena presented the interim findings in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The funding cycle resets each May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Prof. Wang confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Elena noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the technician finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Charlie plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Liam recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
+The journal submission window opens in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Sample collection was completed in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The onboarding of new staff happens every August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Fatima plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Maria finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Yuki presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Elena returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+James will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Chen recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the coordinator noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The grant deadline falls in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Prof. Wang will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+the analyst presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The breeding season peaks in January,00_January,0,0.0,1.0,0
+the postdoc plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Liam noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Fatima returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Charlie plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Prof. Müller noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The cohort study enrollment opens in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The cohort study enrollment opens in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The onboarding of new staff happens every July,06_July,6,1.2246467991473532e-16,-1.0,2
+the postdoc confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The breeding season peaks in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the supervisor finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The reagent stock is replenished every May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The protocol amendment was approved in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the intern will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Bob noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the postdoc will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the analyst recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
+Omar plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Chen confirmed the calibration was done in January,00_January,0,0.0,1.0,0
+Animal migration peaks in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Omar noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The reagent stock is replenished every November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Kim returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The grant deadline falls in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The lab renovation is planned for May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the postdoc noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Yuki finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Charlie noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+The pilot study wrapped up in April,03_April,3,1.0,6.123233995736766e-17,1
+Sample collection was completed in April,03_April,3,1.0,6.123233995736766e-17,1
+Raj noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The pilot study wrapped up in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+James returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The grant deadline falls in January,00_January,0,0.0,1.0,0
+Kevin presented the interim findings in January,00_January,0,0.0,1.0,0
+the analyst noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Animal migration peaks in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Fatima noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Kevin returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Dr. Patel plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Dr. Chen will submit the annual report in January,00_January,0,0.0,1.0,0
+Omar finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Liam noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Liam noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Omar confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Prof. Kim confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Patel returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+the nurse recorded the highest yield in January,00_January,0,0.0,1.0,0
+the nurse will submit the annual report in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Chen presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The pilot study wrapped up in January,00_January,0,0.0,1.0,0
+Omar confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Charlie noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Chen recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The cohort study enrollment opens in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the analyst recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Kevin confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Charlie finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
+the PI recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the nurse noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Omar presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the technician finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Rossi noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Yuki presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the nurse finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the analyst returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the technician noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Dr. Okafor recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Elena returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Maria noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Amara will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Sarah recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The fiscal year closes at the end of August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the analyst recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the PI noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
+Fatima plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Alice noted the equipment arrived in April,03_April,3,1.0,6.123233995736766e-17,1
+the nurse confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Prof. Müller plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the analyst noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the coordinator will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The conference is scheduled for September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The lab will be closed for two weeks in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The onboarding of new staff happens every April,03_April,3,1.0,6.123233995736766e-17,1
+the technician recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The journal submission window opens in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Rossi noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The breeding season peaks in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Raj noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+The lab will be closed for two weeks in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Dr. Patel presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the technician returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+Prof. Müller plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+James returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Prof. Müller recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The fellowship applications are due in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Kevin returned from fieldwork in January,00_January,0,0.0,1.0,0
+Omar plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Maria returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+the nurse returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The conference is scheduled for August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the supervisor plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The cohort study enrollment opens in January,00_January,0,0.0,1.0,0
+Field data collection begins in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The onboarding of new staff happens every December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Fatima returned from fieldwork in January,00_January,0,0.0,1.0,0
+the PI will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Smith noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Smith presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
+Alice noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
+Prof. Kim finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
+Dr. Chen finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Charlie returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+James confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Okafor noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The lab renovation is planned for March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Kevin noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Fatima recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The lab will be closed for two weeks in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Maria finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Charlie recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Charlie finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the supervisor noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Raj returned from fieldwork in January,00_January,0,0.0,1.0,0
+Maria returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Prof. Wang noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Alice returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Liam finalized the analysis in January,00_January,0,0.0,1.0,0
+Yuki recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Raj will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+Dr. Chen finalized the analysis in January,00_January,0,0.0,1.0,0
+Animal migration peaks in April,03_April,3,1.0,6.123233995736766e-17,1
+Alice returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Bob finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Yuki finalized the analysis in January,00_January,0,0.0,1.0,0
+Liam finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The cohort study enrollment opens in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The fiscal year closes at the end of March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Charlie recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Raj will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The lab renovation is planned for November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The reagent stock is replenished every June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The accreditation review is scheduled for October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Sarah finalized the analysis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the analyst noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Patel confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the postdoc noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the nurse confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the postdoc recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The conference is scheduled for March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the nurse plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Amara noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Prof. Müller recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Charlie will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+Dr. Smith noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The breeding season peaks in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the PI noted the equipment arrived in January,00_January,0,0.0,1.0,0
+The grant deadline falls in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the intern returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Chen presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Alice finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the coordinator presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Fatima noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+Charlie noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Chen returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The onboarding of new staff happens every March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Elena plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the PI noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the PI recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the nurse noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Bob will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Amara returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Prof. Kim returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Amara confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the technician noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the coordinator will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Prof. Kim confirmed the calibration was done in January,00_January,0,0.0,1.0,0
+Sample collection was completed in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Omar plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Patel returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Rossi recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Omar will submit the annual report in January,00_January,0,0.0,1.0,0
+The grant deadline falls in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the analyst will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+James plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The grant deadline falls in April,03_April,3,1.0,6.123233995736766e-17,1
+The journal submission window opens in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the intern finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Fatima presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Sarah recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Amara recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The accreditation review is scheduled for July,06_July,6,1.2246467991473532e-16,-1.0,2
+Liam finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
+Maria recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
+Sarah returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The pilot study wrapped up in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the supervisor recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Alice recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The seasonal survey is conducted each December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Liam confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the postdoc noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Prof. Wang confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Kevin returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The journal submission window opens in January,00_January,0,0.0,1.0,0
+the intern plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Wang recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Raj finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Bob noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the nurse confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The fellowship applications are due in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Omar plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
+Bob noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The onboarding of new staff happens every May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the supervisor finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Raj noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
+Alice plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Yuki plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the supervisor plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Yuki recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the postdoc presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the nurse finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The lab renovation is planned for October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The seasonal survey is conducted each May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Yuki presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The review board meets annually in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Elena will submit the annual report in January,00_January,0,0.0,1.0,0
+Yuki finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The funding cycle resets each September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the supervisor confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Liam plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Raj noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The accreditation review is scheduled for June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Charlie plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the analyst presented the interim findings in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the supervisor finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Chen recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
+Omar noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
+Prof. Müller noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Yuki will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+James confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
+Kevin confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the intern presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The fellowship applications are due in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Chen confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Alice noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The symposium takes place every December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The fellowship applications are due in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the supervisor will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Sarah returned from fieldwork in January,00_January,0,0.0,1.0,0
+the supervisor noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Maria confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Liam confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the postdoc recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the nurse confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the intern presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Kim returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The breeding season peaks in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Sarah will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the intern recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Fatima returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+the postdoc finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Charlie confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Bob will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Animal migration peaks in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the coordinator noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The lab renovation is planned for June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Prof. Müller plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Field data collection begins in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the supervisor returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the intern noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Fatima finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Amara plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The fellowship applications are due in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Yuki recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
+The breeding season peaks in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the PI confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The funding cycle resets each June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the coordinator plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Dr. Smith confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
+the postdoc returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Dr. Smith will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Animal migration peaks in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Kim presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Sample collection was completed in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The seasonal survey is conducted each June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Yuki noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Bob noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+Prof. Wang noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Raj finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Maria plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Maria finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the PI confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Charlie plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
+Kevin returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Dr. Smith will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Kevin recorded the highest yield in January,00_January,0,0.0,1.0,0
+The reagent stock is replenished every December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the nurse will submit the annual report in January,00_January,0,0.0,1.0,0
+Animal migration peaks in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The conference is scheduled for December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The fellowship applications are due in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The fiscal year closes at the end of July,06_July,6,1.2246467991473532e-16,-1.0,2
+James will submit the annual report in January,00_January,0,0.0,1.0,0
+James noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+The fiscal year closes at the end of December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The accreditation review is scheduled for April,03_April,3,1.0,6.123233995736766e-17,1
+Dr. Okafor noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The symposium takes place every February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Prof. Wang recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Maria confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Bob presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the supervisor returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Omar confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Yuki noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Prof. Wang noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Prof. Müller plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Liam presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The fellowship applications are due in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the postdoc will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Fatima presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Chen will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Dr. Rossi noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Animal migration peaks in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Elena confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the nurse noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the technician noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Alice returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Bob recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
+James finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The review board meets annually in April,03_April,3,1.0,6.123233995736766e-17,1
+the coordinator confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The onboarding of new staff happens every November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The protocol amendment was approved in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the nurse finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The fiscal year closes at the end of April,03_April,3,1.0,6.123233995736766e-17,1
+The journal submission window opens in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the nurse presented the interim findings in January,00_January,0,0.0,1.0,0
+Prof. Müller returned from fieldwork in January,00_January,0,0.0,1.0,0
+Sample collection was completed in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Sarah returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Kevin will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Amara noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The review board meets annually in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Elena returned from fieldwork in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The reagent stock is replenished every March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Smith presented the interim findings in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Liam returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Yuki returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+The review board meets annually in January,00_January,0,0.0,1.0,0
+The protocol amendment was approved in July,06_July,6,1.2246467991473532e-16,-1.0,2
+James noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Amara noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Wang noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Prof. Wang returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Raj finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the technician returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Bob confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The review board meets annually in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Patel will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Raj noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the technician presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the postdoc will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Rossi noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Prof. Kim confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
+Maria noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The breeding season peaks in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the analyst recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Prof. Kim plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
+Omar returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Okafor confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Chen will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Amara finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Liam plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Raj will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Elena noted the equipment arrived in January,00_January,0,0.0,1.0,0
+James noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Amara will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+The protocol amendment was approved in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Smith recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The journal submission window opens in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Sarah noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the nurse will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Rossi noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
+Sarah will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the intern confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The accreditation review is scheduled for May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The grant deadline falls in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Rossi plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The seasonal survey is conducted each October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Maria noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Liam noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the postdoc confirmed the calibration was done in January,00_January,0,0.0,1.0,0
+The funding cycle resets each November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Okafor noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The lab renovation is planned for February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the postdoc noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Dr. Rossi finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Patel finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Bob noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Sample collection was completed in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the PI plans to defend the thesis in January,00_January,0,0.0,1.0,0
+The reagent stock is replenished every August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The review board meets annually in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Elena plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the nurse returned from fieldwork in January,00_January,0,0.0,1.0,0
+the nurse finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Omar recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Fatima finalized the analysis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The lab will be closed for two weeks in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The journal submission window opens in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Field data collection begins in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Dr. Chen noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Kim plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Animal migration peaks in January,00_January,0,0.0,1.0,0
+Elena presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Raj returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Alice plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the supervisor noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The review board meets annually in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Field data collection begins in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Yuki returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+James will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The lab will be closed for two weeks in January,00_January,0,0.0,1.0,0
+Dr. Smith returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The reagent stock is replenished every October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Raj confirmed the calibration was done in January,00_January,0,0.0,1.0,0
+James recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Rossi finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the supervisor recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Elena noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+Field data collection begins in January,00_January,0,0.0,1.0,0
+the PI noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+James confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Okafor returned from fieldwork in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Kevin recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the analyst finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Sample collection was completed in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Müller returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The review board meets annually in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the PI will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Smith will submit the annual report in January,00_January,0,0.0,1.0,0
+The lab will be closed for two weeks in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Patel presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Chen noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Sample collection was completed in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Elena confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+The review board meets annually in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Maria recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Fatima presented the interim findings in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Prof. Müller noted the equipment arrived in April,03_April,3,1.0,6.123233995736766e-17,1
+the intern plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the intern noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the nurse returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Dr. Patel recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The pilot study wrapped up in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the PI presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
+James returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Dr. Okafor noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+James noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Rossi recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Bob confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the analyst presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Prof. Kim presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Okafor will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
 The seasonal survey is conducted each January,00_January,0,0.0,1.0,0
-the intern finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Prof. Müller noted the equipment arrived in January,00_January,0,0.0,1.0,0
-the postdoc returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
-Raj presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Okafor plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the analyst presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Animal migration peaks in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Liam plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Omar returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+Kevin plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the coordinator returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the technician will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the intern confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the supervisor returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Omar finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The fiscal year closes at the end of September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Maria confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The conference is scheduled for April,03_April,3,1.0,6.123233995736766e-17,1
+The onboarding of new staff happens every January,00_January,0,0.0,1.0,0
+Omar returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the technician will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the technician finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+the supervisor noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The pilot study wrapped up in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+James noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Amara noted the equipment arrived in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Omar confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Dr. Smith will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Maria noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The onboarding of new staff happens every February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The pilot study wrapped up in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the intern confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Alice plans to defend the thesis in January,00_January,0,0.0,1.0,0
+Amara finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The breeding season peaks in April,03_April,3,1.0,6.123233995736766e-17,1
+Alice finalized the analysis in January,00_January,0,0.0,1.0,0
+the supervisor recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Maria noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Animal migration peaks in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The symposium takes place every January,00_January,0,0.0,1.0,0
+Fatima noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The breeding season peaks in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Prof. Müller returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+the supervisor confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Sarah confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Charlie confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Patel recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Amara finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
+The accreditation review is scheduled for November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The conference is scheduled for February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the technician recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The reagent stock is replenished every July,06_July,6,1.2246467991473532e-16,-1.0,2
+The fiscal year closes at the end of June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Charlie returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the intern confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Maria recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The fellowship applications are due in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+Fatima will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+Prof. Wang returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Patel noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Elena noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The funding cycle resets each March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Alice returned from fieldwork in January,00_January,0,0.0,1.0,0
+James plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Elena recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The pilot study wrapped up in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Prof. Kim recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The protocol amendment was approved in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the technician finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Alice presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the technician noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The lab will be closed for two weeks in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Dr. Patel plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Dr. Patel will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The reagent stock is replenished every April,03_April,3,1.0,6.123233995736766e-17,1
+Elena will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+The journal submission window opens in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Kevin presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The symposium takes place every September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Alice returned from fieldwork in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+James recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Bob confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Fatima finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Prof. Kim returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Alice will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+The conference is scheduled for July,06_July,6,1.2246467991473532e-16,-1.0,2
+the intern finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Sarah recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The funding cycle resets each July,06_July,6,1.2246467991473532e-16,-1.0,2
+Dr. Smith noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+James will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the postdoc will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+the nurse presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Prof. Wang will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Raj noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Kevin noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Fatima will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Kevin plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The lab will be closed for two weeks in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the supervisor finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the coordinator noted the equipment arrived in January,00_January,0,0.0,1.0,0
+Charlie confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Fatima confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+the postdoc presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Omar plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Dr. Smith will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+Dr. Okafor noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
+Sarah confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Sample collection was completed in January,00_January,0,0.0,1.0,0
+The onboarding of new staff happens every September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Raj noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Liam returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Elena presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Chen recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Prof. Wang noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The lab renovation is planned for December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+the technician noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The fellowship applications are due in January,00_January,0,0.0,1.0,0
+the postdoc presented the interim findings in January,00_January,0,0.0,1.0,0
+the PI confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Maria will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Amara presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Sarah noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+The lab will be closed for two weeks in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The cohort study enrollment opens in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the technician plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Smith confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+The journal submission window opens in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the intern recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the coordinator finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
+Maria will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+James presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The conference is scheduled for November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+The symposium takes place every August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Prof. Kim will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+James presented the interim findings in January,00_January,0,0.0,1.0,0
+The journal submission window opens in April,03_April,3,1.0,6.123233995736766e-17,1
+the nurse confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
+the intern finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Dr. Smith returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
+Liam returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Bob plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+the intern noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+the technician recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+The lab renovation is planned for July,06_July,6,1.2246467991473532e-16,-1.0,2
+The fiscal year closes at the end of October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Alice recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Charlie confirmed the calibration was done in July,06_July,6,1.2246467991473532e-16,-1.0,2
+The symposium takes place every April,03_April,3,1.0,6.123233995736766e-17,1
+Amara finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+The journal submission window opens in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
+Sarah returned from fieldwork in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+Fatima confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Dr. Okafor noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
+Amara recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+The lab renovation is planned for April,03_April,3,1.0,6.123233995736766e-17,1
+Raj noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the intern confirmed the calibration was done in January,00_January,0,0.0,1.0,0
 Dr. Rossi noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
 The accreditation review is scheduled for August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Rossi finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Amara presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Patel finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-the intern plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Amara noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the analyst finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The grant deadline falls in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Fatima presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Raj finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-The fiscal year closes at the end of March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Okafor noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Patel noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Sample collection was completed in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Sarah plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Elena noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Omar noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the PI plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Bob presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Patel presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Kevin presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The review board meets annually in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Bob finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The protocol amendment was approved in April,03_April,3,1.0,6.123233995736766e-17,1
-Field data collection begins in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The funding cycle resets each February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Sarah confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Prof. Kim plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Okafor finalized the analysis in January,00_January,0,0.0,1.0,0
-Prof. Müller plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The journal submission window opens in July,06_July,6,1.2246467991473532e-16,-1.0,2
+Prof. Müller confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
+Yuki will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
+Maria plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Amara confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
+the supervisor noted the equipment arrived in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
+Omar noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
+Dr. Smith noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
 The breeding season peaks in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Rossi finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Kevin will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the intern noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Dr. Okafor noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Elena noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the postdoc will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The symposium takes place every March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Maria plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the coordinator confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Amara returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the postdoc noted the equipment arrived in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The accreditation review is scheduled for March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the postdoc noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the nurse confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The grant deadline falls in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Fatima returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Patel noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The journal submission window opens in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Rossi plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Bob noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The reagent stock is replenished every January,00_January,0,0.0,1.0,0
-Dr. Patel presented the interim findings in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Alice returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
-Maria confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Fatima recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Prof. Kim confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Maria recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The pilot study wrapped up in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Prof. Müller finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Fatima finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-the PI returned from fieldwork in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Sample collection was completed in January,00_January,0,0.0,1.0,0
-Dr. Okafor noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Alice finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Prof. Müller will submit the annual report in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Sample collection was completed in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the intern returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Patel confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
 The protocol amendment was approved in January,00_January,0,0.0,1.0,0
-the supervisor presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the intern plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the PI presented the interim findings in January,00_January,0,0.0,1.0,0
-Omar noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Omar returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The lab will be closed for two weeks in April,03_April,3,1.0,6.123233995736766e-17,1
-The breeding season peaks in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Rossi noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The cohort study enrollment opens in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Kevin recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the technician will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Smith recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Prof. Wang presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The symposium takes place every November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Kim noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The seasonal survey is conducted each May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the supervisor noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Charlie finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The funding cycle resets each December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The cohort study enrollment opens in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the PI noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Yuki returned from fieldwork in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the nurse will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the analyst returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Sarah will submit the annual report in January,00_January,0,0.0,1.0,0
-The protocol amendment was approved in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Omar finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The lab renovation is planned for September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The reagent stock is replenished every June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The conference is scheduled for November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The breeding season peaks in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the nurse will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Amara noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Sarah noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Kevin recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Okafor finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the supervisor finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Field data collection begins in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Omar plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Elena confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Fatima will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Liam will submit the annual report in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the supervisor confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Liam confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Chen will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Kevin finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the PI presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
-The symposium takes place every February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Chen noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Raj noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the coordinator recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The accreditation review is scheduled for July,06_July,6,1.2246467991473532e-16,-1.0,2
-Bob noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Kevin recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the analyst will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the coordinator will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The onboarding of new staff happens every June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Maria noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the technician returned from fieldwork in January,00_January,0,0.0,1.0,0
-Omar presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Charlie confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The fiscal year closes at the end of October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Liam recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Prof. Kim noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The review board meets annually in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the PI confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-Bob confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The protocol amendment was approved in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Prof. Müller noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Field data collection begins in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Omar noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the supervisor plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-The seasonal survey is conducted each March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the postdoc noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The cohort study enrollment opens in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the coordinator returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Bob confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Liam presented the interim findings in January,00_January,0,0.0,1.0,0
-The fiscal year closes at the end of September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The review board meets annually in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the PI plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Fatima recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Amara plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-The onboarding of new staff happens every February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Raj confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Yuki noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Elena finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Chen confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-Dr. Okafor noted the equipment arrived in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-James confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-James plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-James finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the nurse recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The onboarding of new staff happens every August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Bob noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Bob will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the technician recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Charlie recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Dr. Rossi noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Fatima plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Sarah will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the analyst noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Okafor finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Maria presented the interim findings in January,00_January,0,0.0,1.0,0
-the PI plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Bob recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Liam confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Dr. Patel presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Chen will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Alice noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-Amara recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The lab will be closed for two weeks in January,00_January,0,0.0,1.0,0
-Yuki presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Alice recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Liam finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Kevin finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-The fellowship applications are due in April,03_April,3,1.0,6.123233995736766e-17,1
-Alice noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the supervisor confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-the intern confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the intern noticed the anomaly first appeared in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The fellowship applications are due in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The grant deadline falls in January,00_January,0,0.0,1.0,0
-James will submit the annual report in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Fatima noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Prof. Kim confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Charlie presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Elena noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the coordinator plans to defend the thesis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Alice returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The funding cycle resets each August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Raj will submit the annual report in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Animal migration peaks in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The reagent stock is replenished every November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the technician presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Prof. Kim confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the technician recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the analyst noted the equipment arrived in January,00_January,0,0.0,1.0,0
-Maria noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Yuki confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Prof. Wang confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Okafor returned from fieldwork in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The journal submission window opens in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Fatima presented the interim findings in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Maria returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The fiscal year closes at the end of July,06_July,6,1.2246467991473532e-16,-1.0,2
-Kevin confirmed the calibration was done in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Prof. Müller finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Sarah will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the analyst noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-James returned from fieldwork in January,00_January,0,0.0,1.0,0
-Liam plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the postdoc presented the interim findings in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The reagent stock is replenished every October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Fatima confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Charlie will submit the annual report in January,00_January,0,0.0,1.0,0
-Dr. Patel presented the interim findings in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Charlie noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Amara confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Charlie noticed the anomaly first appeared in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Rossi confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-Yuki confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the analyst recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the supervisor will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Smith plans to defend the thesis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Amara will submit the annual report in April,03_April,3,1.0,6.123233995736766e-17,1
-Prof. Wang noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the postdoc noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the intern returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
-Kevin noticed the anomaly first appeared in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Fatima noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
-Liam plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Maria returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Omar will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Sarah will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Prof. Kim noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Patel noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Dr. Smith confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Omar finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Raj plans to defend the thesis in January,00_January,0,0.0,1.0,0
-Dr. Chen plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Raj plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Raj plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the technician finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-Omar finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Omar plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the analyst confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
-The fellowship applications are due in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The cohort study enrollment opens in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Elena finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Sarah presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Prof. Kim finalized the analysis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the nurse finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Fatima confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the intern finalized the analysis in January,00_January,0,0.0,1.0,0
-Kevin noted the equipment arrived in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Maria noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the intern noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Raj noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Prof. Wang will submit the annual report in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The reagent stock is replenished every April,03_April,3,1.0,6.123233995736766e-17,1
-Kevin will submit the annual report in January,00_January,0,0.0,1.0,0
-Elena noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the coordinator returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Charlie returned from fieldwork in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the intern finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the coordinator finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the analyst plans to defend the thesis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Sample collection was completed in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The symposium takes place every June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the coordinator finalized the analysis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Kevin recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the intern recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Liam finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-The lab will be closed for two weeks in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-James noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the technician will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Sample collection was completed in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Omar returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Bob plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the analyst noticed the anomaly first appeared in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Rossi noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Fatima plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The funding cycle resets each July,06_July,6,1.2246467991473532e-16,-1.0,2
-Raj returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The fiscal year closes at the end of August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the technician confirmed the calibration was done in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The reagent stock is replenished every February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The lab will be closed for two weeks in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Prof. Wang finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Alice returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Okafor presented the interim findings in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Kevin noted the equipment arrived in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Charlie plans to defend the thesis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Yuki will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Liam will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Patel plans to defend the thesis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The journal submission window opens in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Elena returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Dr. Chen recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The fellowship applications are due in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the intern returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The conference is scheduled for January,00_January,0,0.0,1.0,0
-Prof. Müller plans to defend the thesis in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The protocol amendment was approved in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the technician presented the interim findings in January,00_January,0,0.0,1.0,0
-The onboarding of new staff happens every April,03_April,3,1.0,6.123233995736766e-17,1
-Dr. Smith noticed the anomaly first appeared in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The symposium takes place every August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the technician finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Smith recorded the highest yield in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Amara noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
-The lab renovation is planned for March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Animal migration peaks in January,00_January,0,0.0,1.0,0
-The reagent stock is replenished every July,06_July,6,1.2246467991473532e-16,-1.0,2
-the technician plans to defend the thesis in January,00_January,0,0.0,1.0,0
-The review board meets annually in April,03_April,3,1.0,6.123233995736766e-17,1
-The onboarding of new staff happens every March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The conference is scheduled for June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The grant deadline falls in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Kevin noted the equipment arrived in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The lab will be closed for two weeks in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Omar presented the interim findings in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Animal migration peaks in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The breeding season peaks in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The onboarding of new staff happens every January,00_January,0,0.0,1.0,0
-Raj recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the intern finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Raj finalized the analysis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Prof. Wang recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
-Yuki recorded the highest yield in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the supervisor will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The breeding season peaks in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Charlie finalized the analysis in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Liam presented the interim findings in April,03_April,3,1.0,6.123233995736766e-17,1
-the analyst recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Dr. Smith noticed the anomaly first appeared in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The accreditation review is scheduled for September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Kevin plans to defend the thesis in April,03_April,3,1.0,6.123233995736766e-17,1
-the supervisor returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Smith finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The reagent stock is replenished every December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the PI recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Sarah will submit the annual report in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the supervisor presented the interim findings in January,00_January,0,0.0,1.0,0
-Charlie confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The onboarding of new staff happens every July,06_July,6,1.2246467991473532e-16,-1.0,2
-the technician confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the technician presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Prof. Wang noted the equipment arrived in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Chen finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-the nurse will submit the annual report in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Chen noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Maria returned from fieldwork in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The fellowship applications are due in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the coordinator recorded the highest yield in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Kevin recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the technician confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-the coordinator recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Rossi finalized the analysis in April,03_April,3,1.0,6.123233995736766e-17,1
-the supervisor noticed the anomaly first appeared in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Alice returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-James noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The symposium takes place every September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Prof. Wang confirmed the calibration was done in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Dr. Chen returned from fieldwork in April,03_April,3,1.0,6.123233995736766e-17,1
-the coordinator noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-the supervisor finalized the analysis in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Fatima confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The breeding season peaks in April,03_April,3,1.0,6.123233995736766e-17,1
-Alice will submit the annual report in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Kevin noted the equipment arrived in January,00_January,0,0.0,1.0,0
-Maria recorded the highest yield in April,03_April,3,1.0,6.123233995736766e-17,1
-The grant deadline falls in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the supervisor confirmed the calibration was done in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Rossi recorded the highest yield in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Sample collection was completed in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Rossi noted the equipment arrived in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Prof. Wang presented the interim findings in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-The seasonal survey is conducted each February,01_February,1,0.49999999999999994,0.8660254037844387,0
-the PI confirmed the calibration was done in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Elena returned from fieldwork in January,00_January,0,0.0,1.0,0
-the nurse returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The lab renovation is planned for November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The journal submission window opens in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The funding cycle resets each March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The onboarding of new staff happens every November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Prof. Kim finalized the analysis in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The review board meets annually in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The pilot study wrapped up in January,00_January,0,0.0,1.0,0
-The funding cycle resets each June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Yuki finalized the analysis in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The journal submission window opens in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Amara finalized the analysis in January,00_January,0,0.0,1.0,0
-the technician returned from fieldwork in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-the supervisor plans to defend the thesis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-The lab renovation is planned for August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Alice returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the PI presented the interim findings in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The pilot study wrapped up in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-The journal submission window opens in January,00_January,0,0.0,1.0,0
-the supervisor will submit the annual report in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Elena finalized the analysis in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The accreditation review is scheduled for October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Omar returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The cohort study enrollment opens in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-the postdoc will submit the annual report in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Bob finalized the analysis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the PI confirmed the calibration was done in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Yuki noticed the anomaly first appeared in January,00_January,0,0.0,1.0,0
-Kevin plans to defend the thesis in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-Amara returned from fieldwork in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Bob returned from fieldwork in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Liam noted the equipment arrived in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-the intern confirmed the calibration was done in April,03_April,3,1.0,6.123233995736766e-17,1
-The fellowship applications are due in July,06_July,6,1.2246467991473532e-16,-1.0,2
-The fellowship applications are due in January,00_January,0,0.0,1.0,0
-The symposium takes place every December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-Dr. Okafor noticed the anomaly first appeared in April,03_April,3,1.0,6.123233995736766e-17,1
-Prof. Kim will submit the annual report in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the intern confirmed the calibration was done in March,02_March,2,0.8660254037844386,0.5000000000000001,1
-the coordinator noted the equipment arrived in April,03_April,3,1.0,6.123233995736766e-17,1
-Maria plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-The fiscal year closes at the end of June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Omar confirmed the calibration was done in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the analyst recorded the highest yield in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Omar returned from fieldwork in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-The reagent stock is replenished every August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Kevin returned from fieldwork in December,11_December,11,-0.5000000000000004,0.8660254037844384,0
-The protocol amendment was approved in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-Dr. Okafor presented the interim findings in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the nurse will submit the annual report in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Okafor noticed the anomaly first appeared in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-The fellowship applications are due in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Dr. Smith plans to defend the thesis in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-Liam recorded the highest yield in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Dr. Smith noticed the anomaly first appeared in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-Yuki noted the equipment arrived in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Field data collection begins in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3
-Bob plans to defend the thesis in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
-the technician noticed the anomaly first appeared in July,06_July,6,1.2246467991473532e-16,-1.0,2
-the postdoc recorded the highest yield in July,06_July,6,1.2246467991473532e-16,-1.0,2
-Elena finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Kevin noted the equipment arrived in October,09_October,9,-1.0,-1.8369701987210297e-16,3
-Dr. Okafor recorded the highest yield in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-Sarah noted the equipment arrived in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The grant deadline falls in May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the nurse confirmed the calibration was done in November,10_November,10,-0.8660254037844386,0.5000000000000001,3
-The pilot study wrapped up in February,01_February,1,0.49999999999999994,0.8660254037844387,0
-Dr. Patel returned from fieldwork in August,07_August,7,-0.4999999999999997,-0.8660254037844388,2
-The fiscal year closes at the end of May,04_May,4,0.8660254037844387,-0.4999999999999998,1
-the nurse confirmed the calibration was done in January,00_January,0,0.0,1.0,0
-Dr. Rossi recorded the highest yield in June,05_June,5,0.49999999999999994,-0.8660254037844387,2
+the PI finalized the analysis in October,09_October,9,-1.0,-1.8369701987210297e-16,3
+Prof. Wang recorded the highest yield in September,08_September,8,-0.8660254037844384,-0.5000000000000004,3

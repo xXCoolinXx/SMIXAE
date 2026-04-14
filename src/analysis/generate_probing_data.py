@@ -912,7 +912,7 @@ def generate_emotions() -> pd.DataFrame:
         # Quadrant: 0=(V≥0,A≥0), 1=(V<0,A≥0), 2=(V<0,A<0), 3=(V≥0,A<0)
         quadrant = (0 if v >= 0 else 1) if a >= 0 else (3 if v >= 0 else 2)
         rows.append({
-            "Sentence": f"Please classify the emotion of the following user message:\n\n{example['text']}\n\nEmotion:",
+            "Sentence": f"Please classify the emotions expressed by the following sample\n\nSample: {example['text']}\n\nEmotion: ",
             "Label": label,
             "target_valence": v,
             "target_arousal": a,
