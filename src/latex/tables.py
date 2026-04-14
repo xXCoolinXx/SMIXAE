@@ -1,25 +1,29 @@
-"""Convert results.json to LaTeX tables.
+"""Generate LaTeX tables from results.json.
 
-Generates two tables:
+Produces two tables:
   1. Probing table: all models × all tasks × hypotheses (excluding ordinal unless sole hypothesis)
   2. Newline table: Gemma 2 9B models only, periodic gain by line length
 
-Usage:
-    uv run python src/analysis/results_to_latex.py
-    uv run python src/analysis/results_to_latex.py --output results/tables.tex
+CLI usage:
+    smixae latex tables
+    smixae latex tables --probing-output results/table_probing.tex \\
+                        --newline-output results/table_newline.tex
 
 Required LaTeX packages: booktabs, multirow
 """
 
-import argparse
-import json
 from pathlib import Path
+
+import typer
+
+app = typer.Typer()
 
 RESULTS_PATH = Path("results/results.json")
 DATASET_CONFIG_PATH = Path("datasets/probing/dataset_config.json")
-DEFAULT_OUTPUT_PATH = Path("results/tables.tex")
+DEFAULT_PROBING_OUTPUT = Path("results/table_probing.tex")
+DEFAULT_NEWLINE_OUTPUT = Path("results/table_newline.tex")
 
-# ── Display names ─────────────────────────────────────────────────────────────
+# ── Display names ──────────────────────────────────────────────────────────────
 
 MODEL_NAMES: dict[str, str] = {
     "gemma_2_9b_l11": "9B, Layer 11",
@@ -27,7 +31,6 @@ MODEL_NAMES: dict[str, str] = {
     "gemma_2_2b_l12": "2B, Layer 12",
 }
 
-# Top-level family label that spans all model columns in the header
 MODEL_FAMILY = "Gemma 2"
 
 DATASET_NAMES: dict[str, str] = {
@@ -59,7 +62,7 @@ REGRESSION_LABEL: dict[str, str] = {
     "ridge":       "Ridge",
 }
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ── Helpers ────────────────────────────────────────────────────────────────────
 
 def fmt(v: float | None, decimals: int = 3) -> str:
     if v is None:
@@ -72,10 +75,11 @@ def esc(s: str) -> str:
     return s.replace("&", r"\&").replace("%", r"\%").replace("_", r"\_")
 
 
-def load_data() -> tuple[dict, list]:
-    with open(RESULTS_PATH) as f:
+def load_data(results_path: Path, dataset_config_path: Path) -> tuple[dict, list]:
+    import json
+    with open(results_path) as f:
         results = json.load(f)
-    with open(DATASET_CONFIG_PATH) as f:
+    with open(dataset_config_path) as f:
         dataset_config = json.load(f)
     return results, dataset_config
 
@@ -87,7 +91,7 @@ def build_hypothesis_map(dataset_config: list) -> dict[str, dict]:
         ds_name = Path(entry["dataframe_path"]).stem
         hyp_map[ds_name] = {
             h["name"]: {
-                "description":    h["description"],
+                "description":     h["description"],
                 "regression_type": h["regression_type"],
             }
             for h in entry.get("regression_hypotheses", [])
@@ -104,13 +108,12 @@ def hypotheses_to_show(ds_name: str, hyp_map: dict) -> dict:
     return non_ordinal if non_ordinal else all_hyps
 
 
-# ── Probing table ─────────────────────────────────────────────────────────────
+# ── Probing table ──────────────────────────────────────────────────────────────
 
 def build_probing_table(results: dict, hyp_map: dict) -> str:
     models = list(results.keys())
     n_models = len(models)
 
-    # Columns: Task | Hypothesis | Regression | Score | [Top-1  Top-5μ] × n_models
     col_spec = "ll ll " + " ".join(["rr"] * n_models)
 
     rows: list[str] = []
@@ -129,18 +132,16 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
     rows.append(r"\begin{tabular}{" + col_spec + "}")
     rows.append(r"\toprule")
 
-    n_header_cols  = 4          # Task | Hypothesis | Regression | Score
+    n_header_cols  = 4
     n_data_cols    = n_models * 2
-    first_data_col = n_header_cols + 1  # 1-indexed
+    first_data_col = n_header_cols + 1
 
-    # ── Header row 1: "Gemma 2" in the stub, model names spanning data cols ───
     h1_parts = [rf"\multicolumn{{{n_header_cols}}}{{l}}{{{esc(MODEL_FAMILY)}}}"]
     for mk in models:
         name = esc(MODEL_NAMES.get(mk, mk))
         h1_parts.append(r"\multicolumn{2}{c}{" + name + "}")
     rows.append(" & ".join(h1_parts) + r" \\")
 
-    # Cmidrules under model names
     cmidrules = []
     for i in range(n_models):
         c0 = first_data_col + i * 2
@@ -148,14 +149,12 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
         cmidrules.append(rf"\cmidrule(lr){{{c0}-{c1}}}")
     rows.append(" ".join(cmidrules))
 
-    # ── Header row 2: column labels ───────────────────────────────────────────
     h2_parts = ["Task", "Hypothesis", "Regression", "Score"]
     for _ in models:
         h2_parts += ["Top-1", r"Top-5$_{\mu}$"]
     rows.append(" & ".join(h2_parts) + r" \\")
     rows.append(r"\midrule")
 
-    # ── Data rows ─────────────────────────────────────────────────────────────
     all_datasets: list[str] = list(next(iter(results.values()))["probe"].keys())
     last_dataset_with_data: str | None = None
 
@@ -182,7 +181,6 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
         for i, (hyp_name, hyp_info) in enumerate(hyp_list):
             row: list[str] = []
 
-            # Task column: multirow for first sub-row
             if i == 0:
                 cell = (
                     rf"\multirow{{{n_hyps}}}{{*}}{{{ds_display}}}"
@@ -193,16 +191,10 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
             else:
                 row.append("")
 
-            # Hypothesis description
             row.append(esc(hyp_info["description"]))
-
-            # Regression type
             row.append(REGRESSION_LABEL.get(hyp_info["regression_type"], "?"))
-
-            # Score type label
             row.append(SCORE_LABEL.get(hyp_info["regression_type"], "?"))
 
-            # Data: one Top-1 + Top-5μ pair per model
             for mk in models:
                 hyp_data = (
                     results.get(mk, {})
@@ -221,7 +213,6 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
 
             rows.append(" & ".join(row) + r" \\")
 
-        # Separator after each dataset group
         if ds_name == last_dataset_with_data:
             rows.append(r"\bottomrule")
             separator_added = True
@@ -238,14 +229,13 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
     return "\n".join(rows)
 
 
-# ── Newline table ─────────────────────────────────────────────────────────────
+# ── Newline table ──────────────────────────────────────────────────────────────
 
 def build_newline_table(results: dict) -> str:
     nine_b_models = [mk for mk in results if "9b" in mk]
     n_models = len(nine_b_models)
     line_length_keys = ["newline_80", "newline_150"]
 
-    # Columns: Line Length | [Top-1  Top-5μ] × n_models
     col_spec = "l " + " ".join(["cc"] * n_models)
 
     rows: list[str] = []
@@ -262,15 +252,12 @@ def build_newline_table(results: dict) -> str:
     rows.append(r"\begin{tabular}{" + col_spec + "}")
     rows.append(r"\toprule")
 
-    # Header row 1: "Gemma 2 9B" in the stub, model names spanning data cols
     h1_parts = [r"\multicolumn{1}{l}{Gemma 2 9B}"]
     for mk in nine_b_models:
-        # Strip size prefix ("9B, Layer 11" → "Layer 11") — family names the size
         short = esc(MODEL_NAMES.get(mk, mk)).split(", ", 1)[-1]
         h1_parts.append(r"\multicolumn{2}{c}{" + short + "}")
     rows.append(" & ".join(h1_parts) + r" \\")
 
-    # Cmidrules
     cmidrules = []
     for i in range(n_models):
         c0 = 2 + i * 2
@@ -278,14 +265,12 @@ def build_newline_table(results: dict) -> str:
         cmidrules.append(rf"\cmidrule(lr){{{c0}-{c1}}}")
     rows.append(" ".join(cmidrules))
 
-    # Header row 2
     h2_parts = ["Line length"]
     for _ in nine_b_models:
         h2_parts += [r"Top-1 $\Delta R^2_{\text{per.}}$", r"Top-5$_{\mu}$ $\Delta R^2_{\text{per.}}$"]
     rows.append(" & ".join(h2_parts) + r" \\")
     rows.append(r"\midrule")
 
-    # Data rows
     for ll_key in line_length_keys:
         ll_display = ll_key.replace("newline_", "") + " chars"
         row: list[str] = [ll_display]
@@ -304,26 +289,26 @@ def build_newline_table(results: dict) -> str:
     return "\n".join(rows)
 
 
-# ── Entry point ───────────────────────────────────────────────────────────────
+# ── CLI ────────────────────────────────────────────────────────────────────────
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate LaTeX tables from results.json")
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_PATH)
-    args = parser.parse_args()
-
-    results, dataset_config = load_data()
+@app.command()
+def generate(
+    results_path: Path = typer.Option(RESULTS_PATH, help="Path to results.json"),
+    dataset_config_path: Path = typer.Option(DATASET_CONFIG_PATH, help="Path to dataset_config.json"),
+    probing_output: Path = typer.Option(DEFAULT_PROBING_OUTPUT, help="Output path for the probing table .tex file"),
+    newline_output: Path = typer.Option(DEFAULT_NEWLINE_OUTPUT, help="Output path for the newline table .tex file"),
+) -> None:
+    """Generate LaTeX tables (probing + newline) from results.json."""
+    results, dataset_config = load_data(results_path, dataset_config_path)
     hyp_map = build_hypothesis_map(dataset_config)
 
     probing = build_probing_table(results, hyp_map)
     newline = build_newline_table(results)
 
-    combined = probing + "\n\n" + newline
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(combined)
-    print(f"Written to {args.output}")
-    print()
-    print(combined)
+    probing_output.parent.mkdir(parents=True, exist_ok=True)
+    probing_output.write_text(probing)
+    typer.echo(f"Probing table written to {probing_output}")
 
-
-if __name__ == "__main__":
-    main()
+    newline_output.parent.mkdir(parents=True, exist_ok=True)
+    newline_output.write_text(newline)
+    typer.echo(f"Newline table written to {newline_output}")

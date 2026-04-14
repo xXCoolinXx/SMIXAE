@@ -1,7 +1,7 @@
 [
   {
     "dataframe_path": "weekdays.csv",
-    "color_scale": "phase",
+    "color_scale": "mygbm",
     "regression_hypotheses": [
       {"name": "cyc_7d",         "description": "7-Day Ring",        "target_columns": ["target_sin_7d", "target_cos_7d"], "regression_type": "linear"},
       {"name": "weekday_weekend","description": "Weekday vs Weekend", "target_columns": ["target_is_weekend"],              "regression_type": "logistic"},
@@ -69,7 +69,20 @@
   },
   {
     "dataframe_path": "months.csv",
-    "color_scale": "Phase",
+    "color_map": {
+      "January":   "rgb(33, 126, 184)",
+      "February":  "rgb(41, 146, 194)",
+      "March":     "rgb(84, 200, 223)",
+      "April":     "rgb(225, 233, 209)",
+      "May":       "rgb(231, 176, 0)",
+      "June":      "rgb(209, 109, 0)",
+      "July":      "rgb(198, 84, 0)",
+      "August":    "rgb(209, 109, 0)",
+      "September": "rgb(231, 176, 0)",
+      "October":   "rgb(225, 233, 209)",
+      "November":  "rgb(84, 200, 223)",
+      "December":  "rgb(41, 146, 194)"
+    },
     "regression_hypotheses": [
       {"name": "cyc_12m",  "description": "12-Month Ring",   "target_columns": ["target_sin_12m", "target_cos_12m"], "regression_type": "linear"},
       {"name": "season",   "description": "Season",          "target_columns": ["target_season"],                   "regression_type": "multinomial"},

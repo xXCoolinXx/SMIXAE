@@ -77,6 +77,19 @@ class ProbeRunConfig:
 # Pipeline helpers
 # ======================================================================
 
+_SCORE_TYPE: dict[str, str] = {
+    "linear": "r2",
+    "ridge": "r2",
+    "logistic": "acc",
+    "multinomial": "acc",
+}
+
+
+def _regression_score_type(regression_type: str) -> str:
+    """Map regression_type to the short label used in camera-ready PNG filenames."""
+    return _SCORE_TYPE.get(regression_type, "score")
+
+
 def _log_expert_summary(experts: list, n_classes: int, sort_metric: str) -> None:
     """Print a ranked console summary table for a list of scored experts."""
     for i, expert in enumerate(experts):
@@ -326,6 +339,7 @@ def run_pipeline(
                     "hyp_score": None if (hyp_score != hyp_score) else hyp_score,
                     "fisher_score": None if fisher_val is None or fisher_val != fisher_val else fisher_val,
                     "n_points": expert.expert_activations.shape[0],
+                    "score_type": _regression_score_type(hyp.get("regression_type", "")),
                 }
                 hyp_entries.append(_make_plot_entry(expert, btn_label, expert_meta, hypothesis_name=name))
             per_hypothesis_entries[name] = (desc, hyp_entries)
@@ -341,6 +355,7 @@ def run_pipeline(
         expert_entries,
         f"{subdir} — Expert Analysis",
         per_hypothesis_entries=per_hypothesis_entries or None,
+        experiment_id=run_name or "",
     )
     output_path = os.path.join(output_dir, "experts.html")
     with open(output_path, "w", encoding="utf-8") as f:
@@ -493,6 +508,7 @@ def single(
         run_cfg=run_cfg,
         final_output_dir=final_output_dir,
         dataset_name=dataset_name,
+        run_name=run_hash,
     )
 
     del model, sae

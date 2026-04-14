@@ -44,6 +44,9 @@ _HTML_TEMPLATE = """\
     .tab-pane {{ display:none; flex-direction:column; gap:8px; }}
     .tab-pane.active {{ display:flex; }}
     .plot-box {{ width:100%; height:650px; }}
+    .save-bar {{ margin:2px 0 4px; display:flex; gap:6px; }}
+    .save-btn {{ padding:3px 10px; cursor:pointer; border:1px solid #888;
+                 border-radius:3px; background:#f8f8f8; font-size:12px; }}
   </style>
 </head>
 <body>
@@ -52,7 +55,17 @@ _HTML_TEMPLATE = """\
   {tab_panes}
   <script>
     const FIGURES = {{{figures_json}}};
+    const EXPERIMENT_ID = {experiment_id_js};
+    const DATASET_TITLE = {dataset_title_js};
     const rendered = new Set();
+    function savePNG(divId, label, suffix) {{
+      const clean = label.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+      const filename = [EXPERIMENT_ID, DATASET_TITLE, clean, suffix].join('__');
+      Plotly.relayout(divId, {{showlegend: false}});
+      Plotly.downloadImage(divId,
+        {{format: 'png', filename: filename, width: 1100, height: 850, scale: 2}});
+      setTimeout(() => Plotly.relayout(divId, {{showlegend: true}}), 1000);
+    }}
     function renderTab(idx) {{
       document.querySelectorAll('.tab-pane').forEach((pane, i) => {{
         if (i !== idx) return;
@@ -81,6 +94,7 @@ def build_dataset_html(
     expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]]],
     dataset_title: str,
     per_hypothesis_entries: "dict[str, tuple[str, list[tuple[str, Figure, Figure | None, dict[str, float]]]]] | None" = None,
+    experiment_id: str = "",
 ) -> str:
     """Build a self-contained HTML page containing Plotly figures for experts.
 
@@ -111,8 +125,8 @@ def build_dataset_html(
         A complete UTF-8 HTML document as a string.
     """
     if per_hypothesis_entries:
-        return _build_per_hypothesis_html(per_hypothesis_entries, dataset_title)
-    return _build_flat_html(expert_entries, dataset_title)
+        return _build_per_hypothesis_html(per_hypothesis_entries, dataset_title, experiment_id)
+    return _build_flat_html(expert_entries, dataset_title, experiment_id)
 
 
 def _reg_scores_table(reg_scores: dict[str, float]) -> str:
@@ -140,7 +154,9 @@ def _reg_scores_table(reg_scores: dict[str, float]) -> str:
 def _build_flat_html(
     expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]]],
     dataset_title: str,
+    experiment_id: str = "",
 ) -> str:
+    import json as _json
     tab_buttons: list[str] = []
     tab_panes: list[str] = []
     figures_json_parts: list[str] = []
@@ -154,11 +170,26 @@ def _build_flat_html(
 
         tab_buttons.append(f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">{tab_label}</button>')
 
-        plot_divs = f'{_reg_scores_table(reg_scores)}\n    <div class="plot-box" id="{scatter_id}"></div>'
+        safe_label = tab_label.replace("'", "").replace('"', "")
+        save_means_html = ""
         if mean_fig is not None:
             mean_id = f"mean_{idx}"
-            plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
+            save_means_html = (
+                f'<button class="save-btn" '
+                f"onclick=\"savePNG('{mean_id}','{safe_label}','means')\">Save means</button>"
+            )
             figures_json_parts.append(f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}')
+
+        save_bar = (
+            f'<div class="save-bar">'
+            f'<button class="save-btn" '
+            f"onclick=\"savePNG('{scatter_id}','{safe_label}','scatter')\">Save scatter</button>"
+            f"{save_means_html}"
+            f"</div>"
+        )
+        plot_divs = f'{_reg_scores_table(reg_scores)}\n    {save_bar}\n    <div class="plot-box" id="{scatter_id}"></div>'
+        if mean_fig is not None:
+            plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
 
         tab_panes.append(f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>')
         figures_json_parts.append(f'"{scatter_id}": {pio.to_json(scatter_fig, engine="json")}')
@@ -168,6 +199,8 @@ def _build_flat_html(
         tab_buttons="\n    ".join(tab_buttons),
         tab_panes="\n  ".join(tab_panes),
         figures_json=",\n    ".join(figures_json_parts),
+        experiment_id_js=_json.dumps(experiment_id or ""),
+        dataset_title_js=_json.dumps(dataset_title.lower().replace(" ", "_")),
     )
     return html.replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
 
@@ -175,6 +208,7 @@ def _build_flat_html(
 def _build_per_hypothesis_html(
     per_hypothesis_entries: "dict[str, tuple[str, list]]",
     dataset_title: str,
+    experiment_id: str = "",
 ) -> str:
     """All hypothesis tab-rows at top; single shared plot area below.
 
@@ -216,6 +250,7 @@ def _build_per_hypothesis_html(
                 "hyp_score":   expert_meta.get("hyp_score"),
                 "fisher_score": expert_meta.get("fisher_score"),
                 "n_points":    expert_meta.get("n_points"),
+                "score_type":  expert_meta.get("score_type", "score"),
                 "has_mean":    has_mean,
                 "reg_scores":  clean_scores,
             }
@@ -238,6 +273,8 @@ def _build_per_hypothesis_html(
     figures_json = ",\n    ".join(figures_json_parts)
     meta_json = _json.dumps(meta_entries)
     rows_html = "\n  ".join(hyp_rows_html)
+    experiment_id_js = _json.dumps(experiment_id or "")
+    dataset_title_js = _json.dumps(dataset_title.lower().replace(" ", "_"))
 
     html = f"""\
 <!DOCTYPE html>
@@ -262,6 +299,9 @@ def _build_per_hypothesis_html(
     #expert-header {{ font-size:14px; color:#222; margin-bottom:6px;
                       padding:4px 0; }}
     .plot-box {{ width:100%; height:650px; }}
+    #save-bar {{ margin:2px 0 6px; display:none; gap:6px; }}
+    .save-btn {{ padding:3px 10px; cursor:pointer; border:1px solid #888;
+                 border-radius:3px; background:#f8f8f8; font-size:12px; }}
   </style>
 </head>
 <body>
@@ -271,6 +311,11 @@ def _build_per_hypothesis_html(
   </div>
   <div id="plot-area">
     <div id="expert-header"></div>
+    <div id="save-bar" style="display:none">
+      <button class="save-btn" onclick="saveFigurePNG('active-scatter','scatter')">Save scatter</button>
+      <button class="save-btn" id="save-means-btn" style="display:none"
+              onclick="saveFigurePNG('active-mean','means')">Save means</button>
+    </div>
     <div id="reg-scores-container"></div>
     <div class="plot-box" id="active-scatter"></div>
     <div class="plot-box" id="active-mean" style="display:none"></div>
@@ -278,6 +323,23 @@ def _build_per_hypothesis_html(
   <script>
     const FIGURES = {{{figures_json}}};
     const META = {meta_json};
+    const EXPERIMENT_ID = {experiment_id_js};
+    const DATASET_TITLE = {dataset_title_js};
+    let currentKey = null;
+
+    function saveFigurePNG(divId, suffix) {{
+      const m = META[currentKey];
+      if (!m) return;
+      const scoreLabel = m.score_type || 'score';
+      const score = m.hyp_score != null ? m.hyp_score.toFixed(4) : 'NA';
+      const filename = [EXPERIMENT_ID, DATASET_TITLE,
+                        'E' + m.expert_id, m.hyp_name,
+                        scoreLabel, score, suffix].join('__');
+      Plotly.relayout(divId, {{showlegend: false}});
+      Plotly.downloadImage(divId,
+        {{format: 'png', filename: filename, width: 1100, height: 850, scale: 2}});
+      setTimeout(() => Plotly.relayout(divId, {{showlegend: true}}), 1000);
+    }}
 
     function buildRegTable(scores) {{
       if (!scores || !Object.keys(scores).length) return '';
@@ -299,11 +361,12 @@ def _build_per_hypothesis_html(
     }}
 
     function showExpert(hyp, rank) {{
+      currentKey = hyp + '_' + rank;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       const btn = document.querySelector('[data-hyp="' + hyp + '"][data-rank="' + rank + '"]');
       if (btn) btn.classList.add('active');
 
-      const key = hyp + '_' + rank;
+      const key = currentKey;
       const m = META[key];
       if (!m) return;
 
@@ -313,6 +376,10 @@ def _build_per_hypothesis_html(
       if (m.n_points != null) parts.push(m.n_points + ' points');
       document.getElementById('expert-header').innerHTML = parts.join(' &nbsp;|&nbsp; ');
       document.getElementById('reg-scores-container').innerHTML = buildRegTable(m.reg_scores);
+
+      document.getElementById('save-bar').style.display = 'flex';
+      document.getElementById('save-means-btn').style.display =
+        (m.has_mean) ? 'inline-block' : 'none';
 
       Plotly.newPlot('active-scatter',
         FIGURES['scatter_' + key].data,
