@@ -243,10 +243,10 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
 def build_newline_table(results: dict) -> str:
     nine_b_models = [mk for mk in results if "9b" in mk]
     n_models = len(nine_b_models)
-    line_length_keys = ["newline_150", "newline_80"]
+    line_length_keys = ["newline_80", "newline_150"]
 
     # Columns: Line Length | [Top-1  Top-5μ] × n_models
-    col_spec = "l " + " ".join(["rr"] * n_models)
+    col_spec = "l " + " ".join(["cc"] * n_models)
 
     rows: list[str] = []
     rows.append(r"\begin{table}[htbp]")
@@ -281,7 +281,7 @@ def build_newline_table(results: dict) -> str:
     # Header row 2
     h2_parts = ["Line length"]
     for _ in nine_b_models:
-        h2_parts += [r"Top-1 $\Delta R^2_{\text{periodic}}$", r"Top-5$_{\mu}$ $\Delta R^2_{\text{periodic}}$"]
+        h2_parts += [r"Top-1 $\Delta R^2_{\text{per.}}$", r"Top-5$_{\mu}$ $\Delta R^2_{\text{per.}}$"]
     rows.append(" & ".join(h2_parts) + r" \\")
     rows.append(r"\midrule")
 
