@@ -495,6 +495,19 @@ def _strip_prefix(label: str) -> str:
     return re.sub(r"^\d+_", "", label)
 
 
+def extract_layer_from_hook(hook_name: str) -> int | None:
+    """Extract the first integer layer index from a hook name string.
+
+    Args:
+        hook_name: Hook point name such as ``"model.layers.11"`` or ``"blocks.5.hook_resid_post"``.
+
+    Returns:
+        The first integer found after a ``.`` separator, or ``None`` if no integer is present.
+    """
+    m = re.search(r"\.(\d+)(?:\.|$)", hook_name)
+    return int(m.group(1)) if m else None
+
+
 @dataclasses.dataclass
 class DatasetConfig:
     """Per-dataset configuration for data loading and visualization.

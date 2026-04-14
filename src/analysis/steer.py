@@ -1,32 +1,24 @@
-"""Steering experiments using SMIXAE expert coordinate substitution.
+"""Steering experiments using SMIXAE activation patching.
 
-Loads a trained SMIXAE, identifies the top expert(s) for the hours-of-day
-probing task by Fisher discriminant score, and runs two causal interventions
-using pre-generated prompt datasets from datasets/steering/:
+Loads a trained SMIXAE, selects the top experts for the hours-of-day probing
+task from the cyc_24h regression hypothesis in results.json, and runs a causal
+intervention using the current-time steering prompt dataset.
 
-  Task 1 — Current time (hours_current_time.csv):
-      "You glance at the clock and find it is X:00YM. Your friend Z asks
-       you for the time, and you respond, saying it is"
-      Steer Source_Hour representation → Target_Hour class mean.
-
-  Task 2 — Elapsed time (hours_elapsed_time.csv):
-      "You check your phone, and see that the current time is X:00YM.
-       You realize that, since Z:00WM, the amount of hours that has passed is"
-      Steer Current_Hour representation → (Current_Hour + target_delta_hours).
-
-Steering mechanism (coordinate substitution):
-    z        = sae.encode(x_last)                  # bottleneck activations at last token
-    contrib  = decode_single_expert(z, expert_id)  # expert's contribution to residual stream
-    x_steered = x_last - contrib + decode_single_expert(z_target, expert_id)
-    where z_target has only expert_id set to the target class mean.
+Steering mechanism (full-sequence activation patching):
+    At every token position where expert e is active (norm > 0 after threshold):
+        x_steered[pos] = x[pos]
+                        - decode(z[pos, e, :])              # subtract expert's current contribution
+                        + decode(mean_bottleneck[c_target])  # inject target class representation
+    Only positions where the expert fires are patched; inactive positions are untouched.
 """
 
 from __future__ import annotations
 
+import json
 import os
 import re
 from contextlib import contextmanager
-from typing import Generator, Optional
+from typing import Generator
 
 import pandas as pd
 import torch
@@ -34,17 +26,60 @@ import typer
 from tqdm import tqdm
 
 from analysis.utils import (
-    ActivationBatch,
     DatasetConfig,
     ExpertFilterConfig,
     _strip_prefix,
     collect_activations,
+    extract_layer_from_hook,
     get_sae_activations,
     load_llm,
     load_sae,
 )
 
 app = typer.Typer()
+
+
+# ── Expert selection from results.json ─────────────────────────────────────────
+
+
+def load_experts_from_results(
+    results_path: str,
+    run_name: str,
+    dataset_name: str = "hours",
+    hypothesis: str = "cyc_24h",
+    n_top: int = 2,
+) -> list[tuple[int, float]]:
+    """Load top expert IDs from the probing results JSON.
+
+    Navigates to ``data[run_name]["probe"][dataset_name]["hypotheses"][hypothesis]``
+    and returns the top ``n_top`` entries as ``(expert_id, score)`` tuples.
+
+    Raises:
+        FileNotFoundError: If *results_path* does not exist.
+        KeyError: If any navigation key is missing.
+    """
+    with open(results_path) as f:
+        data = json.load(f)
+
+    try:
+        run_data = data[run_name]
+    except KeyError:
+        raise KeyError(f"Run '{run_name}' not found in {results_path}. Available: {list(data.keys())}")
+
+    try:
+        probe_data = run_data["probe"][dataset_name]
+    except KeyError:
+        available = list(run_data.get("probe", {}).keys())
+        raise KeyError(f"Dataset '{dataset_name}' not found under probe for run '{run_name}'. Available: {available}")
+
+    try:
+        hyp_data = probe_data["hypotheses"][hypothesis]
+    except KeyError:
+        available = list(probe_data.get("hypotheses", {}).keys())
+        raise KeyError(f"Hypothesis '{hypothesis}' not found under {dataset_name}. Available: {available}")
+
+    experts = hyp_data["top10_experts"]
+    return [(int(e["expert_id"]), float(e["score"])) for e in experts[:n_top]]
 
 
 # ── Steering primitives ───────────────────────────────────────────────────────
@@ -93,14 +128,15 @@ def steering_hook(
     tgt_means: torch.Tensor,
     device: str,
 ) -> Generator[None, None, None]:
-    """Context manager that installs a coordinate-substitution hook on ``hook_point``.
+    """Context manager that installs a full-sequence activation-patching hook.
 
     ``tgt_means`` is ``(batch, d_bottleneck)`` — one target per prompt in the batch.
 
     At every forward pass the hook:
-    1. Encodes the last-sequence-position activation through the SAE.
-    2. Subtracts the expert's current contribution.
-    3. Adds the decoded per-item target class mean for that expert.
+    1. Encodes ALL token positions through the SAE.
+    2. For each position where the expert is active, subtracts its current
+       contribution and adds the decoded target class mean.
+    3. Inactive positions are left untouched.
 
     The hook is removed on context exit.
     """
@@ -110,18 +146,28 @@ def steering_hook(
 
     def _hook(_module, _input, output):
         x = output[0] if isinstance(output, tuple) else output  # (batch, seq, d_model)
-        x_last = x[:, -1:, :].to(device=sae_device, dtype=sae_dtype)  # (batch, 1, d_model)
+        B, S, D = x.shape
+        x_flat = x.reshape(B * S, D).to(device=sae_device, dtype=sae_dtype)
 
         with torch.no_grad():
-            z = sae.encode(x_last.squeeze(1))  # (batch, n_experts, d_bottleneck)
-            contrib = decode_single_expert(sae, z, expert_id)  # (batch, d_model)
+            z = sae.encode(x_flat)  # (B*S, n_experts, d_bottleneck)
+            expert_norms = z[:, expert_id, :].norm(dim=-1)  # (B*S,)
+            active_mask = expert_norms > 0  # encode() already applies threshold
 
+            # Current contribution of this expert
+            contrib = decode_single_expert(sae, z, expert_id)  # (B*S, d_model)
+
+            # Target contribution: expand per-item targets across all positions
+            tgt_expanded = tgt.repeat_interleave(S, dim=0)  # (B*S, d_bottleneck)
             z_tgt = torch.zeros_like(z)
-            z_tgt[:, expert_id, :] = tgt  # (batch, d_bottleneck) — per-item targets
-            tgt_contrib = decode_single_expert(sae, z_tgt, expert_id)  # (batch, d_model)
+            z_tgt[:, expert_id, :] = tgt_expanded
+            tgt_contrib = decode_single_expert(sae, z_tgt, expert_id)  # (B*S, d_model)
 
-        x_steered = x_last.squeeze(1) - contrib + tgt_contrib
-        x[:, -1, :] = x_steered.to(dtype=x.dtype)
+            # Patch: subtract current, add target, only at active positions
+            delta = (-contrib + tgt_contrib) * active_mask.unsqueeze(-1).float()
+            x_steered = x_flat + delta
+
+        x.copy_(x_steered.reshape(B, S, D).to(dtype=x.dtype))
         return (x,) + output[1:] if isinstance(output, tuple) else x
 
     handle = model.get_submodule(hook_point).register_forward_hook(_hook)
@@ -137,19 +183,6 @@ def steering_hook(
 def build_hour_map(label_names: dict[int, str]) -> dict[str, int]:
     """Build a mapping from stripped hour string (e.g. '6PM') to class id."""
     return {_strip_prefix(v): k for k, v in label_names.items()}
-
-
-def hour_plus_delta(hour_str: str, delta: int, hour_map: dict[str, int]) -> str | None:
-    """Return the hour string that is ``delta`` hours after ``hour_str``.
-
-    Uses the sorted hour_map keys as a 24-element cycle.
-    Returns ``None`` if the result is not in the map.
-    """
-    hours_ordered = list(hour_map.keys())  # already in class-id order
-    if hour_str not in hour_map:
-        return None
-    idx = hours_ordered.index(hour_str)
-    return hours_ordered[(idx + delta) % len(hours_ordered)]
 
 
 # ── Generation helpers ────────────────────────────────────────────────────────
@@ -175,8 +208,6 @@ def generate_text_batch(
 
 # Matches "3PM", "11AM", "3:00 PM", "11:00am", etc.
 _TIME_RE = re.compile(r"\b(\d{1,2})(?::\d{2})?\s*([AaPp][Mm])\b")
-# Matches the first integer in the output (for elapsed hours)
-_NUM_RE = re.compile(r"\b(\d+)\b")
 
 
 def _extract_time(text: str) -> str | None:
@@ -187,39 +218,18 @@ def _extract_time(text: str) -> str | None:
     return None
 
 
-def _extract_number(text: str) -> int | None:
-    """Return first integer found in text, or None."""
-    m = _NUM_RE.search(text)
-    return int(m.group(1)) if m else None
-
-
 def _score_record(record: dict) -> dict:
     """Return scoring fields for a single steering record."""
-    if record["task"] == "current_time":
-        # Baseline should say the source hour; steered output should say the target hour.
-        src = record["src_hour"]
-        tgt = record["tgt_hour"]
-        bp = _extract_time(record["baseline_output"])
-        sp = _extract_time(record["steered_output"])
-        return dict(
-            baseline_pred=bp,
-            steered_pred=sp,
-            baseline_correct=(bp == src) if bp is not None else False,
-            steered_correct=(sp == tgt) if sp is not None else False,
-        )
-    else:
-        # Baseline: should output expected_hours (unsteered elapsed time).
-        # Steered: should output steered_expected_hours (elapsed time after shifting current hour).
-        baseline_tgt = record.get("expected_hours")
-        steered_tgt = record.get("steered_expected_hours")
-        bp = _extract_number(record["baseline_output"])
-        sp = _extract_number(record["steered_output"])
-        return dict(
-            baseline_pred=bp,
-            steered_pred=sp,
-            baseline_correct=(bp == baseline_tgt) if bp is not None else False,
-            steered_correct=(sp == steered_tgt) if sp is not None else False,
-        )
+    src = record["src_hour"]
+    tgt = record["tgt_hour"]
+    bp = _extract_time(record["baseline_output"])
+    sp = _extract_time(record["steered_output"])
+    return dict(
+        baseline_pred=bp,
+        steered_pred=sp,
+        baseline_correct=(bp == src) if bp is not None else False,
+        steered_correct=(sp == tgt) if sp is not None else False,
+    )
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
@@ -232,32 +242,43 @@ def main(
     hook_point: str = typer.Option(..., help="Hook point used during SAE training"),
     hours_dataset: str = typer.Option(
         "datasets/probing/hours.csv",
-        help="CSV with Sentence/Label columns for expert discovery",
+        help="CSV with Sentence/Label columns for class-mean computation",
     ),
     task1_dataset: str = typer.Option(
         "datasets/steering/hours_current_time.csv",
-        help="Steering prompt CSV for Task 1 (current time)",
-    ),
-    task2_dataset: str = typer.Option(
-        "datasets/steering/hours_elapsed_time.csv",
-        help="Steering prompt CSV for Task 2 (elapsed time)",
+        help="Steering prompt CSV (current time task)",
     ),
     output_dir: str = typer.Option("steer_results", help="Output directory"),
-    n_top_experts: int = typer.Option(10, help="Number of top Fisher experts to steer with"),
-    n_probing_samples: int = typer.Option(1000, help="Number of samples for the expert-discovery probing pass"),
-    target_delta_hours: int = typer.Option(1, help="Task 2: hours to add to Current_Hour to get the steering target"),
+    # ── Expert selection ──
+    results_json: str = typer.Option(
+        "results/results.json",
+        help="Path to results.json for hypothesis-based expert selection",
+    ),
+    run_name: str = typer.Option(
+        "",
+        help="Run name key in results.json (e.g. gemma_2_9b_l20). Required.",
+    ),
+    hypothesis: str = typer.Option(
+        "cyc_24h",
+        help="Regression hypothesis name for expert selection",
+    ),
+    n_top_experts: int = typer.Option(2, help="Number of top experts from hypothesis"),
+    # ── Probing ──
+    n_probing_samples: int = typer.Option(1000, help="Number of samples for the probing pass"),
+    # ── Generation ──
     generate_tokens: int = typer.Option(20, help="Max new tokens to generate per prompt"),
     device: str = typer.Option("cuda", help="Device"),
     llm_batch_size: int = typer.Option(16, help="Batch size for probing LLM forward pass"),
     sae_batch_size: int = typer.Option(2048, help="Batch size for SAE encoding"),
     gen_batch_size: int = typer.Option(32, help="Batch size for text generation"),
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold for expert activity"),
-    min_active_fraction: float = typer.Option(0.05, help="Minimum fraction of samples an expert must fire on (0–1)"),
-    expert_ids: Optional[str] = typer.Option(
-        None,
-        help="Comma-separated expert IDs to steer (e.g. '42,137,512'). "
-             "Overrides automatic Fisher-based discovery. The probing pass still runs "
-             "to compute class means for the specified experts.",
+    min_active_fraction: float = typer.Option(0.05, help="Minimum fraction of samples an expert must fire on"),
+    # ── Cross-layer sweep ──
+    sweep_layers: bool = typer.Option(False, help="Sweep steering across multiple layers"),
+    layer_start: int = typer.Option(0, help="First layer to sweep (inclusive)"),
+    layer_end: int = typer.Option(
+        -1,
+        help="Last layer to sweep (inclusive). -1 means trained_layer - 1.",
     ),
 ):
     """Run SMIXAE steering experiments on hours-of-day prompts."""
@@ -269,8 +290,21 @@ def main(
     tokenizer.padding_side = "right"
     sae = load_sae(checkpoint_path, device)
 
-    # ── 2. Expert discovery via hours probing ─────────────────────────
-    print(f"\nDiscovering experts from {hours_dataset}…")
+    # ── 2. Expert selection ────────────────────────────────────────────
+    if not run_name:
+        raise typer.BadParameter("--run-name is required.")
+    selected_experts = load_experts_from_results(
+        results_json, run_name, dataset_name="hours",
+        hypothesis=hypothesis, n_top=n_top_experts,
+    )
+
+    print(
+        f"\nSelected {len(selected_experts)} expert(s):"
+        + "".join(f"\n  Expert {eid}  score={score:.4f}" for eid, score in selected_experts)
+    )
+
+    # ── 3. Probing pass (computes class means) ────────────────────────
+    print(f"\nCollecting activations from {hours_dataset} for class means…")
     hours_cfg = DatasetConfig(
         dataframe_path=hours_dataset,
         text_column="Sentence",
@@ -301,39 +335,23 @@ def main(
     )
     del batch
 
-    print(f"Scoring Fisher for {len(experts)} active experts…")
-    for e in tqdm(experts):
-        e.evaluate_fisher()
+    id_set = {eid for eid, _ in selected_experts}
+    found_map = {e.expert_id: e for e in experts if e.expert_id in id_set}
+    missing = id_set - set(found_map)
+    if missing:
+        print(f"Warning: the following expert IDs were not active: {sorted(missing)}")
 
-    if expert_ids is not None:
-        id_list = [int(x.strip()) for x in expert_ids.split(",")]
-        id_set = set(id_list)
-        found_map = {e.expert_id: e for e in experts if e.expert_id in id_set}
-        missing = id_set - set(found_map)
-        if missing:
-            print(f"Warning: the following expert IDs were not active (below threshold or min_active_fraction): {sorted(missing)}")
-        top_experts = [found_map[i] for i in id_list if i in found_map]
-        print(
-            f"\nUsing {len(top_experts)} manually specified expert(s):"
-            + "".join(f"\n  Expert {e.expert_id}  fisher={e.fisher_score:.4f}" for e in top_experts)
-        )
-    else:
-        experts.sort(key=lambda e: e.fisher_score or 0.0, reverse=True)
-        top_experts = experts[:n_top_experts]
-        print(
-            f"\nTop {n_top_experts} expert(s) by Fisher score:"
-            + "".join(f"\n  Expert {e.expert_id}  fisher={e.fisher_score:.4f}" for e in top_experts)
-        )
+    top_experts = [found_map[eid] for eid, _ in selected_experts if eid in found_map]
+    if not top_experts:
+        raise RuntimeError("None of the selected experts are active. Try lowering --active-threshold or --min-active-fraction.")
 
     assert label_names is not None, "Hours dataset must have labels"
     hour_map = build_hour_map(label_names)  # stripped_hour → class_id
 
     df1 = pd.read_csv(task1_dataset)
-    df2 = pd.read_csv(task2_dataset)
     sae_device = next(sae.parameters()).device
 
-    # ── 3. Pre-filter rows and pre-generate baselines ─────────────────
-    # Baselines don't depend on the expert — generate once, reuse for all.
+    # ── 4. Pre-filter rows and pre-generate baselines ─────────────────
     t1_rows: list[dict] = []
     for _, row in df1.iterrows():
         tgt_id = hour_map.get(row["Target_Hour"])
@@ -341,21 +359,6 @@ def main(
             t1_rows.append(dict(
                 src_hour=row["Source_Hour"], tgt_hour=row["Target_Hour"],
                 tgt_id=tgt_id, prompt=row["Prompt"],
-            ))
-
-    t2_rows: list[dict] = []
-    for _, row in df2.iterrows():
-        tgt_hour = hour_plus_delta(row["Current_Hour"], target_delta_hours, hour_map)
-        tgt_id = hour_map.get(tgt_hour) if tgt_hour else None
-        expected = int(row["Expected_Hours"])
-        steered_expected = expected + target_delta_hours
-        # Skip rows where steering produces the same answer as baseline (no measurable effect).
-        if tgt_id is not None and steered_expected != expected:
-            t2_rows.append(dict(
-                src_hour=row["Current_Hour"], tgt_hour=tgt_hour, tgt_id=tgt_id,
-                start_hour=row["Start_Hour"], expected_hours=expected,
-                steered_expected_hours=steered_expected,
-                prompt=row["Prompt"],
             ))
 
     # Switch to left-padding for generation
@@ -367,91 +370,108 @@ def main(
             out.extend(generate_text_batch(model, tokenizer, prompts[i : i + gen_batch_size], generate_tokens, device))
         return out
 
-    print(f"\nPre-generating baselines ({len(t1_rows)} Task 1 + {len(t2_rows)} Task 2)…")
+    print(f"\nPre-generating baselines ({len(t1_rows)} prompts)…")
     t1_baselines = _gen_chunked([r["prompt"] for r in t1_rows])
-    t2_baselines = _gen_chunked([r["prompt"] for r in t2_rows])
 
-    # ── 4. Steering loop (batched per expert) ─────────────────────────
+    # ── 5. Determine layers to steer at ────────────────────────────────
+    trained_layer = extract_layer_from_hook(hook_point)
+    if sweep_layers:
+        if trained_layer is None:
+            raise typer.BadParameter(f"Cannot extract layer number from --hook-point '{hook_point}'")
+        sweep_end = layer_end if layer_end >= 0 else trained_layer - 1
+        layers = list(range(layer_start, sweep_end + 1))
+        print(f"\nSweeping {len(layers)} layers: {layers[0]}–{layers[-1]} (trained at layer {trained_layer})")
+    else:
+        layers = None  # use trained hook_point directly
+
+    # ── 6. Steering loop ───────────────────────────────────────────────
     records: list[dict] = []
 
-    for expert in top_experts:
-        class_means = compute_class_means(expert)
-        print(f"\n── Expert {expert.expert_id} ──")
+    def _steer_at_layer(target_hook: str, layer_label: int | None = None):
+        """Run steering for all experts at the given hook point."""
+        for expert in top_experts:
+            class_means = compute_class_means(expert)
+            label_tag = f"layer {layer_label}, " if layer_label is not None else ""
+            print(f"\n── {label_tag}Expert {expert.expert_id} ──")
 
-        # ── Task 1: Current time ──────────────────────────────────────
-        t1_valid = [(i, r) for i, r in enumerate(t1_rows) if r["tgt_id"] in class_means]
-        t1_tgt_means = torch.stack([class_means[r["tgt_id"]] for _, r in t1_valid]).to(device=sae_device)
+            t1_valid = [(i, r) for i, r in enumerate(t1_rows) if r["tgt_id"] in class_means]
+            t1_tgt_means = torch.stack([class_means[r["tgt_id"]] for _, r in t1_valid]).to(device=sae_device)
 
-        print(f"Task 1: {len(t1_valid)} prompts (batched, gen_batch_size={gen_batch_size})")
-        t1_steered: list[str] = []
-        for chunk_start in tqdm(range(0, len(t1_valid), gen_batch_size), desc="  Task 1"):
-            chunk = t1_valid[chunk_start : chunk_start + gen_batch_size]
-            chunk_tgt = t1_tgt_means[chunk_start : chunk_start + gen_batch_size]
-            prompts = [r["prompt"] for _, r in chunk]
-            with steering_hook(model, hook_point, sae, expert.expert_id, chunk_tgt, device):
-                t1_steered.extend(generate_text_batch(model, tokenizer, prompts, generate_tokens, device))
+            print(f"Steering: {len(t1_valid)} prompts (gen_batch_size={gen_batch_size})")
+            t1_steered: list[str] = []
+            for chunk_start in tqdm(range(0, len(t1_valid), gen_batch_size), desc="  Steering"):
+                chunk = t1_valid[chunk_start : chunk_start + gen_batch_size]
+                chunk_tgt = t1_tgt_means[chunk_start : chunk_start + gen_batch_size]
+                prompts = [r["prompt"] for _, r in chunk]
+                with steering_hook(model, target_hook, sae, expert.expert_id, chunk_tgt, device):
+                    t1_steered.extend(generate_text_batch(model, tokenizer, prompts, generate_tokens, device))
 
-        for (i, r), steered in zip(t1_valid, t1_steered):
-            records.append(dict(
-                task="current_time", expert_id=expert.expert_id, fisher=expert.fisher_score,
-                src_hour=r["src_hour"], tgt_hour=r["tgt_hour"], start_hour=None,
-                prompt=r["prompt"], baseline_output=t1_baselines[i], steered_output=steered,
-            ))
+            for (i, r), steered in zip(t1_valid, t1_steered):
+                rec = dict(
+                    expert_id=expert.expert_id,
+                    src_hour=r["src_hour"], tgt_hour=r["tgt_hour"],
+                    prompt=r["prompt"], baseline_output=t1_baselines[i], steered_output=steered,
+                )
+                if layer_label is not None:
+                    rec["layer"] = layer_label
+                records.append(rec)
 
-        # ── Task 2: Elapsed time ──────────────────────────────────────
-        t2_valid = [(i, r) for i, r in enumerate(t2_rows) if r["tgt_id"] in class_means]
-        t2_tgt_means = torch.stack([class_means[r["tgt_id"]] for _, r in t2_valid]).to(device=sae_device)
+    if sweep_layers:
+        for L in layers:
+            layer_hook = f"model.layers.{L}"
+            print(f"\n{'=' * 60}")
+            print(f"Layer {L}  (hook: {layer_hook})")
+            print(f"{'=' * 60}")
+            _steer_at_layer(layer_hook, layer_label=L)
+    else:
+        _steer_at_layer(hook_point)
 
-        print(f"Task 2: {len(t2_valid)} prompts (delta={target_delta_hours}h)")
-        t2_steered: list[str] = []
-        for chunk_start in tqdm(range(0, len(t2_valid), gen_batch_size), desc="  Task 2"):
-            chunk = t2_valid[chunk_start : chunk_start + gen_batch_size]
-            chunk_tgt = t2_tgt_means[chunk_start : chunk_start + gen_batch_size]
-            prompts = [r["prompt"] for _, r in chunk]
-            with steering_hook(model, hook_point, sae, expert.expert_id, chunk_tgt, device):
-                t2_steered.extend(generate_text_batch(model, tokenizer, prompts, generate_tokens, device))
-
-        for (i, r), steered in zip(t2_valid, t2_steered):
-            records.append(dict(
-                task="elapsed_time", expert_id=expert.expert_id, fisher=expert.fisher_score,
-                src_hour=r["src_hour"], tgt_hour=r["tgt_hour"], start_hour=r["start_hour"],
-                expected_hours=r["expected_hours"],
-                steered_expected_hours=r["steered_expected_hours"],
-                prompt=r["prompt"],
-                baseline_output=t2_baselines[i], steered_output=steered,
-            ))
-
-    # ── 4. Score all records and save per-expert detail files ────────
+    # ── 7. Score all records and save ──────────────────────────────────
     df = pd.DataFrame(records)
     scores_dir = os.path.join(output_dir, "scores")
     os.makedirs(scores_dir, exist_ok=True)
-    score_cols = ["task", "src_hour", "tgt_hour", "start_hour", "expected_hours", "steered_expected_hours", "prompt"]
-    for expert_id, group in df.groupby("expert_id"):
+    score_cols = ["src_hour", "tgt_hour", "prompt"]
+    if sweep_layers:
+        score_cols.append("layer")
+
+    group_cols = ["expert_id", "layer"] if sweep_layers else ["expert_id"]
+    for group_key, group in df.groupby(group_cols):
         scored_rows = [dict(row[score_cols]) | _score_record(dict(row)) for _, row in group.iterrows()]
         score_df = pd.DataFrame(scored_rows)
-        score_path = os.path.join(scores_dir, f"expert_{expert_id}.csv")
+        if sweep_layers:
+            eid = group_key[0] if isinstance(group_key, tuple) else group_key
+            lid = group_key[1] if isinstance(group_key, tuple) else 0
+            score_path = os.path.join(scores_dir, f"layer_{lid}_expert_{eid}.csv")
+        else:
+            eid = group_key
+            score_path = os.path.join(scores_dir, f"expert_{eid}.csv")
         score_df.to_csv(score_path, index=False)
-    print(f"Saved per-expert detail scores ({len(top_experts)} files) → {scores_dir}/")
+    print(f"Saved detail scores → {scores_dir}/")
 
-    # ── 5. Summary report: one row per (expert, task) ─────────────────
+    # ── 8. Summary report ──────────────────────────────────────────────
     summary_rows = []
-    for expert_id, group in df.groupby("expert_id"):
-        fisher = group["fisher"].iloc[0]
-        for task, tgroup in group.groupby("task"):
-            scored = [_score_record(dict(row)) for _, row in tgroup.iterrows()]
-            n = len(scored)
-            baseline_acc = sum(r["baseline_correct"] for r in scored) / n if n else 0.0
-            steered_acc = sum(r["steered_correct"] for r in scored) / n if n else 0.0
-            summary_rows.append(dict(
-                expert_id=expert_id,
-                fisher=fisher,
-                task=task,
-                n_prompts=n,
-                baseline_accuracy=round(baseline_acc, 4),
-                steered_accuracy=round(steered_acc, 4),
-                delta_accuracy=round(steered_acc - baseline_acc, 4),
-            ))
-    summary_df = pd.DataFrame(summary_rows).sort_values(["task", "fisher"], ascending=[True, False])
+    summary_group_cols = group_cols
+    for group_key, group in df.groupby(summary_group_cols):
+        scored = [_score_record(dict(row)) for _, row in group.iterrows()]
+        n = len(scored)
+        baseline_acc = sum(r["baseline_correct"] for r in scored) / n if n else 0.0
+        steered_acc = sum(r["steered_correct"] for r in scored) / n if n else 0.0
+        row = dict(
+            n_prompts=n,
+            baseline_accuracy=round(baseline_acc, 4),
+            steered_accuracy=round(steered_acc, 4),
+            delta_accuracy=round(steered_acc - baseline_acc, 4),
+        )
+        if sweep_layers:
+            row["layer"] = group_key[1] if isinstance(group_key, tuple) else group_key
+            row["expert_id"] = group_key[0] if isinstance(group_key, tuple) else group_key
+        else:
+            row["expert_id"] = group_key
+        summary_rows.append(row)
+
+    summary_df = pd.DataFrame(summary_rows)
+    sort_cols = ["layer", "delta_accuracy"] if sweep_layers else ["delta_accuracy"]
+    summary_df = summary_df.sort_values(sort_cols, ascending=[True, False] if sweep_layers else [False])
     summary_path = os.path.join(output_dir, "summary.csv")
     summary_df.to_csv(summary_path, index=False)
     print(f"Saved summary ({len(summary_df)} rows) → {summary_path}")

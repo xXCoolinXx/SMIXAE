@@ -138,12 +138,11 @@ Analyzes how experts encode distance-since-newline (a continuous position signal
 
 ### `src/analysis/steer.py`
 
-Causal intervention script using **coordinate substitution**: for a target expert, subtracts its current contribution to the residual stream and adds the decoded mean bottleneck for a target class. Two tasks:
+Causal intervention script using **full-sequence activation patching**: at every token position where the target expert fires, subtracts its current decoded contribution and adds the decoded target class mean. Inactive positions are untouched.
 
-- **Task 1 (current time)**: `"Right now it is {src_hour}. What time is it?"` — steers the perceived current time.
-- **Task 2 (elapsed time)**: `"Right now it is {curr_hour}. How much time has it been since {start_hour}?"` — steers the current-time representation by `+target_delta_hours`, changing the perceived elapsed time.
+- **Current-time steering**: `"You glance at the clock and find it is {src_hour}. Your friend {name} asks you for the time, and you respond, saying it is"` — steers the perceived current time.
 
-Expert discovery reuses `collect_activations()` + `get_sae_activations()` from `utils.py`. Output: `steering_results.csv` with columns `task`, `expert_id`, `src_hour`, `tgt_hour`, `start_hour`, `prompt`, `baseline_output`, `steered_output`. Exposed via CLI as `smixae steer main`.
+Expert selection reads `results.json` and picks the top experts by `cyc_24h` regression hypothesis R² (the hypothesis that best matches circular hour-of-day structure). A probing pass still runs to compute per-class bottleneck means via `collect_activations()` + `get_sae_activations()`. Output: `summary.csv` with per-expert accuracy, plus `scores/` directory with per-prompt detail. Exposed via CLI as `smixae steer main`.
 
 ### `src/analysis/scatter3d.py`
 
@@ -384,5 +383,4 @@ smixae steer main \
 
 ## Known TODOs
 
-- [ ] Refine Task 2 (elapsed-time steering) — the exact intervention point (current vs start time token) and evaluation metric are still being determined
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
