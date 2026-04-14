@@ -14,6 +14,7 @@ from analysis.pretokenize import app as pretokenize
 from analysis.steer import app as steer
 from cli.train import train
 from latex.camera_ready import figures as latex_figures
+from latex.save_server import save_server as latex_save_server
 from latex.tables import generate as latex_tables
 
 app = typer.Typer(name="smixae", help="SMIXAE research toolkit.")
@@ -29,6 +30,7 @@ app.add_typer(pretokenize, name="pretokenize", help="Pretokenize a dataset for f
 latex_app = typer.Typer(help="LaTeX output utilities (tables and camera-ready figures).")
 latex_app.command(name="tables", help="Generate probing and newline LaTeX tables.")(latex_tables)
 latex_app.command(name="figures", help="Assemble camera-ready PNGs into LaTeX figure files.")(latex_figures)
+latex_app.command(name="save-server", help="Start the local save server for camera-ready figure collection.")(latex_save_server)
 app.add_typer(latex_app, name="latex", help="LaTeX output utilities.")
 
 

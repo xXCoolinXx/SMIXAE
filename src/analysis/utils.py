@@ -23,6 +23,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
+from analysis._html_save import SAVE_CLIENT_JS
 from analysis.scatter3d import plot_3d_scatter
 from smixae import SMIXAE
 
@@ -35,6 +36,7 @@ _HTML_TEMPLATE = """\
   <meta charset="utf-8">
   <title>{title}</title>
   <script>__PLOTLYJS__</script>
+  __SAVEJS__
   <style>
     body {{ font-family: sans-serif; margin: 8px; }}
     .tab-strip {{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }}
@@ -61,10 +63,7 @@ _HTML_TEMPLATE = """\
     function savePNG(divId, label, suffix) {{
       const clean = label.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
       const filename = [EXPERIMENT_ID, DATASET_TITLE, clean, suffix].join('__');
-      Plotly.relayout(divId, {{showlegend: false}});
-      Plotly.downloadImage(divId,
-        {{format: 'png', filename: filename, width: 1100, height: 850, scale: 2}});
-      setTimeout(() => Plotly.relayout(divId, {{showlegend: true}}), 1000);
+      _queueFigure(divId, filename);
     }}
     function renderTab(idx) {{
       document.querySelectorAll('.tab-pane').forEach((pane, i) => {{
@@ -202,7 +201,11 @@ def _build_flat_html(
         experiment_id_js=_json.dumps(experiment_id or ""),
         dataset_title_js=_json.dumps(dataset_title.lower().replace(" ", "_")),
     )
-    return html.replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
+    return (
+        html
+        .replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
+        .replace("__SAVEJS__", SAVE_CLIENT_JS, 1)
+    )
 
 
 def _build_per_hypothesis_html(
@@ -283,6 +286,7 @@ def _build_per_hypothesis_html(
   <meta charset="utf-8">
   <title>{dataset_title}</title>
   <script>__PLOTLYJS__</script>
+  __SAVEJS__
   <style>
     body {{ font-family: sans-serif; margin: 8px; }}
     #hyp-rows {{ margin-bottom: 0; }}
@@ -335,10 +339,7 @@ def _build_per_hypothesis_html(
       const filename = [EXPERIMENT_ID, DATASET_TITLE,
                         'E' + m.expert_id, m.hyp_name,
                         scoreLabel, score, suffix].join('__');
-      Plotly.relayout(divId, {{showlegend: false}});
-      Plotly.downloadImage(divId,
-        {{format: 'png', filename: filename, width: 1100, height: 850, scale: 2}});
-      setTimeout(() => Plotly.relayout(divId, {{showlegend: true}}), 1000);
+      _queueFigure(divId, filename);
     }}
 
     function buildRegTable(scores) {{
@@ -403,7 +404,11 @@ def _build_per_hypothesis_html(
 </body>
 </html>"""
 
-    return html.replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
+    return (
+        html
+        .replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
+        .replace("__SAVEJS__", SAVE_CLIENT_JS, 1)
+    )
 
 
 # ── GPU memory ────────────────────────────────────────────────────────────────
