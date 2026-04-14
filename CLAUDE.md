@@ -240,6 +240,21 @@ Add a new generator function in `generate_probing_data.py` following the existin
 
 ---
 
+## Running Python
+
+Always use `uv run python` (or `uv run <script>`) instead of bare `python` or `python3`. The system Python is 3.6 and lacks modern type annotations; `uv` activates the correct project virtualenv.
+
+```bash
+# Correct
+uv run python -c "from analysis.utils import DatasetConfig; ..."
+uv run smixae probe all-datasets --help
+
+# Wrong — uses Python 3.6, will fail on type annotation syntax
+python my_script.py
+```
+
+---
+
 ## What to Avoid
 
 ### Do NOT use TransformerLens

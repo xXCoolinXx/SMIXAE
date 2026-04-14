@@ -34,6 +34,9 @@ import typer
 from tqdm import tqdm
 
 from analysis.utils import (
+    ActivationBatch,
+    DatasetConfig,
+    ExpertFilterConfig,
     _strip_prefix,
     collect_activations,
     get_sae_activations,
@@ -268,7 +271,12 @@ def main(
 
     # ── 2. Expert discovery via hours probing ─────────────────────────
     print(f"\nDiscovering experts from {hours_dataset}…")
-    acts, _str_tokens, labels, label_names, last_positions, n_classes, _, _fisher = collect_activations(
+    hours_cfg = DatasetConfig(
+        dataframe_path=hours_dataset,
+        text_column="Sentence",
+        label_column="Label",
+    )
+    batch = collect_activations(
         model=model,
         tokenizer=tokenizer,
         hook_name=hook_point,
@@ -276,25 +284,22 @@ def main(
         n_input_samples=n_probing_samples,
         device=device,
         llm_batch_size=llm_batch_size,
-        dataframe_path=hours_dataset,
-        text_column="Sentence",
-        label_column="Label",
+        cfg=hours_cfg,
     )
+    label_names = batch.label_names
 
     experts = get_sae_activations(
         sae=sae,
         device=device,
-        activations=acts,
+        batch=batch,
         sae_batch_size=sae_batch_size,
-        active_threshold=active_threshold,
-        min_active_fraction=min_active_fraction,
-        max_points=0,  # no cap — keep all points for accurate means
-        labels=labels,
-        last_token_only=True,
-        last_token_positions=last_positions,
-        n_classes=n_classes,
+        filter_cfg=ExpertFilterConfig(
+            active_threshold=active_threshold,
+            min_active_fraction=min_active_fraction,
+            max_points=0,  # no cap — keep all points for accurate means
+        ),
     )
-    del acts, labels, last_positions
+    del batch
 
     print(f"Scoring Fisher for {len(experts)} active experts…")
     for e in tqdm(experts):

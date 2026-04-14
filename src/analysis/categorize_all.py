@@ -13,254 +13,74 @@ from tqdm import tqdm
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
-from analysis.utils import build_dataset_html, collect_activations, get_sae_activations, load_llm, load_sae
+from analysis.utils import (
+    ActivationBatch,
+    DatasetConfig,
+    ExpertFilterConfig,
+    _collect_target_cols,
+    build_dataset_html,
+    collect_activations,
+    get_sae_activations,
+    load_llm,
+    load_sae,
+)
 from smixae import SMIXAE
 
 
 # ======================================================================
-# Per-dataset config
+# Pipeline configuration
 # ======================================================================
 @dataclasses.dataclass
-class DatasetConfig:
-    """Per-dataset configuration for the probing pipeline.
+class ProbeRunConfig:
+    """Runtime configuration for the probing pipeline.
 
-    Controls which data file to load, how labels are mapped to colours, and how
-    many samples to encode.  Instances are typically constructed from entries in
-    ``datasets/probing/dataset_config.json``.
+    Bundles all tuning parameters that control how experts are scored, filtered,
+    and visualized.  Pass an instance to :func:`run_pipeline` in place of the
+    individual keyword arguments.
 
     Attributes:
-        dataframe_path: Path to the CSV/Parquet/JSONL file (relative to the config
-            directory, or absolute).
-        text_column: Column name containing the input text. Defaults to ``"Sentence"``.
-        label_column: Column name containing class labels, or ``None`` for unlabelled
-            (continuity-only) analysis.
-        color_scale: Named Plotly colorscale (e.g. ``"Plasma"``, ``"Phase"``) used when
-            ``continuous_color`` is ``True``.  ``None`` uses discrete categorical colours.
-        continuous_color: If ``True``, colour points by label ordinal rather than by
-            class.  Automatically set to ``True`` when ``color_scale`` is provided.
-        output_subdir: Override for the output sub-directory name.  Defaults to the
-            stem of ``dataframe_path``.
-        color_map: Explicit ``{label: CSS_color}`` mapping for 1:1 colour schemes.
-            Takes precedence over ``color_scale`` for discrete plots.
-        n_input_samples: Override for the ``--n-input-samples`` CLI flag for this
-            dataset only.  ``None`` uses the global CLI value.
-        max_points: Override for ``--max-points`` for this dataset.
-            ``0`` means no cap; ``None`` uses the global CLI value.
-        show_labels: Annotate class-mean markers with text labels in the 3D scatter.
+        device:                       Torch device string (e.g. ``"cuda"``).
+        hook_point:                   HuggingFace module path to hook.
+        n_input_samples:              Number of texts to encode.
+        input_sequence_length:        Max token length for padding/truncation.
+        llm_batch_size:               Batch size for LLM forward passes.
+        sae_batch_size:               Batch size for SAE encoding.
+        sort_by:                      Metric to rank experts by.
+        sort_ascending:               If ``True``, rank lowest scores first.
+        adjusted_fisher:              Multiply Fisher score by class-coverage fraction.
+        k_neighbors:                  k-NN neighbourhood size for continuity scoring.
+        active_threshold:             Minimum L2 norm for an expert to be active.
+        min_active_fraction:          Minimum fraction of tokens an expert must fire on.
+        max_points:                   Cap on active tokens per expert (0 = no cap).
+        n_interesting_experts_to_plot: Top-N experts to include in the HTML report.
+        context_window_display:       Surrounding tokens shown on hover.
     """
 
-    dataframe_path: str
-    text_column: str = "Sentence"
-    label_column: str | None = "Label"
-    color_scale: str | None = None  # None = discrete categorical colors
-    continuous_color: bool = False
-    output_subdir: str | None = None
-    color_map: dict[str, str] | None = None  # label → CSS color for 1:1 color schemes
-    n_input_samples: int | None = None  # overrides CLI --n-input-samples when set
-    max_points: int | None = None  # overrides CLI --max-points when set (0 = no cap)
-    show_labels: bool = False  # annotate class means with text labels
-    regression_hypotheses: list[dict] | None = None  # list of hypothesis specs for regression probing
-    bucket_column: str | None = None  # continuous column to bucket into Fisher labels when label_column is None
-    n_buckets: int = 10  # number of equal-width bins for bucket_column
-
-    @property
-    def effective_continuous_color(self) -> bool:
-        """True if a color_scale was specified, unless continuous_color was explicitly False."""
-        return self.continuous_color or self.color_scale is not None
-
-    @property
-    def effective_color_scale(self) -> str:
-        """Return the configured color scale, falling back to ``"Plasma"``."""
-        return self.color_scale if self.color_scale is not None else "Plasma"
+    device: str
+    hook_point: str
+    n_input_samples: int
+    input_sequence_length: int
+    llm_batch_size: int
+    sae_batch_size: int
+    sort_by: str = "auto"
+    sort_ascending: bool = False
+    adjusted_fisher: bool = False
+    k_neighbors: int = 10
+    active_threshold: float = 1e-5
+    min_active_fraction: float = 0.10
+    max_points: int = 1000
+    n_interesting_experts_to_plot: int = 50
+    context_window_display: int = 10
 
 
 # ======================================================================
-# Core pipeline (runs on one dataset with pre-loaded model + SAE)
+# Pipeline helpers
 # ======================================================================
-def run_pipeline(
-    model: PreTrainedModel,
-    tokenizer: PreTrainedTokenizerBase,
-    sae: SMIXAE,
-    cfg: DatasetConfig,
-    final_output_dir: str,
-    hook_point: str,
-    n_input_samples: int,
-    input_sequence_length: int,
-    device: str,
-    llm_batch_size: int,
-    sae_batch_size: int,
-    sort_by: str,
-    sort_ascending: bool,
-    adjusted_fisher: bool,
-    k_neighbors: int,
-    active_threshold: float,
-    min_active_fraction: float,
-    max_points: int,
-    n_interesting_experts_to_plot: int,
-    context_window_display: int,
-    dataset_name: str | None = None,
-    results_json_path: str | None = None,
-    run_name: str | None = None,
-    model_name_for_json: str = "",
-) -> None:
-    """Run the full analysis pipeline for a single dataset and write an HTML report.
 
-    Five-stage pipeline:
-
-    1. **Collect LLM activations** — tokenise the dataset and register a forward hook
-       at ``hook_point`` to capture residual stream activations.
-    2. **SAE encoding** — run SMIXAE on the activations in batches; filter experts
-       by ``active_threshold`` and ``min_active_fraction``.
-    3. **Evaluate experts** — score by Fisher discriminant ratio (labelled data) or
-       manifold continuity (unlabelled data).
-    4. **Sort** — rank experts by the chosen metric (``sort_by``).
-    5. **Plot** — generate interactive 3D Plotly scatters for the top-N experts and
-       serialise everything into a single self-contained HTML file.
-
-    Output is written to ``{final_output_dir}/{subdir}/experts.html``.
-
-    Args:
-        model: Pre-loaded HuggingFace language model.
-        tokenizer: Corresponding tokenizer.
-        sae: Loaded SMIXAE inference checkpoint.
-        cfg: Per-dataset configuration (colours, sample count overrides, etc.).
-        final_output_dir: Root directory under which per-dataset sub-directories
-            are created.
-        hook_point: HuggingFace module path to hook (e.g. ``"model.layers.11"``).
-        n_input_samples: Number of texts to encode (overridden by ``cfg.n_input_samples``
-            when set).
-        input_sequence_length: Max token length for padding/truncation.
-        device: Torch device string (e.g. ``"cuda"``).
-        llm_batch_size: Batch size for LLM forward passes.
-        sae_batch_size: Batch size for SAE encoding.
-        sort_by: Metric to rank experts by — one of ``"fisher"``,
-            ``"adjusted_fisher"``, ``"continuity"``, or ``"auto"``.
-        sort_ascending: If ``True``, rank lowest scores first.
-        adjusted_fisher: If ``True``, multiply Fisher score by class coverage fraction.
-        k_neighbors: Neighbourhood size for manifold continuity scoring.
-        active_threshold: Minimum L2 norm for an expert to be considered active.
-        min_active_fraction: Minimum fraction of total tokens an expert must be active on (0–1).
-        max_points: Cap on active tokens per expert (``0`` = no cap).
-        n_interesting_experts_to_plot: Number of top-ranked experts to include in the
-            HTML report.
-        context_window_display: Number of surrounding tokens shown on hover.
-        dataset_name: HuggingFace dataset name to stream (used when
-            ``cfg.dataframe_path`` is empty, e.g. for the continuity pass).
-    """
-    subdir = cfg.output_subdir or Path(cfg.dataframe_path).stem
-    output_dir = os.path.join(final_output_dir, subdir)
-    os.makedirs(output_dir, exist_ok=True)
-    print(f"\n{'=' * 60}")
-    print(f"Dataset: {cfg.dataframe_path}  →  {output_dir}")
-    print(f"{'=' * 60}")
-
-    # ── 1. Collect LLM activations ────────────────────────────────────
-    # Build the deduplicated list of target columns required by regression hypotheses.
-    all_target_cols: list[str] = []
-    if cfg.regression_hypotheses:
-        seen_cols: set[str] = set()
-        for hyp in cfg.regression_hypotheses:
-            for col in hyp.get("target_columns", []):
-                if col not in seen_cols:
-                    all_target_cols.append(col)
-                    seen_cols.add(col)
-
-    llm_acts, str_tokens, labels, label_names, last_token_positions, n_classes, reg_targets, fisher_labels = collect_activations(
-        model=model,
-        tokenizer=tokenizer,
-        hook_name=hook_point,
-        max_length=input_sequence_length,
-        n_input_samples=n_input_samples,
-        device=device,
-        llm_batch_size=llm_batch_size,
-        dataset_name=dataset_name,
-        dataframe_path=cfg.dataframe_path or None,
-        text_column=cfg.text_column,
-        label_column=cfg.label_column,
-        regression_target_columns=all_target_cols if all_target_cols else None,
-        bucket_column=cfg.bucket_column,
-        n_buckets=cfg.n_buckets,
-    )
-
-    # is_labelled = True when we have display labels OR fisher-only bucket labels
-    is_labelled = labels is not None or fisher_labels is not None
-
-    # ── 2. SAE encoding ───────────────────────────────────────────────
-    experts = get_sae_activations(
-        sae=sae,
-        device=device,
-        activations=llm_acts,
-        sae_batch_size=sae_batch_size,
-        active_threshold=active_threshold,
-        min_active_fraction=min_active_fraction,
-        max_points=max_points,
-        labels=labels,
-        last_token_only=is_labelled,
-        last_token_positions=last_token_positions,
-        n_classes=n_classes,
-        regression_targets=reg_targets,
-        fisher_labels=fisher_labels,
-    )
-
-    del llm_acts, labels, reg_targets, fisher_labels
-
-    if not experts:
-        print("No experts fired enough times to exceed the min_active_fraction threshold.")
-        return
-
-    # ── 3. Evaluate ───────────────────────────────────────────────────
-    if is_labelled:
-        print(f"Evaluating Fisher score for {len(experts)} experts…")
-        for expert in tqdm(experts):
-            expert.evaluate_fisher()
-    else:
-        print(f"Evaluating manifold continuity (k={k_neighbors})…")
-        for expert in tqdm(experts):
-            expert.evaluate_manifold(k_neighbors=k_neighbors, device=device)
-
-    # ── 4. Sort (Stage 1: Fisher / continuity) ────────────────────────
-    effective_sort_by = sort_by
-    if sort_by == "auto":
-        effective_sort_by = ("adjusted_fisher" if adjusted_fisher else "fisher") if is_labelled else "continuity"
-
-    print(f"Sorting by {effective_sort_by} ({'ascending' if sort_ascending else 'descending'})…")
-    experts.sort(
-        key=lambda e: e.sort_key(effective_sort_by),
-        reverse=not sort_ascending,
-    )
-
-    # ── 4b. Regression probing on top-N experts (Stage 2) ────────────
-    n_to_plot = min(n_interesting_experts_to_plot, len(experts))
-    top_experts = experts[:n_to_plot]
-
-    # Attach column indices to each hypothesis before running
-    hypotheses_with_indices: list[dict] = []
-    if cfg.regression_hypotheses and all_target_cols:
-        col_to_idx = {col: i for i, col in enumerate(all_target_cols)}
-        for hyp in cfg.regression_hypotheses:
-            h = dict(hyp)
-            h["target_indices"] = [col_to_idx[c] for c in hyp["target_columns"] if c in col_to_idx]
-            if h["target_indices"]:
-                hypotheses_with_indices.append(h)
-
-    if hypotheses_with_indices:
-        print(f"\nRunning regression probing ({len(hypotheses_with_indices)} hypotheses) on top {n_to_plot} experts…")
-        for expert in tqdm(top_experts, desc="Regression probing"):
-            expert.evaluate_regression(hypotheses_with_indices)
-
-        # Stage 2 re-sort: best regression score descending
-        top_experts.sort(key=lambda e: e.sort_key("regression"), reverse=True)
-        final_sort_label = "regression"
-        print("Re-sorted by best regression score.")
-    else:
-        final_sort_label = effective_sort_by
-
-    # ── 5. Plot ───────────────────────────────────────────────────────
-    print(f"\nBuilding HTML for top {n_to_plot} experts…")
-
-    # Console summary
-    for i, expert in enumerate(top_experts):
-        fisher_val = expert.sort_key(effective_sort_by)
+def _log_expert_summary(experts: list, n_classes: int, sort_metric: str) -> None:
+    """Print a ranked console summary table for a list of scored experts."""
+    for i, expert in enumerate(experts):
+        fisher_val = expert.sort_key(sort_metric)
         parts = [
             f"Rank {i + 1:02d}",
             f"Expert {expert.expert_id:4d}",
@@ -280,28 +100,201 @@ def run_pipeline(
         parts.append(f"Points: {expert.expert_activations.shape[0]}")
         print(" | ".join(parts))
 
-    # Helper: build one plot entry tuple
+
+def _build_dataset_results(
+    top_experts: list,
+    per_hypothesis_entries: dict,
+    effective_sort_by: str,
+    hypotheses_with_indices: list[dict],
+) -> dict[str, Any]:
+    """Build the structured results dict for the shared results JSON.
+
+    Stores an ordered top-10 expert list (with rank, expert_id, and score) for
+    both the Fisher/continuity ranking and each regression hypothesis.
+    """
+    dataset_results: dict[str, Any] = {}
+
+    fisher_sorted = sorted(top_experts, key=lambda e: e.sort_key(effective_sort_by), reverse=True)
+    if fisher_sorted and fisher_sorted[0].sort_key(effective_sort_by) > float("-inf"):
+        scores_f = [e.sort_key(effective_sort_by) for e in fisher_sorted]
+        dataset_results["fisher"] = {
+            "sort_by": effective_sort_by,
+            "top10_experts": [
+                {"rank": i + 1, "expert_id": e.expert_id, "score": float(s)}
+                for i, (e, s) in enumerate(zip(fisher_sorted[:10], scores_f[:10]))
+            ],
+            "top5_mean": float(sum(scores_f[:5]) / min(5, len(scores_f))),
+            "top10_mean": float(sum(scores_f[:10]) / min(10, len(scores_f))),
+        }
+
+    if per_hypothesis_entries:
+        dataset_results["hypotheses"] = {}
+        for hyp_name, (hyp_desc, hyp_entries) in per_hypothesis_entries.items():
+            metas = [entry[4] for entry in hyp_entries]
+            hyp_scores = [m["hyp_score"] for m in metas if m.get("hyp_score") is not None]
+            if not hyp_scores:
+                continue
+            reg_type = next(
+                (h.get("regression_type", "unknown") for h in hypotheses_with_indices if h["name"] == hyp_name),
+                "unknown",
+            )
+            dataset_results["hypotheses"][hyp_name] = {
+                "description": hyp_desc,
+                "regression_type": reg_type,
+                "top10_experts": [
+                    {"rank": i + 1, "expert_id": m["expert_id"], "score": hyp_scores[i]}
+                    for i, m in enumerate(metas[:10])
+                    if i < len(hyp_scores)
+                ],
+                "top5_mean": float(sum(hyp_scores[:5]) / min(5, len(hyp_scores))),
+                "top10_mean": float(sum(hyp_scores[:10]) / min(10, len(hyp_scores))),
+            }
+
+    return dataset_results
+
+
+# ======================================================================
+# Core pipeline (runs on one dataset with pre-loaded model + SAE)
+# ======================================================================
+def run_pipeline(
+    model: PreTrainedModel,
+    tokenizer: PreTrainedTokenizerBase,
+    sae: SMIXAE,
+    cfg: DatasetConfig,
+    run_cfg: ProbeRunConfig,
+    final_output_dir: str,
+    dataset_name: str | None = None,
+    results_json_path: str | None = None,
+    run_name: str | None = None,
+    model_name_for_json: str = "",
+) -> None:
+    """Run the full analysis pipeline for a single dataset and write an HTML report.
+
+    Five-stage pipeline:
+
+    1. **Collect LLM activations** — tokenise the dataset and register a forward hook
+       to capture residual stream activations.
+    2. **SAE encoding** — run SMIXAE on the activations in batches; filter experts
+       by activity thresholds.
+    3. **Evaluate experts** — score by Fisher discriminant ratio (labelled data) or
+       manifold continuity (unlabelled data).
+    4. **Sort** — rank experts by the chosen metric.
+    5. **Plot** — generate interactive 3D Plotly scatters for the top-N experts and
+       serialise everything into a single self-contained HTML file.
+
+    Output is written to ``{final_output_dir}/{subdir}/experts.html``.
+
+    Args:
+        model: Pre-loaded HuggingFace language model.
+        tokenizer: Corresponding tokenizer.
+        sae: Loaded SMIXAE inference checkpoint.
+        cfg: Per-dataset configuration (colours, sample count overrides, etc.).
+        run_cfg: Pipeline tuning parameters (thresholds, batch sizes, sorting, etc.).
+        final_output_dir: Root directory under which per-dataset sub-directories are created.
+        dataset_name: HuggingFace dataset name to stream (used when ``cfg.dataframe_path``
+            is empty, e.g. for the continuity pass).
+    """
+    subdir = cfg.output_subdir or Path(cfg.dataframe_path).stem
+    output_dir = os.path.join(final_output_dir, subdir)
+    os.makedirs(output_dir, exist_ok=True)
+    print(f"\n{'=' * 60}")
+    print(f"Dataset: {cfg.dataframe_path}  →  {output_dir}")
+    print(f"{'=' * 60}")
+
+    # ── 1. Collect LLM activations ────────────────────────────────────
+    # When a dataset_name override is passed (e.g. continuity streaming pass),
+    # merge it into cfg so collect_activations sees the right source.
+    effective_cfg = dataclasses.replace(cfg, dataset_name=dataset_name) if dataset_name else cfg
+
+    batch = collect_activations(
+        model=model,
+        tokenizer=tokenizer,
+        hook_name=run_cfg.hook_point,
+        max_length=run_cfg.input_sequence_length,
+        n_input_samples=run_cfg.n_input_samples,
+        device=run_cfg.device,
+        llm_batch_size=run_cfg.llm_batch_size,
+        cfg=effective_cfg,
+    )
+
+    # ── 2. SAE encoding ───────────────────────────────────────────────
+    filter_cfg = ExpertFilterConfig(
+        active_threshold=run_cfg.active_threshold,
+        min_active_fraction=run_cfg.min_active_fraction,
+        max_points=run_cfg.max_points,
+    )
+    experts = get_sae_activations(
+        sae=sae,
+        device=run_cfg.device,
+        batch=batch,
+        sae_batch_size=run_cfg.sae_batch_size,
+        filter_cfg=filter_cfg,
+    )
+
+    del batch.activations
+
+    if not experts:
+        print("No experts fired enough times to exceed the min_active_fraction threshold.")
+        return
+
+    # ── 3. Evaluate ───────────────────────────────────────────────────
+    if batch.is_labelled:
+        print(f"Evaluating Fisher score for {len(experts)} experts…")
+        for expert in tqdm(experts):
+            expert.evaluate_fisher()
+    else:
+        print(f"Evaluating manifold continuity (k={run_cfg.k_neighbors})…")
+        for expert in tqdm(experts):
+            expert.evaluate_manifold(k_neighbors=run_cfg.k_neighbors, device=run_cfg.device)
+
+    # ── 4. Sort (Stage 1: Fisher / continuity) ────────────────────────
+    effective_sort_by = run_cfg.sort_by
+    if run_cfg.sort_by == "auto":
+        effective_sort_by = (
+            ("adjusted_fisher" if run_cfg.adjusted_fisher else "fisher")
+            if batch.is_labelled else "continuity"
+        )
+
+    print(f"Sorting by {effective_sort_by} ({'ascending' if run_cfg.sort_ascending else 'descending'})…")
+    experts.sort(key=lambda e: e.sort_key(effective_sort_by), reverse=not run_cfg.sort_ascending)
+
+    # ── 4b. Regression probing on top-N experts (Stage 2) ────────────
+    n_to_plot = min(run_cfg.n_interesting_experts_to_plot, len(experts))
+    top_experts = experts[:n_to_plot]
+
+    # Attach column indices to each hypothesis before running
+    all_target_cols = _collect_target_cols(cfg)
+    hypotheses_with_indices: list[dict] = []
+    if cfg.regression_hypotheses and all_target_cols:
+        col_to_idx = {col: i for i, col in enumerate(all_target_cols)}
+        for hyp in cfg.regression_hypotheses:
+            h = dict(hyp)
+            h["target_indices"] = [col_to_idx[c] for c in hyp["target_columns"] if c in col_to_idx]
+            if h["target_indices"]:
+                hypotheses_with_indices.append(h)
+
+    if hypotheses_with_indices:
+        print(f"\nRunning regression probing ({len(hypotheses_with_indices)} hypotheses) on top {n_to_plot} experts…")
+        for expert in tqdm(top_experts, desc="Regression probing"):
+            expert.evaluate_regression(hypotheses_with_indices)
+        top_experts.sort(key=lambda e: e.sort_key("regression"), reverse=True)
+        print("Re-sorted by best regression score.")
+
+    # ── 5. Plot ───────────────────────────────────────────────────────
+    print(f"\nBuilding HTML for top {n_to_plot} experts…")
+
+    _log_expert_summary(top_experts, batch.n_classes, effective_sort_by)
+
     def _make_plot_entry(expert, tab_label: str, expert_meta: dict | None = None) -> tuple:
         s_fig = expert.get_plot(
-            str_tokens=str_tokens,  # type: ignore[arg-type]
-            k_neighbors=k_neighbors,
-            context_window=context_window_display,
-            device=device,
-            label_names=label_names,
-            continuous_color=cfg.effective_continuous_color,
-            color_scale=cfg.effective_color_scale,
-            color_map=cfg.color_map,
-            connect_means=False,
-            show_labels=cfg.show_labels,
+            str_tokens=batch.str_tokens,
+            cfg=cfg,
+            label_names=batch.label_names,
+            k_neighbors=run_cfg.k_neighbors,
+            context_window=run_cfg.context_window_display,
+            device=run_cfg.device,
         )
-        m_fig = expert.get_mean_plot(
-            label_names=label_names,
-            color_scale=cfg.effective_color_scale,
-            continuous_color=cfg.effective_continuous_color,
-            color_map=cfg.color_map,
-            connect_means=False,
-            show_labels=cfg.show_labels,
-        )
+        m_fig = expert.get_mean_plot(cfg=cfg, label_names=batch.label_names)
         entry: tuple = (tab_label, s_fig, m_fig, expert.regression_scores)
         if expert_meta is not None:
             entry = entry + (expert_meta,)
@@ -324,7 +317,6 @@ def run_pipeline(
             hyp_entries = []
             for rank, expert in enumerate(sorted_for_hyp):
                 hyp_score = expert.regression_scores.get(name, float("nan"))
-                # Short label for the button; full metadata goes in expert_meta
                 btn_label = f"E{expert.expert_id} ({hyp_score:.3f})"
                 fisher_val = expert.fisher_score
                 expert_meta = {
@@ -339,9 +331,9 @@ def run_pipeline(
     else:
         # No regression — flat tab strip sorted by Fisher/continuity
         for i, expert in enumerate(top_experts):
-            fisher_val = expert.sort_key(effective_sort_by)
+            score_val = expert.sort_key(effective_sort_by)
             l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
-            tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={fisher_val:.3f})"
+            tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"
             expert_entries.append(_make_plot_entry(expert, tab_label))
 
     html_str = build_dataset_html(
@@ -356,50 +348,15 @@ def run_pipeline(
 
     # ── Write structured results into shared results JSON ─────────────
     if results_json_path and run_name:
-        dataset_results: dict[str, Any] = {}
-
-        # Fisher stats (re-sort top_experts by Fisher score)
-        fisher_sorted = sorted(top_experts, key=lambda e: e.sort_key(effective_sort_by), reverse=True)
-        if fisher_sorted and fisher_sorted[0].sort_key(effective_sort_by) > float("-inf"):
-            scores_f = [e.sort_key(effective_sort_by) for e in fisher_sorted]
-            dataset_results["fisher"] = {
-                "sort_by": effective_sort_by,
-                "top1_expert_id": fisher_sorted[0].expert_id,
-                "top1_score": scores_f[0],
-                "top5_mean": float(sum(scores_f[:5]) / min(5, len(scores_f))),
-                "top10_mean": float(sum(scores_f[:10]) / min(10, len(scores_f))),
-            }
-
-        # Per-hypothesis regression stats
-        if per_hypothesis_entries:
-            dataset_results["hypotheses"] = {}
-            for hyp_name, (hyp_desc, hyp_entries) in per_hypothesis_entries.items():
-                metas = [entry[4] for entry in hyp_entries]  # expert_meta dicts
-                hyp_scores = [m["hyp_score"] for m in metas if m.get("hyp_score") is not None]
-                if not hyp_scores:
-                    continue
-                reg_type = next(
-                    (h.get("regression_type", "unknown") for h in hypotheses_with_indices if h["name"] == hyp_name),
-                    "unknown",
-                )
-                dataset_results["hypotheses"][hyp_name] = {
-                    "description": hyp_desc,
-                    "regression_type": reg_type,
-                    "top1_expert_id": metas[0]["expert_id"],
-                    "top1_score": hyp_scores[0],
-                    "top5_mean": float(sum(hyp_scores[:5]) / min(5, len(hyp_scores))),
-                    "top10_mean": float(sum(hyp_scores[:10]) / min(10, len(hyp_scores))),
-                }
-
         from analysis.utils import update_results_json
         update_results_json(
             path=results_json_path,
             run_name=run_name,
             model_name=model_name_for_json,
-            hook_name=hook_point,
+            hook_name=run_cfg.hook_point,
             section="probe",
             key=subdir,
-            data=dataset_results,
+            data=_build_dataset_results(top_experts, per_hypothesis_entries, effective_sort_by, hypotheses_with_indices),
         )
         print(f"Updated results JSON: {results_json_path} [{run_name}/probe/{subdir}]")
 
@@ -509,17 +466,11 @@ def single(
         color_scale=color_scale,
         continuous_color=continuous_color,
     )
-
-    run_pipeline(
-        model=model,
-        tokenizer=tokenizer,
-        sae=sae,
-        cfg=cfg,
-        final_output_dir=final_output_dir,
+    run_cfg = ProbeRunConfig(
+        device=device,
         hook_point=hook_point,
         n_input_samples=n_input_samples,
         input_sequence_length=input_sequence_length,
-        device=device,
         llm_batch_size=llm_batch_size,
         sae_batch_size=sae_batch_size,
         sort_by=sort_by,
@@ -531,6 +482,15 @@ def single(
         max_points=max_points,
         n_interesting_experts_to_plot=n_interesting_experts_to_plot,
         context_window_display=context_window_display,
+    )
+
+    run_pipeline(
+        model=model,
+        tokenizer=tokenizer,
+        sae=sae,
+        cfg=cfg,
+        run_cfg=run_cfg,
+        final_output_dir=final_output_dir,
         dataset_name=dataset_name,
     )
 
@@ -629,17 +589,14 @@ def all_datasets(
     tokenizer.padding_side = "right"
     sae = load_sae(checkpoint_path, device)
 
-    pipeline_kwargs: dict[str, Any] = dict(
-        model=model,
-        tokenizer=tokenizer,
-        sae=sae,
-        final_output_dir=final_output_dir,
+    base_run_cfg = ProbeRunConfig(
+        device=device,
         hook_point=hook_point,
         n_input_samples=n_input_samples,
         input_sequence_length=input_sequence_length,
-        device=device,
         llm_batch_size=llm_batch_size,
         sae_batch_size=sae_batch_size,
+        sort_by=sort_by,
         sort_ascending=sort_ascending,
         adjusted_fisher=adjusted_fisher,
         k_neighbors=k_neighbors,
@@ -648,18 +605,26 @@ def all_datasets(
         max_points=max_points,
         n_interesting_experts_to_plot=n_interesting_experts_to_plot,
         context_window_display=context_window_display,
-        results_json_path=results_json_path,
-        run_name=run_hash,
-        model_name_for_json=base_model_name,
     )
 
     for cfg in dataset_cfgs:
-        per_cfg_kwargs = {
-            **pipeline_kwargs,
-            "n_input_samples": cfg.n_input_samples or n_input_samples,
-            "max_points": cfg.max_points if cfg.max_points is not None else max_points,
-        }
-        run_pipeline(cfg=cfg, sort_by=sort_by, **per_cfg_kwargs)  # type: ignore[arg-type]
+        # Apply per-dataset overrides for sample count and max_points
+        per_cfg_run_cfg = dataclasses.replace(
+            base_run_cfg,
+            n_input_samples=cfg.n_input_samples or n_input_samples,
+            max_points=cfg.max_points if cfg.max_points is not None else max_points,
+        )
+        run_pipeline(
+            model=model,
+            tokenizer=tokenizer,
+            sae=sae,
+            cfg=cfg,
+            run_cfg=per_cfg_run_cfg,
+            final_output_dir=final_output_dir,
+            results_json_path=results_json_path,
+            run_name=run_hash,
+            model_name_for_json=base_model_name,
+        )
 
     # Unlabelled continuity pass
     print(f"\n{'=' * 60}")
@@ -671,11 +636,17 @@ def all_datasets(
         output_subdir="continuity",
     )
     run_pipeline(
+        model=model,
+        tokenizer=tokenizer,
+        sae=sae,
         cfg=continuity_cfg,
-        sort_by="continuity",
+        run_cfg=dataclasses.replace(base_run_cfg, sort_by="continuity"),
+        final_output_dir=final_output_dir,
         dataset_name=continuity_dataset,
-        **pipeline_kwargs,
-    )  # type: ignore[arg-type]
+        results_json_path=results_json_path,
+        run_name=run_hash,
+        model_name_for_json=base_model_name,
+    )
 
     del model, sae
     torch.cuda.empty_cache()

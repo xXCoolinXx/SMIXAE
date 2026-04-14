@@ -46,12 +46,7 @@ from analysis.utils import (
 
 # ═══════════════════════ Constants ═══════════════════════════════════════
 
-VALID_RANK_BY = [
-    "decode_r2",
-    "encode_linear_r2",
-    "encode_periodic_r2",
-    "periodic_gain",
-]
+RANK_BY = "periodic_gain"
 
 
 # ═══════════════════════ Helpers ═════════════════════════════════════════
@@ -526,6 +521,43 @@ def plot_newline_experts_html(
     logger.info(f"Saved top experts HTML → {output_path}")
 
 
+def _build_newline_summary(
+    scores_df: "pd.DataFrame",
+    hook_name: str,
+    n_experts: int,
+    d_bottleneck: int,
+    n_harmonics: int,
+    line_length: int,
+    n_tokens: int,
+    n_classes: int,
+    threshold: float,
+) -> "dict[str, Any]":
+    """Build the structured results dict for the shared results JSON.
+
+    Reports only ``periodic_gain`` in the summary; all four metrics are still
+    available in ``expert_scores.csv`` for offline analysis.
+    """
+    top_by_gain = scores_df.sort_values(RANK_BY, ascending=False)
+    return {
+        "hook_name": hook_name,
+        "n_experts": n_experts,
+        "d_bottleneck": d_bottleneck,
+        "n_harmonics": n_harmonics,
+        "line_length": line_length,
+        "n_tokens": n_tokens,
+        "n_classes": n_classes,
+        "threshold": threshold,
+        "top1_expert_id": int(top_by_gain.iloc[0]["expert_id"]),
+        "top1_periodic_gain": float(top_by_gain.iloc[0][RANK_BY]),
+        "top5_mean_periodic_gain": float(top_by_gain.head(5)[RANK_BY].mean()),
+        "top10_mean_periodic_gain": float(top_by_gain.head(10)[RANK_BY].mean()),
+        "top10_experts": [
+            {"rank": i + 1, "expert_id": int(row["expert_id"]), "periodic_gain": float(row[RANK_BY])}
+            for i, (_, row) in enumerate(top_by_gain.head(10).iterrows())
+        ],
+    }
+
+
 def plot_expert_dim_analysis(
     expert_acts: torch.Tensor,
     labels: torch.Tensor,
@@ -636,7 +668,8 @@ def plot_expert_dim_analysis(
 
     # Build summary line for title
     _SHORT = {"decode_r2": "dec", "encode_linear_r2": "lin", "encode_periodic_r2": "per", "periodic_gain": "Δper"}
-    method_scores = "  ".join(f"{_SHORT.get(m, m)}={scores_row.get(m, 0):.4f}" for m in VALID_RANK_BY)
+    _ALL_METRICS = ["decode_r2", "encode_linear_r2", "encode_periodic_r2", "periodic_gain"]
+    method_scores = "  ".join(f"{_SHORT.get(m, m)}={scores_row.get(m, 0):.4f}" for m in _ALL_METRICS)
     fig.update_layout(
         title=f"Expert {expert_id} — Per-Dim Analysis  ({method_scores})",
         height=400,
@@ -676,9 +709,8 @@ def main(
     # Scoring
     n_harmonics: int = typer.Option(3, help="Fourier harmonics for periodic scoring."),
     # Visualisation
-    plot_top_k: int = typer.Option(10, help="Top-k experts to plot per method."),
+    plot_top_k: int = typer.Option(10, help="Top-k experts to plot."),
     plot_max_points: int = typer.Option(50_000),
-    dim_analysis_top_n: int = typer.Option(3, help="Generate dim analysis for top N experts per method."),
     # Misc
     seed: int = typer.Option(42),
     results_json: str = typer.Option(
@@ -799,12 +831,11 @@ def main(
         n_harmonics,
     )
 
-    # Log top experts per method
+    # Log top experts by periodic_gain
     logger.info(f"\n{'═' * 70}")
-    display_cols = ["expert_id"] + VALID_RANK_BY
-    for method in VALID_RANK_BY:
-        ranked = scores_df.sort_values(method, ascending=False)
-        logger.info(f"\nTop-10 by {method}:\n{ranked[display_cols].head(10).to_string(index=False)}")
+    display_cols = ["expert_id", "encode_linear_r2", "encode_periodic_r2", "periodic_gain"]
+    ranked = scores_df.sort_values(RANK_BY, ascending=False)
+    logger.info(f"\nTop-10 by {RANK_BY}:\n{ranked[display_cols].head(10).to_string(index=False)}")
 
     # Class stats (original fine-grained labels)
     class_means, firing_rates, class_labels_arr = compute_expert_class_stats(
@@ -825,51 +856,25 @@ def main(
         output_path=os.path.join(out_dir, "top_experts.html"),
     )
 
-    # ── Dim analysis for top experts by periodic_gain ────────────────────
-    top_expert_ids = set(
-        scores_df.sort_values("periodic_gain", ascending=False).head(dim_analysis_top_n)["expert_id"].values.tolist()
-    )
-
-    logger.info(
-        f"Generating dim analysis for {len(top_expert_ids)} experts (top-{dim_analysis_top_n} by periodic_gain)"
-    )
-    for eid in sorted(top_expert_ids):
-        row = scores_df[scores_df["expert_id"] == eid].iloc[0]
-        plot_expert_dim_analysis(
-            expert_acts,
-            all_labels,
-            int(eid),
-            row.to_dict(),
-            line_length,
-            n_harmonics,
-            max_points=max(plot_max_points // 3, 5000),
-            output_path=os.path.join(out_dir, f"dim_analysis_expert{int(eid)}.html"),
-        )
-
     # ── Save numerical results ───────────────────────────────────────────
     scores_df.to_csv(os.path.join(out_dir, "expert_scores.csv"), index=False)
     np.save(os.path.join(out_dir, "expert_class_means.npy"), class_means)
     np.save(os.path.join(out_dir, "expert_firing_rates.npy"), firing_rates)
     np.save(os.path.join(out_dir, "class_labels.npy"), class_labels_arr)
 
-    summary: dict[str, Any] = {
-        "hook_name": hook_name,
-        "n_experts": n_experts_cfg,
-        "d_bottleneck": d_bn_cfg,
-        "n_harmonics": n_harmonics,
-        "line_length": line_length,
-        "n_tokens": int(all_labels.shape[0]),
-        "n_classes": int(len(class_labels_arr)),
-        "threshold": threshold,
-    }
-    for method in VALID_RANK_BY:
-        top = scores_df.sort_values(method, ascending=False)
-        summary[f"top1_{method}_expert"] = int(top.iloc[0]["expert_id"])
-        summary[f"top1_{method}"] = float(top.iloc[0][method])
-        summary[f"top5_mean_{method}"] = float(top.head(5)[method].mean())
-        summary[f"top10_mean_{method}"] = float(top.head(10)[method].mean())
+    summary = _build_newline_summary(
+        scores_df=scores_df,
+        hook_name=hook_name,
+        n_experts=n_experts_cfg,
+        d_bottleneck=d_bn_cfg,
+        n_harmonics=n_harmonics,
+        line_length=line_length,
+        n_tokens=int(all_labels.shape[0]),
+        n_classes=int(len(class_labels_arr)),
+        threshold=threshold,
+    )
 
-    pd.DataFrame([summary]).to_csv(
+    pd.DataFrame([{k: v for k, v in summary.items() if not isinstance(v, list)}]).to_csv(
         os.path.join(out_dir, "summary.csv"),
         index=False,
     )

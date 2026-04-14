@@ -6,35 +6,235 @@
       "weekdays": {
         "fisher": {
           "sort_by": "fisher",
-          "top1_expert_id": 1042,
-          "top1_score": 135.8796844482422,
-          "top5_mean": 105.0615447998047,
-          "top10_mean": 88.2844024658203
+          "top10_experts": [
+            {
+              "rank": 1,
+              "expert_id": 1042,
+              "score": 135.87969970703125
+            },
+            {
+              "rank": 2,
+              "expert_id": 1997,
+              "score": 103.35997772216797
+            },
+            {
+              "rank": 3,
+              "expert_id": 329,
+              "score": 100.7968978881836
+            },
+            {
+              "rank": 4,
+              "expert_id": 1910,
+              "score": 94.67941284179688
+            },
+            {
+              "rank": 5,
+              "expert_id": 445,
+              "score": 90.59175109863281
+            },
+            {
+              "rank": 6,
+              "expert_id": 475,
+              "score": 83.98486328125
+            },
+            {
+              "rank": 7,
+              "expert_id": 76,
+              "score": 70.37937927246094
+            },
+            {
+              "rank": 8,
+              "expert_id": 1787,
+              "score": 69.36012268066406
+            },
+            {
+              "rank": 9,
+              "expert_id": 247,
+              "score": 69.14119720458984
+            },
+            {
+              "rank": 10,
+              "expert_id": 560,
+              "score": 64.67073822021484
+            }
+          ],
+          "top5_mean": 105.0615478515625,
+          "top10_mean": 88.28440399169922
         },
         "hypotheses": {
           "cyc_7d": {
             "description": "7-day cyclical ring",
             "regression_type": "linear",
-            "top1_expert_id": 76,
-            "top1_score": 0.8556339621543885,
-            "top5_mean": 0.7840226483345032,
-            "top10_mean": 0.7365500664710998
+            "top10_experts": [
+              {
+                "rank": 1,
+                "expert_id": 76,
+                "score": 0.8556339740753174
+              },
+              {
+                "rank": 2,
+                "expert_id": 282,
+                "score": 0.8054515719413757
+              },
+              {
+                "rank": 3,
+                "expert_id": 1971,
+                "score": 0.7994690418243409
+              },
+              {
+                "rank": 4,
+                "expert_id": 732,
+                "score": 0.7301337480545044
+              },
+              {
+                "rank": 5,
+                "expert_id": 131,
+                "score": 0.7294249296188354
+              },
+              {
+                "rank": 6,
+                "expert_id": 1787,
+                "score": 0.7064197897911072
+              },
+              {
+                "rank": 7,
+                "expert_id": 247,
+                "score": 0.6964952230453492
+              },
+              {
+                "rank": 8,
+                "expert_id": 1997,
+                "score": 0.6880366802215576
+              },
+              {
+                "rank": 9,
+                "expert_id": 1365,
+                "score": 0.6811860799789429
+              },
+              {
+                "rank": 10,
+                "expert_id": 870,
+                "score": 0.6732496976852417
+              }
+            ],
+            "top5_mean": 0.7840226531028748,
+            "top10_mean": 0.7365500736236572
           },
           "weekday_weekend": {
             "description": "Weekday vs weekend",
             "regression_type": "logistic",
-            "top1_expert_id": 1910,
-            "top1_score": 1.0,
+            "top10_experts": [
+              {
+                "rank": 1,
+                "expert_id": 1910,
+                "score": 1.0
+              },
+              {
+                "rank": 2,
+                "expert_id": 1029,
+                "score": 1.0
+              },
+              {
+                "rank": 3,
+                "expert_id": 1304,
+                "score": 0.9993006993006993
+              },
+              {
+                "rank": 4,
+                "expert_id": 870,
+                "score": 0.9992957746478872
+              },
+              {
+                "rank": 5,
+                "expert_id": 1884,
+                "score": 0.9985559378584089
+              },
+              {
+                "rank": 6,
+                "expert_id": 1504,
+                "score": 0.9984615384615385
+              },
+              {
+                "rank": 7,
+                "expert_id": 445,
+                "score": 0.9982142857142857
+              },
+              {
+                "rank": 8,
+                "expert_id": 282,
+                "score": 0.994393497159715
+              },
+              {
+                "rank": 9,
+                "expert_id": 591,
+                "score": 0.9904891461497615
+              },
+              {
+                "rank": 10,
+                "expert_id": 786,
+                "score": 0.9898137667198904
+              }
+            ],
             "top5_mean": 0.9994304823613991,
             "top10_mean": 0.9968524646012187
           },
           "ordinal": {
             "description": "Day ordinal (Mon=0)",
             "regression_type": "linear",
-            "top1_expert_id": 445,
-            "top1_score": 0.8908794522285461,
-            "top5_mean": 0.8403126454353332,
-            "top10_mean": 0.7637743651866913
+            "top10_experts": [
+              {
+                "rank": 1,
+                "expert_id": 445,
+                "score": 0.8908794522285461
+              },
+              {
+                "rank": 2,
+                "expert_id": 1029,
+                "score": 0.8549884915351867
+              },
+              {
+                "rank": 3,
+                "expert_id": 549,
+                "score": 0.8410510301589966
+              },
+              {
+                "rank": 4,
+                "expert_id": 870,
+                "score": 0.8375531315803528
+              },
+              {
+                "rank": 5,
+                "expert_id": 282,
+                "score": 0.7770911455154419
+              },
+              {
+                "rank": 6,
+                "expert_id": 1997,
+                "score": 0.7173182964324951
+              },
+              {
+                "rank": 7,
+                "expert_id": 500,
+                "score": 0.7026314854621887
+              },
+              {
+                "rank": 8,
+                "expert_id": 284,
+                "score": 0.678874397277832
+              },
+              {
+                "rank": 9,
+                "expert_id": 1650,
+                "score": 0.66989506483078
+              },
+              {
+                "rank": 10,
+                "expert_id": 732,
+                "score": 0.6674611687660217
+              }
+            ],
+            "top5_mean": 0.8403126502037048,
+            "top10_mean": 0.7637743663787842
           }
         }
       },

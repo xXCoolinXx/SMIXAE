@@ -112,7 +112,7 @@
       "neutral":       "#888888"
     },
     "regression_hypotheses": [
-      {"name": "valence_arousal", "description": "VA circumplex (multi-output linear)", "target_columns": ["target_valence", "target_arousal"], "regression_type": "linear"},
+      {"name": "valence_arousal", "description": "VA circumplex (multi-output ridge)", "target_columns": ["target_valence", "target_arousal"], "regression_type": "ridge"},
       {"name": "quadrant",        "description": "Affective quadrant (4 classes)",      "target_columns": ["target_quadrant"],                  "regression_type": "multinomial"}
     ]
   }

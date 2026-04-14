@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import gc
 import re
 from pathlib import Path
@@ -494,6 +495,147 @@ def _strip_prefix(label: str) -> str:
     return re.sub(r"^\d+_", "", label)
 
 
+@dataclasses.dataclass
+class DatasetConfig:
+    """Per-dataset configuration for data loading and visualization.
+
+    Single source of truth for data-source options, pipeline per-dataset overrides,
+    and visualization settings.  Used by :func:`collect_activations`,
+    :func:`run_pipeline`, and :meth:`Expert.get_plot` / :meth:`Expert.get_mean_plot`.
+
+    Attributes:
+        dataframe_path:     Path to a local CSV/Parquet/JSONL file.
+        text_column:        Column containing input text.
+        label_column:       Column containing class labels, or ``None`` for unlabelled.
+        dataset_name:       HuggingFace dataset name for streaming (mutually exclusive
+                            with ``dataframe_path``).
+        bucket_column:      Continuous column to discretise into Fisher-scoring bins.
+        n_buckets:          Number of equal-width bins for ``bucket_column``.
+        output_subdir:      Override for the output sub-directory name; defaults to
+                            the stem of ``dataframe_path``.
+        n_input_samples:    Per-dataset override for the number of texts to sample.
+        max_points:         Per-dataset cap on scatter points per expert (0 = no cap).
+        regression_hypotheses: List of hypothesis specs for regression probing.
+        color_scale:        Named Plotly colorscale (e.g. ``"Plasma"``, ``"Phase"``).
+        continuous_color:   Colour points by label ordinal rather than by class.
+        color_map:          Explicit ``{label: CSS_color}`` mapping.
+        show_labels:        Annotate class-mean markers with text labels.
+    """
+
+    # ── Data source ──────────────────────────────────────────────────────
+    dataframe_path: str = ""
+    text_column: str = "Sentence"
+    label_column: str | None = "Label"
+    dataset_name: str | None = None
+    bucket_column: str | None = None
+    n_buckets: int = 10
+
+    # ── Pipeline overrides ───────────────────────────────────────────────
+    output_subdir: str | None = None
+    n_input_samples: int | None = None
+    max_points: int | None = None
+    regression_hypotheses: list[dict] | None = None
+
+    # ── Visualization ────────────────────────────────────────────────────
+    color_scale: str | None = None
+    continuous_color: bool = False
+    color_map: dict[str, str] | None = None
+    show_labels: bool = False
+
+    @property
+    def effective_continuous_color(self) -> bool:
+        """True when ``color_scale`` is set or ``continuous_color`` is explicitly ``True``."""
+        return self.continuous_color or self.color_scale is not None
+
+    @property
+    def effective_color_scale(self) -> str:
+        """Resolved colorscale name, defaulting to ``"Plasma"``."""
+        return self.color_scale if self.color_scale is not None else "Plasma"
+
+
+@dataclasses.dataclass
+class ExpertFilterConfig:
+    """Expert-selection thresholds for :func:`get_sae_activations`.
+
+    Attributes:
+        active_threshold:     Minimum L2 norm for an expert activation to count as active.
+        min_active_fraction:  Drop experts active on fewer than this fraction of tokens.
+        max_points:           Randomly downsample experts exceeding this count (0 = no cap).
+    """
+
+    active_threshold: float = 1e-5
+    min_active_fraction: float = 0.10
+    max_points: int = 1000
+
+
+@dataclasses.dataclass
+class ActivationBatch:
+    """Outputs of :func:`collect_activations` bundled into a single object.
+
+    Attributes:
+        activations:          ``(B, S, d_model)`` CPU tensor of LLM hidden states.
+        str_tokens:           Tokenizer string tokens per sequence.
+        labels:               ``(B, S)`` long tensor of class ids for display, or ``None``.
+        label_names:          ``{id: label_str}`` mapping, or ``None``.
+        last_token_positions: ``(B,)`` long tensor — last non-pad token index per sequence.
+        n_classes:            Number of unique labels (or Fisher buckets if no display labels).
+        regression_targets:   ``(B, n_targets)`` float32 tensor, or ``None``.
+        fisher_labels:        ``(B,)`` long tensor of bucket IDs for Fisher scoring, or ``None``.
+    """
+
+    activations: "torch.Tensor"
+    str_tokens: "list[list[str]]"
+    labels: "torch.Tensor | None"
+    label_names: "dict[int, str] | None"
+    last_token_positions: "torch.Tensor"
+    n_classes: int
+    regression_targets: "torch.Tensor | None"
+    fisher_labels: "torch.Tensor | None"
+
+    @property
+    def is_labelled(self) -> bool:
+        """True when the batch carries display or Fisher-only labels."""
+        return self.labels is not None or self.fisher_labels is not None
+
+
+
+def _resolve_colorscale(
+    color_map: dict[str, str] | None,
+    label_names: dict[int, str],
+    int_labels: "np.ndarray",
+) -> Any:
+    """Convert a ``{display_str: CSS_color}`` map to ``{int_id: color}`` for scatter3d.
+
+    Returns ``None`` when ``color_map`` is ``None`` or when not all active label ids
+    have a matching entry (falls back to the caller's colorscale).
+    """
+    if not color_map:
+        return None
+    candidate = {
+        i: color_map[_strip_prefix(label_names[i])]
+        for i in label_names
+        if _strip_prefix(label_names[i]) in color_map
+    }
+    return candidate if set(int_labels.tolist()) <= candidate.keys() else None
+
+
+def _build_label_mapping(raw_labels: list[str]) -> tuple["torch.Tensor", dict[int, str], int]:
+    """Build a label tensor and id→name mapping from raw string labels.
+
+    Labels are sorted numerically when all values parse as numbers, otherwise
+    alphabetically.  Returns ``(ids_tensor, {id: label_str}, n_classes)``.
+    """
+    unique_strs = list({lbl for lbl in raw_labels})
+    try:
+        unique_sorted = sorted(unique_strs, key=lambda x: float(x))
+    except ValueError:
+        unique_sorted = sorted(unique_strs)
+    label_to_id = {lbl: i for i, lbl in enumerate(unique_sorted)}
+    names = {i: lbl for lbl, i in label_to_id.items()}
+    ids = torch.tensor([label_to_id[lbl] for lbl in raw_labels], dtype=torch.long)
+    return ids, names, len(unique_sorted)
+
+
 class Expert:
     """Container for one SMIXAE expert's bottleneck activations and analysis results.
 
@@ -737,9 +879,9 @@ class Expert:
         Returns:
             ``{name: score}`` dict (NaN for any hypothesis that failed).
         """
-        from sklearn.linear_model import LinearRegression, LogisticRegression
+        from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge
         from sklearn.metrics import make_scorer, r2_score
-        from sklearn.model_selection import StratifiedKFold, cross_val_score
+        from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score
         from sklearn.pipeline import Pipeline
         from sklearn.preprocessing import StandardScaler
 
@@ -751,6 +893,14 @@ class Expert:
         # normalization on the training split only, preventing any data leakage.
         reg_targets = self.regression_targets.numpy()
 
+        def _classification_cv(y_int: "np.ndarray") -> "StratifiedKFold | None":
+            """Return a StratifiedKFold with splits clamped to the minimum class count."""
+            classes, counts = np.unique(y_int, return_counts=True)
+            if len(classes) < 2:
+                return None
+            n_splits = max(2, min(5, int(counts.min())))
+            return StratifiedKFold(n_splits=n_splits)
+
         def _fit_one(hyp: dict) -> tuple[str, float]:
             name = hyp["name"]
             idxs: list[int] = hyp["target_indices"]
@@ -761,36 +911,37 @@ class Expert:
                 Y = Y.ravel()
 
             try:
-                if reg_type == "linear":
-                    pipe = Pipeline([("sc", StandardScaler()), ("reg", LinearRegression())])
+                if reg_type in ("linear", "ridge"):
+                    estimator = Ridge() if reg_type == "ridge" else LinearRegression()
+                    pipe = Pipeline([("sc", StandardScaler()), ("reg", estimator)])
                     scorer = make_scorer(r2_score, multioutput="uniform_average")
-                    cv_s = cross_val_score(pipe, X, Y, cv=5, scoring=scorer)
+                    cv_s = cross_val_score(pipe, X, Y, cv=KFold(n_splits=5), scoring=scorer)
                     return name, float(np.mean(cv_s))
 
                 elif reg_type == "logistic":
+                    y_int = Y.astype(int)
+                    cv = _classification_cv(y_int)
+                    if cv is None:
+                        return name, float("nan")
                     pipe = Pipeline([
                         ("sc", StandardScaler()),
                         ("clf", LogisticRegression(max_iter=1000, class_weight="balanced")),
                     ])
-                    cv_s = cross_val_score(pipe, X, Y.astype(int), cv=5,
-                                           scoring="balanced_accuracy")
+                    cv_s = cross_val_score(pipe, X, y_int, cv=cv, scoring="balanced_accuracy")
                     return name, float(np.mean(cv_s))
 
                 elif reg_type == "multinomial":
                     y_int = Y.astype(int)
-                    classes, counts = np.unique(y_int, return_counts=True)
-                    if len(classes) < 2:
+                    cv = _classification_cv(y_int)
+                    if cv is None:
                         return name, float("nan")
-                    n_splits = max(2, min(5, int(counts.min())))
-                    skf = StratifiedKFold(n_splits=n_splits)
                     # solver='lbfgs' handles multi-class natively; multi_class param
                     # was removed in sklearn 1.7.
                     pipe = Pipeline([
                         ("sc", StandardScaler()),
                         ("clf", LogisticRegression(solver="lbfgs", max_iter=1000)),
                     ])
-                    cv_s = cross_val_score(pipe, X, y_int, cv=skf,
-                                           scoring="f1_macro")
+                    cv_s = cross_val_score(pipe, X, y_int, cv=cv, scoring="f1_macro")
                     return name, float(np.mean(cv_s))
 
                 else:
@@ -862,35 +1013,27 @@ class Expert:
     def get_plot(
         self,
         str_tokens: list[list[str]],
+        cfg: DatasetConfig = DatasetConfig(),
+        label_names: "dict[int, str] | None" = None,
+        *,
         k_neighbors: int = 10,
         context_window: int = 10,
         device: str = "cuda",
-        label_names: dict[int, str] | None = None,
-        continuous_color: bool = False,
-        color_scale: str = "Plasma",
-        color_map: dict[str, str] | None = None,
-        connect_means: bool | None = None,
-        show_labels: bool = False,
     ) -> Figure:
         """Generate an interactive 3D scatter of this expert's bottleneck activations.
 
         Lazily evaluates manifold continuity if it hasn't been computed yet.
-        For labelled data, colours points by class (using ``color_map`` for 1:1 mappings
-        or ``color_scale`` for continuous/ordinal data).  For unlabelled data, colours
-        points by per-token continuity score.
+        For labelled data, colours points by class (using ``cfg.color_map`` for
+        1:1 mappings or ``cfg.effective_color_scale`` for continuous/ordinal data).
+        For unlabelled data, colours points by per-token continuity score.
 
         Args:
             str_tokens: Nested list of string tokens for building hover context windows.
+            cfg: Dataset visualization settings (colorscale, color map, labels flag).
+            label_names: Map from integer label id to display string.
             k_neighbors: Neighbourhood size for lazy continuity evaluation.
             context_window: Tokens on each side of the target in hover text.
             device: Device for continuity computation.
-            label_names: Map from integer label id to display string.
-            continuous_color: Colour by label ordinal (continuous) rather than class.
-            color_scale: Plotly colorscale name for continuous colouring.
-            color_map: ``{display_label: CSS_color}`` for discrete 1:1 colour mapping.
-            connect_means: Whether to draw lines connecting class-mean markers.
-                Defaults to ``continuous_color``.
-            show_labels: Annotate class-mean markers with text.
 
         Returns:
             A Plotly :class:`Figure` with a single 3D scatter trace.
@@ -905,25 +1048,14 @@ class Expert:
         if self.labels is not None and label_names is not None:
             int_labels = self.labels.numpy()
             lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
-
-            # Convert color_map {display_str: color} → {int_id: color} for scatter3d
-            cscale: Any = None
-            if color_map:
-                candidate = {
-                    i: color_map[_strip_prefix(label_names[i])]
-                    for i in label_names
-                    if _strip_prefix(label_names[i]) in color_map
-                }
-                if set(int_labels.tolist()) <= candidate.keys():
-                    cscale = candidate
-
-            _connect_means = connect_means if connect_means is not None else continuous_color
+            cscale = _resolve_colorscale(cfg.color_map, label_names, int_labels)
+            _connect_means = cfg.effective_continuous_color
             fig = plot_3d_scatter(
                 pts, int_labels,
                 label_names=lnames,
-                colorscale=color_scale if continuous_color else cscale,
+                colorscale=cfg.effective_color_scale if cfg.effective_continuous_color else cscale,
                 connect_means=_connect_means,
-                show_labels=show_labels,
+                show_labels=cfg.show_labels,
                 title=self._make_title(),
             )
             # Inject per-token context windows into the scatter trace hover
@@ -948,26 +1080,18 @@ class Expert:
 
     def get_mean_plot(
         self,
-        label_names: dict[int, str] | None = None,
-        color_scale: str = "Plasma",
-        continuous_color: bool = False,
-        color_map: dict[str, str] | None = None,
-        connect_means: bool | None = None,
-        show_labels: bool = False,
-    ) -> Figure | None:
+        cfg: DatasetConfig = DatasetConfig(),
+        label_names: "dict[int, str] | None" = None,
+    ) -> "Figure | None":
         """Generate a 3D scatter showing only per-class mean bottleneck activations.
 
-        Identical colour/scale options as :meth:`get_plot`, but ``scatter_alpha=0.0``
-        so individual token points are hidden.  Returns ``None`` when labels or
-        label names are unavailable.
+        Uses the same colour/scale options as :meth:`get_plot` via ``cfg``, but
+        ``scatter_alpha=0.0`` so individual token points are hidden.  Returns ``None``
+        when labels or label names are unavailable.
 
         Args:
+            cfg: Dataset visualization settings.
             label_names: Map from integer label id to display string.
-            color_scale: Plotly colorscale for continuous colouring.
-            continuous_color: Colour by label ordinal rather than by class.
-            color_map: ``{display_label: CSS_color}`` for 1:1 colour mapping.
-            connect_means: Whether to draw lines between class means.
-            show_labels: Annotate markers with text labels.
 
         Returns:
             A Plotly :class:`Figure` or ``None`` if unlabelled.
@@ -978,31 +1102,89 @@ class Expert:
         pts = self.expert_activations.numpy()
         int_labels = self.labels.numpy()
         lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
-
-        # Convert color_map {display_str: color} → {int_id: color} for scatter3d
-        cscale: Any = None
-        if color_map:
-            candidate = {
-                i: color_map[_strip_prefix(label_names[i])]
-                for i in label_names
-                if _strip_prefix(label_names[i]) in color_map
-            }
-            if set(int_labels.tolist()) <= candidate.keys():
-                cscale = candidate
-
-        _connect_means = connect_means if connect_means is not None else continuous_color
+        cscale = _resolve_colorscale(cfg.color_map, label_names, int_labels)
+        _connect_means = cfg.effective_continuous_color
         return plot_3d_scatter(
             pts, int_labels,
             label_names=lnames,
-            colorscale=color_scale if continuous_color else cscale,
+            colorscale=cfg.effective_color_scale if cfg.effective_continuous_color else cscale,
             scatter_alpha=0.0,
             connect_means=_connect_means,
-            show_labels=show_labels,
+            show_labels=cfg.show_labels,
             title=self._make_title() + " [class means]",
         )
 
 
 # ── Shared activation pipeline ────────────────────────────────────────────────
+
+
+def _collect_target_cols(cfg: DatasetConfig) -> list[str]:
+    """Return a deduplicated ordered list of regression target column names from ``cfg``."""
+    if not cfg.regression_hypotheses:
+        return []
+    seen: set[str] = set()
+    cols: list[str] = []
+    for hyp in cfg.regression_hypotheses:
+        for col in hyp.get("target_columns", []):
+            if col not in seen:
+                cols.append(col)
+                seen.add(col)
+    return cols
+
+
+def _load_texts_and_labels(
+    cfg: DatasetConfig,
+    n_input_samples: int,
+) -> tuple[list[str], list[str] | None, list[int] | None, list[list[float]] | None]:
+    """Load raw texts and labels from a local file or a streaming HuggingFace dataset.
+
+    Returns:
+        texts:                  List of input strings.
+        raw_labels:             String labels for display, or ``None`` if no label column.
+        raw_fisher_labels:      Integer bucket IDs for Fisher scoring, or ``None``.
+        raw_regression_targets: Nested list of float regression targets, or ``None``.
+    """
+    texts: list[str] = []
+    raw_labels: list[str] | None = [] if cfg.label_column is not None else None
+    raw_fisher_labels: list[int] | None = None
+    raw_regression_targets: list[list[float]] | None = None
+
+    target_cols = _collect_target_cols(cfg)
+
+    if cfg.dataframe_path:
+        print(f"Loading data from {cfg.dataframe_path}")
+        ext = Path(cfg.dataframe_path).suffix.lower()
+        if ext == ".csv":
+            df = pd.read_csv(cfg.dataframe_path)
+        elif ext in (".parquet", ".pq"):
+            df = pd.read_parquet(cfg.dataframe_path)
+        elif ext in (".json", ".jsonl"):
+            df = pd.read_json(cfg.dataframe_path, lines=(ext == ".jsonl"))
+        else:
+            raise ValueError(f"Unsupported file extension: {ext}")
+        texts = df[cfg.text_column].tolist()[:n_input_samples]
+        if cfg.label_column is not None:
+            raw_labels = [str(v) for v in df[cfg.label_column].tolist()[:n_input_samples]]
+        if cfg.bucket_column is not None:
+            bucket_series = pd.cut(df[cfg.bucket_column].iloc[:n_input_samples], bins=cfg.n_buckets, labels=False)
+            raw_fisher_labels = [int(b) if not pd.isna(b) else 0 for b in bucket_series]
+            print(f"Bucketed '{cfg.bucket_column}' into {cfg.n_buckets} bins for Fisher scoring only.")
+        if target_cols:
+            reg_df = df[target_cols].iloc[:n_input_samples].fillna(0.0)
+            raw_regression_targets = reg_df.values.tolist()
+    elif cfg.dataset_name is not None:
+        print(f"Streaming {cfg.dataset_name}")
+        dataset = load_dataset(cfg.dataset_name, streaming=True, split="train")
+        for i, sample in enumerate(dataset):
+            if i == n_input_samples:
+                break
+            texts.append(sample[cfg.text_column])
+            if raw_labels is not None:
+                raw_labels.append(str(sample[cfg.label_column]))  # type: ignore[index]
+    else:
+        raise ValueError("DatasetConfig must set either dataframe_path or dataset_name.")
+
+    return texts, raw_labels, raw_fisher_labels, raw_regression_targets
 
 
 def collect_activations(
@@ -1013,98 +1195,26 @@ def collect_activations(
     n_input_samples: int,
     device: str,
     llm_batch_size: int,
-    dataset_name: str | None = None,
-    dataframe_path: str | None = None,
-    text_column: str = "text",
-    label_column: str | None = None,
-    regression_target_columns: list[str] | None = None,
-    bucket_column: str | None = None,
-    n_buckets: int = 10,
-) -> tuple[
-    torch.Tensor,
-    list[list[str]],
-    torch.Tensor | None,
-    dict[int, str] | None,
-    torch.Tensor,
-    int,
-    torch.Tensor | None,
-    torch.Tensor | None,
-]:
-    """Load texts + labels, tokenize, collect LLM residual-stream activations.
+    cfg: DatasetConfig = DatasetConfig(),
+) -> ActivationBatch:
+    """Load texts + labels, tokenize, and collect LLM residual-stream activations.
 
-    When ``bucket_column`` is provided, that continuous column is discretised
-    into ``n_buckets`` equal-width bins used **only** for Fisher scoring.
-    If ``label_column`` is also provided, its values are used for display /
-    coloring and the bucket IDs are kept internal (``fisher_labels_tensor``).
-    If only ``bucket_column`` is provided, display labels are ``None``.
+    Data source, label, and visualization options are bundled in ``cfg`` (a
+    :class:`DatasetConfig`).  When ``cfg.bucket_column`` is provided, that continuous
+    column is discretised into ``cfg.n_buckets`` equal-width bins used **only** for
+    Fisher scoring.
 
-    Returns:
-        activations:           ``(B, S, d_model)`` CPU tensor
-        str_tokens:            list of token-string lists, one per sequence
-        labels_tensor:         ``(B, S)`` long tensor of class ids for display, or ``None``
-        label_names:           ``dict[int, str]`` id→label mapping, or ``None``
-        last_token_positions:  ``(B,)`` long tensor — last non-pad position per sequence
-        n_classes:             number of unique display labels (or Fisher buckets if no display labels)
-        regression_targets:    ``(B, n_targets)`` float32 tensor, or ``None``
-        fisher_labels_tensor:  ``(B,)`` long tensor of bucket IDs for Fisher scoring, or ``None``
+    Returns an :class:`ActivationBatch` with all tensors on CPU.
     """
-    texts: list[str] = []
-    raw_labels: list[str] | None = [] if label_column is not None else None
-    raw_fisher_labels: list[int] | None = None  # bucket IDs — Fisher only, never displayed
-    raw_regression_targets: list[list[float]] | None = None
-
-    if dataframe_path is not None:
-        print(f"Loading data from {dataframe_path}")
-        ext = Path(dataframe_path).suffix.lower()
-        if ext == ".csv":
-            df = pd.read_csv(dataframe_path)
-        elif ext in (".parquet", ".pq"):
-            df = pd.read_parquet(dataframe_path)
-        elif ext in (".json", ".jsonl"):
-            df = pd.read_json(dataframe_path, lines=(ext == ".jsonl"))
-        else:
-            raise ValueError(f"Unsupported file extension: {ext}")
-        texts = df[text_column].tolist()[:n_input_samples]
-        if label_column is not None:
-            raw_labels = [str(v) for v in df[label_column].tolist()[:n_input_samples]]
-        if bucket_column is not None:
-            bucket_series = pd.cut(df[bucket_column].iloc[:n_input_samples], bins=n_buckets, labels=False)
-            raw_fisher_labels = [int(b) if not pd.isna(b) else 0 for b in bucket_series]
-            print(f"Bucketed '{bucket_column}' into {n_buckets} bins for Fisher scoring only.")
-        if regression_target_columns:
-            reg_df = df[regression_target_columns].iloc[:n_input_samples].fillna(0.0)
-            raw_regression_targets = reg_df.values.tolist()
-    elif dataset_name is not None:
-        print(f"Streaming {dataset_name}")
-        dataset = load_dataset(dataset_name, streaming=True, split="train")
-        for i, sample in enumerate(dataset):
-            if i == n_input_samples:
-                break
-            texts.append(sample[text_column])
-            if raw_labels is not None:
-                raw_labels.append(str(sample[label_column]))  # type: ignore[index]
-    else:
-        raise ValueError("Provide either dataset_name or dataframe_path.")
+    texts, raw_labels, raw_fisher_labels, raw_regression_targets = _load_texts_and_labels(cfg, n_input_samples)
 
     labels_tensor: torch.Tensor | None = None
     label_names: dict[int, str] | None = None
     n_classes: int = 0
     fisher_labels_tensor: torch.Tensor | None = None
 
-    def _make_label_tensor(raw: list[str]) -> tuple[torch.Tensor, dict[int, str], int]:
-        """Sort labels, preferring numeric order when all labels parse as numbers."""
-        unique_strs = list({lbl for lbl in raw})
-        try:
-            unique_sorted = sorted(unique_strs, key=lambda x: float(x))
-        except ValueError:
-            unique_sorted = sorted(unique_strs)
-        label_to_id = {lbl: i for i, lbl in enumerate(unique_sorted)}
-        names = {i: lbl for lbl, i in label_to_id.items()}
-        ids = torch.tensor([label_to_id[lbl] for lbl in raw], dtype=torch.long)
-        return ids, names, len(unique_sorted)
-
     if raw_labels is not None and len(raw_labels) > 0:
-        label_ids, label_names, n_classes = _make_label_tensor(raw_labels)
+        label_ids, label_names, n_classes = _build_label_mapping(raw_labels)
         unique_display = [label_names[i] for i in range(n_classes)]
         print(
             f"Found {n_classes} unique labels (numerically sorted): "
@@ -1161,60 +1271,45 @@ def collect_activations(
     if raw_regression_targets is not None:
         regression_targets_tensor = torch.tensor(raw_regression_targets[:B], dtype=torch.float32)
 
-    return (
-        activations,
-        str_tokens,
-        labels_tensor,
-        label_names,
-        last_token_positions,
-        n_classes,
-        regression_targets_tensor,
-        fisher_labels_tensor,
+    return ActivationBatch(
+        activations=activations,
+        str_tokens=str_tokens,
+        labels=labels_tensor,
+        label_names=label_names,
+        last_token_positions=last_token_positions,
+        n_classes=n_classes,
+        regression_targets=regression_targets_tensor,
+        fisher_labels=fisher_labels_tensor,
     )
 
 
 def get_sae_activations(
     sae: SMIXAE,
     device: str,
-    activations: torch.Tensor,
+    batch: ActivationBatch,
     sae_batch_size: int,
-    active_threshold: float = 1e-5,
-    min_active_fraction: float = 0.10,
-    max_points: int = 1000,
-    labels: torch.Tensor | None = None,
-    last_token_only: bool = False,
-    last_token_positions: torch.Tensor | None = None,
-    n_classes: int = 0,
-    regression_targets: torch.Tensor | None = None,
-    fisher_labels: torch.Tensor | None = None,
+    filter_cfg: ExpertFilterConfig = ExpertFilterConfig(),
 ) -> list[Expert]:
     """Encode LLM activations through SMIXAE and return a list of active ``Expert`` objects.
 
     Args:
-        sae:                  Trained SMIXAE model.
-        device:               Device for SAE inference.
-        activations:          ``(B, S, d_model)`` CPU tensor from ``collect_activations``.
-        sae_batch_size:       Tokens per SAE forward pass.
-        active_threshold:     L2 norm threshold to consider an expert active.
-        min_active_fraction:  Skip experts active on fewer than this fraction of total tokens
-                              (0–1, e.g. 0.10 = 10%).
-        max_points:           Randomly downsample experts exceeding this count (0 = no cap).
-        labels:               ``(B, S)`` long tensor of class ids, or ``None``.
-        last_token_only:      If True, only encode the last non-pad token per sequence.
-        last_token_positions: Required when ``last_token_only=True``.
-        n_classes:            Total number of label classes (passed through to ``Expert``).
-        regression_targets:   ``(B, n_targets)`` float32 tensor of numeric regression
-            targets, one row per input sequence.  Passed through to each ``Expert``.
+        sae:         Trained SMIXAE model.
+        device:      Device for SAE inference.
+        batch:       :class:`ActivationBatch` from :func:`collect_activations`.
+        sae_batch_size: Tokens per SAE forward pass.
+        filter_cfg:  Thresholds controlling which experts are retained.
 
     Returns:
         List of ``Expert`` objects for all experts that meet the activity threshold.
     """
+    activations = batch.activations
+    labels = batch.labels
+    last_token_positions = batch.last_token_positions
+    last_token_only = batch.is_labelled
     B, S_full, D = activations.shape
 
     seq_positions: torch.Tensor | None = None
     if last_token_only:
-        if last_token_positions is None:
-            raise ValueError("last_token_only=True but no last_token_positions provided.")
         seq_positions = last_token_positions
         gather_idx = last_token_positions.unsqueeze(1).unsqueeze(2).expand(B, 1, D)
         activations = activations.gather(1, gather_idx)
@@ -1230,27 +1325,27 @@ def get_sae_activations(
 
     # When last_token_only=True, S=1 so B*S = B (number of samples); otherwise all tokens.
     n_total = B * S
-    min_points_abs = max(1, int(min_active_fraction * n_total))
+    min_points_abs = max(1, int(filter_cfg.min_active_fraction * n_total))
     activations_flat = activations.reshape(n_total, D)
 
     sae_activations_cat, mean_latent_l0 = encode_sae_batched(sae, activations_flat, sae_batch_size, return_latent_l0=True)  # type: ignore[misc]
     sae_activations_cat = sae_activations_cat.view(B, S, sae_activations_cat.shape[1], sae_activations_cat.shape[2])
     print(f"Mean latent L0 (pre-bottleneck dims > 0 per token): {mean_latent_l0:.2f}")
-    print(f"min_active_fraction={min_active_fraction:.2%} → min_points={min_points_abs} / {n_total} tokens")
+    print(f"min_active_fraction={filter_cfg.min_active_fraction:.2%} → min_points={min_points_abs} / {n_total} tokens")
 
     experts: list[Expert] = []
     n_experts = sae_activations_cat.shape[-2]
 
     for i in tqdm(range(n_experts), desc="Building experts"):
         expert_pts = sae_activations_cat[..., i, :]
-        active_mask = torch.norm(expert_pts, p=2, dim=-1) > active_threshold
+        active_mask = torch.norm(expert_pts, p=2, dim=-1) > filter_cfg.active_threshold
         n_active = int(active_mask.sum().item())
 
         if n_active < min_points_abs:
             continue
-        if max_points and n_active > max_points:
+        if filter_cfg.max_points and n_active > filter_cfg.max_points:
             active_indices = active_mask.nonzero(as_tuple=False)
-            perm = torch.randperm(n_active)[:max_points]
+            perm = torch.randperm(n_active)[:filter_cfg.max_points]
             chosen = active_indices[perm]
             sampled_mask = torch.zeros_like(active_mask, dtype=torch.bool)
             sampled_mask[chosen[:, 0], chosen[:, 1]] = True
@@ -1262,11 +1357,11 @@ def get_sae_activations(
             activations,
             expert_pts,
             labels=labels,
-            regression_targets=regression_targets,
+            regression_targets=batch.regression_targets,
             seq_positions=seq_positions,
-            n_classes=n_classes,
+            n_classes=batch.n_classes,
             mean_latent_l0=mean_latent_l0,
-            fisher_labels=fisher_labels,
+            fisher_labels=batch.fisher_labels,
         )
         experts.append(expert)
 
