@@ -1,28 +1,36 @@
 """
-Assemble camera-ready LaTeX figure files from saved PNG snapshots.
+Camera-ready LaTeX figure assembly + legend generation (PIL) with correct layout.
 
-This version fixes the layout issues by:
-- NEVER using \\hfill for horizontal layout (it causes huge, stretchy whitespace).
-- Avoiding subfigure grids for the layout; instead it uses rigid minipage blocks
-  packed into rows, centered with \\makebox[\\linewidth][c]{...}.
-- Enforcing "rows of up to N plots" (legends do NOT count toward N).
-- For each TASK, placing EXACTLY ONE legend immediately after the last plot of that task.
-- Cropping legend PNGs tightly with PIL to remove all extra whitespace.
+Fixes vs previous versions:
+- Labels are sorted BEFORE stripping numeric prefixes (e.g. 01_Sunday, 02_Monday ...),
+  then displayed without the prefix.
+- Legends are rendered with PIL (no Plotly/Kaleido image export), giving:
+  - large, legible tick labels on continuous colorbars
+  - fewer ticks (configurable)
+  - discrete legends as a readable swatch+text list
+- Discrete legends are vertically centered in the plot-height box via fixed-height
+  minipages in LaTeX (plots are also placed in fixed-height boxes, centered).
 
-Legend rendering still uses your existing Plotly renderer (analysis.scatter3d.render_legend_png),
-then we crop the output PNG with PIL.
+Layout:
+- Physical rows contain up to --cols PLOTS total (legends do NOT count toward cols).
+- Each TASK is a block: its plots, then ONE legend immediately after its last plot.
+- Tasks with >cols plots get their own wrapped block (internal rows of exactly cols plots),
+  with ONE legend only on the final internal row.
 
 LaTeX requirements:
-- \\usepackage{graphicx}
-(subcaption is not required by this generated layout)
+  \\usepackage{graphicx}
+
+Dependencies:
+  pip install pillow
+  pip install plotly        (used only to sample named Plotly colorscales; no kaleido)
 
 Run:
   smixae latex figures --camera-ready-dir results/camera_ready --output-dir results/paper ...
 
-It will write:
-  results/paper/
-    camera_ready/   (copies of the used PNGs)
-    legends/        (cropped legend PNGs)
+Output:
+  output_dir/
+    camera_ready/   (copied PNGs)
+    legends/        (PIL legends)
     probe_<exp>.tex
     newline_<exp>.tex
 """
@@ -30,6 +38,7 @@ It will write:
 from __future__ import annotations
 
 import json
+import math
 import re
 import shutil
 import string as _string
@@ -39,27 +48,30 @@ from pathlib import Path
 from typing import Optional
 
 import typer
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageColor, ImageDraw, ImageFont
+
+try:
+    import plotly.colors as _pcolors
+except Exception:  # pragma: no cover
+    _pcolors = None  # legend rendering for named scales will error with a clear message
 
 app = typer.Typer()
 
 # ------------------------- Tunable layout constants ----------------------------
-# Max fraction of \linewidth to use for content. Leave slack for inter-minipage whitespace.
-_USABLE_FRAC = 0.98
 
-# Legend width relative to plot width (for layout slots).
-# Keep this SMALL; legends are cropped and typically narrow.
-_LEGEND_SCALE = 0.18
+_USABLE_FRAC = 0.98                 # fraction of \linewidth used for content
+_LEGEND_SCALE = 0.18                # legend slot width relative to one plot slot
+_BLOCK_GAP = r"\hspace{2.5mm}"      # gap between TASK blocks in the same physical row
+_ROW_VSPACE = r"\vspace{5pt}"       # gap between physical rows
+_PANEL_HEIGHT = "4.0cm"             # fixed-height boxes for plots+legends
 
-# Horizontal gap between TASK blocks (physical space, not stretch).
-_BLOCK_GAP = r"\hspace{2.5mm}"
-
-# Vertical gap between physical rows.
-_ROW_VSPACE = r"\vspace{5pt}"
-
-# Constrain both plots and legends to this height (max).
-# If your plots look too small, increase this (e.g. 4.2cm).
-_PANEL_HEIGHT = "4.0cm"
+# Legend (PIL) styling:
+_LEGEND_BG = (255, 255, 255, 0)     # transparent
+_LEGEND_FONT_SIZE = 34              # larger => more legible when scaled
+_LEGEND_TICK_FONT_SIZE = 30
+_LEGEND_TICKS = 6                   # continuous bar tick count
+_LEGEND_SWATCH_PAD = 10
+_LEGEND_LINE_PAD = 10
 
 # --------------------------- Filename parsing ---------------------------------
 
@@ -120,6 +132,56 @@ def _canonical_task(raw_task: str) -> str:
     return raw_task.split("_—_")[0]
 
 
+# ----------------------------- Sorting helpers --------------------------------
+
+_PREFIX_RE = re.compile(r"^(?P<num>\d+)_")
+
+def _strip_numeric_prefix(s: str) -> str:
+    return _PREFIX_RE.sub("", s)
+
+def _labels_all_numeric(values: list) -> bool:
+    for v in values:
+        if isinstance(v, (int, float)):
+            continue
+        try:
+            float(str(v))
+        except Exception:
+            return False
+    return True
+
+def _labels_all_prefixed(values: list) -> bool:
+    ss = [str(v) for v in values]
+    return bool(ss) and all(_PREFIX_RE.match(s) for s in ss)
+
+def _sorted_labels(values: list) -> list:
+    """
+    Sort labels BEFORE stripping numeric prefixes.
+    - If numeric -> numeric ascending
+    - Else if all match ^\\d+_ -> sort by that integer prefix, then by full string
+    - Else -> lexicographic by string
+    """
+    if not values:
+        return []
+    if _labels_all_numeric(values):
+        # preserve ints if they look integral
+        nums = []
+        for v in values:
+            f = float(v)
+            nums.append(int(f) if f.is_integer() else f)
+        return sorted(nums)
+    if _labels_all_prefixed(values):
+        def key(x):
+            s = str(x)
+            m = _PREFIX_RE.match(s)
+            return (int(m.group("num")) if m else 10**9, s)
+        return sorted(values, key=key)
+    return sorted(values, key=lambda x: str(x))
+
+def _display_names_from_sorted(labels: list) -> dict:
+    """Assumes *labels are already sorted*; maps label -> display text with prefix removed."""
+    return {lbl: _strip_numeric_prefix(str(lbl)) for lbl in labels}
+
+
 # ----------------------------- Color-info loading ------------------------------
 
 def _task_from_dataframe_path(path_str: str) -> str:
@@ -130,6 +192,10 @@ def load_color_info(
     dataset_config_path: Path,
     csv_base_dir: Path | None = None,
 ) -> dict[str, dict]:
+    """
+    Returns {task: {color_map, color_scale, hypothesis_color_overrides, continuous_color, labels}}.
+    Labels (if found) are sorted with _sorted_labels().
+    """
     import csv as _csv
 
     with open(dataset_config_path) as f:
@@ -146,16 +212,7 @@ def load_color_info(
                 with open(csv_path, newline="") as cf:
                     reader = _csv.DictReader(cf)
                     raw_labels = {row["Label"] for row in reader if "Label" in row}
-
-                try:
-                    float_vals = {v: float(v) for v in raw_labels}
-                    sorted_str = sorted(raw_labels, key=lambda v: float_vals[v])
-                    labels = [
-                        int(float_vals[v]) if float_vals[v] == int(float_vals[v]) else float_vals[v]
-                        for v in sorted_str
-                    ]
-                except ValueError:
-                    labels = sorted(raw_labels)
+                labels = _sorted_labels(list(raw_labels))
 
         info[task] = {
             "color_map":                  entry.get("color_map"),
@@ -236,7 +293,7 @@ def infer_legend_groups(
             for e in task_entries:
                 n = _get_wrap(e, newline_wrap_lookup)
                 by_exp_wrap[(e.experiment_id, n)].append(e)
-            for (exp_id_nl, n), wrap_entries in sorted(by_exp_wrap.items()):
+            for (_exp_id_nl, n), wrap_entries in sorted(by_exp_wrap.items()):
                 groups.append(LegendGroup(
                     key=f"pile-uncopyrighted__{n}",
                     task="pile-uncopyrighted",
@@ -338,75 +395,232 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
     return groups
 
 
-# ------------------------------ Legend rendering -------------------------------
+# ------------------------------ Legend rendering (PIL) -------------------------
 
-def _display_names(labels: list) -> dict:
-    return {lbl: re.sub(r"^\d+_", "", str(lbl)) for lbl in labels}
+def _load_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    # Prefer DejaVuSans (usually available); fall back to PIL default.
+    for name in ["DejaVuSans.ttf", "Arial.ttf"]:
+        try:
+            return ImageFont.truetype(name, size=size)
+        except Exception:
+            pass
+    return ImageFont.load_default()
 
+def _parse_color(c) -> tuple[int, int, int]:
+    """Parse hex, rgb(...), rgba(...), or named colors."""
+    if c is None:
+        return (0, 0, 0)
+    s = str(c).strip()
+    if s.startswith("rgb(") or s.startswith("rgba("):
+        nums = re.findall(r"[\d.]+", s)
+        if len(nums) >= 3:
+            return (int(float(nums[0])), int(float(nums[1])), int(float(nums[2])))
+    try:
+        return ImageColor.getrgb(s)
+    except Exception:
+        # last resort: black
+        return (0, 0, 0)
 
-def _crop_png_to_content(path: Path, *, pad: int = 6, white_eps: int = 10) -> None:
-    im = Image.open(path).convert("RGBA")
+def _sample_colorscale(colorscale: str, t: float) -> tuple[int, int, int]:
+    if _pcolors is None:
+        raise RuntimeError("plotly is required to sample named colorscales (pip install plotly)")
+    # sample_colorscale accepts either a colorscale list or a named scale string
+    col = _pcolors.sample_colorscale(colorscale, [max(0.0, min(1.0, t))])[0]
+    return _parse_color(col)
 
-    alpha = im.getchannel("A")
-    if alpha.getextrema()[0] < 255:
-        mask = alpha.point(lambda a: 255 if a > 0 else 0)
-        bbox = mask.getbbox()
-    else:
-        rgb = im.convert("RGB")
-        bg = Image.new("RGB", rgb.size, (255, 255, 255))
-        diff = ImageChops.difference(rgb, bg).convert("L")
-        diff = diff.point(lambda p: 255 if p > white_eps else 0)
-        bbox = diff.getbbox()
+def _format_tick(v: float) -> str:
+    if abs(v - round(v)) < 1e-9:
+        return str(int(round(v)))
+    # keep concise
+    if abs(v) >= 100:
+        return f"{v:.0f}"
+    if abs(v) >= 10:
+        return f"{v:.1f}"
+    return f"{v:.2f}"
 
-    if not bbox:
-        return
+def _render_discrete_legend_png(
+    *,
+    labels: list,
+    label_to_color: dict,
+    output_path: Path,
+) -> None:
+    labels = _sorted_labels(labels)
+    disp = _display_names_from_sorted(labels)
 
-    left, top, right, bottom = bbox
-    left = max(0, left - pad)
-    top = max(0, top - pad)
-    right = min(im.width, right + pad)
-    bottom = min(im.height, bottom + pad)
+    font = _load_font(_LEGEND_FONT_SIZE)
 
-    im.crop((left, top, right, bottom)).save(path)
+    # measure max text width
+    dummy = Image.new("RGBA", (10, 10), _LEGEND_BG)
+    d = ImageDraw.Draw(dummy)
+    text_ws = []
+    text_hs = []
+    for lbl in labels:
+        bbox = d.textbbox((0, 0), disp[lbl], font=font)
+        text_ws.append(bbox[2] - bbox[0])
+        text_hs.append(bbox[3] - bbox[1])
+    text_w = max(text_ws) if text_ws else 1
+    text_h = max(text_hs) if text_hs else _LEGEND_FONT_SIZE
 
+    sw = int(text_h * 0.85)
+    line_h = text_h + _LEGEND_LINE_PAD
+
+    W = _LEGEND_SWATCH_PAD * 3 + sw + text_w
+    H = _LEGEND_SWATCH_PAD * 2 + line_h * len(labels)
+
+    im = Image.new("RGBA", (W, H), _LEGEND_BG)
+    draw = ImageDraw.Draw(im)
+
+    x0 = _LEGEND_SWATCH_PAD
+    y = _LEGEND_SWATCH_PAD
+    for lbl in labels:
+        color = _parse_color(label_to_color.get(lbl))
+        # swatch
+        draw.rectangle([x0, y + 2, x0 + sw, y + 2 + sw], fill=(*color, 255), outline=(0, 0, 0, 40))
+        # text
+        draw.text((x0 + sw + _LEGEND_SWATCH_PAD, y), disp[lbl], fill=(0, 0, 0, 255), font=font)
+        y += line_h
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    im.save(output_path)
+
+def _render_continuous_colorbar_png(
+    *,
+    colorscale: str,
+    labels: list,
+    output_path: Path,
+) -> None:
+    labels = _sorted_labels(labels)
+    # Determine numeric range
+    vals = []
+    for v in labels:
+        try:
+            vals.append(float(v))
+        except Exception:
+            pass
+    if not vals:
+        raise ValueError("Continuous legend requested but labels are not numeric.")
+    vmin, vmax = min(vals), max(vals)
+    if abs(vmax - vmin) < 1e-12:
+        vmax = vmin + 1.0
+
+    bar_h = 720
+    bar_w = 42
+    pad = 14
+    tick_len = 10
+    gap = 10
+
+    tick_font = _load_font(_LEGEND_TICK_FONT_SIZE)
+
+    # ticks: choose evenly spaced values, but show endpoints always
+    n_ticks = max(2, _LEGEND_TICKS)
+    tick_vals = [vmin + i * (vmax - vmin) / (n_ticks - 1) for i in range(n_ticks)]
+    tick_text = [_format_tick(v) for v in tick_vals]
+
+    # measure label widths
+    dummy = Image.new("RGBA", (10, 10), _LEGEND_BG)
+    d = ImageDraw.Draw(dummy)
+    tw = 0
+    th = 0
+    for t in tick_text:
+        bbox = d.textbbox((0, 0), t, font=tick_font)
+        tw = max(tw, bbox[2] - bbox[0])
+        th = max(th, bbox[3] - bbox[1])
+
+    W = pad + bar_w + gap + tick_len + gap + tw + pad
+    H = pad + bar_h + pad
+
+    im = Image.new("RGBA", (W, H), _LEGEND_BG)
+    draw = ImageDraw.Draw(im)
+
+    # draw gradient bar
+    x_bar = pad
+    y_bar = pad
+    for yi in range(bar_h):
+        t = 1.0 - yi / (bar_h - 1)  # top=max
+        col = _sample_colorscale(colorscale, t)
+        draw.line([(x_bar, y_bar + yi), (x_bar + bar_w, y_bar + yi)], fill=(*col, 255))
+
+    # bar outline
+    draw.rectangle([x_bar, y_bar, x_bar + bar_w, y_bar + bar_h], outline=(0, 0, 0, 80), width=1)
+
+    # ticks + text
+    for v, t in zip(tick_vals, tick_text):
+        frac = (v - vmin) / (vmax - vmin)
+        y = y_bar + (1.0 - frac) * bar_h
+        y = int(round(y))
+        x1 = x_bar + bar_w + gap
+        x2 = x1 + tick_len
+        draw.line([(x1, y), (x2, y)], fill=(0, 0, 0, 160), width=2)
+
+        bbox = draw.textbbox((0, 0), t, font=tick_font)
+        text_h = bbox[3] - bbox[1]
+        draw.text((x2 + gap, y - text_h // 2), t, fill=(0, 0, 0, 255), font=tick_font)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    im.save(output_path)
 
 def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
-    from analysis.scatter3d import render_legend_png
-
+    """
+    Generates a legend image with PIL:
+    - If color_map -> discrete swatch legend in sorted label order
+    - Else if color_scale -> continuous bar if continuous_color else discrete sampled from scale
+    """
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     if group.color_map:
-        labels = sorted(group.color_map.keys())
-        render_legend_png(
-            colorscale=group.color_map,
+        labels = _sorted_labels(list(group.color_map.keys()))
+        # IMPORTANT: sort first, then strip prefix for display inside renderer
+        _render_discrete_legend_png(
             labels=labels,
+            label_to_color=group.color_map,
             output_path=output_path,
-            label_names=_display_names(labels),
         )
-    elif group.color_scale:
-        if not group.labels:
-            typer.echo(f"  [skip legend] no labels available for group {group.key}", err=True)
-            return
-        render_legend_png(
-            colorscale=group.color_scale,
-            labels=group.labels,
-            output_path=output_path,
-            label_names=_display_names(group.labels),
-            continuous_color=group.continuous_color,
-        )
-    elif group.labels:
-        render_legend_png(
-            colorscale=None,
-            labels=group.labels,
-            output_path=output_path,
-            label_names=_display_names(group.labels),
-        )
-    else:
-        typer.echo(f"  [skip legend] no color info for group {group.key}", err=True)
         return
 
-    if output_path.exists():
-        _crop_png_to_content(output_path)
+    if group.color_scale:
+        if not group.labels:
+            typer.echo(f"  [skip legend] no labels for group {group.key}", err=True)
+            return
+        labels = _sorted_labels(group.labels)
+
+        if group.continuous_color:
+            _render_continuous_colorbar_png(
+                colorscale=group.color_scale,
+                labels=labels,
+                output_path=output_path,
+            )
+        else:
+            # discrete labels but sampled from a named colorscale
+            n = len(labels)
+            if n <= 0:
+                return
+            # evenly spaced colors for categories
+            label_to_color = {}
+            for i, lbl in enumerate(labels):
+                t = 0.0 if n == 1 else i / (n - 1)
+                label_to_color[lbl] = "rgb(%d,%d,%d)" % _sample_colorscale(group.color_scale, t)
+            _render_discrete_legend_png(
+                labels=labels,
+                label_to_color=label_to_color,
+                output_path=output_path,
+            )
+        return
+
+    if group.labels:
+        # fallback discrete legend using Plotly qualitative palette (if available)
+        labels = _sorted_labels(group.labels)
+        palette = []
+        if _pcolors is not None:
+            palette = getattr(_pcolors.qualitative, "Plotly", [])
+        if not palette:
+            palette = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+                       "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+                       "#bcbd22", "#17becf"]
+        label_to_color = {lbl: palette[i % len(palette)] for i, lbl in enumerate(labels)}
+        _render_discrete_legend_png(labels=labels, label_to_color=label_to_color, output_path=output_path)
+        return
+
+    typer.echo(f"  [skip legend] no color info for group {group.key}", err=True)
 
 
 # ------------------------------ LaTeX generation -------------------------------
@@ -545,8 +759,7 @@ class _Block:
 @dataclass
 class _Row:
     blocks: list[_Block]
-    # total plot count only (legends not counted)
-    plot_count: int
+    plot_count: int  # plots only; legends not counted
 
 
 def _split_groups_by_experiment(groups: list[LegendGroup]) -> list[LegendGroup]:
@@ -580,10 +793,6 @@ def _plan_rows_for_experiment(
     cols: int,
     legend_paths: dict[str, Path],
 ) -> tuple[list[_Row], list[tuple[str, PNGEntry]]]:
-    """
-    Physical rows contain up to `cols` PLOTS TOTAL (across tasks).
-    Each task is a block: plots then ONE legend after the final plot.
-    """
     rows: list[_Row] = []
     labeled: list[tuple[str, PNGEntry]] = []
     letter_idx = 0
@@ -612,7 +821,7 @@ def _plan_rows_for_experiment(
 
         leg = legend_paths.get(group.key)
 
-        # If task has >cols plots, it gets its own dedicated rows (wrapped internally).
+        # If task has >cols plots, it gets its own dedicated row (wrapped internally).
         if len(units) > cols:
             flush()
             rows.append(_Row(blocks=[_Block(group=group, units=units, legend_path=leg)], plot_count=len(units)))
@@ -638,48 +847,28 @@ def _task_title(group: LegendGroup) -> str:
     return _TASK_DISPLAY.get(group.task, group.task.replace("_", " ").title())
 
 
-def _include_plot(png_rel: str) -> str:
-    # Use BOTH width and height caps to avoid giant/tiny scaling surprises.
-    return (
-        rf"\includegraphics[width=\linewidth,height={_PANEL_HEIGHT},keepaspectratio]"
-        rf"{{{png_rel}}}"
-    )
-
-
-def _include_legend(legend_rel: str) -> str:
-    return (
-        rf"\includegraphics[width=\linewidth,height={_PANEL_HEIGHT},keepaspectratio]"
-        rf"{{{legend_rel}}}"
-    )
+def _include_graphics(relpath: str) -> str:
+    return rf"\includegraphics[width=\linewidth,height={_PANEL_HEIGHT},keepaspectratio]{{{relpath}}}"
 
 
 def _render_compact_row(row: _Row, cols: int) -> list[str]:
-    """
-    Render a physical row of multiple compact task blocks.
-
-    Key properties:
-    - plots never get bigger than a "3-plot row" size (cap)
-    - no \\hfill (no stretchy whitespace)
-    - blocks are centered using \\makebox
-    """
     blocks = row.blocks
     if not blocks:
         return []
 
-    # Count plots and legends that exist
+    # plots and legends present
     G = sum(len(b.units) for b in blocks)
     L = sum(1 for b in blocks if b.legend_path is not None and b.legend_path.exists())
+    if G <= 0:
+        return []
 
     # Cap plot width so single-plot rows do not blow up.
-    # This matches roughly "full row of cols plots + one legend".
     plot_w_cap = _USABLE_FRAC / (cols + _LEGEND_SCALE)
 
-    # Choose plot_w to fit this row (legends consume width too), but never exceed cap.
-    denom = (G + _LEGEND_SCALE * max(L, 0))
-    plot_w = plot_w_cap if denom <= 0 else min(_USABLE_FRAC / denom, plot_w_cap)
+    denom = (G + _LEGEND_SCALE * L)
+    plot_w = min(_USABLE_FRAC / denom, plot_w_cap) if denom > 0 else plot_w_cap
     legend_w = _LEGEND_SCALE * plot_w
 
-    # Build row content as a centered makebox of minipage blocks.
     lines: list[str] = []
     lines.append(r"\noindent\makebox[\linewidth][c]{%")
 
@@ -691,29 +880,29 @@ def _render_compact_row(row: _Row, cols: int) -> list[str]:
         if block_w <= 0:
             continue
 
-        # Start block minipage
         lines.append(rf"\begin{{minipage}}[t]{{{block_w:.4f}\linewidth}}%")
         lines.append(r"\vspace{0pt}\centering%")
 
-        # Render k plot slots
         plot_frac = plot_w / block_w
-        for i, u in enumerate(block.units):
+
+        # plots in fixed-height centered boxes
+        for u in block.units:
             png_rel = str(Path("camera_ready") / u.entry.path.name)
-            lines.append(rf"\begin{{minipage}}[t]{{{plot_frac:.4f}\linewidth}}%")
-            lines.append(r"\vspace{0pt}\centering%")
-            lines.append(_include_plot(png_rel) + "%")
+            lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{plot_frac:.4f}\linewidth}}%")
+            lines.append(r"\centering%")
+            lines.append(_include_graphics(png_rel) + "%")
             lines.append(r"\end{minipage}%")
 
-        # Render legend immediately after last plot of the task
+        # legend in fixed-height centered box (this centers discrete legends vertically)
         if show_leg:
             leg_frac = legend_w / block_w
             legend_rel = str(Path("legends") / block.legend_path.name)
-            lines.append(rf"\begin{{minipage}}[t]{{{leg_frac:.4f}\linewidth}}%")
-            lines.append(r"\vspace{0pt}\centering%")
-            lines.append(_include_legend(legend_rel) + "%")
+            lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{leg_frac:.4f}\linewidth}}%")
+            lines.append(r"\centering%")
+            lines.append(_include_graphics(legend_rel) + "%")
             lines.append(r"\end{minipage}%")
 
-        # Task label under the block
+        # task label
         title = _task_title(block.group)
         lines.append(r"\par\vspace{1pt}%")
         lines.append(rf"{{\footnotesize\textit{{{_esc_text(title)}}}}}%")
@@ -722,20 +911,19 @@ def _render_compact_row(row: _Row, cols: int) -> list[str]:
         if bi < len(blocks) - 1:
             lines.append(_BLOCK_GAP + "%")
 
-    lines.append(r"}")  # end makebox
+    lines.append(r"}")
     return lines
 
 
 def _render_multiline_task_block(block: _Block, cols: int) -> list[str]:
     """
-    A single task with >cols plots. It becomes its own multi-row block:
-    - internal rows of exactly cols plots (pad empties so size stays consistent)
-    - ONE legend shown only after the final plot (i.e., in the final internal row)
-    - legend slot width is reserved on all internal rows so plots don't change size
+    Task with >cols plots:
+      - internal rows of exactly cols plots (pad empties)
+      - reserve a legend slot on every internal row so plot sizes don't change
+      - draw legend only after final plot (in final internal row)
     """
     show_leg = block.legend_path is not None and block.legend_path.exists()
 
-    # Fix plot width for internal rows as if legend exists (reserve legend slot).
     plot_w = _USABLE_FRAC / (cols + (_LEGEND_SCALE if show_leg else 0.0))
     legend_w = _LEGEND_SCALE * plot_w if show_leg else 0.0
 
@@ -750,24 +938,24 @@ def _render_multiline_task_block(block: _Block, cols: int) -> list[str]:
     for ci, chunk in enumerate(chunks):
         is_last = (ci == len(chunks) - 1)
 
-        # exactly cols plot slots (pad empties)
+        # plots: exactly cols slots
         for i in range(cols):
-            lines.append(rf"\begin{{minipage}}[t]{{{plot_w:.4f}\linewidth}}%")
-            lines.append(r"\vspace{0pt}\centering%")
+            lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{plot_w:.4f}\linewidth}}%")
+            lines.append(r"\centering%")
             if i < len(chunk):
                 png_rel = str(Path("camera_ready") / chunk[i].entry.path.name)
-                lines.append(_include_plot(png_rel) + "%")
+                lines.append(_include_graphics(png_rel) + "%")
             else:
                 lines.append(r"\vspace{0pt}%")
             lines.append(r"\end{minipage}%")
 
-        # reserved legend slot (only filled on last internal row)
+        # legend slot (centered vertically); only filled on last internal row
         if show_leg:
-            lines.append(rf"\begin{{minipage}}[t]{{{legend_w:.4f}\linewidth}}%")
-            lines.append(r"\vspace{0pt}\centering%")
+            lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{legend_w:.4f}\linewidth}}%")
+            lines.append(r"\centering%")
             if is_last:
                 legend_rel = str(Path("legends") / block.legend_path.name)
-                lines.append(_include_legend(legend_rel) + "%")
+                lines.append(_include_graphics(legend_rel) + "%")
             else:
                 lines.append(r"\vspace{0pt}%")
             lines.append(r"\end{minipage}%")
@@ -822,7 +1010,6 @@ def generate_figure_tex(
     ]
 
     for ri, row in enumerate(rows):
-        # Dedicated multiline task row: exactly one block and it has >cols units
         if len(row.blocks) == 1 and len(row.blocks[0].units) > cols:
             lines.extend(_render_multiline_task_block(row.blocks[0], cols))
         else:
@@ -844,7 +1031,6 @@ def generate_figure_tex(
 # ------------------------------ Output syncing --------------------------------
 
 def _sync_camera_ready_images(entries: list[PNGEntry], output_dir: Path) -> None:
-    """Copy used camera-ready PNGs into output_dir/camera_ready for LaTeX portability."""
     dst_dir = output_dir / "camera_ready"
     dst_dir.mkdir(parents=True, exist_ok=True)
     for e in entries:
@@ -875,22 +1061,20 @@ def figures(
 
     typer.echo(f"Scanning {camera_ready_dir} …")
     entries = scan_camera_ready(camera_ready_dir)
-
     if not entries:
         typer.echo("No matching PNGs found.")
         raise typer.Exit(0)
 
-    # Make TeX portable: copy images under output_dir/camera_ready
     output_dir.mkdir(parents=True, exist_ok=True)
     _sync_camera_ready_images(entries, output_dir)
 
     csv_base_dir = dataset_config.parent if dataset_config.exists() else None
     color_info = load_color_info(dataset_config, csv_base_dir=csv_base_dir) if dataset_config.exists() else {}
 
-    # Generate legends from config groups
     legends_dir = output_dir / "legends"
     legends_dir.mkdir(parents=True, exist_ok=True)
 
+    # Build legend set from config (except pile-uncopyrighted which depends on wrap)
     all_config_groups = build_all_config_groups(color_info)
     typer.echo(f"\nGenerating {len(all_config_groups)} legend(s) from config …")
     legend_paths: dict[str, Path] = {}
@@ -911,7 +1095,7 @@ def figures(
     groups = infer_legend_groups(entries, color_info, newline_wrap_lookup)
     groups = _split_groups_by_experiment(groups)
 
-    # Render per-wrap newline legends (depend on wraps present)
+    # Render per-wrap newline legends
     for group in groups:
         if group.task == "pile-uncopyrighted":
             legend_path = legends_dir / f"legend_{group.key}.png"
@@ -919,7 +1103,7 @@ def figures(
             if legend_path.exists():
                 legend_paths[group.key] = legend_path
 
-    # Partition groups by experiment_id
+    # Partition by experiment_id
     by_exp: dict[str, dict[str, list[LegendGroup]]] = defaultdict(lambda: {"probe": [], "newline": []})
     for group in groups:
         if not group.entries:
