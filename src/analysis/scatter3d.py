@@ -748,10 +748,15 @@ def render_legend_png(
     fig = go.Figure()
 
     if _colorscale_is_named or continuous_color:
+        # For numeric labels with no explicit display-name override, pass names=None so
+        # add_colorbar_trace uses its auto-tick path (lo/hi range + _auto_tick_increment)
+        # rather than labelling every index 0,1,2,…
+        _all_numeric = all(isinstance(lb, (int, float)) for lb in labels)
+        names_for_cb = None if (label_names is None and _all_numeric) else names
         add_colorbar_trace(
             fig, labels,
             colorscale_name=colorscale if isinstance(colorscale, str) else "Viridis",
-            names=names,
+            names=names_for_cb,
         )
         # Colourbar needs right margin for the bar itself
         right_margin = 200

@@ -115,7 +115,10 @@ def _task_from_dataframe_path(path_str: str) -> str:
     return Path(path_str).stem
 
 
-def load_color_info(dataset_config_path: Path) -> dict[str, dict]:
+def load_color_info(
+    dataset_config_path: Path,
+    csv_base_dir: Path | None = None,
+) -> dict[str, dict]:
     """Return a mapping from task name to its color configuration.
 
     Each value is a dict with keys:
@@ -123,17 +126,43 @@ def load_color_info(dataset_config_path: Path) -> dict[str, dict]:
     - ``color_scale``: named Plotly colorscale string if present, else None
     - ``hypothesis_color_overrides``: {hyp_name: {label: color}} if present, else {}
     - ``continuous_color``: bool
+    - ``labels``: sorted unique Label-column values read from the CSV when
+      *csv_base_dir* is provided and the CSV exists; ``None`` otherwise.
     """
+    import csv as _csv
+
     with open(dataset_config_path) as f:
         raw = json.load(f)
     info: dict[str, dict] = {}
     for entry in raw:
         task = _task_from_dataframe_path(entry["dataframe_path"])
+
+        labels: list | None = None
+        if csv_base_dir is not None:
+            csv_path = csv_base_dir / f"{task}.csv"
+            if csv_path.exists():
+                with open(csv_path, newline="") as cf:
+                    reader = _csv.DictReader(cf)
+                    raw_labels = {row["Label"] for row in reader if "Label" in row}
+                # Attempt numeric sort + conversion (int/float) so colorbars get proper ranges;
+                # fall back to lexicographic string sort for categorical labels.
+                try:
+                    float_vals = {v: float(v) for v in raw_labels}
+                    sorted_str = sorted(raw_labels, key=lambda v: float_vals[v])
+                    # Convert to int where lossless, else keep as float
+                    labels = [
+                        int(float_vals[v]) if float_vals[v] == int(float_vals[v]) else float_vals[v]
+                        for v in sorted_str
+                    ]
+                except ValueError:
+                    labels = sorted(raw_labels)
+
         info[task] = {
             "color_map":                  entry.get("color_map"),
             "color_scale":                entry.get("color_scale"),
             "hypothesis_color_overrides": entry.get("hypothesis_color_overrides", {}),
             "continuous_color":           entry.get("continuous_color", False),
+            "labels":                     labels,
         }
     return info
 
@@ -150,6 +179,7 @@ class LegendGroup:
     color_map: dict | None = None
     color_scale: str | None = None
     continuous_color: bool = False
+    labels: list | None = None  # sorted unique label values; None = unknown
 
 
 def infer_legend_groups(
@@ -162,6 +192,9 @@ def infer_legend_groups(
     - All entries for the same canonical task share one legend, **unless**
       the task has ``hypothesis_color_overrides`` — in that case each overridden
       hypothesis gets its own sub-group; remaining hypotheses share one group.
+    - ``pile-uncopyrighted`` entries are split by wrap length: each unique wrap
+      length (80, 150, …) gets its own group with key
+      ``"pile-uncopyrighted__{N}"``.
     - Task names are canonicalised via :func:`_canonical_task` before config lookup.
     """
     from collections import defaultdict
@@ -175,6 +208,25 @@ def infer_legend_groups(
 
     for task, task_entries in sorted(by_task.items()):
         ci = color_info.get(task, {})
+
+        # ── newline task: one group per wrap length ──────────────────────────
+        if task == "pile-uncopyrighted":
+            by_wrap: dict[int, list[PNGEntry]] = defaultdict(list)
+            for e in task_entries:
+                n = _infer_newline_wrap([e])
+                by_wrap[n].append(e)
+            for n, wrap_entries in sorted(by_wrap.items()):
+                groups.append(LegendGroup(
+                    key=f"pile-uncopyrighted__{n}",
+                    task="pile-uncopyrighted",
+                    hyp_filter=None,
+                    entries=wrap_entries,
+                    color_scale="Viridis",
+                    continuous_color=True,
+                    labels=list(range(1, n + 1)),
+                ))
+            continue
+
         overrides: dict[str, dict] = ci.get("hypothesis_color_overrides", {})
 
         if overrides:
@@ -196,6 +248,7 @@ def infer_legend_groups(
                     entries=hyp_entries,
                     color_map=overrides[hyp_name],
                     continuous_color=False,
+                    labels=ci.get("labels"),
                 )
                 groups.append(g)
 
@@ -208,6 +261,7 @@ def infer_legend_groups(
                     color_map=ci.get("color_map"),
                     color_scale=ci.get("color_scale"),
                     continuous_color=ci.get("continuous_color", False),
+                    labels=ci.get("labels"),
                 )
                 groups.append(g)
         else:
@@ -219,6 +273,7 @@ def infer_legend_groups(
                 color_map=ci.get("color_map"),
                 color_scale=ci.get("color_scale"),
                 continuous_color=ci.get("continuous_color", False),
+                labels=ci.get("labels"),
             )
             groups.append(g)
 
@@ -226,13 +281,17 @@ def infer_legend_groups(
 
 
 def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
-    """Build legend groups for **every** task in the config, even those without PNGs.
+    """Build legend groups for every task in the config, even those without PNGs.
 
-    This ensures a complete library of legend images is generated.
+    ``pile-uncopyrighted`` is excluded — its legends depend on the actual wrap
+    length present in the PNGs and are built by :func:`infer_legend_groups` instead.
     """
     groups: list[LegendGroup] = []
 
     for task, ci in sorted(color_info.items()):
+        if task == "pile-uncopyrighted":
+            continue  # handled per-wrap-length in infer_legend_groups
+
         overrides: dict[str, dict] = ci.get("hypothesis_color_overrides", {})
 
         if overrides:
@@ -243,8 +302,9 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
                     hyp_filter=hyp_name,
                     color_map=overrides[hyp_name],
                     continuous_color=False,
+                    labels=ci.get("labels"),
                 ))
-            # Default group (no override)
+            # Default group (hypotheses without an override, e.g. taxonomy in living_things)
             groups.append(LegendGroup(
                 key=task,
                 task=task,
@@ -252,6 +312,7 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
                 color_map=ci.get("color_map"),
                 color_scale=ci.get("color_scale"),
                 continuous_color=ci.get("continuous_color", False),
+                labels=ci.get("labels"),
             ))
         else:
             groups.append(LegendGroup(
@@ -261,6 +322,7 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
                 color_map=ci.get("color_map"),
                 color_scale=ci.get("color_scale"),
                 continuous_color=ci.get("continuous_color", False),
+                labels=ci.get("labels"),
             ))
 
     return groups
@@ -274,21 +336,8 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Hard-coded newline exception: use Viridis with integer range [1, line_length]
-    if group.task == "pile-uncopyrighted":
-        # Determine wraparound point from any PNG entry's experiment path,
-        # or default to 150.  The newline output dirs are newline_80, newline_150, etc.
-        line_length = _infer_newline_wrap(group.entries)
-        labels = list(range(1, line_length + 1))
-        render_legend_png(
-            colorscale="Viridis",
-            labels=labels,
-            output_path=output_path,
-            continuous_color=True,
-        )
-        return
-
     if group.color_map:
+        # Explicit per-label colour mapping → discrete coloured legend
         labels = sorted(group.color_map.keys())
         render_legend_png(
             colorscale=group.color_map,
@@ -296,15 +345,25 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
             output_path=output_path,
         )
     elif group.color_scale:
-        # Named colorscale without explicit label→color map.
-        # Build numeric labels matching the class count that scatter3d would see.
-        # The colorbar renders by range; exact tick labels come from the data.
-        labels = list(range(24))  # placeholder — colorbar will auto-range
+        # Named colorscale → continuous colorbar.
+        # Use real label values (loaded from CSV) so the axis range and auto-ticks
+        # reflect the actual data domain (e.g. −40…140 °F) instead of 0…23.
+        if not group.labels:
+            typer.echo(f"  [skip legend] no labels available for group {group.key}", err=True)
+            return
         render_legend_png(
             colorscale=group.color_scale,
-            labels=labels,
+            labels=group.labels,
             output_path=output_path,
+            label_names=None,  # triggers auto-tick in render_legend_png
             continuous_color=group.continuous_color,
+        )
+    elif group.labels:
+        # No explicit color info — render discrete legend with HSV auto-coloring
+        render_legend_png(
+            colorscale=None,
+            labels=group.labels,
+            output_path=output_path,
         )
     else:
         typer.echo(f"  [skip legend] no color info for group {group.key}", err=True)
@@ -472,9 +531,10 @@ def figures(
     typer.echo(f"Scanning {camera_ready_dir} …")
     entries = scan_camera_ready(camera_ready_dir)
 
-    color_info = load_color_info(dataset_config) if dataset_config.exists() else {}
+    csv_base_dir = dataset_config.parent if dataset_config.exists() else None
+    color_info = load_color_info(dataset_config, csv_base_dir=csv_base_dir) if dataset_config.exists() else {}
 
-    # ── Generate legends for ALL config tasks ──────────────────────────────
+    # ── Generate legends for all config tasks (excluding pile-uncopyrighted) ──
     legends_dir = output_dir / "legends"
     legends_dir.mkdir(parents=True, exist_ok=True)
 
@@ -490,7 +550,7 @@ def figures(
             typer.echo(f"  Legend: {legend_path}")
             legend_paths[group.key] = legend_path
 
-    # ── Group PNG entries and generate .tex files ──────────────────────────
+    # ── Group PNG entries (splits pile-uncopyrighted by wrap length) ────────
     if not entries:
         typer.echo("No matching PNGs found.")
         raise typer.Exit(0)
@@ -501,6 +561,16 @@ def figures(
     groups = infer_legend_groups(entries, color_info)
     typer.echo(f"Grouped into {len(groups)} figure group(s).")
 
+    # Render per-wrap-length newline legends (not known until entries are scanned)
+    for group in groups:
+        if group.task == "pile-uncopyrighted":
+            legend_path = legends_dir / f"legend_{group.key}.png"
+            _render_group_legend(group, legend_path)
+            if legend_path.exists():
+                typer.echo(f"  Legend: {legend_path}")
+                legend_paths[group.key] = legend_path
+
+    # ── Generate .tex files ────────────────────────────────────────────────
     for group in groups:
         typer.echo(f"\nGroup: {group.key}  ({len(group.entries)} PNG(s))")
         tex_path = output_dir / f"figure_{group.key}.tex"
