@@ -330,6 +330,11 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
 
 # ── Legend rendering ───────────────────────────────────────────────────────────
 
+def _display_names(labels: list) -> dict:
+    """Strip leading ``NN_`` sort prefixes for display (e.g. ``'06_insect'`` → ``'insect'``)."""
+    return {lbl: re.sub(r"^\d+_", "", str(lbl)) for lbl in labels}
+
+
 def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
     """Render a legend PNG for *group* using scatter3d's exact Plotly rendering."""
     from analysis.scatter3d import render_legend_png
@@ -343,11 +348,11 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
             colorscale=group.color_map,
             labels=labels,
             output_path=output_path,
+            label_names=_display_names(labels),
         )
     elif group.color_scale:
-        # Named colorscale → continuous colorbar.
-        # Use real label values (loaded from CSV) so the axis range and auto-ticks
-        # reflect the actual data domain (e.g. −40…140 °F) instead of 0…23.
+        # Named colorscale → colorbar (continuous_color=True) or discrete legend.
+        # Use real label values loaded from CSV so axis range / colours match the data.
         if not group.labels:
             typer.echo(f"  [skip legend] no labels available for group {group.key}", err=True)
             return
@@ -355,7 +360,7 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
             colorscale=group.color_scale,
             labels=group.labels,
             output_path=output_path,
-            label_names=None,  # triggers auto-tick in render_legend_png
+            label_names=_display_names(group.labels),
             continuous_color=group.continuous_color,
         )
     elif group.labels:
@@ -364,6 +369,7 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
             colorscale=None,
             labels=group.labels,
             output_path=output_path,
+            label_names=_display_names(group.labels),
         )
     else:
         typer.echo(f"  [skip legend] no color info for group {group.key}", err=True)

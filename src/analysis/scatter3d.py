@@ -748,11 +748,12 @@ def render_legend_png(
     fig = go.Figure()
 
     if _colorscale_is_named or continuous_color:
-        # For numeric labels with no explicit display-name override, pass names=None so
-        # add_colorbar_trace uses its auto-tick path (lo/hi range + _auto_tick_increment)
-        # rather than labelling every index 0,1,2,…
+        # Colorbar path — named colorscales (e.g. "phase", "thermal") or explicit
+        # continuous_color flag both render as a colorbar with ticks.
+        # For numeric labels use auto-tick from the real range (temperatures);
+        # for string-labeled colorbars (e.g. hours "1AM"…"12AM") pass the names dict.
         _all_numeric = all(isinstance(lb, (int, float)) for lb in labels)
-        names_for_cb = None if (label_names is None and _all_numeric) else names
+        names_for_cb = None if _all_numeric else names
         add_colorbar_trace(
             fig, labels,
             colorscale_name=colorscale if isinstance(colorscale, str) else "Viridis",
@@ -772,6 +773,8 @@ def render_legend_png(
             paper_bgcolor="rgba(255,255,255,0)",
         )
     else:
+        # Discrete legend — explicit per-label colour dicts or HSV auto-coloring.
+        # Stacks vertically (Plotly default) to match plot_3d_scatter.
         cmap = build_color_map(labels, colorscale)
         add_discrete_legend(fig, labels, cmap, names)
         fig.update_layout(
@@ -783,7 +786,6 @@ def render_legend_png(
             ),
             showlegend=True,
             legend=dict(
-                orientation="h",
                 x=0.5, xanchor="center",
                 y=0.5, yanchor="middle",
                 bgcolor="rgba(255,255,255,0)",
