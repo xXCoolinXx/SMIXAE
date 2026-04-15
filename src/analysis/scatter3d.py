@@ -773,13 +773,13 @@ def render_legend_png(
             margin=dict(l=5, r=190, t=10, b=10),
             paper_bgcolor="white",
         )
-        img_bytes = fig.to_image(format="png", width=240, height=520, scale=1)
+        img_bytes = fig.to_image(format="png", width=480, height=1040, scale=1)
     else:
         # Discrete legend — explicit per-label colour dicts or HSV auto-coloring.
         # Stacks vertically as a portrait PNG sized to fit the label count.
         cmap = build_color_map(labels, colorscale)
         add_discrete_legend(fig, labels, cmap, names)
-        png_height = max(160, n * 26 + 60)
+        png_height = max(320, n * 52 + 120)
         fig.update_layout(
             scene=dict(
                 xaxis=dict(visible=False),
@@ -792,12 +792,12 @@ def render_legend_png(
                 x=0.5, xanchor="center",
                 y=0.5, yanchor="middle",
                 bgcolor="rgba(255,255,255,0)",
-                font=dict(size=14),
+                font=dict(size=18),
             ),
             margin=dict(l=0, r=0, t=0, b=0),
             paper_bgcolor="white",
         )
-        img_bytes = fig.to_image(format="png", width=320, height=png_height, scale=1)
+        img_bytes = fig.to_image(format="png", width=480, height=png_height, scale=1)
 
     output_path.write_bytes(img_bytes)
 

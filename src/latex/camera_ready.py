@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import json
 import re
+import string as _string
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -473,194 +474,251 @@ def _format_experiment_id(exp_id: str) -> str:
     return exp_id.replace("_", " ").replace("-", " ").title()
 
 
-def _subfigure_cell(
-    entry: PNGEntry,
-    png_rel: str,
-    cell_frac: float,
-    is_paired_means: bool = False,
-) -> str:
-    """Return lines for one ``\\begin{subfigure}…\\end{subfigure}`` block.
+# ── Row planning ────────────────────────────────────────────────────────────
 
-    For a means entry paired with a scatter, the caption is shortened to
-    ``E{id} (means)`` since the hypothesis label already appears on the scatter.
-    Standalone means entries (e.g. newline) get the full caption.
-    """
-    if is_paired_means:
-        caption = f"E{entry.expert_id} (means)"
-    else:
-        hyp_disp  = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
-        score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
-        caption = (
-            f"E{entry.expert_id}, {_esc_text(hyp_disp)}"
-            f" ({score_lbl}\\,=\\,{entry.score:.3f})"
-        )
-    width_spec = f"{cell_frac:.2f}\\linewidth"
-    return (
-        f"  \\begin{{subfigure}}[t]{{{width_spec}}}\n"
-        f"    \\centering\n"
-        f"    \\includegraphics[width=\\linewidth]{{{png_rel}}}\n"
-        f"    \\caption{{{caption}}}\n"
-        f"  \\end{{subfigure}}"
-    )
+@dataclass
+class _ImageUnit:
+    """One image in the figure grid, carrying its legend reference."""
+
+    entry: PNGEntry
+    letter: str  # "A", "B", ...
+    legend_path: Path | None
 
 
-def _figure_block(
-    group: LegendGroup,
-    camera_ready_dir: Path,
-    legend_path: Path | None,
-    cols: int,
-) -> list[str]:
-    """Return lines for one complete ``\\begin{figure*}…\\end{figure*}`` block.
+@dataclass
+class _Row:
+    """A horizontal band in the figure — either multi-image or singles."""
 
-    Image sequence:
-    - If scatter entries exist: [scatter1, means1, scatter2, means2, …]
-      (means silently omitted when no matching means exists for a scatter).
-    - If only means entries (e.g. newline): means entries in expert_id order.
-    """
+    units: list[_ImageUnit]
+    kind: str  # "multi" or "singles"
+    legend_path: Path | None = None  # for multi-image rows, the shared legend
+
+
+def _ordered_images(group: LegendGroup) -> list[PNGEntry]:
+    """Return entries in display order: scatter+means interleaved, or means sorted by score."""
     scatter_entries = [e for e in group.entries if e.figure_type == "scatter"]
-    means_map = {
-        (e.expert_id, e.hyp_name): e
-        for e in group.entries if e.figure_type == "means"
-    }
+    means_map = {(e.expert_id, e.hyp_name): e for e in group.entries if e.figure_type == "means"}
 
     if scatter_entries:
-        images: list[tuple[PNGEntry, bool]] = []
+        images: list[PNGEntry] = []
         for se in scatter_entries:
-            images.append((se, False))
+            images.append(se)
             me = means_map.get((se.expert_id, se.hyp_name))
             if me is not None:
-                images.append((me, True))
+                images.append(me)
+        return images
+    return sorted(group.entries, key=lambda x: (-x.score, x.expert_id))
+
+
+def _next_letter(idx: int) -> str:
+    """Map a 0-based index to a letter label: 0→A, 1→B, ..., 25→Z, 26→AA."""
+    if idx < 26:
+        return _string.ascii_uppercase[idx]
+    return _next_letter(idx // 26 - 1) + _string.ascii_uppercase[idx % 26]
+
+
+def _plan_rows(
+    groups: list[LegendGroup],
+    cols: int,
+    legend_paths: dict[str, Path],
+) -> list[_Row]:
+    """Plan the row layout for a single figure*.
+
+    Multi-image tasks (>=cols images) get their own row(s) with a shared legend
+    on the right.  Single-image tasks are buffered and packed into shared rows,
+    each image bringing its own legend stacked below it.
+    """
+    rows: list[_Row] = []
+    letter_idx = 0
+    singles_buffer: list[_ImageUnit] = []
+
+    def _flush_singles() -> None:
+        nonlocal singles_buffer
+        if not singles_buffer:
+            return
+        rows.append(_Row(units=singles_buffer, kind="singles"))
+        singles_buffer = []
+
+    for group in groups:
+        images = _ordered_images(group)
+        if not images:
+            continue
+        legend_path = legend_paths.get(group.key)
+
+        if len(images) >= cols:
+            # Multi-image task: gets its own row(s)
+            _flush_singles()
+            # Split into chunks of `cols`; legend on the last chunk
+            chunks = [images[i:i + cols] for i in range(0, len(images), cols)]
+            for chunk_idx, chunk in enumerate(chunks):
+                is_last_chunk = chunk_idx == len(chunks) - 1
+                units = []
+                for entry in chunk:
+                    units.append(_ImageUnit(
+                        entry=entry,
+                        letter=_next_letter(letter_idx),
+                        legend_path=legend_path,
+                    ))
+                    letter_idx += 1
+                rows.append(_Row(
+                    units=units,
+                    kind="multi",
+                    legend_path=legend_path if is_last_chunk else None,
+                ))
+        else:
+            # Buffer as singles
+            for entry in images:
+                singles_buffer.append(_ImageUnit(
+                    entry=entry,
+                    letter=_next_letter(letter_idx),
+                    legend_path=legend_path,
+                ))
+                letter_idx += 1
+            if len(singles_buffer) >= cols:
+                _flush_singles()
+
+    _flush_singles()
+    return rows
+
+
+# ── LaTeX row/block rendering ──────────────────────────────────────────────────
+
+def _entry_description(entry: PNGEntry) -> str:
+    """Build a short LaTeX description for one image, e.g. ``E282, 7-Day Ring ($R^2$\\,=\\,0.808).``"""
+    hyp_disp = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
+    score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
+    return f"E{entry.expert_id}, {_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})."
+
+
+def _caption_text(
+    model_disp: str,
+    labeled: list[tuple[str, PNGEntry]],
+    newline_wrap: int | None = None,
+) -> str:
+    """Build the main ``\\caption{...}`` text from (letter, entry) pairs."""
+    if newline_wrap is not None:
+        prefix = f"Newline Position ({newline_wrap} chars) --- {model_disp}."
     else:
-        images = [
-            (e, False)
-            for e in sorted(group.entries, key=lambda x: (-x.score, x.expert_id))
-        ]
+        prefix = f"{model_disp}."
+    parts = " ".join(f"({letter}) {_entry_description(e)}" for letter, e in labeled)
+    return f"{prefix} {parts}"
 
-    if not images:
-        return []
 
-    model_disp = _format_experiment_id(images[0][0].experiment_id)
-
-    # Caption
-    if group.task == "pile-uncopyrighted":
-        wrap = group.key.split("__")[-1] if "__" in group.key else "?"
-        caption_text = f"Newline Position ({wrap} chars) --- {model_disp}."
-    elif group.hyp_filter:
-        hyp_disp = _HYP_DISPLAY.get(group.hyp_filter, group.hyp_filter.replace("_", " "))
-        task_disp = _TASK_DISPLAY.get(group.task, group.task.replace("_", " ").title())
-        caption_text = f"{_esc_text(task_disp)} ({_esc_text(hyp_disp)}) --- {model_disp}."
-    else:
-        task_disp = _TASK_DISPLAY.get(group.task, group.task.replace("_", " ").title())
-        caption_text = f"{_esc_text(task_disp)} --- {model_disp}."
-
+def _render_multi_row(row: _Row, cols: int) -> list[str]:
+    """LaTeX lines for a multi-image row: image grid + legend on the right."""
+    lines: list[str] = []
     cell_frac = 0.98 / cols
-
-    lines: list[str] = [r"\begin{figure*}[t]", r"\centering"]
-
-    # ── Content minipage ───────────────────────────────────────────────────────
-    lines.append(r"\begin{minipage}[c]{0.88\linewidth}")
-    lines.append(r"\centering")
-
-    rows: list[list[tuple[PNGEntry, bool]]] = [
-        images[i:i + cols] for i in range(0, len(images), cols)
-    ]
-
-    for row_idx, row in enumerate(rows):
-        is_last_row = (row_idx == len(rows) - 1)
-        for cell_idx, (entry, is_pm) in enumerate(row):
-            png_rel = str(Path("camera_ready") / entry.path.name)
-            cell = _subfigure_cell(entry, png_rel, cell_frac, is_pm)
-            is_last_in_row = (cell_idx == len(row) - 1)
-            if not is_last_in_row:
-                cell += "\n  \\hfill"
-            elif not is_last_row:
-                cell += "\n  \\\\[4pt]"
-            lines.append(cell)
-
-    lines.append(r"\end{minipage}\hfill")
-
-    # ── Legend minipage ────────────────────────────────────────────────────────
-    if legend_path is not None and legend_path.exists():
-        legend_rel = str(Path("legends") / legend_path.name)
-        lines += [
-            r"\begin{minipage}[c]{0.10\linewidth}",
-            r"  \centering",
-            f"  \\includegraphics[width=\\linewidth]{{{legend_rel}}}",
-            r"\end{minipage}",
-        ]
-
-    lines += [
-        f"\\caption{{{caption_text}}}",
-        r"\end{figure*}",
-    ]
+    # Content minipage: images
+    content_frac = 0.82 if row.legend_path else 0.98
+    legend_frac = 0.16
+    lines.append(f"\\begin{{minipage}}[c]{{{content_frac:.2f}\\linewidth}}")
+    lines.append(r"  \centering")
+    for i, unit in enumerate(row.units):
+        png_rel = str(Path("camera_ready") / unit.entry.path.name)
+        width_spec = f"{cell_frac:.2f}\\linewidth"
+        lines.append(f"  \\begin{{subfigure}}[t]{{{width_spec}}}")
+        lines.append(r"    \centering")
+        lines.append(f"    \\includegraphics[width=\\linewidth]{{{png_rel}}}")
+        lines.append(r"  \end{subfigure}")
+        if i < len(row.units) - 1:
+            lines[-1] += r"\hfill"
+    lines.append(r"\end{minipage}")
+    # Legend minipage
+    if row.legend_path is not None and row.legend_path.exists():
+        legend_rel = str(Path("legends") / row.legend_path.name)
+        lines.append(r"\hfill")
+        lines.append(f"\\begin{{minipage}}[c]{{{legend_frac:.2f}\\linewidth}}")
+        lines.append(r"  \centering")
+        lines.append(f"  \\includegraphics[width=\\linewidth]{{{legend_rel}}}")
+        lines.append(r"\end{minipage}")
     return lines
 
 
-def generate_probe_tex(
+def _render_singles_row(row: _Row) -> list[str]:
+    """LaTeX lines for a singles row: each image+legend stacked vertically."""
+    n = len(row.units)
+    pair_frac = 0.98 / n
+    lines: list[str] = []
+    for i, unit in enumerate(row.units):
+        png_rel = str(Path("camera_ready") / unit.entry.path.name)
+        width_spec = f"{pair_frac:.2f}\\linewidth"
+        lines.append(f"\\begin{{minipage}}[t]{{{width_spec}}}")
+        lines.append(r"  \centering")
+        lines.append(f"  \\includegraphics[width=0.85\\linewidth]{{{png_rel}}}")
+        # Legend below the image
+        if unit.legend_path is not None and unit.legend_path.exists():
+            legend_rel = str(Path("legends") / unit.legend_path.name)
+            lines.append(r"  \\[2pt]")
+            lines.append(f"  \\includegraphics[width=0.7\\linewidth]{{{legend_rel}}}")
+        lines.append(r"\end{minipage}")
+        if i < n - 1:
+            lines[-1] += r"\hfill"
+    return lines
+
+
+def generate_figure_tex(
     experiment_id: str,
     groups: list[LegendGroup],
     legend_paths: dict[str, Path],
     camera_ready_dir: Path,
     output_tex: Path,
-    cols: int = 2,
+    cols: int = 3,
+    *,
+    is_newline: bool = False,
 ) -> None:
-    """Write one .tex file containing all probe-task figure blocks for *experiment_id*."""
+    """Write one .tex file with a single figure* containing all groups."""
     output_tex.parent.mkdir(parents=True, exist_ok=True)
 
-    def _sort_key(g: LegendGroup) -> tuple[int, str]:
-        try:
-            return (_TASK_ORDER.index(g.task), g.key)
-        except ValueError:
-            return (len(_TASK_ORDER), g.key)
+    model_disp = _format_experiment_id(experiment_id)
+    rows = _plan_rows(groups, cols, legend_paths)
 
-    all_lines: list[str] = [
+    if not rows:
+        typer.echo(f"  [skip] no renderable rows for {experiment_id}", err=True)
+        return
+
+    # Collect (letter, entry) for the main caption
+    labeled: list[tuple[str, PNGEntry]] = []
+    for row in rows:
+        for unit in row.units:
+            labeled.append((unit.letter, unit.entry))
+
+    # Determine newline_wrap from group key
+    newline_wrap: int | None = None
+    if is_newline and groups:
+        wrap_str = groups[0].key.split("__")[-1] if "__" in groups[0].key else None
+        if wrap_str:
+            try:
+                newline_wrap = int(wrap_str)
+            except ValueError:
+                pass
+
+    caption = _caption_text(model_disp, labeled, newline_wrap)
+
+    lines: list[str] = [
         "% Requires: \\usepackage{subcaption} \\usepackage{graphicx}",
         "% Image paths are relative to this .tex file's location.",
         f"% Generated by: smixae latex figures  (experiment: {experiment_id})",
         "",
+        r"\begin{figure*}[t]",
+        r"\centering",
     ]
 
-    for group in sorted(groups, key=_sort_key):
-        block = _figure_block(group, camera_ready_dir, legend_paths.get(group.key), cols)
-        if block:
-            all_lines.extend(block)
-            all_lines.append("")
+    for row_idx, row in enumerate(rows):
+        is_last_row = row_idx == len(rows) - 1
+        if row.kind == "multi":
+            lines.extend(_render_multi_row(row, cols))
+        else:
+            lines.extend(_render_singles_row(row))
+        if not is_last_row:
+            lines.append(r"\vspace{4pt}")
+            lines.append("")
 
-    output_tex.write_text("\n".join(all_lines) + "\n")
-    typer.echo(f"  Written {output_tex}")
-
-
-def generate_newline_tex(
-    experiment_id: str,
-    groups: list[LegendGroup],
-    legend_paths: dict[str, Path],
-    camera_ready_dir: Path,
-    output_tex: Path,
-    cols: int = 2,
-) -> None:
-    """Write one .tex file containing all newline figure blocks for *experiment_id*."""
-    output_tex.parent.mkdir(parents=True, exist_ok=True)
-
-    def _wrap_key(g: LegendGroup) -> int:
-        try:
-            return int(g.key.split("__")[-1])
-        except (ValueError, IndexError):
-            return 0
-
-    all_lines: list[str] = [
-        "% Requires: \\usepackage{subcaption} \\usepackage{graphicx}",
-        "% Image paths are relative to this .tex file's location.",
-        f"% Generated by: smixae latex figures  (experiment: {experiment_id}, newline)",
-        "",
+    lines += [
+        f"\\caption{{{caption}}}",
+        r"\end{figure*}",
     ]
 
-    for group in sorted(groups, key=_wrap_key):
-        block = _figure_block(group, camera_ready_dir, legend_paths.get(group.key), cols)
-        if block:
-            all_lines.extend(block)
-            all_lines.append("")
-
-    output_tex.write_text("\n".join(all_lines) + "\n")
+    output_tex.write_text("\n".join(lines) + "\n")
     typer.echo(f"  Written {output_tex}")
 
 
@@ -737,7 +795,7 @@ def figures(
         None,
         help="Path to results.json; used to resolve newline wrap lengths per expert",
     ),
-    cols: int = typer.Option(2, help="Number of subfigures per row"),
+    cols: int = typer.Option(3, help="Number of subfigures per row"),
 ) -> None:
     """Assemble camera-ready PNGs into per-experiment LaTeX figure files.
 
@@ -821,11 +879,11 @@ def figures(
         if probe_groups:
             tex_path = output_dir / f"probe_{exp_id}.tex"
             typer.echo(f"\nProbe ({exp_id}): {len(probe_groups)} group(s)")
-            generate_probe_tex(exp_id, probe_groups, legend_paths, camera_ready_dir, tex_path, cols)
+            generate_figure_tex(exp_id, probe_groups, legend_paths, camera_ready_dir, tex_path, cols)
 
         if newline_groups:
             tex_path = output_dir / f"newline_{exp_id}.tex"
             typer.echo(f"\nNewline ({exp_id}): {len(newline_groups)} wrap(s)")
-            generate_newline_tex(exp_id, newline_groups, legend_paths, camera_ready_dir, tex_path, cols)
+            generate_figure_tex(exp_id, newline_groups, legend_paths, camera_ready_dir, tex_path, cols, is_newline=True)
 
     typer.echo(f"\nDone. Output written to {output_dir}")
