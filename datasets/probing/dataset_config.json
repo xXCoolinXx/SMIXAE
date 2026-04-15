@@ -108,6 +108,13 @@
     ]
   },
   {
+    "dataframe_path": "pile-uncopyrighted",
+    "color_scale": "Viridis",
+    "continuous_color": true,
+    "colorbar_title": "chars since \\n",
+    "colorbar_tick_increment": 20
+  },
+  {
     "dataframe_path": "emotions.csv",
     "n_input_samples": 5000,
     "max_points": 0,

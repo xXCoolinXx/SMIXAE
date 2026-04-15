@@ -690,6 +690,109 @@ def add_colorbar_trace(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  STANDALONE LEGEND EXPORT
+# ══════════════════════════════════════════════════════════════════════════════
+
+def render_legend_png(
+    colorscale: Optional[Union[str, list, dict]],
+    labels: list,
+    output_path: "Path",
+    label_names: Optional[Union[Dict, List]] = None,
+    continuous_color: bool = False,
+) -> None:
+    """Render a standalone legend image matching the exact Plotly rendering.
+
+    Creates a minimal 3-D Plotly figure, adds the same legend elements used by
+    :func:`plot_3d_scatter` (via :func:`add_discrete_legend` or
+    :func:`add_colorbar_trace`), hides the scene, and exports to PNG via kaleido.
+
+    Parameters
+    ----------
+    colorscale      : Colorscale specification (same formats as ``plot_3d_scatter``).
+                      ``str`` = named Plotly colorscale (e.g. ``"Plasma"``);
+                      ``dict`` = explicit ``{label: color}`` mapping;
+                      ``list`` = one colour per label in order;
+                      ``None`` = HSV rainbow.
+    labels          : Sorted list of class labels (the colour-map keys).
+    output_path     : Destination file path (``Path``); parent dirs are created.
+    label_names     : Display-name mapping.  ``dict`` maps label → display string;
+                      ``list`` is positional; ``None`` uses ``str(label)``.
+    continuous_color: If ``True``, render a continuous colorbar even when
+                      ``colorscale`` is a dict (i.e. the colours represent a
+                      continuous gradient with named stops rather than discrete
+                      categories).
+    """
+    from pathlib import Path as _Path
+    assert isinstance(output_path, _Path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    n = len(labels)
+    if n == 0:
+        return
+
+    # ── resolve display names ────────────────────────────────────────────────
+    if label_names is None:
+        names = {c: str(c) for c in labels}
+    elif isinstance(label_names, dict):
+        names = {c: str(label_names.get(c, c)) for c in labels}
+    else:
+        ln = list(label_names)
+        names = {c: str(ln[i]) for i, c in enumerate(labels)}
+
+    # ── decide legend mode ───────────────────────────────────────────────────
+    _colorscale_is_named = (
+        isinstance(colorscale, str)
+        and colorscale not in ("auto", "hsv", None)
+    )
+
+    fig = go.Figure()
+
+    if _colorscale_is_named or continuous_color:
+        add_colorbar_trace(
+            fig, labels,
+            colorscale_name=colorscale if isinstance(colorscale, str) else "Viridis",
+            names=names,
+        )
+        # Colourbar needs right margin for the bar itself
+        right_margin = 200
+        fig.update_layout(
+            scene=dict(
+                xaxis=dict(visible=False),
+                yaxis=dict(visible=False),
+                zaxis=dict(visible=False),
+                bgcolor="rgba(0,0,0,0)",
+            ),
+            showlegend=False,
+            margin=dict(l=0, r=right_margin, t=0, b=0),
+            paper_bgcolor="rgba(255,255,255,0)",
+        )
+    else:
+        cmap = build_color_map(labels, colorscale)
+        add_discrete_legend(fig, labels, cmap, names)
+        fig.update_layout(
+            scene=dict(
+                xaxis=dict(visible=False),
+                yaxis=dict(visible=False),
+                zaxis=dict(visible=False),
+                bgcolor="rgba(0,0,0,0)",
+            ),
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                x=0.5, xanchor="center",
+                y=0.5, yanchor="middle",
+                bgcolor="rgba(255,255,255,0)",
+                font=dict(size=13),
+            ),
+            margin=dict(l=0, r=0, t=0, b=0),
+            paper_bgcolor="rgba(255,255,255,0)",
+        )
+
+    img_bytes = fig.to_image(format="png", scale=2)
+    output_path.write_bytes(img_bytes)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  TOP-LEVEL FUNCTION
 # ══════════════════════════════════════════════════════════════════════════════
 

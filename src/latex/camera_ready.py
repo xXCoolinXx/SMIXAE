@@ -16,8 +16,8 @@ Output structure::
 
     results/paper/
       legends/
-        legend_gemma_2_9b_l11_hours.png
-        legend_gemma_2_9b_l11_months.png
+        legend_hours.png
+        legend_months.png
         ...
       figure_gemma_2_9b_l11_hours.tex
       figure_gemma_2_9b_l11_months.tex
@@ -33,11 +33,6 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-import numpy as np
 import typer
 
 app = typer.Typer()
@@ -49,7 +44,7 @@ _FILENAME_RE = re.compile(
     r"(?P<task>[^_].*?)__"
     r"E(?P<expert_id>\d+)__"
     r"(?P<hyp_name>[^_].*?)__"
-    r"(?P<score_type>[^_]+)__"
+    r"(?P<score_type>[^_].*?)__"
     r"(?P<score>[0-9.]+)__"
     r"(?P<figure_type>scatter|means)"
     r"\.png$"
@@ -59,6 +54,7 @@ _SCORE_LABEL: dict[str, str] = {
     "r2":    r"$R^2$",
     "acc":   "Acc.",
     "score": "Score",
+    "per_gain": r"$\Delta$per",
 }
 
 
@@ -95,6 +91,24 @@ def scan_camera_ready(camera_ready_dir: Path) -> list[PNGEntry]:
     return entries
 
 
+# ── Task-name canonicalisation ────────────────────────────────────────────────
+
+def _canonical_task(raw_task: str) -> str:
+    """Strip the ``_—_…`` suffix added by ``utils.py`` when building HTML titles.
+
+    The save workflow lowercases the dataset title and replaces spaces with
+    underscores, producing task names like ``"hours_—_expert_analysis"`` in the
+    PNG filename.  The dataset config key is just ``"hours"`` (the CSV stem).
+    This helper strips the suffix so lookups work correctly.
+
+    Examples::
+
+        'hours_—_expert_analysis' → 'hours'
+        'pile-uncopyrighted'       → 'pile-uncopyrighted'  (no suffix, unchanged)
+    """
+    return raw_task.split("_—_")[0]
+
+
 # ── Color-info loading ─────────────────────────────────────────────────────────
 
 def _task_from_dataframe_path(path_str: str) -> str:
@@ -129,9 +143,8 @@ def load_color_info(dataset_config_path: Path) -> dict[str, dict]:
 @dataclass
 class LegendGroup:
     """A set of PNGs that share a single legend image."""
-    key: str          # e.g. "gemma_2_9b_l11__hours" or "gemma_2_9b_l11__living_things__plant_animal"
-    experiment_id: str
-    task: str
+    key: str          # e.g. "hours" or "living_things__plant_animal"
+    task: str         # canonical task name (e.g. "hours")
     hyp_filter: str | None  # None = all hypotheses; str = only this hypothesis
     entries: list[PNGEntry] = field(default_factory=list)
     color_map: dict | None = None
@@ -146,26 +159,25 @@ def infer_legend_groups(
     """Group PNG entries into legend groups.
 
     Rules:
-    - All entries for the same (experiment_id, task) share one legend, **unless**
+    - All entries for the same canonical task share one legend, **unless**
       the task has ``hypothesis_color_overrides`` — in that case each overridden
       hypothesis gets its own sub-group; remaining hypotheses share one group.
-    - Groups with no PNGs are not produced.
+    - Task names are canonicalised via :func:`_canonical_task` before config lookup.
     """
     from collections import defaultdict
 
-    # Index entries by (experiment_id, task)
-    by_exp_task: dict[tuple[str, str], list[PNGEntry]] = defaultdict(list)
+    # Index entries by canonical task
+    by_task: dict[str, list[PNGEntry]] = defaultdict(list)
     for e in entries:
-        by_exp_task[(e.experiment_id, e.task)].append(e)
+        by_task[_canonical_task(e.task)].append(e)
 
     groups: list[LegendGroup] = []
 
-    for (exp_id, task), task_entries in sorted(by_exp_task.items()):
+    for task, task_entries in sorted(by_task.items()):
         ci = color_info.get(task, {})
         overrides: dict[str, dict] = ci.get("hypothesis_color_overrides", {})
 
         if overrides:
-            # Split overridden hypotheses into their own sub-groups
             overridden_hyps = set(overrides.keys())
             override_entries: dict[str, list[PNGEntry]] = defaultdict(list)
             default_entries: list[PNGEntry] = []
@@ -178,8 +190,7 @@ def infer_legend_groups(
 
             for hyp_name, hyp_entries in sorted(override_entries.items()):
                 g = LegendGroup(
-                    key=f"{exp_id}__{task}__{hyp_name}",
-                    experiment_id=exp_id,
+                    key=f"{task}__{hyp_name}",
                     task=task,
                     hyp_filter=hyp_name,
                     entries=hyp_entries,
@@ -190,8 +201,7 @@ def infer_legend_groups(
 
             if default_entries:
                 g = LegendGroup(
-                    key=f"{exp_id}__{task}",
-                    experiment_id=exp_id,
+                    key=task,
                     task=task,
                     hyp_filter=None,
                     entries=default_entries,
@@ -202,8 +212,7 @@ def infer_legend_groups(
                 groups.append(g)
         else:
             g = LegendGroup(
-                key=f"{exp_id}__{task}",
-                experiment_id=exp_id,
+                key=task,
                 task=task,
                 hyp_filter=None,
                 entries=task_entries,
@@ -216,103 +225,103 @@ def infer_legend_groups(
     return groups
 
 
+def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
+    """Build legend groups for **every** task in the config, even those without PNGs.
+
+    This ensures a complete library of legend images is generated.
+    """
+    groups: list[LegendGroup] = []
+
+    for task, ci in sorted(color_info.items()):
+        overrides: dict[str, dict] = ci.get("hypothesis_color_overrides", {})
+
+        if overrides:
+            for hyp_name in sorted(overrides.keys()):
+                groups.append(LegendGroup(
+                    key=f"{task}__{hyp_name}",
+                    task=task,
+                    hyp_filter=hyp_name,
+                    color_map=overrides[hyp_name],
+                    continuous_color=False,
+                ))
+            # Default group (no override)
+            groups.append(LegendGroup(
+                key=task,
+                task=task,
+                hyp_filter=None,
+                color_map=ci.get("color_map"),
+                color_scale=ci.get("color_scale"),
+                continuous_color=ci.get("continuous_color", False),
+            ))
+        else:
+            groups.append(LegendGroup(
+                key=task,
+                task=task,
+                hyp_filter=None,
+                color_map=ci.get("color_map"),
+                color_scale=ci.get("color_scale"),
+                continuous_color=ci.get("continuous_color", False),
+            ))
+
+    return groups
+
+
 # ── Legend rendering ───────────────────────────────────────────────────────────
 
-def _plotly_colorscale_to_rgba(scale_name: str, n: int) -> list[str]:
-    """Sample *n* evenly-spaced colors from a named Plotly colorscale."""
-    from plotly.colors import sample_colorscale
-    positions = [i / max(n - 1, 1) for i in range(n)]
-    return sample_colorscale(scale_name, positions)
+def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
+    """Render a legend PNG for *group* using scatter3d's exact Plotly rendering."""
+    from analysis.scatter3d import render_legend_png
 
-
-def _parse_rgb(color_str: str) -> tuple[float, float, float]:
-    """Parse an 'rgb(r,g,b)' or CSS hex color string to (r,g,b) floats in [0,1]."""
-    color_str = color_str.strip()
-    m = re.match(r"rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)", color_str)
-    if m:
-        return tuple(int(m.group(i)) / 255 for i in range(1, 4))  # type: ignore[return-value]
-    # CSS hex
-    color_str = color_str.lstrip("#")
-    if len(color_str) == 6:
-        r, g, b = (int(color_str[i:i+2], 16) / 255 for i in (0, 2, 4))
-        return r, g, b
-    # Fall back to matplotlib parsing
-    import matplotlib.colors as mcolors
-    return mcolors.to_rgb(color_str)
-
-
-def render_legend_png(group: LegendGroup, output_path: Path) -> None:
-    """Render a clean legend swatch image for *group* and save to *output_path*."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if group.continuous_color and group.color_scale:
-        _render_colorbar_legend(group.color_scale, output_path)
+    # Hard-coded newline exception: use Viridis with integer range [1, line_length]
+    if group.task == "pile-uncopyrighted":
+        # Determine wraparound point from any PNG entry's experiment path,
+        # or default to 150.  The newline output dirs are newline_80, newline_150, etc.
+        line_length = _infer_newline_wrap(group.entries)
+        labels = list(range(1, line_length + 1))
+        render_legend_png(
+            colorscale="Viridis",
+            labels=labels,
+            output_path=output_path,
+            continuous_color=True,
+        )
         return
 
     if group.color_map:
-        _render_swatch_legend(group.color_map, output_path)
-        return
-
-    if group.color_scale:
-        # Named colorscale with discrete classes — try to infer labels from task name.
-        # Without live data we can only render a generic colorbar strip.
-        _render_colorbar_legend(group.color_scale, output_path)
-        return
-
-    # No color info: skip
-    typer.echo(f"  [skip legend] no color info for group {group.key}", err=True)
-
-
-def _render_swatch_legend(color_map: dict, output_path: Path) -> None:
-    """Render a horizontal swatch legend for a discrete color_map."""
-    labels = list(color_map.keys())
-    colors = [_parse_rgb(str(v)) for v in color_map.values()]
-    n = len(labels)
-
-    swatch_w = 0.25   # inches per swatch
-    label_w  = 0.80   # inches per label
-    height   = 0.35
-    fig_w = max(4.0, n * (swatch_w + label_w) + 0.2)
-
-    fig, ax = plt.subplots(figsize=(fig_w, height))
-    ax.set_axis_off()
-
-    x = 0.0
-    step = (swatch_w + label_w) / fig_w
-    for label, rgb in zip(labels, colors):
-        ax.add_patch(mpatches.Rectangle(
-            (x, 0.1), swatch_w / fig_w, 0.8,
-            color=rgb, transform=ax.transAxes, clip_on=False,
-        ))
-        ax.text(
-            x + (swatch_w + 3) / fig_w / 72 * fig_w,
-            0.5,
-            label,
-            transform=ax.transAxes,
-            va="center", ha="left",
-            fontsize=7,
+        labels = sorted(group.color_map.keys())
+        render_legend_png(
+            colorscale=group.color_map,
+            labels=labels,
+            output_path=output_path,
         )
-        x += step
+    elif group.color_scale:
+        # Named colorscale without explicit label→color map.
+        # Build numeric labels matching the class count that scatter3d would see.
+        # The colorbar renders by range; exact tick labels come from the data.
+        labels = list(range(24))  # placeholder — colorbar will auto-range
+        render_legend_png(
+            colorscale=group.color_scale,
+            labels=labels,
+            output_path=output_path,
+            continuous_color=group.continuous_color,
+        )
+    else:
+        typer.echo(f"  [skip legend] no color info for group {group.key}", err=True)
 
-    fig.savefig(output_path, dpi=150, bbox_inches="tight", transparent=True)
-    plt.close(fig)
 
+def _infer_newline_wrap(entries: list[PNGEntry]) -> int:
+    """Infer the newline wraparound point from entries' experiment paths.
 
-def _render_colorbar_legend(scale_name: str, output_path: Path) -> None:
-    """Render a horizontal colorbar strip for a continuous/named colorscale."""
-    n_steps = 256
-    colors = _plotly_colorscale_to_rgba(scale_name, n_steps)
-    rgb_array = np.array([_parse_rgb(c) for c in colors])
-
-    fig, ax = plt.subplots(figsize=(5.0, 0.4))
-    ax.imshow(rgb_array[np.newaxis, :, :], aspect="auto", extent=[0, 1, 0, 1])
-    ax.set_yticks([])
-    ax.set_xticks([0, 0.5, 1.0])
-    ax.tick_params(axis="x", labelsize=7)
-    ax.set_xlabel(scale_name, fontsize=8)
-
-    fig.savefig(output_path, dpi=150, bbox_inches="tight", transparent=True)
-    plt.close(fig)
+    Looks for a ``newline_<N>`` pattern in the source directory tree.
+    Defaults to 150 if no hint is found.
+    """
+    for e in entries:
+        for part in e.path.parts:
+            m = re.match(r"newline_(\d+)", part)
+            if m:
+                return int(m.group(1))
+    return 150
 
 
 # ── LaTeX generation ───────────────────────────────────────────────────────────
@@ -327,6 +336,7 @@ _TASK_DISPLAY: dict[str, str] = {
     "months":       "Months",
     "colors":       "Colors",
     "emotions":     "Emotions",
+    "pile-uncopyrighted": "Newline Position",
 }
 
 _HYP_DISPLAY: dict[str, str] = {
@@ -347,6 +357,7 @@ _HYP_DISPLAY: dict[str, str] = {
     "warm_nat_cool":   "Warm/Cool",
     "valence_arousal": "Valence-Arousal",
     "quadrant":        "Quadrant",
+    "periodic_gain":   "Periodic Gain",
 }
 
 
@@ -357,7 +368,8 @@ def _esc_text(s: str) -> str:
 
 def _subcaption(entry: PNGEntry, png_rel: str) -> str:
     """Return a \\subcaptionbox{...}{...} string for one PNG."""
-    task_disp = _TASK_DISPLAY.get(entry.task, entry.task.replace("_", " ").title())
+    canon = _canonical_task(entry.task)
+    task_disp = _TASK_DISPLAY.get(canon, canon.replace("_", " ").title())
     hyp_disp  = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
     score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
     # score_lbl may contain LaTeX math ($R^2$) — don't escape it; escape the rest
@@ -390,7 +402,8 @@ def generate_latex_figure(
         return
 
     task_disp = _TASK_DISPLAY.get(group.task, group.task.replace("_", " ").title())
-    model_disp = group.experiment_id.replace("_", "-")
+    # Derive model name from the first entry's experiment_id
+    model_disp = scatter_entries[0].experiment_id.replace("_", "-")
 
     lines: list[str] = [
         "% Requires: \\usepackage{subcaption} \\usepackage{graphicx}",
@@ -449,7 +462,7 @@ def figures(
     """Assemble camera-ready PNGs into LaTeX figure files with shared legend images.
 
     Scans *camera-ready-dir* for PNGs saved by the browser Save buttons in experts.html,
-    groups them by (experiment, task), renders per-group legend images, and writes one
+    groups them by task, renders legend images for ALL config tasks, and writes one
     .tex file per group under *output-dir*.
     """
     if not camera_ready_dir.exists():
@@ -458,36 +471,43 @@ def figures(
 
     typer.echo(f"Scanning {camera_ready_dir} …")
     entries = scan_camera_ready(camera_ready_dir)
+
+    color_info = load_color_info(dataset_config) if dataset_config.exists() else {}
+
+    # ── Generate legends for ALL config tasks ──────────────────────────────
+    legends_dir = output_dir / "legends"
+    legends_dir.mkdir(parents=True, exist_ok=True)
+
+    all_groups = build_all_config_groups(color_info)
+
+    typer.echo(f"\nGenerating {len(all_groups)} legend(s) from config …")
+    legend_paths: dict[str, Path] = {}  # group.key → Path
+    for group in all_groups:
+        legend_filename = f"legend_{group.key}.png"
+        legend_path = legends_dir / legend_filename
+        _render_group_legend(group, legend_path)
+        if legend_path.exists():
+            typer.echo(f"  Legend: {legend_path}")
+            legend_paths[group.key] = legend_path
+
+    # ── Group PNG entries and generate .tex files ──────────────────────────
     if not entries:
         typer.echo("No matching PNGs found.")
         raise typer.Exit(0)
 
-    typer.echo(f"Found {len(entries)} PNG(s) across "
-               f"{len({(e.experiment_id, e.task) for e in entries})} (experiment, task) pairs.")
+    typer.echo(f"\nFound {len(entries)} PNG(s) across "
+               f"{len({_canonical_task(e.task) for e in entries})} task(s).")
 
-    color_info = load_color_info(dataset_config) if dataset_config.exists() else {}
     groups = infer_legend_groups(entries, color_info)
-    typer.echo(f"Grouped into {len(groups)} legend group(s).")
-
-    legends_dir = output_dir / "legends"
-    legends_dir.mkdir(parents=True, exist_ok=True)
+    typer.echo(f"Grouped into {len(groups)} figure group(s).")
 
     for group in groups:
         typer.echo(f"\nGroup: {group.key}  ({len(group.entries)} PNG(s))")
-
-        # Render legend
-        legend_filename = f"legend_{group.key}.png"
-        legend_path = legends_dir / legend_filename
-        render_legend_png(group, legend_path)
-        if legend_path.exists():
-            typer.echo(f"  Legend: {legend_path}")
-
-        # Write .tex
         tex_path = output_dir / f"figure_{group.key}.tex"
         generate_latex_figure(
             group=group,
             camera_ready_dir=camera_ready_dir,
-            legend_path=legend_path if legend_path.exists() else None,
+            legend_path=legend_paths.get(group.key),
             output_tex=tex_path,
             cols=cols,
         )
