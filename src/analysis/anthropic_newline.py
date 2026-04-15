@@ -451,6 +451,7 @@ def plot_newline_experts_html(
     top_k: int = 10,
     max_points: int = 50_000,
     output_path: str = "top_experts.html",
+    experiment_id: str = "",
 ) -> None:
     """Build a tabbed HTML of top experts ranked by periodic_gain.
 
@@ -471,6 +472,9 @@ def plot_newline_experts_html(
         idx = np.arange(N)
 
     labels_sub = labels[idx].numpy().astype(np.int32)
+
+    # Derive a dataset title from the output_path leaf dir (e.g. newline_150)
+    dataset_title = Path(output_path).parent.name
 
     expert_entries = []
     for _, row in ranked.iterrows():
@@ -498,9 +502,17 @@ def plot_newline_experts_html(
             title=f"Expert {eid}  (\u0394per={val:.4f}) [class means]",
         )
         tab_label = f"E{eid}  \u0394per={val:.4f}"
-        expert_entries.append((tab_label, scatter_fig, mean_fig))
+        expert_meta = {
+            "expert_id": str(eid),
+            "hyp_name": "periodic_gain",
+            "hyp_score": val,
+            "score_type": "per_gain",
+        }
+        expert_entries.append((tab_label, scatter_fig, mean_fig, {}, expert_meta))
 
-    html_str = build_dataset_html(expert_entries, "Newline Position — Expert Analysis (periodic_gain)")
+    html_str = build_dataset_html(
+        expert_entries, dataset_title, experiment_id=experiment_id,
+    )
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_str)
     logger.info(f"Saved top experts HTML → {output_path}")
@@ -830,6 +842,7 @@ def main(
     )
 
     # ── Top experts HTML (ranked by periodic_gain) ───────────────────────
+    _nl_exp_id = Path(output_path).parent.name  # e.g. gemma_2_9b_l11
     plot_newline_experts_html(
         expert_acts,
         all_labels,
@@ -839,6 +852,7 @@ def main(
         top_k=plot_top_k,
         max_points=plot_max_points,
         output_path=os.path.join(out_dir, "top_experts.html"),
+        experiment_id=_nl_exp_id,
     )
 
     # ── Save numerical results ───────────────────────────────────────────

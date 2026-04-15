@@ -57,12 +57,18 @@ _HTML_TEMPLATE = """\
   {tab_panes}
   <script>
     const FIGURES = {{{figures_json}}};
+    const META = {meta_json};
     const EXPERIMENT_ID = {experiment_id_js};
     const DATASET_TITLE = {dataset_title_js};
     const rendered = new Set();
-    function savePNG(divId, label, suffix) {{
-      const clean = label.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-      const filename = [EXPERIMENT_ID, DATASET_TITLE, clean, suffix].join('__');
+    function savePNG(divId, key, suffix) {{
+      const m = META[key];
+      const filename = m && m.hyp_name
+        ? [EXPERIMENT_ID, DATASET_TITLE,
+           'E' + m.expert_id, m.hyp_name,
+           m.score_type, m.hyp_score != null ? m.hyp_score.toFixed(4) : 'NA', suffix].join('__')
+        : [EXPERIMENT_ID, DATASET_TITLE,
+           'E' + (m ? m.expert_id : key), suffix].join('__');
       _queueFigure(divId, filename);
     }}
     function renderTab(idx) {{
@@ -151,7 +157,7 @@ def _reg_scores_table(reg_scores: dict[str, float]) -> str:
 
 
 def _build_flat_html(
-    expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]]],
+    expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]] | tuple[str, Figure, Figure | None, dict[str, float], dict]],
     dataset_title: str,
     experiment_id: str = "",
 ) -> str:
@@ -159,35 +165,48 @@ def _build_flat_html(
     tab_buttons: list[str] = []
     tab_panes: list[str] = []
     figures_json_parts: list[str] = []
+    meta_entries: dict[str, dict] = {}
 
     for idx, entry in enumerate(expert_entries):
         tab_label, scatter_fig, mean_fig = entry[0], entry[1], entry[2]
         reg_scores: dict[str, float] = entry[3] if len(entry) > 3 else {}  # type: ignore[misc]
+        expert_meta: dict = entry[4] if len(entry) > 4 else {}  # type: ignore[misc]
 
         scatter_id = f"scatter_{idx}"
+        mean_id = f"mean_{idx}"
+        key = str(idx)
+        has_mean = mean_fig is not None
+
+        meta_entries[key] = {
+            "expert_id":   expert_meta.get("expert_id", "?"),
+            "hyp_name":    expert_meta.get("hyp_name", ""),
+            "hyp_score":   expert_meta.get("hyp_score"),
+            "score_type":  expert_meta.get("score_type", "score"),
+            "has_mean":    has_mean,
+            "reg_scores":  {k: v for k, v in reg_scores.items() if v == v} if reg_scores else {},
+        }
+
         active_cls = " active" if idx == 0 else ""
 
         tab_buttons.append(f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">{tab_label}</button>')
 
-        safe_label = tab_label.replace("'", "").replace('"', "")
         save_means_html = ""
-        if mean_fig is not None:
-            mean_id = f"mean_{idx}"
+        if has_mean:
             save_means_html = (
                 f'<button class="save-btn" '
-                f"onclick=\"savePNG('{mean_id}','{safe_label}','means')\">Save means</button>"
+                f"onclick=\"savePNG('{mean_id}','{key}','means')\">Save means</button>"
             )
             figures_json_parts.append(f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}')
 
         save_bar = (
             f'<div class="save-bar">'
             f'<button class="save-btn" '
-            f"onclick=\"savePNG('{scatter_id}','{safe_label}','scatter')\">Save scatter</button>"
+            f"onclick=\"savePNG('{scatter_id}','{key}','scatter')\">Save scatter</button>"
             f"{save_means_html}"
             f"</div>"
         )
         plot_divs = f'{_reg_scores_table(reg_scores)}\n    {save_bar}\n    <div class="plot-box" id="{scatter_id}"></div>'
-        if mean_fig is not None:
+        if has_mean:
             plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
 
         tab_panes.append(f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>')
@@ -198,6 +217,7 @@ def _build_flat_html(
         tab_buttons="\n    ".join(tab_buttons),
         tab_panes="\n  ".join(tab_panes),
         figures_json=",\n    ".join(figures_json_parts),
+        meta_json=_json.dumps(meta_entries),
         experiment_id_js=_json.dumps(experiment_id or ""),
         dataset_title_js=_json.dumps(dataset_title.lower().replace(" ", "_")),
     )

@@ -14,6 +14,7 @@ Workflow:
 from __future__ import annotations
 
 import base64
+import io
 import json
 import os
 import re
@@ -26,6 +27,38 @@ import typer
 app = typer.Typer()
 
 _DEFAULT_PORT = 7788
+
+
+def _autocrop_png(data: bytes) -> bytes:
+    """Crop white borders from a PNG by finding the bounding box of non-white pixels."""
+    from PIL import Image, ImageOps
+
+    img = Image.open(io.BytesIO(data))
+    if img.mode == "RGBA":
+        bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
+        bg.paste(img, mask=img.getchannel("A"))
+        img = bg.convert("RGB")
+    elif img.mode != "RGB":
+        img = img.convert("RGB")
+
+    # Invert: white (255) becomes black (0), anything else becomes non-zero.
+    # getbbox() returns the bounding box of non-zero pixels = non-white content.
+    bbox = ImageOps.invert(img).getbbox()
+    if bbox is None:
+        return data
+
+    # Small padding so the plot doesn't touch the edge
+    pad = 4
+    bbox = (
+        max(bbox[0] - pad, 0),
+        max(bbox[1] - pad, 0),
+        min(bbox[2] + pad, img.width),
+        min(bbox[3] + pad, img.height),
+    )
+    cropped = img.crop(bbox)
+    buf = io.BytesIO()
+    cropped.save(buf, format="PNG")
+    return buf.getvalue()
 
 
 def _ssh_forward_hint(port: int) -> str | None:
@@ -66,20 +99,33 @@ def _ssh_banner_html(port: int) -> str:
 
 
 def _scan_html_files(probe_dir: Path | None) -> list[dict]:
-    """Return sorted list of {rel, label} dicts for every experts.html under probe_dir."""
+    """Return sorted list of {rel, label} dicts for browsable HTML files under probe_dir.
+
+    Only includes ``experts.html`` (probing) and ``top_experts.html`` (newline).
+    """
     if probe_dir is None or not probe_dir.exists():
         return []
     entries = []
-    for p in sorted(probe_dir.rglob("experts.html")):
+    for p in sorted(probe_dir.rglob("*.html")):
+        if p.name not in ("experts.html", "top_experts.html"):
+            continue
         rel = str(p.relative_to(probe_dir))
-        # Build a human label from the last two path components (task / file)
-        parts = p.parts
-        label_parts = []
-        if len(parts) >= 3:
-            label_parts = list(parts[-3:-1])  # e.g. ["gemma_2_9b_l11_model", "hours"]
-        elif len(parts) >= 2:
-            label_parts = list(parts[-2:-1])
-        label = " / ".join(label_parts) if label_parts else rel
+        # Exclude old/ directories
+        if "/old/" in rel or rel.startswith("old/"):
+            continue
+        # Derive a display label:
+        #   experts.html  → parent folder (e.g. "hours", "colors")
+        #   top_experts.html → first "newline_*" ancestor (e.g. "newline_150")
+        if p.name == "top_experts.html":
+            label = None
+            for part in p.relative_to(probe_dir).parts:
+                if part.startswith("newline"):
+                    label = part
+                    break
+            if label is None:
+                label = p.parent.name
+        else:
+            label = p.parent.name
         entries.append({"rel": rel, "label": label})
     return entries
 
@@ -270,21 +316,22 @@ def _gallery_html(output_dir: Path, port: int, probe_dir: Path | None = None) ->
         list.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:#999">No experts.html files found</div>';
         return;
       }}
-      // Group by first path component (experiment / model subfolder)
+      // Group by first path component (experiment), then by second (probe / newline_*)
       const groups = {{}};
       items.forEach(item => {{
         const parts = item.rel.split('/');
-        const group = parts.length > 1 ? parts[0] : '';
-        if (!groups[group]) groups[group] = [];
-        groups[group].push(item);
+        const grp = parts.length > 1 ? parts[0] : '';
+        const sub = parts.length > 2 ? parts[1] : '';
+        const key = sub ? grp + ' / ' + sub : grp;
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item);
       }});
       let html = '';
       for (const [grp, grpItems] of Object.entries(groups)) {{
-        if (grp) html += `<div class="nav-group">${{grp}}</div>`;
+        html += `<div class="nav-group">${{grp}}</div>`;
         grpItems.forEach(item => {{
-          const label = item.label.split(' / ').slice(-1)[0];  // just the task name
           html += `<a class="nav-item" href="${{BASE}}/view?p=${{encodeURIComponent(item.rel)}}"
-                      target="expert-frame" title="${{item.rel}}">${{label}}</a>`;
+                      target="expert-frame" title="${{item.rel}}">${{item.label}}</a>`;
         }});
       }}
       list.innerHTML = html;
@@ -411,6 +458,7 @@ class _Handler(BaseHTTPRequestHandler):
                 if not fn.endswith(".png"):
                     fn += ".png"
                 data = base64.b64decode(body["data"])
+                data = _autocrop_png(data)
                 _queue[fn] = data
                 typer.echo(f"  Queued  [{len(_queue):3d}]  {fn}")
                 self._json(200, {"queued": fn, "total": len(_queue)})

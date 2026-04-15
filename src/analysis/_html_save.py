@@ -65,14 +65,44 @@ SAVE_CLIENT_JS: str = """\
   }
 
   async function _queueFigure(divId, filename) {
-    Plotly.relayout(divId, { showlegend: false });
+    const gd = document.getElementById(divId);
+    // Snapshot current per-trace showlegend / showscale so we can restore them
+    const traceState = gd.data.map(t => ({
+      showlegend: t.showlegend,
+      marker: { showscale: t.marker ? t.marker.showscale : undefined },
+    }));
+    const layout = gd._fullLayout || {};
+    const savedTitle = layout.title ? (layout.title.text !== undefined ? layout.title.text : layout.title) : '';
+    const savedMargin = Object.assign({}, layout.margin || {});
+
+    // Hide everything that isn't the 3-D scatter
+    Plotly.relayout(divId, {
+      showlegend: false,
+      title: { text: '' },
+      margin: { t: 0, b: 0, l: 0, r: 0 },
+    });
+    gd.data.forEach(t => {
+      t.showlegend = false;
+      if (t.marker) t.marker.showscale = false;
+    });
+    Plotly.redraw(divId);
+
     let imgData;
     try {
       imgData = await Plotly.toImage(
         divId, { format: 'png', width: 1100, height: 850, scale: 2 }
       );
     } finally {
-      Plotly.relayout(divId, { showlegend: true });
+      // Restore
+      gd.data.forEach((t, i) => {
+        t.showlegend = traceState[i].showlegend;
+        if (t.marker) t.marker.showscale = traceState[i].marker.showscale;
+      });
+      Plotly.relayout(divId, {
+        showlegend: true,
+        title: { text: savedTitle },
+        margin: savedMargin,
+      });
     }
     const base64 = imgData.split(',')[1];
     try {
