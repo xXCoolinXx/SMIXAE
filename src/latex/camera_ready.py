@@ -10,18 +10,25 @@ Workflow:
        smixae latex figures \\
            --camera-ready-dir results/camera_ready/ \\
            --output-dir       results/paper/ \\
-           --dataset-config   datasets/probing/dataset_config.json
+           --dataset-config   datasets/probing/dataset_config.json \\
+           --results-json     results/results.json
 
 Output structure::
 
     results/paper/
       legends/
         legend_hours.png
-        legend_months.png
+        legend_pile-uncopyrighted__80.png
+        legend_pile-uncopyrighted__150.png
         ...
-      figure_gemma_2_9b_l11_hours.tex
-      figure_gemma_2_9b_l11_months.tex
+      probe_gemma_2_9b_l11.tex      ← all probing tasks for this experiment
+      probe_gemma_2_2b_l12.tex
+      newline_gemma_2_9b_l11.tex    ← newline tasks (one figure per wrap length)
+      newline_gemma_2_2b_l12.tex
       ...
+
+Each .tex file contains one \\begin{figure*} block per task/wrap, using a
+minipage-based grid with the legend on the right side.
 
 Required LaTeX packages: subcaption, graphicx
 """
@@ -30,8 +37,10 @@ from __future__ import annotations
 
 import json
 import re
+from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Optional
 
 import typer
 
@@ -51,9 +60,9 @@ _FILENAME_RE = re.compile(
 )
 
 _SCORE_LABEL: dict[str, str] = {
-    "r2":    r"$R^2$",
-    "acc":   "Acc.",
-    "score": "Score",
+    "r2":       r"$R^2$",
+    "acc":      "Acc.",
+    "score":    "Score",
     "per_gain": r"$\Delta$per",
 }
 
@@ -96,15 +105,10 @@ def scan_camera_ready(camera_ready_dir: Path) -> list[PNGEntry]:
 def _canonical_task(raw_task: str) -> str:
     """Strip the ``_—_…`` suffix added by ``utils.py`` when building HTML titles.
 
-    The save workflow lowercases the dataset title and replaces spaces with
-    underscores, producing task names like ``"hours_—_expert_analysis"`` in the
-    PNG filename.  The dataset config key is just ``"hours"`` (the CSV stem).
-    This helper strips the suffix so lookups work correctly.
-
     Examples::
 
         'hours_—_expert_analysis' → 'hours'
-        'pile-uncopyrighted'       → 'pile-uncopyrighted'  (no suffix, unchanged)
+        'pile-uncopyrighted'       → 'pile-uncopyrighted'
     """
     return raw_task.split("_—_")[0]
 
@@ -144,12 +148,10 @@ def load_color_info(
                 with open(csv_path, newline="") as cf:
                     reader = _csv.DictReader(cf)
                     raw_labels = {row["Label"] for row in reader if "Label" in row}
-                # Attempt numeric sort + conversion (int/float) so colorbars get proper ranges;
-                # fall back to lexicographic string sort for categorical labels.
+                # Attempt numeric sort + conversion; fall back to lexicographic.
                 try:
                     float_vals = {v: float(v) for v in raw_labels}
                     sorted_str = sorted(raw_labels, key=lambda v: float_vals[v])
-                    # Convert to int where lossless, else keep as float
                     labels = [
                         int(float_vals[v]) if float_vals[v] == int(float_vals[v]) else float_vals[v]
                         for v in sorted_str
@@ -165,6 +167,38 @@ def load_color_info(
             "labels":                     labels,
         }
     return info
+
+
+# ── Newline wrap lookup ────────────────────────────────────────────────────────
+
+def load_newline_wrap_lookup(results_json_path: Path) -> dict[tuple, int]:
+    """Build ``(experiment_id, expert_id, round(score, 4)) → line_length`` from results.json.
+
+    Used to assign the correct wrap length to each newline PNG entry even when
+    the flat camera_ready directory has no ``newline_<N>`` path component.
+    """
+    with open(results_json_path) as f:
+        data = json.load(f)
+
+    lookup: dict[tuple, int] = {}
+    for exp_id, exp_data in data.items():
+        for _wrap_key, wrap_data in exp_data.get("newline", {}).items():
+            line_length = wrap_data.get("line_length")
+            if line_length is None:
+                continue
+            for expert in wrap_data.get("top10_experts", []):
+                key = (exp_id, expert["expert_id"], round(expert["periodic_gain"], 4))
+                lookup[key] = line_length
+    return lookup
+
+
+def _get_wrap(entry: PNGEntry, lookup: dict | None) -> int:
+    """Determine newline wrap length for *entry* from lookup table or path scan."""
+    if lookup:
+        key = (entry.experiment_id, entry.expert_id, round(entry.score, 4))
+        if key in lookup:
+            return lookup[key]
+    return _infer_newline_wrap([entry])
 
 
 # ── Grouping ───────────────────────────────────────────────────────────────────
@@ -185,6 +219,7 @@ class LegendGroup:
 def infer_legend_groups(
     entries: list[PNGEntry],
     color_info: dict[str, dict],
+    newline_wrap_lookup: dict | None = None,
 ) -> list[LegendGroup]:
     """Group PNG entries into legend groups.
 
@@ -192,14 +227,11 @@ def infer_legend_groups(
     - All entries for the same canonical task share one legend, **unless**
       the task has ``hypothesis_color_overrides`` — in that case each overridden
       hypothesis gets its own sub-group; remaining hypotheses share one group.
-    - ``pile-uncopyrighted`` entries are split by wrap length: each unique wrap
-      length (80, 150, …) gets its own group with key
-      ``"pile-uncopyrighted__{N}"``.
+    - ``pile-uncopyrighted`` entries are split by wrap length.  Wrap is resolved
+      via *newline_wrap_lookup* (keyed by experiment_id, expert_id, score) when
+      available, otherwise falls back to scanning path components.
     - Task names are canonicalised via :func:`_canonical_task` before config lookup.
     """
-    from collections import defaultdict
-
-    # Index entries by canonical task
     by_task: dict[str, list[PNGEntry]] = defaultdict(list)
     for e in entries:
         by_task[_canonical_task(e.task)].append(e)
@@ -209,15 +241,15 @@ def infer_legend_groups(
     for task, task_entries in sorted(by_task.items()):
         ci = color_info.get(task, {})
 
-        # ── newline task: one group per wrap length ──────────────────────────
+        # ── newline task: one group per (experiment_id, wrap length) ────────
         if task == "pile-uncopyrighted":
-            by_wrap: dict[int, list[PNGEntry]] = defaultdict(list)
+            by_exp_wrap: dict[tuple[str, int], list[PNGEntry]] = defaultdict(list)
             for e in task_entries:
-                n = _infer_newline_wrap([e])
-                by_wrap[n].append(e)
-            for n, wrap_entries in sorted(by_wrap.items()):
+                n = _get_wrap(e, newline_wrap_lookup)
+                by_exp_wrap[(e.experiment_id, n)].append(e)
+            for (exp_id_nl, n), wrap_entries in sorted(by_exp_wrap.items()):
                 groups.append(LegendGroup(
-                    key=f"pile-uncopyrighted__{n}",
+                    key=f"pile-uncopyrighted__{n}",   # shared legend key across experiments
                     task="pile-uncopyrighted",
                     hyp_filter=None,
                     entries=wrap_entries,
@@ -241,7 +273,7 @@ def infer_legend_groups(
                     default_entries.append(e)
 
             for hyp_name, hyp_entries in sorted(override_entries.items()):
-                g = LegendGroup(
+                groups.append(LegendGroup(
                     key=f"{task}__{hyp_name}",
                     task=task,
                     hyp_filter=hyp_name,
@@ -249,11 +281,10 @@ def infer_legend_groups(
                     color_map=overrides[hyp_name],
                     continuous_color=False,
                     labels=ci.get("labels"),
-                )
-                groups.append(g)
+                ))
 
             if default_entries:
-                g = LegendGroup(
+                groups.append(LegendGroup(
                     key=task,
                     task=task,
                     hyp_filter=None,
@@ -262,10 +293,9 @@ def infer_legend_groups(
                     color_scale=ci.get("color_scale"),
                     continuous_color=ci.get("continuous_color", False),
                     labels=ci.get("labels"),
-                )
-                groups.append(g)
+                ))
         else:
-            g = LegendGroup(
+            groups.append(LegendGroup(
                 key=task,
                 task=task,
                 hyp_filter=None,
@@ -274,8 +304,7 @@ def infer_legend_groups(
                 color_scale=ci.get("color_scale"),
                 continuous_color=ci.get("continuous_color", False),
                 labels=ci.get("labels"),
-            )
-            groups.append(g)
+            ))
 
     return groups
 
@@ -290,7 +319,7 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
 
     for task, ci in sorted(color_info.items()):
         if task == "pile-uncopyrighted":
-            continue  # handled per-wrap-length in infer_legend_groups
+            continue
 
         overrides: dict[str, dict] = ci.get("hypothesis_color_overrides", {})
 
@@ -304,7 +333,6 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
                     continuous_color=False,
                     labels=ci.get("labels"),
                 ))
-            # Default group (hypotheses without an override, e.g. taxonomy in living_things)
             groups.append(LegendGroup(
                 key=task,
                 task=task,
@@ -342,7 +370,6 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     if group.color_map:
-        # Explicit per-label colour mapping → discrete coloured legend
         labels = sorted(group.color_map.keys())
         render_legend_png(
             colorscale=group.color_map,
@@ -351,8 +378,6 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
             label_names=_display_names(labels),
         )
     elif group.color_scale:
-        # Named colorscale → colorbar (continuous_color=True) or discrete legend.
-        # Use real label values loaded from CSV so axis range / colours match the data.
         if not group.labels:
             typer.echo(f"  [skip legend] no labels available for group {group.key}", err=True)
             return
@@ -364,7 +389,6 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
             continuous_color=group.continuous_color,
         )
     elif group.labels:
-        # No explicit color info — render discrete legend with HSV auto-coloring
         render_legend_png(
             colorscale=None,
             labels=group.labels,
@@ -376,11 +400,7 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
 
 
 def _infer_newline_wrap(entries: list[PNGEntry]) -> int:
-    """Infer the newline wraparound point from entries' experiment paths.
-
-    Looks for a ``newline_<N>`` pattern in the source directory tree.
-    Defaults to 150 if no hint is found.
-    """
+    """Infer newline wrap from ``newline_<N>`` path components; defaults to 150."""
     for e in entries:
         for part in e.path.parts:
             m = re.match(r"newline_(\d+)", part)
@@ -392,15 +412,15 @@ def _infer_newline_wrap(entries: list[PNGEntry]) -> int:
 # ── LaTeX generation ───────────────────────────────────────────────────────────
 
 _TASK_DISPLAY: dict[str, str] = {
-    "weekdays":     "Weekdays",
-    "hours":        "Hours",
-    "temperatures": "Temperature",
-    "time_units":   "Time Units",
-    "body_parts":   "Body Parts",
-    "living_things":"Living Things",
-    "months":       "Months",
-    "colors":       "Colors",
-    "emotions":     "Emotions",
+    "weekdays":          "Weekdays",
+    "hours":             "Hours",
+    "months":            "Months",
+    "temperatures":      "Temperature",
+    "time_units":        "Time Units",
+    "body_parts":        "Body Parts",
+    "living_things":     "Living Things",
+    "colors":            "Colors",
+    "emotions":          "Emotions",
     "pile-uncopyrighted": "Newline Position",
 }
 
@@ -412,8 +432,8 @@ _HYP_DISPLAY: dict[str, str] = {
     "am_pm":           "AM vs PM",
     "cyc_12m":         "12-Month Ring",
     "season":          "Season",
-    "linear_f":        "Linear °F",
-    "log_f":           "Log °F",
+    "linear_f":        r"Linear \textdegree F",
+    "log_f":           r"Log \textdegree F",
     "log_duration":    "log Duration",
     "plant_animal":    "Plant vs Animal",
     "taxonomy":        "Taxonomy",
@@ -425,27 +445,237 @@ _HYP_DISPLAY: dict[str, str] = {
     "periodic_gain":   "Periodic Gain",
 }
 
+# Canonical display order for probe tasks (pile-uncopyrighted always last in newline files)
+_TASK_ORDER: list[str] = [
+    "weekdays", "hours", "months", "temperatures",
+    "time_units", "body_parts", "living_things",
+    "colors", "emotions",
+]
+
 
 def _esc_text(s: str) -> str:
     """Escape LaTeX special chars in plain text (not math mode)."""
     return s.replace("_", r"\_").replace("&", r"\&").replace("%", r"\%")
 
 
-def _subcaption(entry: PNGEntry, png_rel: str) -> str:
-    """Return a \\subcaptionbox{...}{...} string for one PNG."""
-    canon = _canonical_task(entry.task)
-    task_disp = _TASK_DISPLAY.get(canon, canon.replace("_", " ").title())
-    hyp_disp  = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
-    score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
-    # score_lbl may contain LaTeX math ($R^2$) — don't escape it; escape the rest
-    caption = (
-        f"{_esc_text(task_disp)}, Expert {entry.expert_id}, "
-        f"{_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})"
-    )
+def _subcaption_cell(
+    entry: PNGEntry,
+    png_rel: str,
+    cell_frac: float,
+    is_paired_means: bool = False,
+) -> str:
+    """Return one ``\\subcaptionbox{caption}[width]{\\includegraphics...}`` string.
+
+    For a means entry paired with a scatter, the caption is shortened to
+    ``E{id} (means)`` since the hypothesis label already appears on the scatter.
+    Standalone means entries (e.g. newline) get the full caption.
+    """
+    if is_paired_means:
+        caption = f"E{entry.expert_id} (means)"
+    else:
+        hyp_disp  = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
+        score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
+        caption = (
+            f"E{entry.expert_id}, {_esc_text(hyp_disp)}"
+            f" ({score_lbl}\\,=\\,{entry.score:.3f})"
+        )
+    width_spec = f"{cell_frac:.2f}\\linewidth"
     return (
-        f"  \\subcaptionbox{{{caption}}}{{%\n"
-        f"    \\includegraphics[width=\\columnwidth]{{{png_rel}}}}}"
+        f"  \\subcaptionbox{{{caption}}}[{width_spec}]{{%\n"
+        f"    \\includegraphics[width=\\linewidth]{{{png_rel}}}}}"
     )
+
+
+def _figure_block(
+    group: LegendGroup,
+    camera_ready_dir: Path,
+    legend_path: Path | None,
+    cols: int,
+) -> list[str]:
+    """Return lines for one complete ``\\begin{figure*}…\\end{figure*}`` block.
+
+    Image sequence:
+    - If scatter entries exist: [scatter1, means1, scatter2, means2, …]
+      (means silently omitted when no matching means exists for a scatter).
+    - If only means entries (e.g. newline): means entries in expert_id order.
+    """
+    scatter_entries = [e for e in group.entries if e.figure_type == "scatter"]
+    means_map = {
+        (e.expert_id, e.hyp_name): e
+        for e in group.entries if e.figure_type == "means"
+    }
+
+    if scatter_entries:
+        images: list[tuple[PNGEntry, bool]] = []
+        for se in scatter_entries:
+            images.append((se, False))
+            me = means_map.get((se.expert_id, se.hyp_name))
+            if me is not None:
+                images.append((me, True))
+    else:
+        images = [
+            (e, False)
+            for e in sorted(group.entries, key=lambda x: (-x.score, x.expert_id))
+        ]
+
+    if not images:
+        return []
+
+    model_disp = images[0][0].experiment_id.replace("_", "-")
+
+    # Caption
+    if group.task == "pile-uncopyrighted":
+        wrap = group.key.split("__")[-1] if "__" in group.key else "?"
+        caption_text = f"Newline Position ({wrap} chars) --- {model_disp}."
+    elif group.hyp_filter:
+        hyp_disp = _HYP_DISPLAY.get(group.hyp_filter, group.hyp_filter.replace("_", " "))
+        task_disp = _TASK_DISPLAY.get(group.task, group.task.replace("_", " ").title())
+        caption_text = f"{_esc_text(task_disp)} ({_esc_text(hyp_disp)}) --- {model_disp}."
+    else:
+        task_disp = _TASK_DISPLAY.get(group.task, group.task.replace("_", " ").title())
+        caption_text = f"{_esc_text(task_disp)} --- {model_disp}."
+
+    cell_frac = 0.98 / cols
+
+    lines: list[str] = [r"\begin{figure*}[t]", r"\centering"]
+
+    # ── Content minipage ───────────────────────────────────────────────────────
+    lines.append(r"\begin{minipage}[c]{0.88\linewidth}")
+
+    rows: list[list[tuple[PNGEntry, bool]]] = [
+        images[i:i + cols] for i in range(0, len(images), cols)
+    ]
+
+    for row_idx, row in enumerate(rows):
+        is_last_row = (row_idx == len(rows) - 1)
+        for cell_idx, (entry, is_pm) in enumerate(row):
+            png_rel = str(Path("camera_ready") / entry.path.name)
+            cell = _subcaption_cell(entry, png_rel, cell_frac, is_pm)
+            is_last_in_row = (cell_idx == len(row) - 1)
+            if not is_last_in_row:
+                cell += r"\hfill"
+            elif not is_last_row:
+                cell += r"\\[4pt]"
+            lines.append(cell)
+
+    lines.append(r"\end{minipage}\hfill")
+
+    # ── Legend minipage ────────────────────────────────────────────────────────
+    if legend_path is not None and legend_path.exists():
+        legend_rel = str(Path("legends") / legend_path.name)
+        lines += [
+            r"\begin{minipage}[c]{0.10\linewidth}",
+            r"  \centering",
+            f"  \\includegraphics[width=\\linewidth]{{{legend_rel}}}",
+            r"\end{minipage}",
+        ]
+
+    lines += [
+        f"\\caption{{{caption_text}}}",
+        r"\end{figure*}",
+    ]
+    return lines
+
+
+def generate_probe_tex(
+    experiment_id: str,
+    groups: list[LegendGroup],
+    legend_paths: dict[str, Path],
+    camera_ready_dir: Path,
+    output_tex: Path,
+    cols: int = 2,
+) -> None:
+    """Write one .tex file containing all probe-task figure blocks for *experiment_id*."""
+    output_tex.parent.mkdir(parents=True, exist_ok=True)
+
+    def _sort_key(g: LegendGroup) -> tuple[int, str]:
+        try:
+            return (_TASK_ORDER.index(g.task), g.key)
+        except ValueError:
+            return (len(_TASK_ORDER), g.key)
+
+    all_lines: list[str] = [
+        "% Requires: \\usepackage{subcaption} \\usepackage{graphicx}",
+        "% Image paths are relative to this .tex file's location.",
+        f"% Generated by: smixae latex figures  (experiment: {experiment_id})",
+        "",
+    ]
+
+    for group in sorted(groups, key=_sort_key):
+        block = _figure_block(group, camera_ready_dir, legend_paths.get(group.key), cols)
+        if block:
+            all_lines.extend(block)
+            all_lines.append("")
+
+    output_tex.write_text("\n".join(all_lines) + "\n")
+    typer.echo(f"  Written {output_tex}")
+
+
+def generate_newline_tex(
+    experiment_id: str,
+    groups: list[LegendGroup],
+    legend_paths: dict[str, Path],
+    camera_ready_dir: Path,
+    output_tex: Path,
+    cols: int = 2,
+) -> None:
+    """Write one .tex file containing all newline figure blocks for *experiment_id*."""
+    output_tex.parent.mkdir(parents=True, exist_ok=True)
+
+    def _wrap_key(g: LegendGroup) -> int:
+        try:
+            return int(g.key.split("__")[-1])
+        except (ValueError, IndexError):
+            return 0
+
+    all_lines: list[str] = [
+        "% Requires: \\usepackage{subcaption} \\usepackage{graphicx}",
+        "% Image paths are relative to this .tex file's location.",
+        f"% Generated by: smixae latex figures  (experiment: {experiment_id}, newline)",
+        "",
+    ]
+
+    for group in sorted(groups, key=_wrap_key):
+        block = _figure_block(group, camera_ready_dir, legend_paths.get(group.key), cols)
+        if block:
+            all_lines.extend(block)
+            all_lines.append("")
+
+    output_tex.write_text("\n".join(all_lines) + "\n")
+    typer.echo(f"  Written {output_tex}")
+
+
+def _split_groups_by_experiment(groups: list[LegendGroup]) -> list[LegendGroup]:
+    """Ensure each LegendGroup contains entries from exactly one experiment_id.
+
+    ``pile-uncopyrighted`` groups are already per-experiment (handled in
+    :func:`infer_legend_groups`).  All other groups may have entries from
+    multiple experiments and are duplicated here — one copy per experiment,
+    sharing the same legend key so :func:`figures` can look up the right legend.
+    """
+    result: list[LegendGroup] = []
+    for group in groups:
+        if group.task == "pile-uncopyrighted":
+            result.append(group)
+            continue
+        by_exp: dict[str, list[PNGEntry]] = defaultdict(list)
+        for e in group.entries:
+            by_exp[e.experiment_id].append(e)
+        if len(by_exp) <= 1:
+            result.append(group)
+            continue
+        for exp_id, exp_entries in sorted(by_exp.items()):
+            result.append(LegendGroup(
+                key=group.key,
+                task=group.task,
+                hyp_filter=group.hyp_filter,
+                entries=exp_entries,
+                color_map=group.color_map,
+                color_scale=group.color_scale,
+                continuous_color=group.continuous_color,
+                labels=group.labels,
+            ))
+    return result
 
 
 def generate_latex_figure(
@@ -455,60 +685,22 @@ def generate_latex_figure(
     output_tex: Path,
     cols: int = 2,
 ) -> None:
-    """Write one \\begin{{figure}}…\\end{{figure}} .tex file for *group*."""
+    """Write one figure .tex file for *group* (legacy single-task format).
+
+    Kept for backwards compatibility; the ``figures`` command now uses
+    :func:`generate_probe_tex` / :func:`generate_newline_tex` instead.
+    """
     output_tex.parent.mkdir(parents=True, exist_ok=True)
-
-    # Use only scatter entries; pair with means when both exist for same expert+hyp
-    scatter_entries = [e for e in group.entries if e.figure_type == "scatter"]
-    means_entries   = {(e.expert_id, e.hyp_name): e for e in group.entries if e.figure_type == "means"}
-
-    if not scatter_entries:
-        typer.echo(f"  [skip .tex] no scatter entries in group {group.key}", err=True)
+    block = _figure_block(group, camera_ready_dir, legend_path, cols)
+    if not block:
+        typer.echo(f"  [skip .tex] no renderable entries in group {group.key}", err=True)
         return
-
-    task_disp = _TASK_DISPLAY.get(group.task, group.task.replace("_", " ").title())
-    # Derive model name from the first entry's experiment_id
-    model_disp = scatter_entries[0].experiment_id.replace("_", "-")
-
-    lines: list[str] = [
+    header = [
         "% Requires: \\usepackage{subcaption} \\usepackage{graphicx}",
-        "% Image paths are relative to this .tex file's location.",
         f"% Generated by: smixae latex figures  (group: {group.key})",
-        r"\begin{figure*}[t]",
+        "",
     ]
-
-    subcaps: list[str] = []
-    for entry in scatter_entries:
-        png_rel = str(Path("camera_ready") / entry.path.name)
-        subcaps.append(_subcaption(entry, png_rel))
-        # If a means figure exists for this expert+hyp, add it alongside
-        means_entry = means_entries.get((entry.expert_id, entry.hyp_name))
-        if means_entry is not None:
-            means_rel = str(Path("camera_ready") / means_entry.path.name)
-            subcaps.append(_subcaption(means_entry, means_rel))
-
-    # Lay out in rows of `cols` subfigures
-    row_parts: list[list[str]] = []
-    for i in range(0, len(subcaps), cols):
-        row_parts.append(subcaps[i:i + cols])
-
-    subfig_width = f"{0.98 / cols:.2f}" + r"\textwidth"
-    for row in row_parts:
-        # Override width based on cols
-        row_adjusted = [s.replace(r"\columnwidth", subfig_width) for s in row]
-        lines.append("  " + r" \hfill".join(row_adjusted) + r" \\[4pt]")
-
-    # Legend
-    if legend_path is not None and legend_path.exists():
-        legend_rel = str(Path("legends") / legend_path.name)
-        lines.append(f"  \\includegraphics[width=\\textwidth]{{{legend_rel}}}")
-
-    lines.append(
-        f"  \\caption{{{task_disp} manifold structure ({model_disp}).}}"
-    )
-    lines.append(r"\end{figure*}")
-
-    output_tex.write_text("\n".join(lines) + "\n")
+    output_tex.write_text("\n".join(header + block) + "\n")
     typer.echo(f"  Written {output_tex}")
 
 
@@ -522,13 +714,18 @@ def figures(
         Path("datasets/probing/dataset_config.json"),
         help="Path to dataset_config.json for color scheme information",
     ),
+    results_json: Optional[Path] = typer.Option(
+        None,
+        help="Path to results.json; used to resolve newline wrap lengths per expert",
+    ),
     cols: int = typer.Option(2, help="Number of subfigures per row"),
 ) -> None:
-    """Assemble camera-ready PNGs into LaTeX figure files with shared legend images.
+    """Assemble camera-ready PNGs into per-experiment LaTeX figure files.
 
-    Scans *camera-ready-dir* for PNGs saved by the browser Save buttons in experts.html,
-    groups them by task, renders legend images for ALL config tasks, and writes one
-    .tex file per group under *output-dir*.
+    Produces one ``probe_{experiment_id}.tex`` and/or one ``newline_{experiment_id}.tex``
+    per experiment found in *camera-ready-dir*.  Each file contains one
+    ``\\begin{figure*}`` block per task (probe) or wrap length (newline), using a
+    minipage grid with the legend on the right side.
     """
     if not camera_ready_dir.exists():
         typer.echo(f"Error: camera-ready-dir does not exist: {camera_ready_dir}", err=True)
@@ -544,30 +741,39 @@ def figures(
     legends_dir = output_dir / "legends"
     legends_dir.mkdir(parents=True, exist_ok=True)
 
-    all_groups = build_all_config_groups(color_info)
-
-    typer.echo(f"\nGenerating {len(all_groups)} legend(s) from config …")
-    legend_paths: dict[str, Path] = {}  # group.key → Path
-    for group in all_groups:
-        legend_filename = f"legend_{group.key}.png"
-        legend_path = legends_dir / legend_filename
+    all_config_groups = build_all_config_groups(color_info)
+    typer.echo(f"\nGenerating {len(all_config_groups)} legend(s) from config …")
+    legend_paths: dict[str, Path] = {}
+    for group in all_config_groups:
+        legend_path = legends_dir / f"legend_{group.key}.png"
         _render_group_legend(group, legend_path)
         if legend_path.exists():
             typer.echo(f"  Legend: {legend_path}")
             legend_paths[group.key] = legend_path
 
-    # ── Group PNG entries (splits pile-uncopyrighted by wrap length) ────────
+    # ── Group PNG entries ──────────────────────────────────────────────────────
     if not entries:
         typer.echo("No matching PNGs found.")
         raise typer.Exit(0)
 
-    typer.echo(f"\nFound {len(entries)} PNG(s) across "
-               f"{len({_canonical_task(e.task) for e in entries})} task(s).")
+    typer.echo(
+        f"\nFound {len(entries)} PNG(s) across "
+        f"{len({_canonical_task(e.task) for e in entries})} task(s)."
+    )
 
-    groups = infer_legend_groups(entries, color_info)
+    newline_wrap_lookup: dict | None = None
+    if results_json is not None and results_json.exists():
+        typer.echo(f"Loading newline wrap lookup from {results_json} …")
+        newline_wrap_lookup = load_newline_wrap_lookup(results_json)
+        typer.echo(f"  {len(newline_wrap_lookup)} expert→wrap entries loaded.")
+    elif results_json is not None:
+        typer.echo(f"  [warn] --results-json path not found: {results_json}", err=True)
+
+    groups = infer_legend_groups(entries, color_info, newline_wrap_lookup)
+    groups = _split_groups_by_experiment(groups)
     typer.echo(f"Grouped into {len(groups)} figure group(s).")
 
-    # Render per-wrap-length newline legends (not known until entries are scanned)
+    # ── Render per-wrap newline legends ────────────────────────────────────────
     for group in groups:
         if group.task == "pile-uncopyrighted":
             legend_path = legends_dir / f"legend_{group.key}.png"
@@ -576,16 +782,31 @@ def figures(
                 typer.echo(f"  Legend: {legend_path}")
                 legend_paths[group.key] = legend_path
 
-    # ── Generate .tex files ────────────────────────────────────────────────
+    # ── Partition groups by experiment_id ─────────────────────────────────────
+    by_exp: dict[str, dict[str, list[LegendGroup]]] = defaultdict(
+        lambda: {"probe": [], "newline": []}
+    )
     for group in groups:
-        typer.echo(f"\nGroup: {group.key}  ({len(group.entries)} PNG(s))")
-        tex_path = output_dir / f"figure_{group.key}.tex"
-        generate_latex_figure(
-            group=group,
-            camera_ready_dir=camera_ready_dir,
-            legend_path=legend_paths.get(group.key),
-            output_tex=tex_path,
-            cols=cols,
-        )
+        if not group.entries:
+            continue
+        exp_id = group.entries[0].experiment_id
+        slot = "newline" if group.task == "pile-uncopyrighted" else "probe"
+        by_exp[exp_id][slot].append(group)
+
+    # ── Generate .tex files ────────────────────────────────────────────────────
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for exp_id in sorted(by_exp):
+        probe_groups   = by_exp[exp_id]["probe"]
+        newline_groups = by_exp[exp_id]["newline"]
+
+        if probe_groups:
+            tex_path = output_dir / f"probe_{exp_id}.tex"
+            typer.echo(f"\nProbe ({exp_id}): {len(probe_groups)} group(s)")
+            generate_probe_tex(exp_id, probe_groups, legend_paths, camera_ready_dir, tex_path, cols)
+
+        if newline_groups:
+            tex_path = output_dir / f"newline_{exp_id}.tex"
+            typer.echo(f"\nNewline ({exp_id}): {len(newline_groups)} wrap(s)")
+            generate_newline_tex(exp_id, newline_groups, legend_paths, camera_ready_dir, tex_path, cols)
 
     typer.echo(f"\nDone. Output written to {output_dir}")
