@@ -630,9 +630,7 @@ def _caption_text(
 def _render_multi_row(row: _Row) -> list[str]:
     """LaTeX lines for a multi-image row: subfigures + legend to the right."""
     n_imgs = len(row.units)
-    img_frac = 0.98 / (n_imgs + 0.4)
-    legend_max_h = f"{img_frac * 0.95:.2f}\\linewidth"
-    legend_max_w = f"{0.4 * img_frac:.2f}\\linewidth"
+    img_frac = 0.98 / n_imgs
 
     lines: list[str] = []
     for i, unit in enumerate(row.units):
@@ -650,8 +648,8 @@ def _render_multi_row(row: _Row) -> list[str]:
         legend_rel = str(Path("legends") / row.legend_path.name)
         lines.append(r"\hfill")
         lines.append(
-            f"\\includegraphics[height={legend_max_h}, width={legend_max_w}, "
-            f"keepaspectratio]{{{legend_rel}}}"
+            f"\\includegraphics[height={img_frac:.2f}\\linewidth]"
+            f"{{{legend_rel}}}"
         )
     return lines
 
@@ -659,24 +657,22 @@ def _render_multi_row(row: _Row) -> list[str]:
 def _render_singles_row(row: _Row) -> list[str]:
     """LaTeX lines for a singles row: each image + its legend side by side."""
     n = len(row.units)
-    pair_width = 0.98 / n
-    img_frac_str = f"{0.70 * pair_width:.2f}\\linewidth"
-    legend_max_h = f"{0.70 * pair_width * 0.95:.2f}\\linewidth"
-    legend_max_w = f"{0.25 * pair_width:.2f}\\linewidth"
+    img_frac = 0.98 / n
 
     lines: list[str] = []
     for i, unit in enumerate(row.units):
         png_rel = str(Path("camera_ready") / unit.entry.path.name)
-        lines.append(f"\\begin{{subfigure}}[t]{{{img_frac_str}}}")
+        lines.append(f"\\begin{{subfigure}}[t]{{{img_frac:.2f}\\linewidth}}")
         lines.append(r"  \centering")
         lines.append(f"  \\includegraphics[width=\\linewidth]{{{png_rel}}}")
         lines.append(r"\end{subfigure}")
 
         if unit.legend_path is not None and unit.legend_path.exists():
             legend_rel = str(Path("legends") / unit.legend_path.name)
+            lines.append(r"\hfill")
             lines.append(
-                f"\\includegraphics[height={legend_max_h}, width={legend_max_w}, "
-                f"keepaspectratio]{{{legend_rel}}}"
+                f"\\includegraphics[height={img_frac:.2f}\\linewidth]"
+                f"{{{legend_rel}}}"
             )
 
         if i < n - 1:

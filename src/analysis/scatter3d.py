@@ -801,6 +801,24 @@ def render_legend_png(
 
     output_path.write_bytes(img_bytes)
 
+    # Auto-crop: remove empty white space around the actual legend/colorbar.
+    # The Plotly figure includes a hidden 3D scene that wastes space.
+    try:
+        from PIL import Image, ImageChops
+        import io as _io
+
+        img = Image.open(_io.BytesIO(img_bytes))
+        if img.mode == "RGBA":
+            bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
+        else:
+            bg = Image.new("RGB", img.size, (255, 255, 255))
+        diff = ImageChops.difference(img, bg)
+        bbox = diff.getbbox()
+        if bbox:
+            img.crop(bbox).save(output_path)
+    except ImportError:
+        pass  # PIL not available; leave uncropped
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  TOP-LEVEL FUNCTION
