@@ -595,64 +595,92 @@ def _caption_text(
     labeled: list[tuple[str, PNGEntry]],
     newline_wrap: int | None = None,
 ) -> str:
-    """Build the main ``\\caption{...}`` text from (letter, entry) pairs."""
+    """Build the main ``\\caption{...}`` text with task-grouped descriptions."""
     if newline_wrap is not None:
         prefix = f"Newline Position ({newline_wrap} chars) --- {model_disp}."
     else:
         prefix = f"{model_disp}."
-    parts = " ".join(f"({letter}) {_entry_description(e)}" for letter, e in labeled)
-    return f"{prefix} {parts}"
+
+    # Group consecutive entries by task for bold task headers
+    task_groups: list[tuple[str, list[tuple[str, PNGEntry]]]] = []
+    current_task: str | None = None
+    current_items: list[tuple[str, PNGEntry]] = []
+    for letter, entry in labeled:
+        task = _canonical_task(entry.task)
+        if task != current_task:
+            if current_items:
+                task_groups.append((current_task, current_items))
+            current_task = task
+            current_items = []
+        current_items.append((letter, entry))
+    if current_items:
+        task_groups.append((current_task, current_items))
+
+    parts: list[str] = []
+    for task, items in task_groups:
+        task_disp = _TASK_DISPLAY.get(task, task.replace("_", " ").title())
+        descriptions = " ".join(
+            f"({letter.lower()}) {_entry_description(e)}" for letter, e in items
+        )
+        parts.append(f"\\textbf{{{_esc_text(task_disp)}}}: {descriptions}")
+
+    return f"{prefix} {'  '.join(parts)}"
 
 
-def _render_multi_row(row: _Row, cols: int) -> list[str]:
-    """LaTeX lines for a multi-image row: image grid + legend on the right."""
+def _render_multi_row(row: _Row) -> list[str]:
+    """LaTeX lines for a multi-image row: subfigures + legend to the right."""
+    n_imgs = len(row.units)
+    img_frac = 0.98 / (n_imgs + 0.4)
+    legend_max_h = f"{img_frac * 0.95:.2f}\\linewidth"
+    legend_max_w = f"{0.4 * img_frac:.2f}\\linewidth"
+
     lines: list[str] = []
-    cell_frac = 0.98 / cols
-    # Content minipage: images
-    content_frac = 0.82 if row.legend_path else 0.98
-    legend_frac = 0.16
-    lines.append(f"\\begin{{minipage}}[c]{{{content_frac:.2f}\\linewidth}}")
-    lines.append(r"  \centering")
     for i, unit in enumerate(row.units):
         png_rel = str(Path("camera_ready") / unit.entry.path.name)
-        width_spec = f"{cell_frac:.2f}\\linewidth"
-        lines.append(f"  \\begin{{subfigure}}[t]{{{width_spec}}}")
-        lines.append(r"    \centering")
-        lines.append(f"    \\includegraphics[width=\\linewidth]{{{png_rel}}}")
-        lines.append(r"  \end{subfigure}")
-        if i < len(row.units) - 1:
-            lines[-1] += r"\hfill"
-    lines.append(r"\end{minipage}")
-    # Legend minipage
+        width_spec = f"{img_frac:.2f}\\linewidth"
+        lines.append(f"\\begin{{subfigure}}[t]{{{width_spec}}}")
+        lines.append(r"  \centering")
+        lines.append(f"  \\includegraphics[width=\\linewidth]{{{png_rel}}}")
+        end = r"\end{subfigure}"
+        if i < n_imgs - 1:
+            end += r"\hfill"
+        lines.append(end)
+
     if row.legend_path is not None and row.legend_path.exists():
         legend_rel = str(Path("legends") / row.legend_path.name)
         lines.append(r"\hfill")
-        lines.append(f"\\begin{{minipage}}[c]{{{legend_frac:.2f}\\linewidth}}")
-        lines.append(r"  \centering")
-        lines.append(f"  \\includegraphics[width=\\linewidth]{{{legend_rel}}}")
-        lines.append(r"\end{minipage}")
+        lines.append(
+            f"\\includegraphics[height={legend_max_h}, width={legend_max_w}, "
+            f"keepaspectratio]{{{legend_rel}}}"
+        )
     return lines
 
 
 def _render_singles_row(row: _Row) -> list[str]:
-    """LaTeX lines for a singles row: each image+legend stacked vertically."""
+    """LaTeX lines for a singles row: each image + its legend side by side."""
     n = len(row.units)
-    pair_frac = 0.98 / n
+    pair_width = 0.98 / n
+    img_frac_str = f"{0.70 * pair_width:.2f}\\linewidth"
+    legend_max_h = f"{0.70 * pair_width * 0.95:.2f}\\linewidth"
+    legend_max_w = f"{0.25 * pair_width:.2f}\\linewidth"
+
     lines: list[str] = []
     for i, unit in enumerate(row.units):
         png_rel = str(Path("camera_ready") / unit.entry.path.name)
-        width_spec = f"{pair_frac:.2f}\\linewidth"
-        lines.append(f"\\begin{{minipage}}[t]{{{width_spec}}}")
+        lines.append(f"\\begin{{subfigure}}[t]{{{img_frac_str}}}")
         lines.append(r"  \centering")
-        lines.append(f"  \\includegraphics[width=0.85\\linewidth]{{{png_rel}}}")
-        # Legend below the image
+        lines.append(f"  \\includegraphics[width=\\linewidth]{{{png_rel}}}")
+        lines.append(r"\end{subfigure}")
+
         if unit.legend_path is not None and unit.legend_path.exists():
             legend_rel = str(Path("legends") / unit.legend_path.name)
-            lines.append(r"  \\[2pt]")
-            lines.append(f"  \\includegraphics[width=0.7\\linewidth]{{{legend_rel}}}")
-        lines.append(r"\end{minipage}")
+            lines.append(
+                f"\\includegraphics[height={legend_max_h}, width={legend_max_w}, "
+                f"keepaspectratio]{{{legend_rel}}}"
+            )
+
         if i < n - 1:
-            lines[-1] += r"\hfill"
+            lines.append(r"\hfill")
     return lines
 
 
@@ -706,7 +734,7 @@ def generate_figure_tex(
     for row_idx, row in enumerate(rows):
         is_last_row = row_idx == len(rows) - 1
         if row.kind == "multi":
-            lines.extend(_render_multi_row(row, cols))
+            lines.extend(_render_multi_row(row))
         else:
             lines.extend(_render_singles_row(row))
         if not is_last_row:
