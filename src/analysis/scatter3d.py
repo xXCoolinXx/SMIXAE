@@ -758,9 +758,10 @@ def render_legend_png(
             fig, labels,
             colorscale_name=colorscale if isinstance(colorscale, str) else "Viridis",
             names=names_for_cb,
+            colorbar_len=0.95,
         )
-        # Colourbar needs right margin for the bar itself
-        right_margin = 200
+        # Portrait: narrow image with most space given to the colorbar right margin.
+        # The scene area is ~40px; colorbar + tick labels fill the 190px right margin.
         fig.update_layout(
             scene=dict(
                 xaxis=dict(visible=False),
@@ -769,14 +770,16 @@ def render_legend_png(
                 bgcolor="rgba(0,0,0,0)",
             ),
             showlegend=False,
-            margin=dict(l=0, r=right_margin, t=0, b=0),
-            paper_bgcolor="rgba(255,255,255,0)",
+            margin=dict(l=5, r=190, t=10, b=10),
+            paper_bgcolor="white",
         )
+        img_bytes = fig.to_image(format="png", width=240, height=520, scale=1)
     else:
         # Discrete legend — explicit per-label colour dicts or HSV auto-coloring.
-        # Stacks vertically (Plotly default) to match plot_3d_scatter.
+        # Stacks vertically as a portrait PNG sized to fit the label count.
         cmap = build_color_map(labels, colorscale)
         add_discrete_legend(fig, labels, cmap, names)
+        png_height = max(160, n * 26 + 60)
         fig.update_layout(
             scene=dict(
                 xaxis=dict(visible=False),
@@ -789,13 +792,13 @@ def render_legend_png(
                 x=0.5, xanchor="center",
                 y=0.5, yanchor="middle",
                 bgcolor="rgba(255,255,255,0)",
-                font=dict(size=13),
+                font=dict(size=14),
             ),
             margin=dict(l=0, r=0, t=0, b=0),
-            paper_bgcolor="rgba(255,255,255,0)",
+            paper_bgcolor="white",
         )
+        img_bytes = fig.to_image(format="png", width=320, height=png_height, scale=1)
 
-    img_bytes = fig.to_image(format="png", scale=2)
     output_path.write_bytes(img_bytes)
 
 

@@ -458,13 +458,28 @@ def _esc_text(s: str) -> str:
     return s.replace("_", r"\_").replace("&", r"\&").replace("%", r"\%")
 
 
-def _subcaption_cell(
+def _format_experiment_id(exp_id: str) -> str:
+    """Convert a snake_case experiment ID to a human-readable model name.
+
+    Examples::
+
+        'gemma_2_9b_l11' → 'Gemma 2 9B, Layer 11'
+        'gemma_2_2b_l12' → 'Gemma 2 2B, Layer 12'
+    """
+    m = re.match(r"gemma_(\d+)_(\d+)([bBkK])_l(\d+)$", exp_id)
+    if m:
+        gen, size, unit, layer = m.groups()
+        return f"Gemma {gen} {size}{unit.upper()}, Layer {layer}"
+    return exp_id.replace("_", " ").replace("-", " ").title()
+
+
+def _subfigure_cell(
     entry: PNGEntry,
     png_rel: str,
     cell_frac: float,
     is_paired_means: bool = False,
 ) -> str:
-    """Return one ``\\subcaptionbox{caption}[width]{\\includegraphics...}`` string.
+    """Return lines for one ``\\begin{subfigure}…\\end{subfigure}`` block.
 
     For a means entry paired with a scatter, the caption is shortened to
     ``E{id} (means)`` since the hypothesis label already appears on the scatter.
@@ -481,8 +496,11 @@ def _subcaption_cell(
         )
     width_spec = f"{cell_frac:.2f}\\linewidth"
     return (
-        f"  \\subcaptionbox{{{caption}}}[{width_spec}]{{%\n"
-        f"    \\includegraphics[width=\\linewidth]{{{png_rel}}}}}"
+        f"  \\begin{{subfigure}}[t]{{{width_spec}}}\n"
+        f"    \\centering\n"
+        f"    \\includegraphics[width=\\linewidth]{{{png_rel}}}\n"
+        f"    \\caption{{{caption}}}\n"
+        f"  \\end{{subfigure}}"
     )
 
 
@@ -521,7 +539,7 @@ def _figure_block(
     if not images:
         return []
 
-    model_disp = images[0][0].experiment_id.replace("_", "-")
+    model_disp = _format_experiment_id(images[0][0].experiment_id)
 
     # Caption
     if group.task == "pile-uncopyrighted":
@@ -541,6 +559,7 @@ def _figure_block(
 
     # ── Content minipage ───────────────────────────────────────────────────────
     lines.append(r"\begin{minipage}[c]{0.88\linewidth}")
+    lines.append(r"\centering")
 
     rows: list[list[tuple[PNGEntry, bool]]] = [
         images[i:i + cols] for i in range(0, len(images), cols)
@@ -550,12 +569,12 @@ def _figure_block(
         is_last_row = (row_idx == len(rows) - 1)
         for cell_idx, (entry, is_pm) in enumerate(row):
             png_rel = str(Path("camera_ready") / entry.path.name)
-            cell = _subcaption_cell(entry, png_rel, cell_frac, is_pm)
+            cell = _subfigure_cell(entry, png_rel, cell_frac, is_pm)
             is_last_in_row = (cell_idx == len(row) - 1)
             if not is_last_in_row:
-                cell += r"\hfill"
+                cell += "\n  \\hfill"
             elif not is_last_row:
-                cell += r"\\[4pt]"
+                cell += "\n  \\\\[4pt]"
             lines.append(cell)
 
     lines.append(r"\end{minipage}\hfill")
