@@ -88,13 +88,21 @@ Reads saved PNGs and produces a `.tex` file with `\includegraphics` layout.
 
 ### PNG filename convention
 
-Saved figures must follow:
+The actual delimiter is `__` (double underscore). The full format:
 
 ```
-{experiment_id}_{task}_{expert_id}_{hypothesis}_{score}.png
+{experiment_id}__{task}__{E}{expert_id}__{hyp_name}__{score_type}__{score}__{figure_type}.png
 ```
 
-The assembler parses this to group figures by task and hypothesis for layout purposes.
+Example: `gemma_2_9b_l11__weekdays__E1234__cyc_7d__r2__0.8541__scatter.png`
+
+`camera_ready.py` uses `_FILENAME_RE` (a compiled regex) to parse this. Files that don't match are **silently skipped** with a `[skip]` log line — check stderr if figures are missing.
+
+**Short-form filenames (no `hyp_name`/`score`) are not parseable.** These occur when a flat (non-regression) expert entry has no `expert_meta` populated. In `_build_flat_html` in `utils.py`, the save-button filename falls back to `{experiment_id}__{task}__E{expert_id}__{figure_type}.png`, which the regex does not match. To fix: pass an `expert_meta` dict with `hyp_name`, `hyp_score`, and `score_type` when calling `_make_plot_entry` for unlabeled/flat entries.
+
+**How `task` is determined:** `DatasetConfig.output_subdir` → `subdir` in `run_pipeline` → `dataset_title` string → JS `DATASET_TITLE` (lowercased, spaces → `_`) → embedded in the PNG filename → parsed by `camera_ready.py`. `_canonical_task()` strips the `_—_expert_analysis` suffix, so `"continuity_—_expert_analysis"` → canonical task `"continuity"`. This determines which `.tex` file a PNG is routed to.
+
+The assembler groups figures by canonical task and hypothesis for layout.
 
 ### Legend generation
 

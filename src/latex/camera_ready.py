@@ -90,7 +90,8 @@ _SCORE_LABEL: dict[str, str] = {
     "r2":       r"$R^2$",
     "acc":      "Acc.",
     "score":    "Score",
-    "per_gain": r"$\Delta$per",
+    "per_gain": r"$\Delta$_{per}",
+    "cont":     "Cont.",
 }
 
 
@@ -302,6 +303,22 @@ def infer_legend_groups(
                     color_scale="Viridis",
                     continuous_color=True,
                     labels=list(range(1, n + 1)),
+                ))
+            continue
+
+        # random-sample unlabeled pass: one group per experiment_id (no wrap, no labels)
+        if task == "continuity":
+            by_exp_r: dict[str, list[PNGEntry]] = defaultdict(list)
+            for e in task_entries:
+                by_exp_r[e.experiment_id].append(e)
+            for _exp_id_r, r_entries in sorted(by_exp_r.items()):
+                groups.append(LegendGroup(
+                    key="continuity",
+                    task="continuity",
+                    hyp_filter=None,
+                    entries=r_entries,
+                    color_scale="Viridis",
+                    continuous_color=True,
                 ))
             continue
 
@@ -636,9 +653,12 @@ _TASK_DISPLAY: dict[str, str] = {
     "colors":            "Colors",
     "emotions":          "Emotions",
     "pile-uncopyrighted": "Newline Position",
+    "continuity":        "Random Experts (Unlabeled)",
 }
 
 _HYP_DISPLAY: dict[str, str] = {
+    "random":          "Random Sample",
+    "continuity":      "Continuity",
     "cyc_7d":          "7-Day Ring",
     "weekday_weekend": "Weekday vs Weekend",
     "cyc_24h":         "24-Hour Ring",
@@ -1104,12 +1124,17 @@ def figures(
                 legend_paths[group.key] = legend_path
 
     # Partition by experiment_id
-    by_exp: dict[str, dict[str, list[LegendGroup]]] = defaultdict(lambda: {"probe": [], "newline": []})
+    by_exp: dict[str, dict[str, list[LegendGroup]]] = defaultdict(lambda: {"probe": [], "newline": [], "random": []})
     for group in groups:
         if not group.entries:
             continue
         exp_id = group.entries[0].experiment_id
-        slot = "newline" if group.task == "pile-uncopyrighted" else "probe"
+        if group.task == "pile-uncopyrighted":
+            slot = "newline"
+        elif group.task == "continuity":
+            slot = "random"
+        else:
+            slot = "probe"
         by_exp[exp_id][slot].append(group)
 
     # Sort probe tasks into desired order
@@ -1129,6 +1154,7 @@ def figures(
     for exp_id in sorted(by_exp):
         probe_groups = sort_probe(by_exp[exp_id]["probe"])
         newline_groups = sort_newline(by_exp[exp_id]["newline"])
+        random_groups = by_exp[exp_id]["random"]
 
         if probe_groups:
             tex_path = output_dir / f"probe_{exp_id}.tex"
@@ -1139,6 +1165,11 @@ def figures(
             tex_path = output_dir / f"newline_{exp_id}.tex"
             typer.echo(f"\nNewline ({exp_id}): {len(newline_groups)} wrap(s)")
             generate_figure_tex(exp_id, newline_groups, legend_paths, tex_path, cols, is_newline=True)
+
+        if random_groups:
+            tex_path = output_dir / f"random_{exp_id}.tex"
+            typer.echo(f"\nRandom sample ({exp_id}): {len(random_groups)} group(s)")
+            generate_figure_tex(exp_id, random_groups, legend_paths, tex_path, cols, is_newline=False)
 
     typer.echo(f"\nDone. Output written to {output_dir}")
 

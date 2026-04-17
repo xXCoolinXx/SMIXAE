@@ -385,7 +385,16 @@ def run_pipeline(
                 tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} (random, cont={score_val:.3f})"
             else:
                 tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"
-            expert_entries.append(_make_plot_entry(expert, tab_label))
+            # For unlabeled entries, include expert_meta so the browser save button generates
+            # a full parseable filename ({exp_id}__{task}__E{id}__random__cont__{score}__scatter.png).
+            flat_meta = {
+                "expert_id": expert.expert_id,
+                "hyp_name": "random" if use_random_sample else "continuity",
+                "hyp_score": score_val if score_val != float("-inf") else None,
+                "score_type": "cont",
+                "n_points": expert.expert_activations.shape[0],
+            } if not batch.is_labelled else None
+            expert_entries.append(_make_plot_entry(expert, tab_label, flat_meta))
 
     html_str = build_dataset_html(
         expert_entries,

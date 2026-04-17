@@ -141,10 +141,15 @@ Shared infrastructure used by all analysis scripts:
 The primary analysis script. Loads a trained SMIXAE checkpoint and a labeled dataset, then:
 1. Collects LLM activations at the hook point
 2. Runs SMIXAE encoding, filters experts by activity
-3. Scores experts by Fisher discriminant ratio or manifold continuity
+3. Scores experts by Fisher (labelled) or KNN continuity (unlabelled); for `sort_by="auto"` + unlabelled, randomly samples experts with >75% of `max_points` active tokens instead of ranking by continuity
 4. Plots top-N experts as interactive 3D Plotly scatters in an HTML file
 
 Exposed via CLI as the `probe` subcommand group.
+
+**Internal structure notes:**
+- `_make_plot_entry` is a **nested function** inside `run_pipeline`, so it has closure access to `use_random_sample`, `batch`, `run_cfg`, `cfg`, etc. — these do not need to be passed as arguments.
+- The `all-datasets` command's unlabeled pass uses `base_run_cfg` directly (inheriting `sort_by="auto"`). It previously hardcoded `sort_by="continuity"`, which bypassed random sampling — do not reintroduce that override.
+- For unlabeled flat entries (no regression hypotheses), you must pass an `expert_meta` dict with `hyp_name`, `hyp_score`, and `score_type` to `_make_plot_entry` so the browser save button generates a filename parseable by `camera_ready.py`. Without it, the filename is short-form and silently skipped. See `docs/LATEX.md` for the full filename convention.
 
 ### `src/analysis/generate_probing_data.py`
 
