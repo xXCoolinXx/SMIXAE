@@ -2,7 +2,11 @@
 
 ## Activation Patching
 
-Steering in SMIXAE works by **full-sequence activation patching** at the SAE level: at every token position where the target expert fires, replace its bottleneck contribution with the decoded mean of a target class.
+Steering in SMIXAE works by **full-sequence activation patching** at the SAE level: at every token position where the target expert fires, replace its bottleneck contribution with the decoded mean of a target class. 
+
+It is currently a work in progress - we suspect that the correct intervention layer for many of the manifolds we found is different from the layers we trained on.
+
+We also expect that one may neeed to steer along multiple manifolds due to the many ways the model can interact with a single concept. This is future work. But here is a start if you have some better ideas than what we did.
 
 For a target expert `e` and target class `c`:
 
