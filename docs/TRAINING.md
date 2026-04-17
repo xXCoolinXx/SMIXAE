@@ -92,7 +92,7 @@ Key metrics to watch during training:
 
 ---
 
-We caution that `l2_loss` and `FVE` are not especially meaningful for interpretability. They should be considered vibe checks to make sure the model didn't collapse, rather than indications that your run performed "better". You should essentially treat `l2_loss` as a flow that provides pressure on the latent representation to be meaningful - you shouldn't add any additional flows from e.g. the residual to "increase performance" - this will wreck your SAE/SMIXAE and I will read your paper and laugh at you.
+We caution that `l2_loss` and `FVE` are not especially meaningful for interpretability. They should be considered vibe checks to make sure the model didn't collapse, rather than indications that your run performed "better". You should essentially treat `l2_loss` as a flow that provides pressure on the latent representation to be meaningful. You shouldn't add any additional flows from e.g. the residual to "increase performance" - this will wreck your SAE/SMIXAE and I will read your paper and laugh at you.
 
 ## Resuming Training
 
