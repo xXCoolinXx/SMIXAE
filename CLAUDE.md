@@ -388,6 +388,5 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 ## Known TODOs
 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
-- [ ] **Expert ranking switch**: Replace continuity-ranked expert plotting with a random sample of experts that meet an activity threshold (minimum active point count). Avoids continuity bias in which experts get visualized.
 - [ ] **LaTeX table fixes**: Color bar in regenerated figures is too small and unreadable. Need a shared colorbar utility used by both `scatter3d.py` and `camera_ready.py`. Generated expert descriptions also need to be more prosaic.
 - [ ] **SAEBench evaluation**: Test SMIXAE on SAEBench core, benchmarked against comparable Gemma Scope models. Requires monkey-patching SAEBench (upstream is not well-structured for custom architectures).

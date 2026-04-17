@@ -1131,13 +1131,16 @@ class Expert:
         k_neighbors: int = 10,
         context_window: int = 10,
         device: str = "cuda",
+        scatter_size: float = 1,
+        unlabeled_color: str = "continuity",
     ) -> Figure:
         """Generate an interactive 3D scatter of this expert's bottleneck activations.
 
         Lazily evaluates manifold continuity if it hasn't been computed yet.
         For labelled data, colours points by class (using ``cfg.color_map`` for
         1:1 mappings or ``cfg.effective_color_scale`` for continuous/ordinal data).
-        For unlabelled data, colours points by per-token continuity score.
+        For unlabelled data, colours points by continuity score or Euclidean distance
+        from the origin, controlled by ``unlabeled_color``.
 
         Args:
             str_tokens: Nested list of string tokens for building hover context windows.
@@ -1146,6 +1149,8 @@ class Expert:
             k_neighbors: Neighbourhood size for lazy continuity evaluation.
             context_window: Tokens on each side of the target in hover text.
             device: Device for continuity computation.
+            scatter_size: Marker size for scatter points (default 1 for labeled, 5 for unlabeled).
+            unlabeled_color: ``"continuity"`` (default) or ``"distance"`` (Euclidean from origin).
 
         Returns:
             A Plotly :class:`Figure` with a single 3D scatter trace.
@@ -1177,17 +1182,23 @@ class Expert:
             # Inject per-token context windows into the scatter trace hover
             fig.data[0].update(hovertext=contexts, hoverinfo="text")
         else:
-            # Unlabeled: color by per-point continuity score via float-label path
-            cont_arr = (
-                self.local_continuity_scores.numpy()
-                if self.local_continuity_scores is not None
-                else np.zeros(pts.shape[0], dtype=np.float32)
-            )
+            # Unlabeled: color by continuity score or Euclidean distance from origin
+            if unlabeled_color == "distance":
+                color_arr = np.linalg.norm(pts, axis=1).astype(np.float32)
+                colorbar_label = "Distance from origin"
+            else:
+                color_arr = (
+                    self.local_continuity_scores.numpy()
+                    if self.local_continuity_scores is not None
+                    else np.zeros(pts.shape[0], dtype=np.float32)
+                )
+                colorbar_label = "Continuity"
             fig = plot_3d_scatter(
-                pts, cont_arr.astype(np.float32),
+                pts, color_arr,
                 colorscale="Viridis",
-                colorbar_title="Continuity",
+                colorbar_title=colorbar_label,
                 scatter_alpha=1.0,
+                scatter_size=scatter_size,
                 title=self._make_title(),
             )
             fig.data[0].update(hovertext=contexts, hoverinfo="text")

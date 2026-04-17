@@ -3,6 +3,7 @@
 import dataclasses
 import json
 import os
+import random
 from pathlib import Path
 from typing import Any
 
@@ -71,6 +72,7 @@ class ProbeRunConfig:
     max_points: int = 1000
     n_interesting_experts_to_plot: int = 50
     context_window_display: int = 10
+    random_seed: int = 42
 
 
 # ======================================================================
@@ -269,7 +271,7 @@ def run_pipeline(
         for expert in tqdm(experts):
             expert.evaluate_manifold(k_neighbors=run_cfg.k_neighbors, device=run_cfg.device)
 
-    # ── 4. Sort (Stage 1: Fisher / continuity) ────────────────────────
+    # ── 4. Sort / Select (Stage 1: Fisher / continuity / random) ─────
     effective_sort_by = run_cfg.sort_by
     if run_cfg.sort_by == "auto":
         effective_sort_by = (
@@ -277,12 +279,27 @@ def run_pipeline(
             if batch.is_labelled else "continuity"
         )
 
-    print(f"Sorting by {effective_sort_by} ({'ascending' if run_cfg.sort_ascending else 'descending'})…")
-    experts.sort(key=lambda e: e.sort_key(effective_sort_by), reverse=not run_cfg.sort_ascending)
+    # For unlabeled data in auto mode, randomly sample rather than ranking by
+    # continuity so the visualized experts are representative, not biased toward
+    # geometrically "smooth" features.  Continuity is still computed above and
+    # stored in each expert for reference.
+    use_random_sample = not batch.is_labelled and run_cfg.sort_by == "auto"
+
+    if use_random_sample:
+        effective_max_points = run_cfg.max_points or 1000
+        min_pts = int(0.75 * effective_max_points)
+        candidates = [e for e in experts if e.expert_activations.shape[0] > min_pts]
+        print(f"Random sampling: {len(candidates)} eligible experts with >{min_pts} points (seed={run_cfg.random_seed})…")
+        rng = random.Random(run_cfg.random_seed)
+        n_to_plot = min(run_cfg.n_interesting_experts_to_plot, len(candidates))
+        top_experts = rng.sample(candidates, n_to_plot)
+    else:
+        print(f"Sorting by {effective_sort_by} ({'ascending' if run_cfg.sort_ascending else 'descending'})…")
+        experts.sort(key=lambda e: e.sort_key(effective_sort_by), reverse=not run_cfg.sort_ascending)
+        n_to_plot = min(run_cfg.n_interesting_experts_to_plot, len(experts))
+        top_experts = experts[:n_to_plot]
 
     # ── 4b. Regression probing on top-N experts (Stage 2) ────────────
-    n_to_plot = min(run_cfg.n_interesting_experts_to_plot, len(experts))
-    top_experts = experts[:n_to_plot]
 
     # Attach column indices to each hypothesis before running
     all_target_cols = _collect_target_cols(cfg)
@@ -316,6 +333,8 @@ def run_pipeline(
             k_neighbors=run_cfg.k_neighbors,
             context_window=run_cfg.context_window_display,
             device=run_cfg.device,
+            scatter_size=5 if not batch.is_labelled else 1,
+            unlabeled_color="distance" if use_random_sample else "continuity",
         )
         m_fig = expert.get_mean_plot(cfg=cfg, label_names=batch.label_names, hypothesis_name=hypothesis_name)
         entry: tuple = (tab_label, s_fig, m_fig, expert.regression_scores)
@@ -358,11 +377,14 @@ def run_pipeline(
                 hyp_entries.append(_make_plot_entry(expert, btn_label, expert_meta, hypothesis_name=name))
             per_hypothesis_entries[name] = (desc, hyp_entries)
     else:
-        # No regression — flat tab strip sorted by Fisher/continuity
+        # No regression — flat tab strip sorted by Fisher/continuity (or random sample)
         for i, expert in enumerate(top_experts):
             score_val = expert.sort_key(effective_sort_by)
             l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
-            tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"
+            if use_random_sample:
+                tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} (random, cont={score_val:.3f})"
+            else:
+                tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"
             expert_entries.append(_make_plot_entry(expert, tab_label))
 
     html_str = build_dataset_html(
@@ -451,6 +473,7 @@ def single(
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold to consider an expert active"),
     min_active_fraction: float = typer.Option(0.10, help="Minimum fraction of tokens an expert must fire on (0–1, e.g. 0.10 = 10%)"),
     max_points: int = typer.Option(1000, help="Max active tokens per expert (0 = no cap)"),
+    random_seed: int = typer.Option(42, help="Random seed for expert sampling in unlabeled auto mode"),
     adjusted_fisher: bool = typer.Option(
         False,
         help="Sort by Fisher × (n_classes_present / n_classes) to penalise low class coverage",
@@ -512,6 +535,7 @@ def single(
         max_points=max_points,
         n_interesting_experts_to_plot=n_interesting_experts_to_plot,
         context_window_display=context_window_display,
+        random_seed=random_seed,
     )
 
     run_pipeline(
@@ -560,6 +584,7 @@ def all_datasets(
     active_threshold: float = typer.Option(1e-5, help="L2 norm threshold to consider an expert active"),
     min_active_fraction: float = typer.Option(0.10, help="Minimum fraction of tokens an expert must fire on (0–1, e.g. 0.10 = 10%)"),
     max_points: int = typer.Option(1000, help="Max active tokens per expert (0 = no cap)"),
+    random_seed: int = typer.Option(42, help="Random seed for expert sampling in unlabeled auto mode"),
     adjusted_fisher: bool = typer.Option(
         False,
         help="Sort by Fisher × (n_classes_present / n_classes) to penalise low class coverage",
@@ -636,6 +661,7 @@ def all_datasets(
         max_points=max_points,
         n_interesting_experts_to_plot=n_interesting_experts_to_plot,
         context_window_display=context_window_display,
+        random_seed=random_seed,
     )
 
     for cfg in dataset_cfgs:
@@ -657,9 +683,9 @@ def all_datasets(
             model_name_for_json=base_model_name,
         )
 
-    # Unlabelled continuity pass
+    # Unlabelled pass (random sample by default; sort_by="continuity" for ranked mode)
     print(f"\n{'=' * 60}")
-    print(f"Continuity pass: streaming from {continuity_dataset}")
+    print(f"Unlabelled pass: streaming from {continuity_dataset}")
     continuity_cfg = DatasetConfig(
         dataframe_path="",
         text_column="text",
@@ -671,7 +697,7 @@ def all_datasets(
         tokenizer=tokenizer,
         sae=sae,
         cfg=continuity_cfg,
-        run_cfg=dataclasses.replace(base_run_cfg, sort_by="continuity"),
+        run_cfg=base_run_cfg,
         final_output_dir=final_output_dir,
         dataset_name=continuity_dataset,
         results_json_path=results_json_path,

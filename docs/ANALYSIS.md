@@ -54,9 +54,22 @@ where `S_B` is the between-class scatter matrix and `S_W` is the within-class sc
 
 `Expert.evaluate_manifold()` finds k-nearest neighbors of each token in **bottleneck space** (Euclidean distance), then computes the average cosine similarity between those neighbors' **LLM residual stream activations**. It is a bridging metric: bottleneck proximity → LLM-space coherence. It does not measure continuity within the bottleneck itself.
 
-Used for unsupervised expert discovery. In practice it tends to surface linear directions rather than genuinely nonlinear manifold structure.
+In practice it tends to surface linear directions rather than genuinely nonlinear manifold structure.
 
 `sort_key("continuity")` ranks by this score.
+
+### Unlabeled Expert Selection (Random Sampling)
+
+For unlabeled data with `sort_by="auto"` (the default), the pipeline **randomly samples** experts rather than ranking by continuity. This avoids the continuity bias that would otherwise prefer geometrically smooth features over irregular but meaningful ones.
+
+Selection criteria:
+- Expert must have fired on more than **75% of `max_points`** tokens (default threshold: 750 of 1000) — ensures enough data to see geometry.
+- Up to `n_interesting_experts_to_plot` experts are drawn without replacement using `random.Random(random_seed)` (default seed: 42).
+- KNN continuity is **still computed** for all experts and shown in tab labels for reference.
+
+To revert to the old continuity-ranked selection pass `--sort-by continuity` explicitly.
+
+**Visualization**: unlabeled scatter plots use `scatter_size=5` (larger than the labeled default of 1) so individual points are visible. Points are colored by **Euclidean distance from the origin** (Viridis) in random mode, or by continuity score when explicitly ranking by continuity.
 
 ### Expert Regression Probing
 
