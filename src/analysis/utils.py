@@ -806,7 +806,9 @@ class Expert:
         self.local_continuity_scores: torch.Tensor | None = None
         self.fisher_score: float | None = None
         self.regression_scores: dict[str, float] = {}
+        self.regression_scores_std: dict[str, float] = {}
         self.best_regression_score: float | None = None
+        self.best_regression_score_std: float | None = None
         self.best_regression_name: str | None = None
 
     # ── accessors ─────────────────────────────────────────────────────
@@ -1007,7 +1009,7 @@ class Expert:
             n_splits = max(2, min(5, int(counts.min())))
             return StratifiedKFold(n_splits=n_splits)
 
-        def _fit_one(hyp: dict) -> tuple[str, float]:
+        def _fit_one(hyp: dict) -> tuple[str, float, float]:
             name = hyp["name"]
             idxs: list[int] = hyp["target_indices"]
             reg_type: str = hyp["regression_type"]
@@ -1022,25 +1024,25 @@ class Expert:
                     pipe = Pipeline([("sc", StandardScaler()), ("reg", estimator)])
                     scorer = make_scorer(r2_score, multioutput="uniform_average")
                     cv_s = cross_val_score(pipe, X, Y, cv=KFold(n_splits=5), scoring=scorer)
-                    return name, float(np.mean(cv_s))
+                    return name, float(np.mean(cv_s)), float(np.std(cv_s))
 
                 elif reg_type == "logistic":
                     y_int = Y.astype(int)
                     cv = _classification_cv(y_int)
                     if cv is None:
-                        return name, float("nan")
+                        return name, float("nan"), float("nan")
                     pipe = Pipeline([
                         ("sc", StandardScaler()),
                         ("clf", LogisticRegression(max_iter=1000, class_weight="balanced")),
                     ])
                     cv_s = cross_val_score(pipe, X, y_int, cv=cv, scoring="balanced_accuracy")
-                    return name, float(np.mean(cv_s))
+                    return name, float(np.mean(cv_s)), float(np.std(cv_s))
 
                 elif reg_type == "multinomial":
                     y_int = Y.astype(int)
                     cv = _classification_cv(y_int)
                     if cv is None:
-                        return name, float("nan")
+                        return name, float("nan"), float("nan")
                     # solver='lbfgs' handles multi-class natively; multi_class param
                     # was removed in sklearn 1.7.
                     pipe = Pipeline([
@@ -1048,24 +1050,27 @@ class Expert:
                         ("clf", LogisticRegression(solver="lbfgs", max_iter=1000)),
                     ])
                     cv_s = cross_val_score(pipe, X, y_int, cv=cv, scoring="f1_macro")
-                    return name, float(np.mean(cv_s))
+                    return name, float(np.mean(cv_s)), float(np.std(cv_s))
 
                 else:
-                    return name, float("nan")
+                    return name, float("nan"), float("nan")
 
             except Exception:
-                return name, float("nan")
+                return name, float("nan"), float("nan")
 
         # Run hypotheses sequentially; sklearn's cross_val_score already
         # parallelises folds internally, so no additional nesting is needed.
-        results: list[tuple[str, float]] = [_fit_one(hyp) for hyp in hypotheses]
+        results: list[tuple[str, float, float]] = [_fit_one(hyp) for hyp in hypotheses]
 
-        scores: dict[str, float] = dict(results)  # type: ignore[arg-type]
-        self.regression_scores = scores
+        scores:     dict[str, float] = {name: mean for name, mean, _   in results}
+        scores_std: dict[str, float] = {name: std  for name, _,    std in results}
+        self.regression_scores     = scores
+        self.regression_scores_std = scores_std
         valid = {k: v for k, v in scores.items() if np.isfinite(v)}
         if valid:
-            self.best_regression_name = max(valid, key=valid.__getitem__)
-            self.best_regression_score = valid[self.best_regression_name]
+            self.best_regression_name      = max(valid, key=valid.__getitem__)
+            self.best_regression_score     = valid[self.best_regression_name]
+            self.best_regression_score_std = scores_std.get(self.best_regression_name)
         return scores
 
     # ── context windows ───────────────────────────────────────────────

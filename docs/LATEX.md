@@ -37,8 +37,8 @@ smixae latex save-server [--output-dir PATH] [--port INT] [--results-dir PATH]
 # 2. Assemble camera-ready figures
 smixae latex figures [--input-dir PATH] [--output PATH] [OPTIONS]
 
-# 3. Generate tables
-smixae latex tables [--results-json PATH] [--output PATH]
+# 3. Generate tables (writes 4 .tex files to --output-dir)
+smixae latex tables [--output-dir results/]
 ```
 
 Run `smixae latex <subcommand> --help` for the full flag reference.
@@ -117,12 +117,16 @@ Required LaTeX packages: `graphicx`, `booktabs`, `multirow`, `caption`.
 
 ## `src/latex/tables.py` — LaTeX Table Generation
 
-Generates two table types from `results.json`:
+Generates four table files from `results.json` into `--output-dir` (default `results/`):
 
-| Table | Contents |
-|-------|----------|
-| **Probing table** | Models × Tasks × Hypotheses, showing top-1 and top-5 expert scores |
-| **Newline table** | Gemma 2 9B periodic gain metrics broken down by line length bucket |
+| File | Contents |
+|------|----------|
+| `table_probing.tex` | Models × Tasks × Hypotheses, top-1 and top-5μ scores with `$\pm$` CV std |
+| `table_newline.tex` | Gemma 2 9B periodic gain summary broken down by line length |
+| `table_probing_appendix.tex` | Per-model detail: all 10 experts per hypothesis with score `$\pm$` std |
+| `table_newline_appendix.tex` | Per-model detail: all 10 experts per line length with periodic gain |
+
+The `$\pm$` values in the probing tables are cross-validation standard deviations from `Expert.evaluate_regression()`. The top-5μ `$\pm$` is the mean of individual expert CV stds across the top-5. See [docs/ANALYSIS.md — results.json Schema](ANALYSIS.md) for the underlying data format.
 
 Required LaTeX packages: `booktabs`, `multirow`.
 

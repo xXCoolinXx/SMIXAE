@@ -69,13 +69,24 @@ Used for unsupervised expert discovery. In practice it tends to surface linear d
 | `logistic` | Binary classification | Balanced accuracy |
 | `multinomial` | Multi-class classification | F1-macro |
 
-Classification modes use `StratifiedKFold` cross-validation. After evaluation, `Expert.best_regression_name` and `Expert.best_regression_score` hold the top-scoring hypothesis.
+Classification modes use `StratifiedKFold` cross-validation. After evaluation:
+- `Expert.best_regression_name` / `best_regression_score` — top-scoring hypothesis name and mean CV score
+- `Expert.regression_scores` — `{hypothesis_name: mean_cv_score}` for all hypotheses
+- `Expert.regression_scores_std` — `{hypothesis_name: cv_std}` — standard deviation across folds
+- `Expert.best_regression_score_std` — CV std for the best-scoring hypothesis
 
 `sort_key("regression")` ranks by `best_regression_score`. All four sort modes: `"fisher"`, `"adjusted_fisher"`, `"continuity"`, `"regression"`.
 
 ### Newline Metrics
 
-See the table in [CLAUDE.md — Analysis Metrics](../CLAUDE.md) for definitions of `decode_r2`, `encode_linear_r2`, `encode_periodic_r2`, and `periodic_gain`.
+Produced by `anthropic_newline.py`. Each metric is computed over the expert's bottleneck activations against the chars-since-newline target.
+
+| Metric | Meaning |
+|--------|---------|
+| `decode_r2` | R² of a linear regression predicting chars-since-newline from the **decoded** residual stream contribution of the expert. Measures how linearly decodable the position signal is from the full output. |
+| `encode_linear_r2` | R² of a linear regression on the **bottleneck** activations directly. Measures raw linear structure in 3-D. |
+| `encode_periodic_r2` | R² of a Fourier regression (sin + cos) on the bottleneck. Measures periodic / ring structure. |
+| `periodic_gain` | `encode_periodic_r2 − encode_linear_r2`. Positive = ring or spiral geometry; negative = linear fit was better. **Most useful metric.** |
 
 **Interpretation guide**:
 - `encode_periodic_r2 > 0.5` and `periodic_gain > 0.1`: strong ring or spiral structure for newline distance.
@@ -137,6 +148,83 @@ The 3-D scatter is the raw bottleneck output — coordinates are exactly the 3 b
 | `max_points` | `1000` | Randomly downsample experts exceeding this point count (0 = no cap) |
 
 Pass a `ExpertFilterConfig` instance to `get_sae_activations()` to override defaults.
+
+---
+
+## Dataset Config Schema (`datasets/probing/dataset_config.json`)
+
+Each entry maps a dataset stem to a config dict controlling how `categorize_all.py` loads and visualizes it.
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `dataframe_path` | `str \| null` | Path to the CSV file (relative to repo root) |
+| `dataset_name` | `str \| null` | HuggingFace dataset name for streaming (mutually exclusive with `dataframe_path`) |
+| `label_column` | `str \| null` | Column name for class labels (default `"Label"`) |
+| `color_scale` | `str \| null` | Plotly colorscale name (e.g. `"HSV"`, `"Plasma"`); `null` for auto |
+| `color_map` | `dict \| null` | Explicit `{label: color}` map overriding `color_scale` |
+| `hypothesis_color_overrides` | `dict \| null` | Per-hypothesis `{hypothesis_name: {label: color}}` color maps |
+| `n_input_samples` | `int \| null` | Number of sentences to sample when collecting activations |
+| `max_points` | `int \| null` | Maximum scatter points per expert in the HTML output (0 = no cap) |
+| `show_labels` | `bool` | Whether to render class-name annotations on mean spheres |
+| `continuous_color` | `bool` | If `true`, uses continuous colorbar mode instead of discrete legend |
+| `regression_hypotheses` | `list[dict] \| null` | List of regression hypothesis specs for `Expert.evaluate_regression()` |
+| `bucket_column` | `str \| null` | Continuous column to discretise into Fisher-scoring bins |
+| `n_buckets` | `int` | Number of equal-width bins for `bucket_column` (default 10) |
+| `output_subdir` | `str \| null` | Override output sub-directory name; defaults to stem of `dataframe_path` |
+
+---
+
+## `results.json` Schema
+
+Written by `update_results_json()` (`src/analysis/utils.py`) after each probe or newline run. Consumed by `smixae latex tables`. Structure:
+
+```json
+{
+  "<run_name>": {
+    "model_name": "google/gemma-2-9b",
+    "hook_name":  "model.layers.11",
+    "probe": {
+      "<dataset_stem>": {
+        "fisher": {
+          "sort_by": "fisher|adjusted_fisher|continuity|regression",
+          "top10_experts": [{"rank": 1, "expert_id": 123, "score": 0.845}],
+          "top5_mean": 0.812,
+          "top10_mean": 0.761
+        },
+        "hypotheses": {
+          "<hypothesis_name>": {
+            "description": "...",
+            "regression_type": "linear|ridge|logistic|multinomial",
+            "top10_experts": [
+              {"rank": 1, "expert_id": 456, "score": 0.924, "score_std": 0.021}
+            ],
+            "top5_mean": 0.891,
+            "top5_mean_std": 0.018,
+            "top10_mean": 0.834
+          }
+        }
+      }
+    },
+    "newline": {
+      "newline_80": {
+        "top1_expert_id": 789,
+        "top1_periodic_gain": 0.312,
+        "top5_mean_periodic_gain": 0.287,
+        "top10_mean_periodic_gain": 0.241,
+        "top10_experts": [{"rank": 1, "expert_id": 789, "periodic_gain": 0.312}]
+      },
+      "newline_150": {"...": "same shape"}
+    }
+  }
+}
+```
+
+**Notes**:
+- `score_std` per expert is the standard deviation of CV fold scores from `Expert.evaluate_regression()`.
+- `top5_mean_std` is the mean of individual expert `score_std` values across the top-5 (not the std of the 5 mean scores).
+- Newline entries have no std — periodic gain comes from a single regression fit, not CV.
+
+---
 
 ### Adding a New Scoring Metric
 

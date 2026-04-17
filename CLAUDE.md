@@ -189,64 +189,9 @@ A SMIXAE variant that replaces bottleneck-norm routing with cosine-similarity ro
 
 ## Analysis Metrics
 
-### Fisher Discriminant Ratio
+Four scoring metrics: **Fisher** (class separability in bottleneck space), **adjusted Fisher** (penalises experts active on only a subset of classes), **KNN continuity** (bottleneck proximity → LLM-space coherence, tends to surface linear directions), and **regression probing** (`Expert.evaluate_regression()`, CV mean ± std, modes: linear/ridge/logistic/multinomial). Newline-distance metrics (`decode_r2`, `encode_linear_r2`, `encode_periodic_r2`, `periodic_gain`) are produced by `anthropic_newline.py`. `sort_key()` accepts `"fisher"`, `"adjusted_fisher"`, `"continuity"`, or `"regression"`.
 
-Measures class separability in the expert's 3-D bottleneck space. Computed as the ratio of between-class variance to within-class variance across the bottleneck dimensions. Higher is better, though this can be from noise.
-
-The `adjusted_fisher_score` property rescales by the fraction of dataset classes actually present in the active samples, preventing experts that only see a subset of classes from appearing artificially strong.
-
-This is useful when the exact regression target is unknown.
-
-### KNN Continuity
-
-Finds k-nearest neighbors in **bottleneck space** (Euclidean distance), then measures the average cosine similarity between the corresponding **LLM residual stream activations** of those neighbors. It is a bridging metric — bottleneck proximity → LLM-space coherence — not a measure of continuity within the bottleneck itself. Used for unsupervised discovery; in practice tends to surface linear directions.
-
-### Expert Regression Probing
-
-`Expert.evaluate_regression()` runs supervised regression or classification on the bottleneck activations using hypotheses defined in `DatasetConfig.regression_hypotheses`. Supported modes:
-
-| Mode | Task | Score |
-|------|------|-------|
-| `linear` | Linear regression | R² |
-| `ridge` | Ridge regression | R² |
-| `logistic` | Binary classification | Balanced accuracy |
-| `multinomial` | Multi-class classification | F1-macro |
-
-Classification modes use `StratifiedKFold` cross-validation. Results are stored as `best_regression_name` and `best_regression_score` on the `Expert` object.
-
-`sort_key()` accepts `"fisher"`, `"adjusted_fisher"`, `"continuity"`, or `"regression"` as the sort criterion.
-
-### Newline Metrics (from `anthropic_newline.py`)
-
-| Metric | Meaning |
-|--------|---------|
-| `decode_r2` | R² of a linear regression predicting chars-since-newline from the **decoded** residual stream contribution of the expert. Measures how linearly decodable the position signal is from the full output. |
-| `encode_linear_r2` | R² of a linear regression on the **bottleneck** activations directly. Measures raw linear structure in 3-D. |
-| `encode_periodic_r2` | R² of a Fourier regression (sin + cos) on the bottleneck. Measures periodic / ring structure. |
-| `periodic_gain` | `encode_periodic_r2 − encode_linear_r2`. Positive gain = ring or spiral geometry; negative = the linear fit was better. **This is the most useful metric** |
-
----
-
-## Dataset Config Schema (`datasets/probing/dataset_config.json`)
-
-Each entry in the config maps a dataset name to a dict with the following fields:
-
-| Field | Type | Meaning |
-|-------|------|---------|
-| `dataframe_path` | `str \| null` | Path to the CSV file (relative to repo root) |
-| `dataset_name` | `str \| null` | HuggingFace dataset name for streaming (mutually exclusive with `dataframe_path`) |
-| `label_column` | `str \| null` | Column name for class labels (default `"Label"`) |
-| `color_scale` | `str \| null` | Plotly colorscale name (e.g. `"HSV"`, `"Plasma"`); `null` for auto |
-| `color_map` | `dict \| null` | Explicit `{label: color}` map overriding `color_scale` |
-| `hypothesis_color_overrides` | `dict \| null` | Per-hypothesis `{hypothesis_name: {label: color}}` color maps |
-| `n_input_samples` | `int \| null` | Number of sentences to sample when collecting activations |
-| `max_points` | `int \| null` | Maximum scatter points per expert in the HTML output (0 = no cap) |
-| `show_labels` | `bool` | Whether to render class-name annotations on mean spheres |
-| `continuous_color` | `bool` | If `true`, uses continuous colorbar mode instead of discrete legend |
-| `regression_hypotheses` | `list[dict] \| null` | List of regression hypothesis specs for `Expert.evaluate_regression()` |
-| `bucket_column` | `str \| null` | Continuous column to discretise into Fisher-scoring bins |
-| `n_buckets` | `int` | Number of equal-width bins for `bucket_column` (default 10) |
-| `output_subdir` | `str \| null` | Override output sub-directory name; defaults to stem of `dataframe_path` |
+See [docs/ANALYSIS.md](docs/ANALYSIS.md) for full definitions, interpretation guides, the dataset config schema, and the `results.json` schema.
 
 ---
 
@@ -377,7 +322,7 @@ smixae
 └── latex
     ├── save-server              # Start local HTTP figure-collection server (port 7788)
     ├── figures                  # Assemble camera-ready PNGs into LaTeX figure files
-    └── tables                   # Generate probing and newline LaTeX tables from results.json
+    └── tables                   # Generate four LaTeX tables (probing + newline, summary + appendix) from results.json
 ```
 
 ```bash
@@ -436,7 +381,7 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 3. **Queue figures**: click the save button on any expert panel — the JS POSTs a 2200×1700px Plotly PNG to the server.
 4. **Review and save**: visit `http://127.0.0.1:7788/` to inspect the gallery, remove unwanted figures, and batch-save all to disk (auto-crops white borders).
 5. **Assemble LaTeX**: `smixae latex figures` — reads saved PNGs, generates PIL legends, and produces a `.tex` file with `\includegraphics` layout.
-6. **Generate tables**: `smixae latex tables` — reads `results.json` and writes probing/newline LaTeX tables (requires `booktabs`, `multirow` packages).
+6. **Generate tables**: `smixae latex tables [--output-dir results/]` — reads `results.json` and writes four `.tex` files to `--output-dir`: `table_probing.tex` (summary with `\pm` CV std), `table_newline.tex` (summary), `table_probing_appendix.tex` (all 10 experts per model/hypothesis), `table_newline_appendix.tex` (all 10 experts per model/line-length). Requires `booktabs`, `multirow` packages.
 
 ---
 
@@ -445,5 +390,4 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
 - [ ] **Expert ranking switch**: Replace continuity-ranked expert plotting with a random sample of experts that meet an activity threshold (minimum active point count). Avoids continuity bias in which experts get visualized.
 - [ ] **LaTeX table fixes**: Color bar in regenerated figures is too small and unreadable. Need a shared colorbar utility used by both `scatter3d.py` and `camera_ready.py`. Generated expert descriptions also need to be more prosaic.
-- [ ] **Regression CV std reporting**: Report standard deviation alongside mean score for cross-validated regression/classification results in the Expert regression toolkit.
 - [ ] **SAEBench evaluation**: Test SMIXAE on SAEBench core, benchmarked against comparable Gemma Scope models. Requires monkey-patching SAEBench (upstream is not well-structured for custom architectures).

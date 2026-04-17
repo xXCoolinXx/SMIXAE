@@ -147,19 +147,28 @@ def _build_dataset_results(
             hyp_scores = [m["hyp_score"] for m in metas if m.get("hyp_score") is not None]
             if not hyp_scores:
                 continue
+            hyp_score_stds = [m.get("hyp_score_std") for m in metas[:len(hyp_scores)]]
             reg_type = next(
                 (h.get("regression_type", "unknown") for h in hypotheses_with_indices if h["name"] == hyp_name),
                 "unknown",
             )
+            valid_stds_top5 = [s for s in hyp_score_stds[:5] if s is not None]
+            top5_mean_std = float(sum(valid_stds_top5) / len(valid_stds_top5)) if valid_stds_top5 else None
             dataset_results["hypotheses"][hyp_name] = {
                 "description": hyp_desc,
                 "regression_type": reg_type,
                 "top10_experts": [
-                    {"rank": i + 1, "expert_id": m["expert_id"], "score": hyp_scores[i]}
+                    {
+                        "rank": i + 1,
+                        "expert_id": m["expert_id"],
+                        "score": hyp_scores[i],
+                        "score_std": hyp_score_stds[i],
+                    }
                     for i, m in enumerate(metas[:10])
                     if i < len(hyp_scores)
                 ],
                 "top5_mean": float(sum(hyp_scores[:5]) / min(5, len(hyp_scores))),
+                "top5_mean_std": top5_mean_std,
                 "top10_mean": float(sum(hyp_scores[:10]) / min(10, len(hyp_scores))),
             }
 
@@ -331,12 +340,17 @@ def run_pipeline(
             hyp_entries = []
             for rank, expert in enumerate(sorted_for_hyp):
                 hyp_score = expert.regression_scores.get(name, float("nan"))
+                hyp_score_std = (
+                    expert.regression_scores_std.get(name)
+                    if expert.regression_scores_std else None
+                )
                 btn_label = f"E{expert.expert_id} ({hyp_score:.3f})"
                 fisher_val = expert.fisher_score
                 expert_meta = {
                     "expert_id": expert.expert_id,
                     "hyp_name": name,
                     "hyp_score": None if (hyp_score != hyp_score) else hyp_score,
+                    "hyp_score_std": hyp_score_std,
                     "fisher_score": None if fisher_val is None or fisher_val != fisher_val else fisher_val,
                     "n_points": expert.expert_activations.shape[0],
                     "score_type": _regression_score_type(hyp.get("regression_type", "")),
