@@ -10,6 +10,12 @@ A standard SAE decomposes a model's residual stream into a sparse sum of linear 
 
 ---
 
+## Documentation Policy
+
+After every major change — new class, new metric, new CLI command, changed default, changed algorithm — update both `CLAUDE.md` and the relevant file(s) under `docs/` to reflect the new state. Do not leave docs describing removed or replaced behavior.
+
+---
+
 ## Repository Structure
 
 ```
@@ -20,17 +26,28 @@ SMIXAE/
 │   │   ├── smixae.py               # Core architecture: SMIXAE model + training classes
 │   │   └── affine_smixae.py        # AffineSMIXAE variant with W_directions routing (NOT actively used/maintained)
 │   ├── analysis/
-│   │   ├── utils.py                 # Shared infrastructure: load_llm, load_sae, collect_hook_activations, encode_sae_batched, Expert
+│   │   ├── utils.py                 # Shared infrastructure: load_llm, load_sae, collect_hook_activations, Expert, ExpertFilterConfig, DatasetConfig
 │   │   ├── generate_probing_data.py # Synthetic probing dataset generation (outputs to datasets/probing/)
 │   │   ├── generate_steering_data.py # Steering prompt dataset generation (outputs to datasets/steering/)
 │   │   ├── categorize_all.py        # Expert probing pipeline: load checkpoint, evaluate experts, produce HTML visualizations
 │   │   ├── anthropic_newline.py     # Newline-position manifold analysis
 │   │   ├── steer.py                 # Steering experiments: coordinate substitution via top Fisher expert
 │   │   ├── scatter3d.py             # Flexible 3-D Plotly scatter with per-class means, labels, and colorbar
+│   │   ├── _html_save.py            # Client-side JS injected into experts.html for figure capture via save server
 │   │   └── pretokenize.py           # Converts HuggingFace datasets to SAELens tokenized format
+│   ├── latex/
+│   │   ├── save_server.py           # Local HTTP server (port 7788) for interactive figure collection
+│   │   ├── camera_ready.py          # Camera-ready LaTeX figure assembly with PIL legends
+│   │   └── tables.py                # LaTeX table generation from results.json
 │   └── cli/
 │       ├── cli.py                   # Centralized CLI entry point (smixae command)
 │       └── train.py                 # smixae train subcommand — all training options as CLI flags
+├── docs/
+│   ├── ARCHITECTURE.md              # Encoding/decoding pipelines, tensor shapes, dead expert recovery
+│   ├── ANALYSIS.md                  # Probing workflow, scoring metrics, dataset format
+│   ├── TRAINING.md                  # Training procedure, hyperparameters, checkpointing
+│   ├── STEERING.md                  # Steering experiments, activation patching
+│   └── LATEX.md                     # LaTeX/figure export toolkit reference
 ├── datasets/
 │   ├── probing/                     # Labeled datasets for probing experiments (populated by generate_probing_data.py)
 │   └── steering/                    # Steering prompt datasets (populated by generate_steering_data.py)
@@ -81,7 +98,7 @@ Given a residual stream activation `x` of shape `(batch, d_model)` (e.g. 3584 fo
 
 ### Dead Expert Recovery
 
-Experts that haven't fired in `dead_after_n_passes` (default 500) passes are considered dead. An auxiliary loss reconstructs the residual from dead experts using their top-k activations, encouraging them to participate.
+Experts that haven't fired in `dead_after_n_passes` (default 1000) passes are considered dead. An auxiliary loss reconstructs the residual from dead experts using their top-k activations, encouraging them to participate.
 
 ---
 
@@ -115,7 +132,8 @@ Shared infrastructure used by all analysis scripts:
 - **`encode_sae_batched()`**: batched SAE encoding; returns `(N, n_experts, d_bottleneck)` float32 tensor
 - **`collect_activations()`**: end-to-end data loading + tokenization + LLM activation collection; returns `(activations, str_tokens, labels, label_names, last_token_positions, n_classes)`
 - **`get_sae_activations()`**: encodes LLM activations through SMIXAE, builds and returns a list of `Expert` objects filtered by activity threshold
-- **`Expert`**: holds per-expert bottleneck activations and labels; implements `evaluate_fisher()`, `evaluate_manifold()`, `get_plot()`, `get_mean_plot()`
+- **`ExpertFilterConfig`**: controls expert selection — `active_threshold` (float, default `1e-5`), `min_active_fraction` (float, default `0.10`), `max_points` (int, default `1000`)
+- **`Expert`**: holds per-expert bottleneck activations and labels; implements `evaluate_fisher()`, `evaluate_manifold()`, `evaluate_regression()`, `get_plot()`, `get_mean_plot()`, `sort_key()`
 - **`_strip_prefix()`**: strips `NN_` ordering prefixes from label display strings
 
 ### `src/analysis/categorize_all.py`
@@ -181,7 +199,22 @@ This is useful when the exact regression target is unknown.
 
 ### KNN Continuity
 
-Measures whether the expert's bottleneck activations smoothly transition over the original activation vectors, measured using cosine similarity of the neighbors of a single point (found using KNN) and averaging. This is used for unsupervised discovery, but mostly finds linear directions. 
+Finds k-nearest neighbors in **bottleneck space** (Euclidean distance), then measures the average cosine similarity between the corresponding **LLM residual stream activations** of those neighbors. It is a bridging metric — bottleneck proximity → LLM-space coherence — not a measure of continuity within the bottleneck itself. Used for unsupervised discovery; in practice tends to surface linear directions.
+
+### Expert Regression Probing
+
+`Expert.evaluate_regression()` runs supervised regression or classification on the bottleneck activations using hypotheses defined in `DatasetConfig.regression_hypotheses`. Supported modes:
+
+| Mode | Task | Score |
+|------|------|-------|
+| `linear` | Linear regression | R² |
+| `ridge` | Ridge regression | R² |
+| `logistic` | Binary classification | Balanced accuracy |
+| `multinomial` | Multi-class classification | F1-macro |
+
+Classification modes use `StratifiedKFold` cross-validation. Results are stored as `best_regression_name` and `best_regression_score` on the `Expert` object.
+
+`sort_key()` accepts `"fisher"`, `"adjusted_fisher"`, `"continuity"`, or `"regression"` as the sort criterion.
 
 ### Newline Metrics (from `anthropic_newline.py`)
 
@@ -200,13 +233,20 @@ Each entry in the config maps a dataset name to a dict with the following fields
 
 | Field | Type | Meaning |
 |-------|------|---------|
-| `dataframe_path` | `str` | Path to the CSV file (relative to repo root) |
+| `dataframe_path` | `str \| null` | Path to the CSV file (relative to repo root) |
+| `dataset_name` | `str \| null` | HuggingFace dataset name for streaming (mutually exclusive with `dataframe_path`) |
+| `label_column` | `str \| null` | Column name for class labels (default `"Label"`) |
 | `color_scale` | `str \| null` | Plotly colorscale name (e.g. `"HSV"`, `"Plasma"`); `null` for auto |
 | `color_map` | `dict \| null` | Explicit `{label: color}` map overriding `color_scale` |
-| `n_input_samples` | `int` | Number of sentences to sample when collecting activations |
-| `max_points` | `int` | Maximum scatter points per expert in the HTML output |
+| `hypothesis_color_overrides` | `dict \| null` | Per-hypothesis `{hypothesis_name: {label: color}}` color maps |
+| `n_input_samples` | `int \| null` | Number of sentences to sample when collecting activations |
+| `max_points` | `int \| null` | Maximum scatter points per expert in the HTML output (0 = no cap) |
 | `show_labels` | `bool` | Whether to render class-name annotations on mean spheres |
 | `continuous_color` | `bool` | If `true`, uses continuous colorbar mode instead of discrete legend |
+| `regression_hypotheses` | `list[dict] \| null` | List of regression hypothesis specs for `Expert.evaluate_regression()` |
+| `bucket_column` | `str \| null` | Continuous column to discretise into Fisher-scoring bins |
+| `n_buckets` | `int` | Number of equal-width bins for `bucket_column` (default 10) |
+| `output_subdir` | `str \| null` | Override output sub-directory name; defaults to stem of `dataframe_path` |
 
 ---
 
@@ -225,7 +265,7 @@ Analysis scripts are **standalone** — they do not inherit from a base class. F
 ### Scoring New Geometric Properties
 
 To add a new interpretability metric on experts:
-- Add a method to the `Expert` class in `categorize_all.py`, or write a standalone scoring function
+- Add a method to the `Expert` class in `src/analysis/utils.py`, or write a standalone scoring function
 - The expert's bottleneck activations (shape: `n_active_samples × d_bottleneck`) are the primary input to any geometric analysis
 - For regression-based metrics, see `anthropic_newline.py` as a reference pattern
 
@@ -332,8 +372,12 @@ smixae
 │   └── all-datasets             # Batch over a JSON config of datasets
 ├── newline
 │   └── main                     # Newline-position manifold analysis
-└── steer
-    └── main                     # Steering experiments (coordinate substitution)
+├── steer
+│   └── main                     # Steering experiments (coordinate substitution)
+└── latex
+    ├── save-server              # Start local HTTP figure-collection server (port 7788)
+    ├── figures                  # Assemble camera-ready PNGs into LaTeX figure files
+    └── tables                   # Generate probing and newline LaTeX tables from results.json
 ```
 
 ```bash
@@ -381,6 +425,25 @@ smixae steer main \
 
 ---
 
+## Figure Export and LaTeX Toolkit
+
+See [docs/LATEX.md](docs/LATEX.md) for full details. Summary:
+
+The browser-side capture and LaTeX assembly pipeline works as follows:
+
+1. **Run the save server**: `smixae latex save-server` — starts a local HTTP server on port 7788. On HPC, SSH port-forward: `ssh -L 7788:localhost:7788 <host>`.
+2. **Open an `experts.html`** in a browser — the embedded JS (from `src/analysis/_html_save.py`) polls the server every 3s and shows a queue badge when the server is available.
+3. **Queue figures**: click the save button on any expert panel — the JS POSTs a 2200×1700px Plotly PNG to the server.
+4. **Review and save**: visit `http://127.0.0.1:7788/` to inspect the gallery, remove unwanted figures, and batch-save all to disk (auto-crops white borders).
+5. **Assemble LaTeX**: `smixae latex figures` — reads saved PNGs, generates PIL legends, and produces a `.tex` file with `\includegraphics` layout.
+6. **Generate tables**: `smixae latex tables` — reads `results.json` and writes probing/newline LaTeX tables (requires `booktabs`, `multirow` packages).
+
+---
+
 ## Known TODOs
 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
+- [ ] **Expert ranking switch**: Replace continuity-ranked expert plotting with a random sample of experts that meet an activity threshold (minimum active point count). Avoids continuity bias in which experts get visualized.
+- [ ] **LaTeX table fixes**: Color bar in regenerated figures is too small and unreadable. Need a shared colorbar utility used by both `scatter3d.py` and `camera_ready.py`. Generated expert descriptions also need to be more prosaic.
+- [ ] **Regression CV std reporting**: Report standard deviation alongside mean score for cross-validated regression/classification results in the Expert regression toolkit.
+- [ ] **SAEBench evaluation**: Test SMIXAE on SAEBench core, benchmarked against comparable Gemma Scope models. Requires monkey-patching SAEBench (upstream is not well-structured for custom architectures).

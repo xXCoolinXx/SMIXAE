@@ -50,6 +50,29 @@ where `S_B` is the between-class scatter matrix and `S_W` is the within-class sc
 
 **Adjusted Fisher score**: `F * (n_seen_classes / n_total_classes)` — penalises experts that are only active for a subset of classes in the dataset (e.g., an expert that only fires on Monday sentences but not other weekdays should score lower even if its Monday cluster is tight).
 
+### KNN Continuity
+
+`Expert.evaluate_manifold()` finds k-nearest neighbors of each token in **bottleneck space** (Euclidean distance), then computes the average cosine similarity between those neighbors' **LLM residual stream activations**. It is a bridging metric: bottleneck proximity → LLM-space coherence. It does not measure continuity within the bottleneck itself.
+
+Used for unsupervised expert discovery. In practice it tends to surface linear directions rather than genuinely nonlinear manifold structure.
+
+`sort_key("continuity")` ranks by this score.
+
+### Expert Regression Probing
+
+`Expert.evaluate_regression()` runs supervised regression or classification on the 3-D bottleneck activations using hypotheses defined in `DatasetConfig.regression_hypotheses`. Supported modes:
+
+| Mode | Task | Score |
+|------|------|-------|
+| `linear` | Linear regression | R² |
+| `ridge` | Ridge regression | R² |
+| `logistic` | Binary classification | Balanced accuracy |
+| `multinomial` | Multi-class classification | F1-macro |
+
+Classification modes use `StratifiedKFold` cross-validation. After evaluation, `Expert.best_regression_name` and `Expert.best_regression_score` hold the top-scoring hypothesis.
+
+`sort_key("regression")` ranks by `best_regression_score`. All four sort modes: `"fisher"`, `"adjusted_fisher"`, `"continuity"`, `"regression"`.
+
 ### Newline Metrics
 
 See the table in [CLAUDE.md — Analysis Metrics](../CLAUDE.md) for definitions of `decode_r2`, `encode_linear_r2`, `encode_periodic_r2`, and `periodic_gain`.
@@ -102,6 +125,18 @@ The 3-D scatter is the raw bottleneck output — coordinates are exactly the 3 b
    df.to_csv(OUTPUT_DIR / "my_concept.csv", index=False)
    ```
 3. Add an entry to `datasets/probing/dataset_config.json` with the appropriate colorscale and config fields (see CLAUDE.md — Dataset Config Schema).
+
+### Expert Filtering
+
+`ExpertFilterConfig` (in `src/analysis/utils.py`) controls which experts are included in analysis:
+
+| Field | Default | Meaning |
+|-------|---------|---------|
+| `active_threshold` | `1e-5` | Minimum L2 norm for an expert activation to count as active |
+| `min_active_fraction` | `0.10` | Drop experts active on fewer than this fraction of tokens |
+| `max_points` | `1000` | Randomly downsample experts exceeding this point count (0 = no cap) |
+
+Pass a `ExpertFilterConfig` instance to `get_sae_activations()` to override defaults.
 
 ### Adding a New Scoring Metric
 
