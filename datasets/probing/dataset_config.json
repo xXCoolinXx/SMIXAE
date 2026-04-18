@@ -70,18 +70,18 @@
   {
     "dataframe_path": "months.csv",
     "color_map": {
-      "January":   "rgb(33, 126, 184)",
-      "February":  "rgb(41, 146, 194)",
-      "March":     "rgb(84, 200, 223)",
-      "April":     "rgb(225, 233, 209)",
-      "May":       "rgb(231, 176, 0)",
-      "June":      "rgb(209, 109, 0)",
-      "July":      "rgb(198, 84, 0)",
-      "August":    "rgb(209, 109, 0)",
-      "September": "rgb(231, 176, 0)",
-      "October":   "rgb(225, 233, 209)",
-      "November":  "rgb(84, 200, 223)",
-      "December":  "rgb(41, 146, 194)"
+      "January":   "rgb(30, 100, 190)",
+      "February":  "rgb(50, 140, 210)",
+      "March":     "rgb(100, 180, 220)",
+      "April":     "rgb(170, 210, 210)",
+      "May":       "rgb(220, 210, 160)",
+      "June":      "rgb(230, 180, 80)",
+      "July":      "rgb(210, 90, 50)",
+      "August":    "rgb(230, 160, 60)",
+      "September": "rgb(225, 210, 130)",
+      "October":   "rgb(160, 200, 200)",
+      "November":  "rgb(70, 140, 200)",
+      "December":  "rgb(55, 80, 180)"
     },
     "regression_hypotheses": [
       {"name": "cyc_12m",  "description": "12-Month Ring",   "target_columns": ["target_sin_12m", "target_cos_12m"], "regression_type": "linear"},

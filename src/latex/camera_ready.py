@@ -670,10 +670,12 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
             n = len(labels)
             if n <= 0:
                 return
-            # evenly spaced colors for categories
+            # Add dummy endpoints so first and last real labels don't land on
+            # the extremes of the colorscale (which can look identical).
+            n_total = n + 2
             label_to_color = {}
             for i, lbl in enumerate(labels):
-                t = 0.0 if n == 1 else i / (n - 1)
+                t = (i + 1) / (n_total - 1)
                 label_to_color[lbl] = "rgb(%d,%d,%d)" % _sample_colorscale(group.color_scale, t)
             _render_discrete_legend_png(
                 labels=labels,
@@ -974,6 +976,7 @@ def _render_compact_row(row: _Row, cols: int) -> list[str]:
             lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{plot_frac:.4f}\linewidth}}%")
             lines.append(r"\centering%")
             lines.append(_include_graphics(png_rel) + "%")
+            lines.append(rf"\par\vspace{{-2pt}}{{\small\textbf{{({u.letter.lower()})}}}}%")
             lines.append(r"\end{minipage}%")
 
         # legend in fixed-height centered box (this centers discrete legends vertically)
@@ -1028,6 +1031,7 @@ def _render_multiline_task_block(block: _Block, cols: int) -> list[str]:
             if i < len(chunk):
                 png_rel = str(Path("camera_ready") / chunk[i].entry.path.name)
                 lines.append(_include_graphics(png_rel) + "%")
+                lines.append(rf"\par\vspace{{-2pt}}{{\small\textbf{{({chunk[i].letter.lower()})}}}}%")
             else:
                 lines.append(r"\vspace{0pt}%")
             lines.append(r"\end{minipage}%")
