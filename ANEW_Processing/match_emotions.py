@@ -1,5 +1,4 @@
-"""
-Match GoEmotions labels to the closest ANEW word using spaCy en_core_web_lg word vectors
+"""Match GoEmotions labels to the closest ANEW word using spaCy en_core_web_lg word vectors
 (cosine similarity), then output normalised valence/arousal scores.
 
 ANEW scale: 1-9  →  normalised to [-1, 1] via  (x - 5) / 4
@@ -15,7 +14,6 @@ Output: emotion_va_scores.csv
 """
 
 import csv
-import math
 from pathlib import Path
 
 import numpy as np

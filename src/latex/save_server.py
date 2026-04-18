@@ -17,7 +17,6 @@ import base64
 import io
 import json
 import os
-import re
 import socket
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path

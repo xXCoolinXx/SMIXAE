@@ -39,7 +39,6 @@ import plotly.graph_objects as go
 from matplotlib.colors import to_rgb as _mpl_to_rgb
 from PIL import Image, ImageChops, ImageColor, ImageDraw, ImageFont
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 #  1. COLOR PARSING / CONVERSION
 # ══════════════════════════════════════════════════════════════════════════════

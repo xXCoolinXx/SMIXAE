@@ -9,13 +9,11 @@ from typing import Any
 
 import torch
 import typer
-from plotly.graph_objects import Figure
 from tqdm import tqdm
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 from analysis.utils import (
-    ActivationBatch,
     DatasetConfig,
     ExpertFilterConfig,
     _collect_target_cols,
@@ -73,6 +71,13 @@ class ProbeRunConfig:
     n_interesting_experts_to_plot: int = 50
     context_window_display: int = 10
     random_seed: int = 42
+
+    # Density-aware subsampling (random-sample path only)
+    random_sample_n_input_samples: int = 5000
+    random_sample_min_active_fraction: float = 0.75
+    random_sample_max_points: int = 10000
+    density_subsample_k: int = 12
+    density_subsample_target: int = 1000
 
 
 # ======================================================================
@@ -225,27 +230,41 @@ def run_pipeline(
     print(f"Dataset: {cfg.dataframe_path}  →  {output_dir}")
     print(f"{'=' * 60}")
 
+    # Preliminary check (no label column → unlabeled) to override collection params.
+    _will_random_sample = (not cfg.label_column) and run_cfg.sort_by == "auto"
+
     # ── 1. Collect LLM activations ────────────────────────────────────
     # When a dataset_name override is passed (e.g. continuity streaming pass),
     # merge it into cfg so collect_activations sees the right source.
     effective_cfg = dataclasses.replace(cfg, dataset_name=dataset_name) if dataset_name else cfg
+
+    n_input_samples = (
+        run_cfg.random_sample_n_input_samples
+        if _will_random_sample
+        else run_cfg.n_input_samples
+    )
 
     batch = collect_activations(
         model=model,
         tokenizer=tokenizer,
         hook_name=run_cfg.hook_point,
         max_length=run_cfg.input_sequence_length,
-        n_input_samples=run_cfg.n_input_samples,
+        n_input_samples=n_input_samples,
         device=run_cfg.device,
         llm_batch_size=run_cfg.llm_batch_size,
         cfg=effective_cfg,
     )
 
     # ── 2. SAE encoding ───────────────────────────────────────────────
+    max_points = (
+        run_cfg.random_sample_max_points
+        if _will_random_sample
+        else run_cfg.max_points
+    )
     filter_cfg = ExpertFilterConfig(
         active_threshold=run_cfg.active_threshold,
         min_active_fraction=run_cfg.min_active_fraction,
-        max_points=run_cfg.max_points,
+        max_points=max_points,
     )
     experts = get_sae_activations(
         sae=sae,
@@ -286,13 +305,18 @@ def run_pipeline(
     use_random_sample = not batch.is_labelled and run_cfg.sort_by == "auto"
 
     if use_random_sample:
-        effective_max_points = run_cfg.max_points or 1000
-        min_pts = int(0.75 * effective_max_points)
+        min_pts = int(run_cfg.random_sample_min_active_fraction * run_cfg.random_sample_max_points)
         candidates = [e for e in experts if e.expert_activations.shape[0] > min_pts]
         print(f"Random sampling: {len(candidates)} eligible experts with >{min_pts} points (seed={run_cfg.random_seed})…")
         rng = random.Random(run_cfg.random_seed)
         n_to_plot = min(run_cfg.n_interesting_experts_to_plot, len(candidates))
         top_experts = rng.sample(candidates, n_to_plot)
+        print(f"Density subsampling {len(top_experts)} experts (k={run_cfg.density_subsample_k}, target={run_cfg.density_subsample_target})…")
+        for expert in top_experts:
+            expert.density_subsample(
+                max_points=run_cfg.density_subsample_target,
+                k=run_cfg.density_subsample_k,
+            )
     else:
         print(f"Sorting by {effective_sort_by} ({'ascending' if run_cfg.sort_ascending else 'descending'})…")
         experts.sort(key=lambda e: e.sort_key(effective_sort_by), reverse=not run_cfg.sort_ascending)
@@ -493,6 +517,12 @@ def single(
     ),
     color_scale: str = typer.Option("Plasma", help="Plotly continuous colorscale name (e.g. Plasma, Viridis, RdBu)"),
     output_dir: str = typer.Option("expert_plots", help="Base directory to save the HTML plots"),
+    # ── density subsampling (random-sample path only) ──
+    random_sample_n_input_samples: int = typer.Option(5000, help="Number of prompts for unlabeled random-sample path"),
+    random_sample_min_active_fraction: float = typer.Option(0.75, help="Min active fraction for random-sample candidates (0–1)"),
+    random_sample_max_points: int = typer.Option(10000, help="Max points collected per expert in random-sample path"),
+    density_subsample_k: int = typer.Option(12, help="k-NN neighbor count for density estimation"),
+    density_subsample_target: int = typer.Option(1000, help="Final point count after density-aware thinning"),
 ):
     """Probe a single dataset against a SMIXAE checkpoint and write an HTML report.
 
@@ -545,6 +575,11 @@ def single(
         n_interesting_experts_to_plot=n_interesting_experts_to_plot,
         context_window_display=context_window_display,
         random_seed=random_seed,
+        random_sample_n_input_samples=random_sample_n_input_samples,
+        random_sample_min_active_fraction=random_sample_min_active_fraction,
+        random_sample_max_points=random_sample_max_points,
+        density_subsample_k=density_subsample_k,
+        density_subsample_target=density_subsample_target,
     )
 
     run_pipeline(
@@ -609,6 +644,12 @@ def all_datasets(
         "When set, probe results for each dataset are merged into this file keyed by run name. "
         "Leave empty to skip.",
     ),
+    # ── density subsampling (random-sample path only) ──
+    random_sample_n_input_samples: int = typer.Option(5000, help="Number of prompts for unlabeled random-sample path"),
+    random_sample_min_active_fraction: float = typer.Option(0.75, help="Min active fraction for random-sample candidates (0–1)"),
+    random_sample_max_points: int = typer.Option(10000, help="Max points collected per expert in random-sample path"),
+    density_subsample_k: int = typer.Option(12, help="k-NN neighbor count for density estimation"),
+    density_subsample_target: int = typer.Option(1000, help="Final point count after density-aware thinning"),
 ):
     """Probe all datasets listed in a JSON config file, then run an unlabelled continuity pass.
 
@@ -673,6 +714,11 @@ def all_datasets(
         n_interesting_experts_to_plot=n_interesting_experts_to_plot,
         context_window_display=context_window_display,
         random_seed=random_seed,
+        random_sample_n_input_samples=random_sample_n_input_samples,
+        random_sample_min_active_fraction=random_sample_min_active_fraction,
+        random_sample_max_points=random_sample_max_points,
+        density_subsample_k=density_subsample_k,
+        density_subsample_target=density_subsample_target,
     )
 
     for cfg in dataset_cfgs:

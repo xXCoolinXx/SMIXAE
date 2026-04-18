@@ -59,12 +59,12 @@ import plotly.graph_objects as go
 from analysis.colors import (
     add_colorbar_trace,
     add_discrete_legend,
-    border_rgba as _border_rgba,
     build_color_map,
-    export_legend_png as render_legend_png,
     rgb_with_alpha,
 )
-
+from analysis.colors import (
+    border_rgba as _border_rgba,
+)
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  LABEL LAYOUT  (adjustText) - WARNING: This doesn't work very well. Included in case it is necessary later

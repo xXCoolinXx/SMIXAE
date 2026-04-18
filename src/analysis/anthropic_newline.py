@@ -14,7 +14,6 @@ Code is loosely based on the reproduction paper from Sinii et. al.
 
 import json
 import os
-import re
 import textwrap
 from itertools import islice
 from pathlib import Path

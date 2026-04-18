@@ -865,6 +865,62 @@ class Expert:
         v = mapping[sort_by]
         return v if v is not None else float("-inf")
 
+    # ── density-aware subsampling ──────────────────────────────────────
+    def density_subsample(self, max_points: int, k: int = 12) -> None:
+        """Thin activations to *max_points* via k-NN density rejection.
+
+        Keeps points in sparse regions (low local density) with high
+        probability and aggressively thins dense clusters, producing a
+        spatially stratified sample across the learned manifold.
+        """
+        X = self.expert_activations
+        n = X.shape[0]
+        if n <= max_points:
+            return
+
+        eps = 1e-12
+        D = torch.cdist(X, X)
+        r_k = D.topk(k + 1, largest=False).values[:, -1]
+        del D
+
+        inv_rho = r_k + eps  # proportional to 1/density
+        p = (max_points * inv_rho / inv_rho.sum()).clamp(max=1.0)
+
+        keep_mask = torch.rand(n) < p
+        n_kept = int(keep_mask.sum().item())
+
+        if n_kept > max_points:
+            kept_idx = keep_mask.nonzero(as_tuple=True)[0]
+            trim = kept_idx[torch.randperm(n_kept)[:max_points]]
+            keep_mask = torch.zeros(n, dtype=torch.bool)
+            keep_mask[trim] = True
+        elif n_kept < max_points:
+            rejected = (~keep_mask).nonzero(as_tuple=True)[0]
+            n_need = max_points - n_kept
+            if n_need <= rejected.numel():
+                pad = rejected[torch.randperm(rejected.numel())[:n_need]]
+            else:
+                pad = rejected
+            keep_mask[pad] = True
+
+        self._apply_mask(keep_mask)
+
+    def _apply_mask(self, mask: torch.Tensor) -> None:
+        """Apply a boolean mask to all stored per-sample tensors."""
+        self.expert_activations = self.expert_activations[mask]
+        if self.llm_activations is not None:
+            self.llm_activations = self.llm_activations[mask]
+        if self.labels is not None:
+            self.labels = self.labels[mask]
+        if self.fisher_labels is not None:
+            self.fisher_labels = self.fisher_labels[mask]
+        if self.regression_targets is not None:
+            self.regression_targets = self.regression_targets[mask]
+        kept_indices = [self.active_indices[i] for i in mask.nonzero(as_tuple=True)[0].tolist()]
+        self.active_indices = kept_indices
+        if self.local_continuity_scores is not None:
+            self.local_continuity_scores = self.local_continuity_scores[mask]
+
     # ── continuity (unlabelled) ───────────────────────────────────────
     def evaluate_manifold(self, k_neighbors: int = 10, device: str = "cuda") -> torch.Tensor:
         """Score expert continuity by comparing bottleneck neighbourhoods to LLM space.

@@ -1,5 +1,4 @@
-"""
-Camera-ready LaTeX figure assembly + legend generation (PIL) with correct layout.
+"""Camera-ready LaTeX figure assembly + legend generation (PIL) with correct layout.
 
 Fixes vs previous versions:
 - Labels are sorted BEFORE stripping numeric prefixes (e.g. 01_Sunday, 02_Monday ...),
@@ -151,8 +150,7 @@ def _labels_all_prefixed(values: list) -> bool:
     return bool(ss) and all(_PREFIX_RE.match(s) for s in ss)
 
 def _sorted_labels(values: list) -> list:
-    """
-    Sort labels BEFORE stripping numeric prefixes.
+    """Sort labels BEFORE stripping numeric prefixes.
     - If numeric -> numeric ascending
     - Else if all match ^\\d+_ -> sort by that integer prefix, then by full string
     - Else -> lexicographic by string
@@ -189,8 +187,7 @@ def load_color_info(
     dataset_config_path: Path,
     csv_base_dir: Path | None = None,
 ) -> dict[str, dict]:
-    """
-    Returns {task: {color_map, color_scale, hypothesis_color_overrides, continuous_color, labels}}.
+    """Returns {task: {color_map, color_scale, hypothesis_color_overrides, continuous_color, labels}}.
     Labels (if found) are sorted with _sorted_labels().
     """
     import csv as _csv
@@ -806,11 +803,10 @@ def _render_compact_row(row: _Row, cols: int) -> list[str]:
 
 
 def _render_multiline_task_block(block: _Block, cols: int) -> list[str]:
-    """
-    Task with >cols plots:
-      - internal rows of exactly cols plots (pad empties)
-      - reserve a legend slot on every internal row so plot sizes don't change
-      - draw legend only after final plot (in final internal row)
+    """Task with >cols plots:
+    - internal rows of exactly cols plots (pad empties)
+    - reserve a legend slot on every internal row so plot sizes don't change
+    - draw legend only after final plot (in final internal row)
     """
     show_leg = block.legend_path is not None and block.legend_path.exists()
 
