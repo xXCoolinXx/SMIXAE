@@ -43,7 +43,6 @@ inside resolve relative to the main document.
 from __future__ import annotations
 
 import json
-import math
 import re
 import shutil
 import string as _string
@@ -53,12 +52,12 @@ from pathlib import Path
 from typing import Optional
 
 import typer
-from PIL import Image, ImageChops, ImageColor, ImageDraw, ImageFont
 
-try:
-    import plotly.colors as _pcolors
-except Exception:  # pragma: no cover
-    _pcolors = None  # legend rendering for named scales will error with a clear message
+from analysis.colors import (
+    render_continuous_colorbar_png,
+    render_discrete_from_scale_png,
+    render_discrete_legend_png,
+)
 
 app = typer.Typer()
 
@@ -69,14 +68,6 @@ _LEGEND_SCALE = 0.35                # legend slot width relative to one plot slo
 _BLOCK_GAP = r"\hspace{2.5mm}"      # gap between TASK blocks in the same physical row
 _ROW_VSPACE = r"\vspace{5pt}"       # gap between physical rows
 _PANEL_HEIGHT = "4.0cm"             # fixed-height boxes for plots+legends
-
-# Legend (PIL) styling:
-_LEGEND_BG = (255, 255, 255, 0)     # transparent
-_LEGEND_FONT_SIZE = 56              # larger => more legible when scaled
-_LEGEND_TICK_FONT_SIZE = 50
-_LEGEND_TICKS = 10                  # continuous bar tick count
-_LEGEND_SWATCH_PAD = 14
-_LEGEND_LINE_PAD = 14
 
 # --------------------------- Filename parsing ---------------------------------
 
@@ -441,202 +432,18 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
     return groups
 
 
-# ------------------------------ Legend rendering (PIL) -------------------------
-
-def _load_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    # Prefer DejaVuSans (usually available); fall back to PIL default.
-    for name in ["DejaVuSans.ttf", "Arial.ttf"]:
-        try:
-            return ImageFont.truetype(name, size=size)
-        except Exception:
-            pass
-    return ImageFont.load_default()
-
-def _parse_color(c) -> tuple[int, int, int]:
-    """Parse hex, rgb(...), rgba(...), or named colors."""
-    if c is None:
-        return (0, 0, 0)
-    s = str(c).strip()
-    if s.startswith("rgb(") or s.startswith("rgba("):
-        nums = re.findall(r"[\d.]+", s)
-        if len(nums) >= 3:
-            return (int(float(nums[0])), int(float(nums[1])), int(float(nums[2])))
-    try:
-        return ImageColor.getrgb(s)
-    except Exception:
-        # last resort: black
-        return (0, 0, 0)
-
-def _sample_colorscale(colorscale: str, t: float) -> tuple[int, int, int]:
-    if _pcolors is None:
-        raise RuntimeError("plotly is required to sample named colorscales (pip install plotly)")
-    # sample_colorscale accepts either a colorscale list or a named scale string
-    col = _pcolors.sample_colorscale(colorscale, [max(0.0, min(1.0, t))])[0]
-    return _parse_color(col)
-
-def _format_tick(v: float) -> str:
-    if abs(v - round(v)) < 1e-9:
-        return str(int(round(v)))
-    if abs(v) >= 10:
-        return str(int(round(v)))
-    return f"{v:.2f}"
-
-def _render_discrete_legend_png(
-    *,
-    labels: list,
-    label_to_color: dict,
-    output_path: Path,
-) -> None:
-    labels = _sorted_labels(labels)
-    disp = _display_names_from_sorted(labels)
-
-    font = _load_font(_LEGEND_FONT_SIZE)
-
-    # measure max text width
-    dummy = Image.new("RGBA", (10, 10), _LEGEND_BG)
-    d = ImageDraw.Draw(dummy)
-    text_ws = []
-    text_hs = []
-    for lbl in labels:
-        bbox = d.textbbox((0, 0), disp[lbl], font=font)
-        text_ws.append(bbox[2] - bbox[0])
-        text_hs.append(bbox[3] - bbox[1])
-    text_w = max(text_ws) if text_ws else 1
-    text_h = max(text_hs) if text_hs else _LEGEND_FONT_SIZE
-
-    sw = int(text_h * 0.85)
-    line_h = text_h + _LEGEND_LINE_PAD
-
-    W = _LEGEND_SWATCH_PAD * 3 + sw + text_w
-    H = _LEGEND_SWATCH_PAD * 2 + line_h * len(labels)
-
-    im = Image.new("RGBA", (W, H), _LEGEND_BG)
-    draw = ImageDraw.Draw(im)
-
-    x0 = _LEGEND_SWATCH_PAD
-    y = _LEGEND_SWATCH_PAD
-    for lbl in labels:
-        color = _parse_color(label_to_color.get(lbl))
-        # swatch
-        draw.rectangle([x0, y + 2, x0 + sw, y + 2 + sw], fill=(*color, 255), outline=(0, 0, 0, 40))
-        # text
-        draw.text((x0 + sw + _LEGEND_SWATCH_PAD, y), disp[lbl], fill=(0, 0, 0, 255), font=font)
-        y += line_h
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    im.save(output_path)
-
-def _render_continuous_colorbar_png(
-    *,
-    colorscale: str,
-    labels: list,
-    output_path: Path,
-) -> None:
-    labels = _sorted_labels(labels)
-    # Determine numeric range
-    vals = []
-    for v in labels:
-        try:
-            vals.append(float(v))
-        except Exception:
-            pass
-    if not vals:
-        raise ValueError("Continuous legend requested but labels are not numeric.")
-    vmin, vmax = min(vals), max(vals)
-    if abs(vmax - vmin) < 1e-12:
-        vmax = vmin + 1.0
-
-    bar_h = 550
-    bar_w = 60
-    pad = 16
-    tick_len = 14
-    gap = 12
-
-    tick_font = _load_font(_LEGEND_TICK_FONT_SIZE)
-
-    # Measure tick label height so we can compute a minimum pixel gap.
-    dummy = Image.new("RGBA", (10, 10), _LEGEND_BG)
-    d = ImageDraw.Draw(dummy)
-    sample_bbox = d.textbbox((0, 0), "0", font=tick_font)
-    tick_h = sample_bbox[3] - sample_bbox[1]
-    min_tick_gap_px = tick_h + 8  # at least one line height + 8px breathing room
-
-    # Pick the smallest "nice" increment (5, 10, 20, 25, 50, …) that keeps ticks
-    # far enough apart vertically, then add endpoints.
-    span = vmax - vmin
-    nice_increments = [5, 10, 20, 25, 50, 100, 200, 250, 500, 1000]
-    increment = nice_increments[-1]
-    for inc in nice_increments:
-        n_interior = span / inc
-        if n_interior <= 0:
-            continue
-        px_per_unit = bar_h / span
-        if inc * px_per_unit >= min_tick_gap_px:
-            increment = inc
-            break
-
-    first_tick = math.ceil(vmin / increment) * increment
-    last_tick = math.floor(vmax / increment) * increment
-    if first_tick > last_tick:
-        first_tick = math.ceil(vmin)
-        last_tick = math.floor(vmax)
-    tick_vals = []
-    v = first_tick
-    while v <= last_tick + 1e-9:
-        tick_vals.append(v)
-        v += increment
-    tick_text = [_format_tick(v) for v in tick_vals]
-
-    # measure label widths
-    tw = 0
-    th = 0
-    for t in tick_text:
-        bbox = d.textbbox((0, 0), t, font=tick_font)
-        tw = max(tw, bbox[2] - bbox[0])
-        th = max(th, bbox[3] - bbox[1])
-
-    W = pad + bar_w + gap + tick_len + gap + tw + pad
-    H = pad + bar_h + pad + th // 2  # extra bottom padding so lowest tick label isn't clipped
-
-    im = Image.new("RGBA", (W, H), _LEGEND_BG)
-    draw = ImageDraw.Draw(im)
-
-    # draw gradient bar
-    x_bar = pad
-    y_bar = pad
-    for yi in range(bar_h):
-        t = 1.0 - yi / (bar_h - 1)  # top=max
-        col = _sample_colorscale(colorscale, t)
-        draw.line([(x_bar, y_bar + yi), (x_bar + bar_w, y_bar + yi)], fill=(*col, 255))
-
-    # bar outline
-    draw.rectangle([x_bar, y_bar, x_bar + bar_w, y_bar + bar_h], outline=(0, 0, 0, 80), width=1)
-
-    # ticks + text
-    for v, t in zip(tick_vals, tick_text):
-        frac = (v - vmin) / (vmax - vmin)
-        y = y_bar + (1.0 - frac) * bar_h
-        y = int(round(y))
-        x1 = x_bar + bar_w + gap
-        x2 = x1 + tick_len
-        draw.line([(x1, y), (x2, y)], fill=(0, 0, 0, 160), width=2)
-
-        bbox = draw.textbbox((0, 0), t, font=tick_font)
-        text_top = bbox[1]
-        text_bot = bbox[3]
-        text_h = text_bot - text_top
-        text_x = x2 + gap
-        text_y = y - text_h // 2 - text_top
-        draw.text((text_x, text_y), t, fill=(0, 0, 0, 255), font=tick_font)
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    im.save(output_path)
+# ------------------------------ Legend rendering -------------------------------
 
 def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
-    """
-    Generates a legend image with PIL:
-    - If color_map -> discrete swatch legend in sorted label order
-    - Else if color_scale -> continuous bar if continuous_color else discrete sampled from scale
+    """Dispatch a :class:`LegendGroup` to the appropriate PIL renderer in
+    :mod:`analysis.colors`.
+
+    - ``color_map``      → discrete swatch legend using the provided mapping.
+    - ``color_scale`` + ``continuous_color`` → continuous colorbar PNG.
+    - ``color_scale`` alone → discrete swatch legend with colors sampled from
+      the named scale (endpoint-skip applied in
+      :func:`analysis.colors.sample_named_scale_discrete`).
+    - ``labels`` alone   → fallback discrete legend using a qualitative palette.
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -649,12 +456,12 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
                 label_to_color[lbl] = group.color_map.get(stripped, group.color_map.get(lbl))
         else:
             labels = _sorted_labels(list(group.color_map.keys()))
-            label_to_color = group.color_map
-        # IMPORTANT: sort first, then strip prefix for display inside renderer
-        _render_discrete_legend_png(
+            label_to_color = dict(group.color_map)
+        render_discrete_legend_png(
             labels=labels,
             label_to_color=label_to_color,
             output_path=output_path,
+            display_names=_display_names_from_sorted(labels),
         )
         return
 
@@ -665,42 +472,32 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
         labels = _sorted_labels(group.labels)
 
         if group.continuous_color:
-            _render_continuous_colorbar_png(
+            render_continuous_colorbar_png(
                 colorscale=group.color_scale,
                 labels=labels,
                 output_path=output_path,
             )
         else:
-            # discrete labels but sampled from a named colorscale
-            n = len(labels)
-            if n <= 0:
-                return
-            # Add dummy endpoints so first and last real labels don't land on
-            # the extremes of the colorscale (which can look identical).
-            n_total = n + 2
-            label_to_color = {}
-            for i, lbl in enumerate(labels):
-                t = (i + 1) / (n_total - 1)
-                label_to_color[lbl] = "rgb(%d,%d,%d)" % _sample_colorscale(group.color_scale, t)
-            _render_discrete_legend_png(
+            render_discrete_from_scale_png(
+                colorscale=group.color_scale,
                 labels=labels,
-                label_to_color=label_to_color,
                 output_path=output_path,
+                display_names=_display_names_from_sorted(labels),
             )
         return
 
     if group.labels:
-        # fallback discrete legend using Plotly qualitative palette (if available)
         labels = _sorted_labels(group.labels)
-        palette = []
-        if _pcolors is not None:
-            palette = getattr(_pcolors.qualitative, "Plotly", [])
-        if not palette:
-            palette = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
-                       "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
-                       "#bcbd22", "#17becf"]
+        palette = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+                   "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
+                   "#bcbd22", "#17becf"]
         label_to_color = {lbl: palette[i % len(palette)] for i, lbl in enumerate(labels)}
-        _render_discrete_legend_png(labels=labels, label_to_color=label_to_color, output_path=output_path)
+        render_discrete_legend_png(
+            labels=labels,
+            label_to_color=label_to_color,
+            output_path=output_path,
+            display_names=_display_names_from_sorted(labels),
+        )
         return
 
     typer.echo(f"  [skip legend] no color info for group {group.key}", err=True)

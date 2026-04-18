@@ -1139,8 +1139,9 @@ class Expert:
         """Generate an interactive 3D scatter of this expert's bottleneck activations.
 
         Lazily evaluates manifold continuity if it hasn't been computed yet.
-        For labelled data, colours points by class (using ``cfg.color_map`` for
-        1:1 mappings or ``cfg.effective_color_scale`` for continuous/ordinal data).
+        For labelled data, colours points by class (using ``cfg.color_map`` when
+        provided, else ``cfg.color_scale``). ``cfg.continuous_color`` selects
+        between a discrete swatch legend and a Plotly colorbar widget.
         For unlabelled data, colours points by continuity score or Euclidean distance
         from the origin, controlled by ``unlabeled_color``.
 
@@ -1176,7 +1177,8 @@ class Expert:
             fig = plot_3d_scatter(
                 pts, int_labels,
                 label_names=lnames,
-                colorscale=cfg.effective_color_scale if cfg.effective_continuous_color else cscale,
+                colorscale=cscale if cscale is not None else cfg.color_scale,
+                continuous_color=cfg.continuous_color,
                 connect_means=False,
                 show_labels=cfg.show_labels,
                 title=self._make_title(),
@@ -1241,7 +1243,8 @@ class Expert:
         return plot_3d_scatter(
             pts, int_labels,
             label_names=lnames,
-            colorscale=cfg.effective_color_scale if cfg.effective_continuous_color else cscale,
+            colorscale=cscale if cscale is not None else cfg.color_scale,
+            continuous_color=cfg.continuous_color,
             scatter_alpha=0.0,
             connect_means=False,
             show_labels=cfg.show_labels,

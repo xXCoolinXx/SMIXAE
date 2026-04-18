@@ -33,6 +33,7 @@ SMIXAE/
 │   │   ├── anthropic_newline.py     # Newline-position manifold analysis
 │   │   ├── steer.py                 # Steering experiments: coordinate substitution via top Fisher expert
 │   │   ├── scatter3d.py             # Flexible 3-D Plotly scatter with per-class means, labels, and colorbar
+│   │   ├── colors.py                # Shared colour/colorbar/legend backend (Plotly traces + PIL PNGs)
 │   │   ├── _html_save.py            # Client-side JS injected into experts.html for figure capture via save server
 │   │   └── pretokenize.py           # Converts HuggingFace datasets to SAELens tokenized format
 │   ├── latex/

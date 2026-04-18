@@ -2,9 +2,9 @@
 
 Public API (all importable directly)
 -------------------------------------
-Color helpers
-    build_color_map(classes, colorscale)  → dict[label, "rgb(...)"]
-    rgb_with_alpha(rgb_str, alpha)         → "rgba(...)"
+Color helpers  (re-exported from :mod:`analysis.colors`)
+    build_color_map(classes, colorscale, *, skip_endpoints=True)  → dict[label, "rgb(...)"]
+    rgb_with_alpha(rgb_str, alpha)                                → "rgba(...)"
 
 Label layout
     compute_label_offsets(mean_xyz, display_labels, ...)  → np.ndarray (N,2)
@@ -17,7 +17,10 @@ Figure building (composable — each returns the modified fig)
     add_colorbar_trace(fig, classes, colorscale_name, label_range, ...)
 
 Top-level
-    plot_3d_scatter(xyz, labels, ...)  → go.Figure
+    plot_3d_scatter(xyz, labels, *, continuous_color=False, ...)  → go.Figure
+
+Standalone legend export
+    render_legend_png(...)  — alias of :func:`analysis.colors.export_legend_png`
 
 Data helpers
     make_hour_ring(...)
@@ -30,7 +33,7 @@ Demo
 Colorscale formats
 ------------------
 None / "auto"        HSV rainbow, one hue per unique class
-"Plasma", "Viridis"  Any Plotly colorscale name (used for both colors and colorbar)
+"Plasma", "Viridis"  Any Plotly colorscale name
 list[color_str]      One Plotly-native color string per class in sorted order
 dict[label, color]   Explicit per-label color mapping
 
@@ -38,131 +41,29 @@ All user-supplied color strings must be Plotly-native (hex, "rgb(...)", CSS name
 
 Legend
 ------
-``plot_3d_scatter`` auto-selects the legend type based on colorscale:
-- Named colorscale (e.g. "Viridis", "HSV") → vertical colorbar with class-name
-  tick labels at each class position.
-- HSV / dict / list colorscale → discrete colored marker entries in a Plotly
-  legend panel.
+``plot_3d_scatter`` picks the legend style based on ``continuous_color``:
+- ``continuous_color=True`` + named colorscale → vertical colorbar with tick labels.
+- ``continuous_color=False`` (default) → discrete swatch legend. Named scales
+  are sampled via :func:`analysis.colors.sample_named_scale_discrete` so the
+  first and last classes never collide on a circular scale.
 Pass ``show_legend=False`` to suppress entirely.
 """
 
 from __future__ import annotations
 
-from colorsys import hsv_to_rgb
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
-import plotly.colors as pc
 import plotly.graph_objects as go
-from matplotlib.colors import to_rgb as _mpl_to_rgb
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  COLOR HELPERS
-# ══════════════════════════════════════════════════════════════════════════════
-
-def _normalize_to_rgb(color: str) -> str:
-    """Normalize any color string (named CSS, hex, rgb(...), rgba(...)) to 'rgb(R,G,B)'."""
-    if color.startswith("rgb("):
-        return color
-    if color.startswith("rgba("):
-        parts = color[5:-1].split(",")
-        return f"rgb({parts[0].strip()},{parts[1].strip()},{parts[2].strip()})"
-    # handles named CSS colors, hex strings, etc.
-    r, g, b = _mpl_to_rgb(color)
-    return f"rgb({int(round(r * 255))},{int(round(g * 255))},{int(round(b * 255))})"
-
-
-def _rgb_from_floats(r: float, g: float, b: float) -> str:
-    """(r,g,b) in [0,1] → 'rgb(R,G,B)'."""
-    return f"rgb({int(round(r*255))},{int(round(g*255))},{int(round(b*255))})"
-
-
-def rgb_with_alpha(rgb_str: str, alpha: float) -> str:
-    """Append alpha to a canonical 'rgb(R,G,B)' string.
-
-    Parameters
-    ----------
-    rgb_str : str   Must be in 'rgb(R,G,B)' format (use build_color_map to
-                    ensure this).
-    alpha   : float Opacity in [0, 1].
-
-    Returns:
-    -------
-    str  'rgba(R,G,B,alpha)'
-    """
-    if not rgb_str.startswith("rgb("):
-        rgb_str = _normalize_to_rgb(rgb_str)
-    return f"rgba({rgb_str[4:-1]},{alpha:.3f})"
-
-
-def _darken_rgb(rgb_str: str, factor: float = 0.55) -> str:
-    """Return a darkened version of an 'rgb(R,G,B)' string (for font legibility)."""
-    if not rgb_str.startswith("rgb("):
-        rgb_str = _normalize_to_rgb(rgb_str)
-    vals = [int(v) for v in rgb_str[4:-1].split(",")]
-    return f"rgb({int(vals[0]*factor)},{int(vals[1]*factor)},{int(vals[2]*factor)})"
-
-
-def _border_rgba(rgb_str: str, alpha: float = 0.5) -> str:
-    """'rgb(R,G,B)' → 'rgba(R,G,B,alpha)' for annotation borders."""
-    vals = rgb_str[4:-1]
-    return f"rgba({vals},{alpha})"
-
-
-def build_color_map(
-    classes: list,
-    colorscale: Optional[Union[str, list, dict]],
-) -> Dict[Any, str]:
-    """Build a mapping from class label → canonical 'rgb(R,G,B)' color string.
-
-    Parameters
-    ----------
-    classes    : list of unique class labels in the desired order.
-    colorscale : One of:
-        None / "auto"  — evenly-spaced HSV hues
-        str            — named Plotly colorscale (e.g. "Plasma", "Viridis")
-        list[str]      — one Plotly-native color string per class
-        dict           — {label: color_str} explicit mapping
-
-    Returns:
-    -------
-    dict mapping each class label to a normalized 'rgb(R,G,B)' string.
-    All values are guaranteed to be in 'rgb(...)' format so rgb_with_alpha
-    can be applied without further parsing.
-    """
-    n = len(classes)
-
-    if isinstance(colorscale, dict):
-        missing = [c for c in classes if c not in colorscale]
-        if missing:
-            raise ValueError(f"colorscale dict missing labels: {missing}")
-        return {c: _normalize_to_rgb(colorscale[c]) for c in classes}
-
-    if isinstance(colorscale, list):
-        if len(colorscale) < n:
-            raise ValueError(
-                f"colorscale list has {len(colorscale)} entries "
-                f"but there are {n} unique classes."
-            )
-        return {c: _normalize_to_rgb(colorscale[i]) for i, c in enumerate(classes)}
-
-    name = colorscale if isinstance(colorscale, str) else "auto"
-
-    if name in ("auto", "hsv", None):
-        return {
-            c: _rgb_from_floats(*hsv_to_rgb(i / max(n, 1), 0.88, 0.90))
-            for i, c in enumerate(classes)
-        }
-
-    try:
-        scale = pc.get_colorscale(name)
-        sampled = pc.sample_colorscale(scale, [i / max(n - 1, 1) for i in range(n)])
-        return {c: sampled[i] for i, c in enumerate(classes)}
-    except Exception as exc:
-        raise ValueError(
-            f"Unknown colorscale {name!r}. Pass a Plotly colorscale name, "
-            "a list of color strings, a dict, or None."
-        ) from exc
+from analysis.colors import (
+    add_colorbar_trace,
+    add_discrete_legend,
+    border_rgba as _border_rgba,
+    build_color_map,
+    export_legend_png as render_legend_png,
+    rgb_with_alpha,
+)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -565,261 +466,6 @@ def add_origin_marker(
     return fig
 
 
-def add_discrete_legend(
-    fig: go.Figure,
-    classes: list,
-    cmap: Dict[Any, str],
-    names: Dict[Any, str],
-    marker_size: float = 8,
-) -> go.Figure:
-    """Add one invisible marker trace per class to populate Plotly's 2-D legend.
-
-    Returns ``fig`` for chaining.
-    """
-    for c in classes:
-        fig.add_trace(go.Scatter3d(
-            x=[None], y=[None], z=[None],
-            mode="markers",
-            marker=dict(size=marker_size, color=cmap[c], line=dict(width=0)),
-            name=names[c],
-            showlegend=True,
-        ))
-    return fig
-
-
-def _auto_tick_increment(lo: float, hi: float, n_classes: int, requested: Optional[float]) -> Optional[float]:
-    """Pick a sensible colorbar tick increment for datasets with more than 25 classes.
-
-    Selects the largest increment from ``{20, 10, 5}`` that still produces at least 5
-    visible ticks across ``[lo, hi]``.  Falls back to 5 if none satisfies the threshold.
-    Returns ``requested`` unchanged when ``n_classes <= 25``.
-    """
-    if n_classes <= 25:
-        return requested
-    span = hi - lo
-    for inc in [20, 10, 5]:
-        if span / inc >= 5:
-            return float(inc)
-    return 5.0
-
-
-def add_colorbar_trace(
-    fig: go.Figure,
-    classes: list,
-    colorscale_name: str,
-    names: Optional[Dict] = None,
-    label_range: Optional[tuple] = None,
-    colorbar_title: str = "",
-    colorbar_thickness: int = 20,
-    colorbar_len: float = 0.75,
-    colorbar_x: float = 1.02,
-    tick_increment: Optional[float] = 20,
-) -> go.Figure:
-    """Add an invisible scatter trace whose sole purpose is to render a colorbar.
-
-    Parameters
-    ----------
-    classes          : sorted list of class labels.
-    colorscale_name  : named Plotly colorscale string, e.g. "Plasma".
-    names            : when provided, tick every class with its display name
-                       (overrides label_range and tick_increment).
-    label_range      : (start_label, end_label) for endpoint-only ticks.
-    colorbar_title   : optional title text above the colorbar.
-    tick_increment   : numeric tick spacing; ignored when ``names`` is given.
-                       When n_classes > 25 and ``names`` is None, this value is
-                       overridden by ``_auto_tick_increment``.
-    colorbar_thickness, colorbar_len, colorbar_x : colorbar geometry.
-    """
-    n = len(classes)
-    if names is not None:
-        lo, hi = 0.0, float(n - 1)
-        inc = _auto_tick_increment(lo, hi, n, tick_increment)
-        if inc is not None and inc > 0 and n > 25:
-            raw = np.arange(np.ceil(lo / inc) * inc, hi + 1e-9, inc)
-            indices = sorted(int(v) for v in raw if 0 <= int(v) < n)
-            tickvals = indices
-            ticktext = [str(names.get(classes[i], classes[i])) for i in indices]
-        else:
-            tickvals = list(range(n))
-            ticktext = [str(names.get(c, c)) for c in classes]
-    else:
-        lo = float(classes[0]) if not isinstance(classes[0], str) else 0.0
-        hi = float(classes[-1]) if not isinstance(classes[-1], str) else float(n - 1)
-        tick_increment = _auto_tick_increment(lo, hi, n, tick_increment)
-        if tick_increment is not None and tick_increment > 0:
-            first_tick = np.ceil(lo / tick_increment) * tick_increment
-            tickvals = sorted(set(np.arange(first_tick, hi + 1e-9, tick_increment)))
-            ticktext = [str(int(v)) if v == int(v) else f"{v:.2f}" for v in tickvals]
-        else:
-            start_label, end_label = (
-                label_range if label_range is not None
-                else (str(classes[0]), str(classes[-1]))
-            )
-            tickvals = [lo, hi]
-            ticktext = [start_label, end_label]
-
-    fig.add_trace(go.Scatter3d(
-        x=[None, None], y=[None, None], z=[None, None],
-        mode="markers",
-        marker=dict(
-            color=[lo, hi],
-            colorscale=colorscale_name,
-            showscale=True,
-            opacity=0,
-            colorbar=dict(
-                title=dict(text=colorbar_title, side="right"),
-                thickness=colorbar_thickness,
-                len=colorbar_len,
-                x=colorbar_x,
-                tickvals=tickvals,
-                ticktext=ticktext,
-                tickfont=dict(size=11),
-                outlinewidth=1,
-                outlinecolor="black",
-                ticks="outside",
-                ticklen=6,
-                tickwidth=1,
-                tickcolor="black",
-            ),
-        ),
-        hoverinfo="skip",
-        showlegend=False,
-        name="_colorbar",
-    ))
-    return fig
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  STANDALONE LEGEND EXPORT
-# ══════════════════════════════════════════════════════════════════════════════
-
-def render_legend_png(
-    colorscale: Optional[Union[str, list, dict]],
-    labels: list,
-    output_path: "Path",
-    label_names: Optional[Union[Dict, List]] = None,
-    continuous_color: bool = False,
-) -> None:
-    """Render a standalone legend image matching the exact Plotly rendering.
-
-    Creates a minimal 3-D Plotly figure, adds the same legend elements used by
-    :func:`plot_3d_scatter` (via :func:`add_discrete_legend` or
-    :func:`add_colorbar_trace`), hides the scene, and exports to PNG via kaleido.
-
-    Parameters
-    ----------
-    colorscale      : Colorscale specification (same formats as ``plot_3d_scatter``).
-                      ``str`` = named Plotly colorscale (e.g. ``"Plasma"``);
-                      ``dict`` = explicit ``{label: color}`` mapping;
-                      ``list`` = one colour per label in order;
-                      ``None`` = HSV rainbow.
-    labels          : Sorted list of class labels (the colour-map keys).
-    output_path     : Destination file path (``Path``); parent dirs are created.
-    label_names     : Display-name mapping.  ``dict`` maps label → display string;
-                      ``list`` is positional; ``None`` uses ``str(label)``.
-    continuous_color: If ``True``, render a continuous colorbar even when
-                      ``colorscale`` is a dict (i.e. the colours represent a
-                      continuous gradient with named stops rather than discrete
-                      categories).
-    """
-    from pathlib import Path as _Path
-    assert isinstance(output_path, _Path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    n = len(labels)
-    if n == 0:
-        return
-
-    # ── resolve display names ────────────────────────────────────────────────
-    if label_names is None:
-        names = {c: str(c) for c in labels}
-    elif isinstance(label_names, dict):
-        names = {c: str(label_names.get(c, c)) for c in labels}
-    else:
-        ln = list(label_names)
-        names = {c: str(ln[i]) for i, c in enumerate(labels)}
-
-    # ── decide legend mode ───────────────────────────────────────────────────
-    _colorscale_is_named = (
-        isinstance(colorscale, str)
-        and colorscale not in ("auto", "hsv", None)
-    )
-
-    fig = go.Figure()
-
-    if _colorscale_is_named or continuous_color:
-        # Colorbar path — named colorscales (e.g. "phase", "thermal") or explicit
-        # continuous_color flag both render as a colorbar with ticks.
-        # For numeric labels use auto-tick from the real range (temperatures);
-        # for string-labeled colorbars (e.g. hours "1AM"…"12AM") pass the names dict.
-        _all_numeric = all(isinstance(lb, (int, float)) for lb in labels)
-        names_for_cb = None if _all_numeric else names
-        add_colorbar_trace(
-            fig, labels,
-            colorscale_name=colorscale if isinstance(colorscale, str) else "Viridis",
-            names=names_for_cb,
-            colorbar_len=0.95,
-        )
-        # Portrait: narrow image with most space given to the colorbar right margin.
-        # The scene area is ~40px; colorbar + tick labels fill the 190px right margin.
-        fig.update_layout(
-            scene=dict(
-                xaxis=dict(visible=False),
-                yaxis=dict(visible=False),
-                zaxis=dict(visible=False),
-                bgcolor="rgba(0,0,0,0)",
-            ),
-            showlegend=False,
-            margin=dict(l=5, r=190, t=10, b=10),
-            paper_bgcolor="white",
-        )
-        img_bytes = fig.to_image(format="png", width=480, height=1040, scale=1)
-    else:
-        # Discrete legend — explicit per-label colour dicts or HSV auto-coloring.
-        # Stacks vertically as a portrait PNG sized to fit the label count.
-        cmap = build_color_map(labels, colorscale)
-        add_discrete_legend(fig, labels, cmap, names)
-        png_height = max(320, n * 52 + 120)
-        fig.update_layout(
-            scene=dict(
-                xaxis=dict(visible=False),
-                yaxis=dict(visible=False),
-                zaxis=dict(visible=False),
-                bgcolor="rgba(0,0,0,0)",
-            ),
-            showlegend=True,
-            legend=dict(
-                x=0.5, xanchor="center",
-                y=0.5, yanchor="middle",
-                bgcolor="rgba(255,255,255,0)",
-                font=dict(size=18),
-            ),
-            margin=dict(l=0, r=0, t=0, b=0),
-            paper_bgcolor="white",
-        )
-        img_bytes = fig.to_image(format="png", width=480, height=png_height, scale=1)
-
-    output_path.write_bytes(img_bytes)
-
-    # Auto-crop: remove empty white space around the actual legend/colorbar.
-    # The Plotly figure includes a hidden 3D scene that wastes space.
-    try:
-        from PIL import Image, ImageChops
-        import io as _io
-
-        img = Image.open(_io.BytesIO(img_bytes))
-        if img.mode == "RGBA":
-            bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
-        else:
-            bg = Image.new("RGB", img.size, (255, 255, 255))
-        diff = ImageChops.difference(img, bg)
-        bbox = diff.getbbox()
-        if bbox:
-            img.crop(bbox).save(output_path)
-    except ImportError:
-        pass  # PIL not available; leave uncropped
-
-
 # ══════════════════════════════════════════════════════════════════════════════
 #  TOP-LEVEL FUNCTION
 # ══════════════════════════════════════════════════════════════════════════════
@@ -832,6 +478,7 @@ def plot_3d_scatter(
     label_names: Optional[Union[Dict, List, Sequence]] = None,
     # ── color ────────────────────────────────────────────────────────────────
     colorscale: Optional[Union[str, list, dict]] = None,
+    continuous_color: bool = False,
     scatter_alpha: float = 1.0,
     mean_alpha: float = 1.0,
     # ── markers ──────────────────────────────────────────────────────────────
@@ -869,6 +516,14 @@ def plot_3d_scatter(
                      ``add_continuous_scatter_trace`` is used instead.
     label_names    : dict or list mapping labels to display strings.
     colorscale     : see module docstring for accepted formats.
+    continuous_color : selects the legend style for named-scale colorscales.
+                     ``False`` (default) → discrete swatch legend, colors
+                     sampled via ``sample_named_scale_discrete`` so circular
+                     scales don't collide at the endpoints. ``True`` → Plotly
+                     colorbar widget with tick labels (use for genuinely
+                     continuous axes like temperature or newline distance).
+                     Ignored for dict / list / HSV colorscales, which are
+                     always discrete.
     scatter_alpha  : opacity of individual scatter points (default 0.7).
     mean_alpha     : opacity of class-mean spheres (default 1.0).
     scatter_size   : marker size for scatter points.
@@ -877,9 +532,7 @@ def plot_3d_scatter(
     connect_means  : if True, draw a line connecting adjacent means in sorted
                      class order (no wraparound).
     mean_line_width: stroke width in pixels (default 3).
-    show_legend    : if True (default), auto-select legend type: named colorscale
-                     → colorbar with class-name ticks; otherwise → discrete
-                     colored marker entries.
+    show_legend    : if True (default), render the legend.
     colorbar_title : optional title shown above the colorbar.
     colorbar_tick_increment : spacing between colorbar tick labels (default 20).
     width, height  : figure pixel dimensions.
@@ -956,6 +609,7 @@ def plot_3d_scatter(
 
     # ── build figure ─────────────────────────────────────────────────────────
     _colorscale_is_named = isinstance(colorscale, str) and colorscale not in ("auto", "hsv")
+    _use_colorbar = continuous_color and _colorscale_is_named
 
     fig = go.Figure()
     add_scatter_trace(fig, xyz, labels, cmap, scatter_alpha, scatter_size)
@@ -966,16 +620,17 @@ def plot_3d_scatter(
     if connect_means and len(classes) > 1:
         add_mean_line_trace(fig, mean_xyz, classes, cmap, line_width=mean_line_width)
 
-    # ── legend: colorbar for named scales, discrete markers otherwise ─────────
+    # ── legend: Plotly colorbar only when caller asks for continuous; otherwise discrete swatches ─
     right_margin = 0
     legend_kwargs: dict = {}
     if show_legend:
-        if _colorscale_is_named:
+        if _use_colorbar:
             add_colorbar_trace(
                 fig, classes, colorscale,
                 names=names,
                 colorbar_title=colorbar_title,
                 tick_increment=colorbar_tick_increment,
+                skip_endpoints=False,
             )
             _max_label_chars = max((len(str(names.get(c, c))) for c in classes), default=6)
             right_margin = max(200, 60 + _max_label_chars * 10)
@@ -998,7 +653,7 @@ def plot_3d_scatter(
         margin=dict(l=0, r=right_margin, t=40 if title else 10, b=0),
     )
 
-    if show_labels and not _colorscale_is_named:
+    if show_labels and not _use_colorbar:
         eye_tuple = (camera_eye["x"], camera_eye["y"], camera_eye["z"])
         add_label_annotations(
             fig, mean_xyz, classes, cmap, names,
@@ -1138,11 +793,12 @@ def demo(which: str = "hour") -> go.Figure:
         )
 
     elif which == "continuous":
-        # 150-class ring: named colorscale → colorbar with class-name ticks auto-selected.
+        # 150-class ring: explicit continuous_color=True → Plotly colorbar with ticks.
         xyz, labs = make_continuous_ring(n_classes=150)
         return plot_3d_scatter(
             xyz, labs,
             colorscale="Viridis",
+            continuous_color=True,
             scatter_alpha=0.0,          # hide individual points; means tell the story
             connect_means=True,         # draw the sorted path through all means
             colorbar_title="class",

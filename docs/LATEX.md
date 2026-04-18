@@ -109,9 +109,13 @@ The assembler groups figures by canonical task and hypothesis for layout.
 
 ### Legend generation
 
-Legends are rendered with PIL (not Plotly/Kaleido), using:
+Legends are rendered by the shared backend in `src/analysis/colors.py` (PIL, not Plotly/Kaleido):
 - Discrete legends: colored swatches + label text, one per class
 - Continuous legends: vertical colorbar gradient using a named Plotly colorscale
+
+The `continuous_color` field in `dataset_config.json` picks which one to render, and is also honoured by the interactive `experts.html` figures — a dataset with `continuous_color: false` and a named `color_scale` (e.g. `hours.csv` + `phase`) renders as a discrete swatch legend both on the paper and in the browser.
+
+For named scales, `sample_named_scale_discrete` samples at `(i + 1) / (n + 1)` positions (instead of `0, …, 1`) so circular scales don't collide at the endpoints — the first and last class are guaranteed visually distinct. `plot_3d_scatter`'s colorbar widget inherits the same clipping via `build_clipped_colorscale`.
 
 Colorscale resolution goes through `plotly.colors` — any named Plotly scale (e.g. `"Plasma"`, `"Phase"`) is accepted.
 
