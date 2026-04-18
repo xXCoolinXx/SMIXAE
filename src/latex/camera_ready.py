@@ -69,7 +69,7 @@ _PANEL_HEIGHT = "4.0cm"             # fixed-height boxes for plots+legends
 _LEGEND_BG = (255, 255, 255, 0)     # transparent
 _LEGEND_FONT_SIZE = 56              # larger => more legible when scaled
 _LEGEND_TICK_FONT_SIZE = 50
-_LEGEND_TICKS = 6                   # continuous bar tick count
+_LEGEND_TICKS = 10                  # continuous bar tick count
 _LEGEND_SWATCH_PAD = 14
 _LEGEND_LINE_PAD = 14
 
@@ -472,11 +472,8 @@ def _sample_colorscale(colorscale: str, t: float) -> tuple[int, int, int]:
 def _format_tick(v: float) -> str:
     if abs(v - round(v)) < 1e-9:
         return str(int(round(v)))
-    # keep concise
-    if abs(v) >= 100:
-        return f"{v:.0f}"
     if abs(v) >= 10:
-        return f"{v:.1f}"
+        return str(int(round(v)))
     return f"{v:.2f}"
 
 def _render_discrete_legend_png(
@@ -544,7 +541,7 @@ def _render_continuous_colorbar_png(
     if abs(vmax - vmin) < 1e-12:
         vmax = vmin + 1.0
 
-    bar_h = 350
+    bar_h = 550
     bar_w = 60
     pad = 16
     tick_len = 14
@@ -552,14 +549,40 @@ def _render_continuous_colorbar_png(
 
     tick_font = _load_font(_LEGEND_TICK_FONT_SIZE)
 
-    # ticks: choose evenly spaced values, but show endpoints always
-    n_ticks = max(2, _LEGEND_TICKS)
-    tick_vals = [vmin + i * (vmax - vmin) / (n_ticks - 1) for i in range(n_ticks)]
+    # Measure tick label height so we can compute a minimum pixel gap.
+    dummy = Image.new("RGBA", (10, 10), _LEGEND_BG)
+    d = ImageDraw.Draw(dummy)
+    sample_bbox = d.textbbox((0, 0), "0", font=tick_font)
+    tick_h = sample_bbox[3] - sample_bbox[1]
+    min_tick_gap_px = tick_h + 8  # at least one line height + 8px breathing room
+
+    # Pick the smallest "nice" increment (5, 10, 20, 25, 50, …) that keeps ticks
+    # far enough apart vertically, then add endpoints.
+    span = vmax - vmin
+    nice_increments = [5, 10, 20, 25, 50, 100, 200, 250, 500, 1000]
+    increment = nice_increments[-1]
+    for inc in nice_increments:
+        n_interior = span / inc
+        if n_interior <= 0:
+            continue
+        px_per_unit = bar_h / span
+        if inc * px_per_unit >= min_tick_gap_px:
+            increment = inc
+            break
+
+    first_tick = math.ceil(vmin / increment) * increment
+    last_tick = math.floor(vmax / increment) * increment
+    if first_tick > last_tick:
+        first_tick = math.ceil(vmin)
+        last_tick = math.floor(vmax)
+    tick_vals = []
+    v = first_tick
+    while v <= last_tick + 1e-9:
+        tick_vals.append(v)
+        v += increment
     tick_text = [_format_tick(v) for v in tick_vals]
 
     # measure label widths
-    dummy = Image.new("RGBA", (10, 10), _LEGEND_BG)
-    d = ImageDraw.Draw(dummy)
     tw = 0
     th = 0
     for t in tick_text:
@@ -568,7 +591,7 @@ def _render_continuous_colorbar_png(
         th = max(th, bbox[3] - bbox[1])
 
     W = pad + bar_w + gap + tick_len + gap + tw + pad
-    H = pad + bar_h + pad
+    H = pad + bar_h + pad + th // 2  # extra bottom padding so lowest tick label isn't clipped
 
     im = Image.new("RGBA", (W, H), _LEGEND_BG)
     draw = ImageDraw.Draw(im)
@@ -594,8 +617,12 @@ def _render_continuous_colorbar_png(
         draw.line([(x1, y), (x2, y)], fill=(0, 0, 0, 160), width=2)
 
         bbox = draw.textbbox((0, 0), t, font=tick_font)
-        text_h = bbox[3] - bbox[1]
-        draw.text((x2 + gap, y - text_h // 2), t, fill=(0, 0, 0, 255), font=tick_font)
+        text_top = bbox[1]
+        text_bot = bbox[3]
+        text_h = text_bot - text_top
+        text_x = x2 + gap
+        text_y = y - text_h // 2 - text_top
+        draw.text((text_x, text_y), t, fill=(0, 0, 0, 255), font=tick_font)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     im.save(output_path)
