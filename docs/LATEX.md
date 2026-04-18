@@ -34,14 +34,17 @@ All commands are under the `smixae latex` subcommand group.
 # 1. Start the save server
 smixae latex save-server [--output-dir PATH] [--port INT] [--results-dir PATH]
 
-# 2. Assemble camera-ready figures
-smixae latex figures [--input-dir PATH] [--output PATH] [OPTIONS]
+# 2. Assemble camera-ready figures (writes .tex, camera_ready/, legends/ into <output-dir>/paper/)
+smixae latex figures --camera-ready-dir PATH --output-dir PATH [--results-json PATH] [OPTIONS]
 
-# 3. Generate tables (writes 4 .tex files to --output-dir)
+# 3. Generate tables (writes 4 .tex files into <output-dir>/paper/)
 smixae latex tables [--output-dir results/]
 ```
 
-Run `smixae latex <subcommand> --help` for the full flag reference.
+Both `figures` and `tables` use the same `--output-dir` convention: it is the
+**parent** of the final `paper/` folder. Everything a LaTeX document needs ends
+up under `<output-dir>/paper/`. Run `smixae latex <subcommand> --help` for the
+full flag reference.
 
 ---
 
@@ -137,7 +140,7 @@ Each caption includes a description of the plotted points:
 - **Probe figures**: "Larger points denote class mean activations in the bottleneck space; smaller points are individual token activations."
 - **Newline figures**: "Points represent individual token activations in the bottleneck space, colored by distance since the last newline."
 
-Generates four table files from `results.json` into `--output-dir` (default `results/`):
+Generates four table files from `results.json` into `<output-dir>/paper/` (default `results/paper/`):
 
 | File | Contents |
 |------|----------|

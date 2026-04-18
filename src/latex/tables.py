@@ -1,6 +1,6 @@
 """Generate LaTeX tables from results.json.
 
-Produces four tables, all written under a single output directory:
+Produces four tables, all written under ``<output-dir>/paper/``:
   1. table_probing.tex          — all models × tasks × hypotheses (summary: top-1 ± std, top-5μ ± mean-std)
   2. table_newline.tex          — Gemma 2 9B only, periodic gain summary (top-1, top-5μ)
   3. table_probing_appendix.tex — per-model detail: all 10 experts per hypothesis with score ± std
@@ -21,7 +21,7 @@ app = typer.Typer()
 
 RESULTS_PATH = Path("results/results.json")
 DATASET_CONFIG_PATH = Path("datasets/probing/dataset_config.json")
-DEFAULT_OUTPUT_DIR = Path("results/paper/")
+DEFAULT_OUTPUT_DIR = Path("results/")
 
 # ── Display names ──────────────────────────────────────────────────────────────
 
@@ -488,12 +488,13 @@ def build_newline_appendix_tables(results: dict) -> str:
 def generate(
     results_path: Path = typer.Option(RESULTS_PATH, help="Path to results.json"),
     dataset_config_path: Path = typer.Option(DATASET_CONFIG_PATH, help="Path to dataset_config.json"),
-    output_dir: Path = typer.Option(DEFAULT_OUTPUT_DIR, help="Directory to write all four .tex output files"),
+    output_dir: Path = typer.Option(DEFAULT_OUTPUT_DIR, help="Parent directory; all tables are written to <output-dir>/paper/"),
 ) -> None:
     """Generate LaTeX tables (probing + newline, summary + appendix) from results.json."""
     results, dataset_config = load_data(results_path, dataset_config_path)
     hyp_map = build_hypothesis_map(dataset_config)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    paper_dir = output_dir / "paper"
+    paper_dir.mkdir(parents=True, exist_ok=True)
 
     outputs = [
         ("table_probing.tex",          build_probing_table(results, hyp_map)),
@@ -502,6 +503,6 @@ def generate(
         ("table_newline_appendix.tex", build_newline_appendix_tables(results)),
     ]
     for filename, content in outputs:
-        out_path = output_dir / filename
+        out_path = paper_dir / filename
         out_path.write_text(content)
         typer.echo(f"Written: {out_path}")

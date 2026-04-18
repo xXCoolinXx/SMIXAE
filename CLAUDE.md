@@ -391,8 +391,8 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 2. **Open an `experts.html`** in a browser — the embedded JS (from `src/analysis/_html_save.py`) polls the server every 3s and shows a queue badge when the server is available.
 3. **Queue figures**: click the save button on any expert panel — the JS POSTs a 2200×1700px Plotly PNG to the server.
 4. **Review and save**: visit `http://127.0.0.1:7788/` to inspect the gallery, remove unwanted figures, and batch-save all to disk (auto-crops white borders).
-5. **Assemble LaTeX**: `smixae latex figures` — reads saved PNGs, generates PIL legends, and produces a `.tex` file with `\includegraphics` layout.
-6. **Generate tables**: `smixae latex tables [--output-dir results/]` — reads `results.json` and writes four `.tex` files to `--output-dir`: `table_probing.tex` (summary with `\pm` CV std), `table_newline.tex` (summary), `table_probing_appendix.tex` (all 10 experts per model/hypothesis), `table_newline_appendix.tex` (all 10 experts per model/line-length). Requires `booktabs`, `multirow` packages.
+5. **Assemble LaTeX**: `smixae latex figures --camera-ready-dir … --output-dir results/` — reads saved PNGs, generates PIL legends, and writes `.tex` files + `camera_ready/` + `legends/` into `<output-dir>/paper/`. `\includegraphics` paths are written as `paper/camera_ready/…` / `paper/legends/…`, so a main document sitting next to the `paper/` folder can `\input{paper/probe_<exp>.tex}` and the images resolve correctly.
+6. **Generate tables**: `smixae latex tables [--output-dir results/]` — reads `results.json` and writes four `.tex` files to `<output-dir>/paper/` (same layout as figures): `table_probing.tex` (summary with `\pm` CV std), `table_newline.tex` (summary), `table_probing_appendix.tex` (all 10 experts per model/hypothesis), `table_newline_appendix.tex` (all 10 experts per model/line-length). Requires `booktabs`, `multirow` packages.
 
 ---
 
