@@ -125,6 +125,8 @@ def build_dataset_html(
             ``(description, [(tab_label, scatter_fig, mean_fig, reg_scores), ...])``.
             When provided, the per-hypothesis row layout is used instead of
             the flat tab strip.
+        experiment_id: Identifier embedded into the page for figure-capture
+            filenames; safe to leave empty.
 
     Returns:
         A complete UTF-8 HTML document as a string.
@@ -1205,6 +1207,8 @@ class Expert:
             str_tokens: Nested list of string tokens for building hover context windows.
             cfg: Dataset visualization settings (colorscale, color map, labels flag).
             label_names: Map from integer label id to display string.
+            hypothesis_name: Optional hypothesis key used to look up a
+                per-hypothesis override in ``cfg.hypothesis_color_overrides``.
             k_neighbors: Neighbourhood size for lazy continuity evaluation.
             context_window: Tokens on each side of the target in hover text.
             device: Device for continuity computation.
@@ -1280,6 +1284,8 @@ class Expert:
         Args:
             cfg: Dataset visualization settings.
             label_names: Map from integer label id to display string.
+            hypothesis_name: Optional hypothesis key used to look up a
+                per-hypothesis override in ``cfg.hypothesis_color_overrides``.
 
         Returns:
             A Plotly :class:`Figure` or ``None`` if unlabelled.

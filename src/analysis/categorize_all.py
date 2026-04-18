@@ -100,7 +100,7 @@ def _regression_score_type(regression_type: str) -> str:
 def _log_expert_summary(experts: list, n_classes: int, sort_metric: str) -> None:
     """Print a ranked console summary table for a list of scored experts."""
     for i, expert in enumerate(experts):
-        fisher_val = expert.sort_key(sort_metric)
+        # fisher_val = expert.sort_key(sort_metric)
         parts = [
             f"Rank {i + 1:02d}",
             f"Expert {expert.expert_id:4d}",
@@ -222,6 +222,9 @@ def run_pipeline(
         final_output_dir: Root directory under which per-dataset sub-directories are created.
         dataset_name: HuggingFace dataset name to stream (used when ``cfg.dataframe_path``
             is empty, e.g. for the continuity pass).
+        results_json_path: Optional path to a ``results.json`` to append per-expert scores to.
+        run_name: Optional run identifier used as a top-level key in ``results.json``.
+        model_name_for_json: Human-readable model label stored alongside results in ``results.json``.
     """
     subdir = cfg.output_subdir or Path(cfg.dataframe_path).stem
     output_dir = os.path.join(final_output_dir, subdir)

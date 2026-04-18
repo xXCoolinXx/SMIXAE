@@ -247,6 +247,17 @@ python my_script.py
 
 ---
 
+## Linting
+
+After making code changes, run `uv run ruff check` and fix any errors before handing the task back. The ruff config (`pyproject.toml`) selects `E`, `F`, `W`, `I`, `D` with the Google docstring convention; `ANEW_Processing/`, `experiments/`, and `smixae_run.py` are exempted from `D` rules via per-file-ignores.
+
+Notes on common fixes:
+- `F841` (unused variable): comment the assignment out with `# ` rather than deleting it.
+- `D417` (missing arg description): add the missing parameter to the existing `Args:` block — don't replace the docstring.
+- `D301` (backslash in docstring): prefix the docstring with `r`.
+
+---
+
 ## What to Avoid
 
 ### Do NOT use TransformerLens

@@ -1,4 +1,4 @@
-"""Camera-ready LaTeX figure assembly + legend generation (PIL) with correct layout.
+r"""Camera-ready LaTeX figure assembly + legend generation (PIL) with correct layout.
 
 Fixes vs previous versions:
 - Labels are sorted BEFORE stripping numeric prefixes (e.g. 01_Sunday, 02_Monday ...),
@@ -92,6 +92,8 @@ _SCORE_LABEL: dict[str, str] = {
 
 @dataclass
 class PNGEntry:
+    """Parsed metadata for a single camera-ready PNG file (filename follows the convention in docs/LATEX.md)."""
+
     path: Path
     experiment_id: str
     task: str
@@ -103,6 +105,7 @@ class PNGEntry:
 
 
 def scan_camera_ready(camera_ready_dir: Path) -> list[PNGEntry]:
+    """Return all conformant PNG entries in ``camera_ready_dir``, skipping files that don't match the naming convention."""
     entries: list[PNGEntry] = []
     for p in sorted(camera_ready_dir.glob("*.png")):
         m = _FILENAME_RE.match(p.name)
@@ -150,10 +153,11 @@ def _labels_all_prefixed(values: list) -> bool:
     return bool(ss) and all(_PREFIX_RE.match(s) for s in ss)
 
 def _sorted_labels(values: list) -> list:
-    """Sort labels BEFORE stripping numeric prefixes.
+    r"""Sort labels BEFORE stripping numeric prefixes.
+
     - If numeric -> numeric ascending
-    - Else if all match ^\\d+_ -> sort by that integer prefix, then by full string
-    - Else -> lexicographic by string
+    - Else if all match ^\d+_ -> sort by that integer prefix, then by full string
+    - Else -> lexicographic by string.
     """
     if not values:
         return []
@@ -187,8 +191,11 @@ def load_color_info(
     dataset_config_path: Path,
     csv_base_dir: Path | None = None,
 ) -> dict[str, dict]:
-    """Returns {task: {color_map, color_scale, hypothesis_color_overrides, continuous_color, labels}}.
-    Labels (if found) are sorted with _sorted_labels().
+    """Return per-task color info from ``dataset_config_path``.
+
+    The shape is ``{task: {color_map, color_scale, hypothesis_color_overrides,
+    continuous_color, labels}}``. Labels (if found) are sorted with
+    ``_sorted_labels()``.
     """
     import csv as _csv
 
@@ -245,6 +252,7 @@ def load_newline_color_info(newline_config_path: Path) -> dict[str, dict]:
 # ------------------------------ Newline wrap lookup ----------------------------
 
 def load_newline_wrap_lookup(results_json_path: Path) -> dict[tuple, int]:
+    """Build a ``(experiment_id, expert_id, periodic_gain) → line_length`` lookup from ``results.json``."""
     with open(results_json_path) as f:
         data = json.load(f)
 
@@ -281,6 +289,8 @@ def _get_wrap(entry: PNGEntry, lookup: dict | None) -> int:
 
 @dataclass
 class LegendGroup:
+    """Bucket of PNG entries that share a single rendered legend (color map or colorbar)."""
+
     key: str
     task: str
     hyp_filter: str | None
@@ -296,6 +306,7 @@ def infer_legend_groups(
     color_info: dict[str, dict],
     newline_wrap_lookup: dict | None = None,
 ) -> list[LegendGroup]:
+    """Partition PNG entries into ``LegendGroup`` buckets that each map to a single legend image."""
     by_task: dict[str, list[PNGEntry]] = defaultdict(list)
     for e in entries:
         by_task[_canonical_task(e.task)].append(e)
@@ -390,6 +401,7 @@ def infer_legend_groups(
 
 
 def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
+    """Create a legend group per entry in ``color_info``, used for the config-only legend gallery."""
     groups: list[LegendGroup] = []
     for task, ci in sorted(color_info.items()):
         if task == "pile-uncopyrighted":
@@ -432,8 +444,7 @@ def build_all_config_groups(color_info: dict[str, dict]) -> list[LegendGroup]:
 # ------------------------------ Legend rendering -------------------------------
 
 def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
-    """Dispatch a :class:`LegendGroup` to the appropriate PIL renderer in
-    :mod:`analysis.colors`.
+    """Dispatch a ``LegendGroup`` to the appropriate PIL renderer in ``analysis.colors``.
 
     - ``color_map``      → discrete swatch legend using the provided mapping.
     - ``color_scale`` + ``continuous_color`` → continuous colorbar PNG.
@@ -803,10 +814,11 @@ def _render_compact_row(row: _Row, cols: int) -> list[str]:
 
 
 def _render_multiline_task_block(block: _Block, cols: int) -> list[str]:
-    """Task with >cols plots:
+    """Render a task block that wraps across multiple internal rows.
+
     - internal rows of exactly cols plots (pad empties)
     - reserve a legend slot on every internal row so plot sizes don't change
-    - draw legend only after final plot (in final internal row)
+    - draw legend only after final plot (in final internal row).
     """
     show_leg = block.legend_path is not None and block.legend_path.exists()
 
@@ -869,6 +881,7 @@ def generate_figure_tex(
     *,
     is_newline: bool = False,
 ) -> None:
+    """Write a LaTeX ``figure*`` block for one experiment, laying out plots and legends into rows."""
     output_tex.parent.mkdir(parents=True, exist_ok=True)
 
     model_disp = _format_experiment_id(experiment_id)
@@ -943,6 +956,7 @@ def figures(
     ),
     cols: int = typer.Option(3, help="Max number of PLOTS per physical row (legends do not count)"),
 ) -> None:
+    """CLI entry: assemble camera-ready PNGs into per-experiment LaTeX figure files."""
     if not camera_ready_dir.exists():
         typer.echo(f"Error: camera-ready-dir does not exist: {camera_ready_dir}", err=True)
         raise typer.Exit(1)

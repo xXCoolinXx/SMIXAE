@@ -1,3 +1,5 @@
+"""Extract the ANEW All-Subjects table from the source PDF into a CSV of word/valence/arousal."""
+
 import csv
 import re
 
@@ -5,6 +7,7 @@ import pdfplumber
 
 
 def convert_anew_to_csv(pdf_path, output_csv):
+    """Parse Table 1 of the ANEW PDF and write word, valence, and arousal means to CSV."""
     # Table 1 (All Subjects) resides on pages 5 through 18 (indices 4 to 17)
     start_page = 4
     end_page = 17

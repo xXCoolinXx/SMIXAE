@@ -65,12 +65,14 @@ REGRESSION_LABEL: dict[str, str] = {
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 def fmt(v: float | None, decimals: int = 3) -> str:
+    """Format a float to ``decimals`` places, or return ``"--"`` if ``v`` is None."""
     if v is None:
         return "--"
     return f"{v:.{decimals}f}"
 
 
 def fmt_with_std(v: float | None, std: float | None = None, decimals: int = 3) -> str:
+    r"""Format ``v`` with optional ``$\pm$ std`` suffix; returns ``"--"`` if ``v`` is None."""
     if v is None:
         return "--"
     s = f"{v:.{decimals}f}"
@@ -85,6 +87,7 @@ def esc(s: str) -> str:
 
 
 def load_data(results_path: Path, dataset_config_path: Path) -> tuple[dict, list]:
+    """Load ``results.json`` and ``dataset_config.json`` and return them as ``(results, dataset_config)``."""
     import json
     with open(results_path) as f:
         results = json.load(f)
@@ -120,6 +123,7 @@ def hypotheses_to_show(ds_name: str, hyp_map: dict) -> dict:
 # ── Probing table ──────────────────────────────────────────────────────────────
 
 def build_probing_table(results: dict, hyp_map: dict) -> str:
+    """Build the summary probing table (best-expert regression score per model × hypothesis)."""
     models = list(results.keys())
     n_models = len(models)
 
@@ -144,7 +148,7 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
     rows.append(r"\toprule")
 
     n_header_cols  = 4
-    n_data_cols    = n_models * 2
+    # n_data_cols    = n_models * 2
     first_data_col = n_header_cols + 1
 
     h1_parts = [rf"\multicolumn{{{n_header_cols}}}{{l}}{{{esc(MODEL_FAMILY)}}}"]
@@ -242,6 +246,7 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
 # ── Newline table ──────────────────────────────────────────────────────────────
 
 def build_newline_table(results: dict) -> str:
+    """Build the summary newline table (periodic gain of top expert per model × line length)."""
     nine_b_models = [mk for mk in results if "9b" in mk]
     n_models = len(nine_b_models)
     line_length_keys = ["newline_80", "newline_150"]
@@ -327,13 +332,14 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
         rows.append(r"\midrule")
 
         all_datasets = list(run_data.get("probe", {}).keys())
-        last_ds = None
+        # last_ds = None
         for ds_name in all_datasets:
             if ds_name in SKIP_DATASETS:
                 continue
             hyps = hypotheses_to_show(ds_name, hyp_map)
             if hyps:
-                last_ds = ds_name
+                # last_ds = ds_name
+                pass
 
         first_ds = True
         for ds_name in all_datasets:
@@ -349,7 +355,7 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
 
             ds_display = esc(DATASET_NAMES.get(ds_name, ds_name.title()))
             hyp_list = list(hyps.items())
-            n_hyps = len(hyp_list)
+            # n_hyps = len(hyp_list)
             total_rows = sum(
                 len(
                     run_data.get("probe", {})

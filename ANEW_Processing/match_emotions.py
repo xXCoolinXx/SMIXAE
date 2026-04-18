@@ -1,5 +1,7 @@
-"""Match GoEmotions labels to the closest ANEW word using spaCy en_core_web_lg word vectors
-(cosine similarity), then output normalised valence/arousal scores.
+"""Match GoEmotions labels to closest ANEW words and export valence/arousal scores.
+
+Uses spaCy en_core_web_lg word vectors (cosine similarity) to match each GoEmotions
+label to the closest ANEW word, then outputs normalised valence/arousal scores.
 
 ANEW scale: 1-9  →  normalised to [-1, 1] via  (x - 5) / 4
 
@@ -35,6 +37,7 @@ OUTPUT_CSV = HERE / "emotion_va_scores.csv"
 
 
 def cosine(a: np.ndarray, b: np.ndarray) -> float:
+    """Compute cosine similarity between two vectors; returns 0 if either is ~zero."""
     na, nb = np.linalg.norm(a), np.linalg.norm(b)
     if na < 1e-9 or nb < 1e-9:
         return 0.0
@@ -47,6 +50,7 @@ def normalize(val: float) -> float:
 
 
 def main() -> None:
+    """Match each GoEmotions label to its closest ANEW word and write the VA CSV."""
     print("Loading spaCy en_core_web_lg …")
     nlp = spacy.load("en_core_web_lg")
 
