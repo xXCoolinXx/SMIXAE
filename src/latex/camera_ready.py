@@ -60,18 +60,18 @@ app = typer.Typer()
 # ------------------------- Tunable layout constants ----------------------------
 
 _USABLE_FRAC = 0.98                 # fraction of \linewidth used for content
-_LEGEND_SCALE = 0.18                # legend slot width relative to one plot slot
+_LEGEND_SCALE = 0.35                # legend slot width relative to one plot slot
 _BLOCK_GAP = r"\hspace{2.5mm}"      # gap between TASK blocks in the same physical row
 _ROW_VSPACE = r"\vspace{5pt}"       # gap between physical rows
 _PANEL_HEIGHT = "4.0cm"             # fixed-height boxes for plots+legends
 
 # Legend (PIL) styling:
 _LEGEND_BG = (255, 255, 255, 0)     # transparent
-_LEGEND_FONT_SIZE = 34              # larger => more legible when scaled
-_LEGEND_TICK_FONT_SIZE = 30
+_LEGEND_FONT_SIZE = 56              # larger => more legible when scaled
+_LEGEND_TICK_FONT_SIZE = 50
 _LEGEND_TICKS = 6                   # continuous bar tick count
-_LEGEND_SWATCH_PAD = 10
-_LEGEND_LINE_PAD = 10
+_LEGEND_SWATCH_PAD = 14
+_LEGEND_LINE_PAD = 14
 
 # --------------------------- Filename parsing ---------------------------------
 
@@ -88,9 +88,9 @@ _FILENAME_RE = re.compile(
 
 _SCORE_LABEL: dict[str, str] = {
     "r2":       r"$R^2$",
-    "acc":      "Acc.",
+    "acc":      "Accuracy",
     "score":    "Score",
-    "per_gain": r"$\Delta$_{per}",
+    "per_gain": r"$\Delta R^2_{\mathrm{per}}$",
     "cont":     "Cont.",
 }
 
@@ -520,11 +520,11 @@ def _render_continuous_colorbar_png(
     if abs(vmax - vmin) < 1e-12:
         vmax = vmin + 1.0
 
-    bar_h = 720
-    bar_w = 42
-    pad = 14
-    tick_len = 10
-    gap = 10
+    bar_h = 350
+    bar_w = 60
+    pad = 16
+    tick_len = 14
+    gap = 12
 
     tick_font = _load_font(_LEGEND_TICK_FONT_SIZE)
 
@@ -585,11 +585,19 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     if group.color_map:
-        labels = _sorted_labels(list(group.color_map.keys()))
+        if group.labels:
+            labels = _sorted_labels(group.labels)
+            label_to_color = {}
+            for lbl in labels:
+                stripped = _strip_numeric_prefix(str(lbl))
+                label_to_color[lbl] = group.color_map.get(stripped, group.color_map.get(lbl))
+        else:
+            labels = _sorted_labels(list(group.color_map.keys()))
+            label_to_color = group.color_map
         # IMPORTANT: sort first, then strip prefix for display inside renderer
         _render_discrete_legend_png(
             labels=labels,
-            label_to_color=group.color_map,
+            label_to_color=label_to_color,
             output_path=output_path,
         )
         return
@@ -722,7 +730,7 @@ def _next_letter(idx: int) -> str:
 def _entry_description(entry: PNGEntry) -> str:
     hyp_disp = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
     score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
-    return f"E{entry.expert_id}, {_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})."
+    return f"Expert {entry.expert_id}, {_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})."
 
 
 def _caption_text(
@@ -758,7 +766,11 @@ def _caption_text(
         )
         parts.append(f"\\textbf{{{_esc_text(task_disp)}}}: {descriptions}")
 
-    return f"{prefix} {'  '.join(parts)}"
+    if newline_wrap is not None:
+        suffix = " Points represent individual token activations in the bottleneck space, colored by distance since the last newline."
+    else:
+        suffix = " Larger points denote class mean activations in the bottleneck space; smaller points are individual token activations."
+    return f"{prefix} {'  '.join(parts)}{suffix}"
 
 
 # ------------------------------ Block row planning -----------------------------

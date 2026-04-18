@@ -121,9 +121,21 @@ The generated `.tex` uses:
 
 Required LaTeX packages: `graphicx`, `booktabs`, `multirow`, `caption`.
 
----
+### Caption format
 
-## `src/latex/tables.py` — LaTeX Table Generation
+Captions are generated automatically by `_caption_text()`. The format is:
+
+```
+{Model Display Name}. \textbf{Task}: (a) Expert {id}, {Hypothesis} ({score_label}\,=\,{value}). (b) ...
+```
+
+Example: `Gemma 2 9B, Layer 11. \textbf{Hours}: (a) Expert 541, 24-Hour Ring ($R^2$\,=\,0.876). (b) Expert 1521, 12-Hour Ring ($R^2$\,=\,0.734).`
+
+Score labels: `$R^2$`, `Accuracy`, `Score`, `$\Delta R^2_{\mathrm{per}}$`, `Cont.`
+
+Each caption includes a description of the plotted points:
+- **Probe figures**: "Larger points denote class mean activations in the bottleneck space; smaller points are individual token activations."
+- **Newline figures**: "Points represent individual token activations in the bottleneck space, colored by distance since the last newline."
 
 Generates four table files from `results.json` into `--output-dir` (default `results/`):
 
@@ -142,5 +154,4 @@ Required LaTeX packages: `booktabs`, `multirow`.
 
 ## Known Issues (TODOs)
 
-- The color bar in regenerated figures is too small and unreadable at paper scale. A shared colorbar utility is needed that is used consistently by both `scatter3d.py` and `camera_ready.py`.
-- Generated figure descriptions/captions are mechanical/templated — they should be more prosaic for paper inclusion.
+- Generated expert descriptions could be further refined for more natural paper prose beyond the current "Expert N, Hypothesis (Score=Value)" format.
