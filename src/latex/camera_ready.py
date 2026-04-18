@@ -972,7 +972,7 @@ def _render_compact_row(row: _Row, cols: int) -> list[str]:
 
         # plots in fixed-height centered boxes
         for u in block.units:
-            png_rel = str(Path("camera_ready") / u.entry.path.name)
+            png_rel = str(Path("paper/camera_ready") / u.entry.path.name)
             lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{plot_frac:.4f}\linewidth}}%")
             lines.append(r"\centering%")
             lines.append(_include_graphics(png_rel) + "%")
@@ -982,7 +982,7 @@ def _render_compact_row(row: _Row, cols: int) -> list[str]:
         # legend in fixed-height centered box (this centers discrete legends vertically)
         if show_leg:
             leg_frac = legend_w / block_w
-            legend_rel = str(Path("legends") / block.legend_path.name)
+            legend_rel = str(Path("paper/legends") / block.legend_path.name)
             lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{leg_frac:.4f}\linewidth}}%")
             lines.append(r"\centering%")
             lines.append(_include_graphics(legend_rel) + "%")
@@ -1029,7 +1029,7 @@ def _render_multiline_task_block(block: _Block, cols: int) -> list[str]:
             lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{plot_w:.4f}\linewidth}}%")
             lines.append(r"\centering%")
             if i < len(chunk):
-                png_rel = str(Path("camera_ready") / chunk[i].entry.path.name)
+                png_rel = str(Path("paper/camera_ready") / chunk[i].entry.path.name)
                 lines.append(_include_graphics(png_rel) + "%")
                 lines.append(rf"\par\vspace{{-2pt}}{{\small\textbf{{({chunk[i].letter.lower()})}}}}%")
             else:
@@ -1041,7 +1041,7 @@ def _render_multiline_task_block(block: _Block, cols: int) -> list[str]:
             lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{legend_w:.4f}\linewidth}}%")
             lines.append(r"\centering%")
             if is_last:
-                legend_rel = str(Path("legends") / block.legend_path.name)
+                legend_rel = str(Path("paper/legends") / block.legend_path.name)
                 lines.append(_include_graphics(legend_rel) + "%")
             else:
                 lines.append(r"\vspace{0pt}%")
@@ -1118,7 +1118,7 @@ def generate_figure_tex(
 # ------------------------------ Output syncing --------------------------------
 
 def _sync_camera_ready_images(entries: list[PNGEntry], output_dir: Path) -> None:
-    dst_dir = output_dir / "camera_ready"
+    dst_dir = output_dir / "paper" / "camera_ready"
     dst_dir.mkdir(parents=True, exist_ok=True)
     for e in entries:
         dst = dst_dir / e.path.name
@@ -1163,7 +1163,7 @@ def figures(
         typer.echo(f"Loading newline color info from {newline_config} …")
         color_info.update(load_newline_color_info(newline_config))
 
-    legends_dir = output_dir / "legends"
+    legends_dir = output_dir / "paper" / "legends"
     legends_dir.mkdir(parents=True, exist_ok=True)
 
     # Build legend set from config (except pile-uncopyrighted which depends on wrap)
