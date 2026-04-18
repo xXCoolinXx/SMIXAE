@@ -225,6 +225,30 @@ def load_color_info(
     return info
 
 
+def load_newline_color_info(newline_config_path: Path) -> dict[str, dict]:
+    """Load color info from newline_config.json.
+
+    Unlike the probing config, entries use ``"task"`` directly instead of
+    deriving it from ``"dataframe_path"``.
+    """
+    with open(newline_config_path) as f:
+        raw = json.load(f)
+
+    info: dict[str, dict] = {}
+    for entry in raw:
+        task = entry.get("task", "")
+        if not task:
+            continue
+        info[task] = {
+            "color_map":                  entry.get("color_map"),
+            "color_scale":                entry.get("color_scale"),
+            "hypothesis_color_overrides": entry.get("hypothesis_color_overrides", {}),
+            "continuous_color":           entry.get("continuous_color", False),
+            "labels":                     None,
+        }
+    return info
+
+
 # ------------------------------ Newline wrap lookup ----------------------------
 
 def load_newline_wrap_lookup(results_json_path: Path) -> dict[tuple, int]:
@@ -1102,6 +1126,11 @@ def figures(
 
     csv_base_dir = dataset_config.parent if dataset_config.exists() else None
     color_info = load_color_info(dataset_config, csv_base_dir=csv_base_dir) if dataset_config.exists() else {}
+
+    newline_config = dataset_config.parent / "newline_config.json"
+    if newline_config.exists():
+        typer.echo(f"Loading newline color info from {newline_config} …")
+        color_info.update(load_newline_color_info(newline_config))
 
     legends_dir = output_dir / "legends"
     legends_dir.mkdir(parents=True, exist_ok=True)

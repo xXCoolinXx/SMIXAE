@@ -50,6 +50,8 @@ SMIXAE/
 │   └── LATEX.md                     # LaTeX/figure export toolkit reference
 ├── datasets/
 │   ├── probing/                     # Labeled datasets for probing experiments (populated by generate_probing_data.py)
+│   │   ├── dataset_config.json      # Probing dataset configs — read by categorize_all.py only
+│   │   └── newline_config.json      # Newline color info — read by camera_ready.py only
 │   └── steering/                    # Steering prompt datasets (populated by generate_steering_data.py)
 ├── experiments/                     # Self-contained experiment scripts (one per run configuration)
 │   └── gemma_2_9b_l11.sh            # Gemma 2-9B layer 11: train → probe → newline
@@ -255,6 +257,10 @@ All scripts now use HuggingFace for model loading. No TransformerLens usage rema
 ### Do NOT assume features are linear
 
 The whole point of SMIXAE is that features can be nonlinear manifolds. Don't apply analysis methods that assume linearity (e.g. PCA for interpreting bottleneck structure) without also checking for nonlinear structure.
+
+### Do NOT mix probing and newline configs
+
+`dataset_config.json` is for the probing pipeline (`categorize_all.py`) only — every entry must have a real `dataframe_path` pointing to a local CSV. `newline_config.json` is for `camera_ready.py` figure assembly only — entries use `"task"` directly and provide color scheme info for newline figures. Do not add newline/pile-uncopyrighted entries to `dataset_config.json` — it will break the probing pipeline with file-not-found or wrong-column errors.
 
 ---
 

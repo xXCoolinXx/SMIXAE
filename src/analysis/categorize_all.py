@@ -630,9 +630,11 @@ def all_datasets(
         raw_configs = json.load(f)
 
     for entry in raw_configs:
-        p = Path(entry["dataframe_path"])
-        if not p.is_absolute():
-            entry["dataframe_path"] = str(config_dir / p)
+        df_path = entry.get("dataframe_path", "")
+        if df_path:
+            p = Path(df_path)
+            if not p.is_absolute():
+                entry["dataframe_path"] = str(config_dir / p)
 
     dataset_cfgs = [DatasetConfig(**entry) for entry in raw_configs]
     print(f"Loaded {len(dataset_cfgs)} dataset configs from {datasets_config}")

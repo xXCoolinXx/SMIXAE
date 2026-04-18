@@ -647,6 +647,8 @@ class DatasetConfig:
     color_map: dict[str, str] | None = None
     hypothesis_color_overrides: dict[str, dict[str, str]] | None = None
     show_labels: bool = False
+    colorbar_title: str = ""
+    colorbar_tick_increment: int | None = None
 
     @property
     def effective_continuous_color(self) -> bool:
