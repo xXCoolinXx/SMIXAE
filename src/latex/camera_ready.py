@@ -970,13 +970,13 @@ def _render_compact_row(row: _Row, cols: int) -> list[str]:
 
         plot_frac = plot_w / block_w
 
-        # plots in fixed-height centered boxes
+        # plots in fixed-height centered boxes with overlaid panel label
         for u in block.units:
             png_rel = str(Path("paper/camera_ready") / u.entry.path.name)
             lines.append(rf"\begin{{minipage}}[c][{_PANEL_HEIGHT}][c]{{{plot_frac:.4f}\linewidth}}%")
             lines.append(r"\centering%")
+            lines.append(rf"\raisebox{{-\height}}{{\rlap{{\hspace{{3pt}}{{\small\textbf{{({u.letter.lower()})}}}}}}}}%")
             lines.append(_include_graphics(png_rel) + "%")
-            lines.append(rf"\par\vspace{{-2pt}}{{\small\textbf{{({u.letter.lower()})}}}}%")
             lines.append(r"\end{minipage}%")
 
         # legend in fixed-height centered box (this centers discrete legends vertically)
@@ -1030,8 +1030,8 @@ def _render_multiline_task_block(block: _Block, cols: int) -> list[str]:
             lines.append(r"\centering%")
             if i < len(chunk):
                 png_rel = str(Path("paper/camera_ready") / chunk[i].entry.path.name)
+                lines.append(rf"\raisebox{{-\height}}{{\rlap{{\hspace{{3pt}}{{\small\textbf{{({chunk[i].letter.lower()})}}}}}}}}%")
                 lines.append(_include_graphics(png_rel) + "%")
-                lines.append(rf"\par\vspace{{-2pt}}{{\small\textbf{{({chunk[i].letter.lower()})}}}}%")
             else:
                 lines.append(r"\vspace{0pt}%")
             lines.append(r"\end{minipage}%")
