@@ -490,9 +490,9 @@ def build_newline_appendix_tables(results: dict) -> str:
 
 # ── SAEBench table ─────────────────────────────────────────────────────────────
 
-SAEBENCH_RESULTS_PATH = Path("results/saebench_results.json")
+CORE_EVAL_RESULTS_PATH = Path("results/core_eval_results.json")
 
-SAEBENCH_METRIC_LABELS: dict[str, str] = {
+CORE_EVAL_METRIC_LABELS: dict[str, str] = {
     "l0":                  "L0",
     "mse":                 "MSE (norm.)",
     "explained_variance":  "Expl. Var.",
@@ -504,7 +504,7 @@ SAEBENCH_METRIC_LABELS: dict[str, str] = {
     "ce_loss_with_ablation": "CE (ablation)",
 }
 
-SAEBENCH_SUMMARY_METRICS = [
+CORE_EVAL_SUMMARY_METRICS = [
     "l0",
     "explained_variance",
     "ce_loss_score",
@@ -517,14 +517,14 @@ SAEBENCH_SUMMARY_METRICS = [
 ]
 
 # Human-readable model names reused from existing table helpers.
-SAEBENCH_MODEL_DISPLAY: dict[str, str] = {
+CORE_EVAL_MODEL_DISPLAY: dict[str, str] = {
     "google/gemma-2-2b": "Gemma 2 2B",
     "google/gemma-2-9b": "Gemma 2 9B",
 }
 
 
-def _fmt_saebench(v: float | str | None, decimals: int = 3) -> str:
-    """Format a SAEBench metric value for LaTeX output."""
+def _fmt_core_eval(v: float | str | None, decimals: int = 3) -> str:
+    """Format a core eval metric value for LaTeX output."""
     if v is None:
         return "--"
     if isinstance(v, str):
@@ -532,14 +532,14 @@ def _fmt_saebench(v: float | str | None, decimals: int = 3) -> str:
     return f"{v:.{decimals}f}"
 
 
-def build_saebench_table(saebench_results: dict) -> str:
-    r"""Build a SAEBench core metrics table.
+def build_core_eval_table(core_eval_results: dict) -> str:
+    r"""Build a core eval metrics table.
 
     Produces one block per model, with rows = (layer, SAE) and columns = metrics.
     Requires ``booktabs`` LaTeX package.
 
     Args:
-        saebench_results: Contents of ``saebench_results.json``.
+        core_eval_results: Contents of ``core_eval_results.json``.
 
     Returns:
         LaTeX string for a ``table*`` environment.
@@ -559,22 +559,22 @@ def build_saebench_table(saebench_results: dict) -> str:
     rows.append(r"\label{tab:saebench}")
     rows.append(r"\resizebox{\textwidth}{!}{%")
 
-    n_metrics = len(SAEBENCH_SUMMARY_METRICS)
+    n_metrics = len(CORE_EVAL_SUMMARY_METRICS)
     col_spec = "ll " + "r " * n_metrics
     rows.append(r"\begin{tabular}{" + col_spec.strip() + "}")
     rows.append(r"\toprule")
 
-    header = ["Model / Layer", "SAE"] + [SAEBENCH_METRIC_LABELS[m] for m in SAEBENCH_SUMMARY_METRICS]
+    header = ["Model / Layer", "SAE"] + [CORE_EVAL_METRIC_LABELS[m] for m in CORE_EVAL_SUMMARY_METRICS]
     rows.append(" & ".join(header) + r" \\")
     rows.append(r"\midrule")
 
-    model_names = sorted(saebench_results.keys())
+    model_names = sorted(core_eval_results.keys())
 
     for model_idx, model_name in enumerate(model_names):
         if model_idx > 0:
             rows.append(r"\midrule")
-        model_display = esc(SAEBENCH_MODEL_DISPLAY.get(model_name, model_name))
-        layers = saebench_results[model_name]
+        model_display = esc(CORE_EVAL_MODEL_DISPLAY.get(model_name, model_name))
+        layers = core_eval_results[model_name]
         layer_keys = sorted(layers.keys(), key=lambda lk: int(lk.split("_")[-1]))
 
         # Count total data rows for this model to span the model cell.
@@ -613,8 +613,8 @@ def build_saebench_table(saebench_results: dict) -> str:
                 row.append(esc(sae_name))
 
                 metrics = layers[layer_key][sae_name]
-                for metric in SAEBENCH_SUMMARY_METRICS:
-                    row.append(_fmt_saebench(metrics.get(metric)))
+                for metric in CORE_EVAL_SUMMARY_METRICS:
+                    row.append(_fmt_core_eval(metrics.get(metric)))
 
                 rows.append(" & ".join(row) + r" \\")
 
@@ -632,9 +632,10 @@ def build_saebench_table(saebench_results: dict) -> str:
 def generate(
     results_path: Path = typer.Option(RESULTS_PATH, help="Path to results.json"),
     dataset_config_path: Path = typer.Option(DATASET_CONFIG_PATH, help="Path to dataset_config.json"),
+    core_eval_results_path: Path = typer.Option(CORE_EVAL_RESULTS_PATH, help="Path to core_eval_results.json"),
     output_dir: Path = typer.Option(DEFAULT_OUTPUT_DIR, help="Parent directory; all tables are written to <output-dir>/paper/"),
 ) -> None:
-    """Generate LaTeX tables (probing + newline, summary + appendix) from results.json."""
+    """Generate all LaTeX tables from results.json and core_eval_results.json."""
     results, dataset_config = load_data(results_path, dataset_config_path)
     hyp_map = build_hypothesis_map(dataset_config)
     paper_dir = output_dir / "paper"
@@ -651,24 +652,13 @@ def generate(
         out_path.write_text(content)
         typer.echo(f"Written: {out_path}")
 
+    if core_eval_results_path.exists():
+        import json
 
-@app.command(name="saebench")
-def generate_saebench(
-    saebench_results_path: Path = typer.Option(SAEBENCH_RESULTS_PATH, help="Path to saebench_results.json"),
-    output_dir: Path = typer.Option(DEFAULT_OUTPUT_DIR, help="Parent directory; table is written to <output-dir>/paper/"),
-) -> None:
-    """Generate SAEBench core metrics LaTeX table from saebench_results.json."""
-    import json
-
-    if not saebench_results_path.exists():
-        typer.echo(f"Error: {saebench_results_path} not found. Run 'smixae saebench run-all' first.", err=True)
-        raise typer.Exit(1)
-
-    with open(saebench_results_path) as f:
-        saebench_results = json.load(f)
-
-    paper_dir = output_dir / "paper"
-    paper_dir.mkdir(parents=True, exist_ok=True)
-    out_path = paper_dir / "table_saebench.tex"
-    out_path.write_text(build_saebench_table(saebench_results))
-    typer.echo(f"Written: {out_path}")
+        with open(core_eval_results_path) as f:
+            core_eval_results = json.load(f)
+        out_path = paper_dir / "table_core_eval.tex"
+        out_path.write_text(build_core_eval_table(core_eval_results))
+        typer.echo(f"Written: {out_path}")
+    else:
+        typer.echo(f"Skipping core eval table ({core_eval_results_path} not found)")
