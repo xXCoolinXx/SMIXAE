@@ -488,6 +488,144 @@ def build_newline_appendix_tables(results: dict) -> str:
     return "\n\n".join(parts)
 
 
+# ── SAEBench table ─────────────────────────────────────────────────────────────
+
+SAEBENCH_RESULTS_PATH = Path("results/saebench_results.json")
+
+SAEBENCH_METRIC_LABELS: dict[str, str] = {
+    "l0":                  "L0",
+    "mse":                 "MSE (norm.)",
+    "explained_variance":  "Expl. Var.",
+    "cosine_similarity":   "Cos. Sim.",
+    "l2_ratio":            r"$\|$recon$\|/\|$in$\|$",
+    "ce_loss_score":       "CE Score",
+    "ce_loss_without_sae": "CE (orig.)",
+    "ce_loss_with_sae":    "CE (SAE)",
+    "ce_loss_with_ablation": "CE (ablation)",
+}
+
+SAEBENCH_SUMMARY_METRICS = [
+    "l0",
+    "explained_variance",
+    "ce_loss_score",
+    "ce_loss_without_sae",
+    "ce_loss_with_sae",
+    "ce_loss_with_ablation",
+    "mse",
+    "cosine_similarity",
+    "l2_ratio",
+]
+
+# Human-readable model names reused from existing table helpers.
+SAEBENCH_MODEL_DISPLAY: dict[str, str] = {
+    "google/gemma-2-2b": "Gemma 2 2B",
+    "google/gemma-2-9b": "Gemma 2 9B",
+}
+
+
+def _fmt_saebench(v: float | str | None, decimals: int = 3) -> str:
+    """Format a SAEBench metric value for LaTeX output."""
+    if v is None:
+        return "--"
+    if isinstance(v, str):
+        return esc(v[:20])  # truncate error messages
+    return f"{v:.{decimals}f}"
+
+
+def build_saebench_table(saebench_results: dict) -> str:
+    r"""Build a SAEBench core metrics table.
+
+    Produces one block per model, with rows = (layer, SAE) and columns = metrics.
+    Requires ``booktabs`` LaTeX package.
+
+    Args:
+        saebench_results: Contents of ``saebench_results.json``.
+
+    Returns:
+        LaTeX string for a ``table*`` environment.
+    """
+    rows: list[str] = []
+    rows.append(r"% Required packages: booktabs, multirow")
+    rows.append(r"\begin{table*}[htbp]")
+    rows.append(r"\centering")
+    rows.append(r"\small")
+    rows.append(
+        r"\caption{SAEBench core metrics for SMIXAE and GemmaScope 16k baselines. "
+        r"Evaluated on OpenWebText (context 128 tokens). "
+        r"L0 = mean active features per token; Expl.\ Var.\ = explained variance; "
+        r"CE Score $= (\text{CE}_\text{abl} - \text{CE}_\text{SAE}) / "
+        r"(\text{CE}_\text{abl} - \text{CE}_\text{orig})$, higher is better.}"
+    )
+    rows.append(r"\label{tab:saebench}")
+    rows.append(r"\resizebox{\textwidth}{!}{%")
+
+    n_metrics = len(SAEBENCH_SUMMARY_METRICS)
+    col_spec = "ll " + "r " * n_metrics
+    rows.append(r"\begin{tabular}{" + col_spec.strip() + "}")
+    rows.append(r"\toprule")
+
+    header = ["Model / Layer", "SAE"] + [SAEBENCH_METRIC_LABELS[m] for m in SAEBENCH_SUMMARY_METRICS]
+    rows.append(" & ".join(header) + r" \\")
+    rows.append(r"\midrule")
+
+    model_names = sorted(saebench_results.keys())
+
+    for model_idx, model_name in enumerate(model_names):
+        if model_idx > 0:
+            rows.append(r"\midrule")
+        model_display = esc(SAEBENCH_MODEL_DISPLAY.get(model_name, model_name))
+        layers = saebench_results[model_name]
+        layer_keys = sorted(layers.keys(), key=lambda lk: int(lk.split("_")[-1]))
+
+        # Count total data rows for this model to span the model cell.
+        total_model_rows = sum(len(layers[lk]) for lk in layer_keys)
+        model_cell_written = False
+
+        for layer_key in layer_keys:
+            layer_display = esc(layer_key.replace("_", " ").replace("layer", "Layer"))
+            sae_names = list(layers[layer_key].keys())
+            n_saes = len(sae_names)
+
+            for sae_idx, sae_name in enumerate(sae_names):
+                row: list[str] = []
+
+                # Model column (spans all rows for this model).
+                if not model_cell_written:
+                    row.append(
+                        rf"\multirow{{{total_model_rows}}}{{*}}{{{model_display}}}"
+                        if total_model_rows > 1
+                        else model_display
+                    )
+                    model_cell_written = True
+                else:
+                    row.append("")
+
+                # Layer column (spans SAE rows within this layer).
+                if sae_idx == 0:
+                    row.append(
+                        rf"\multirow{{{n_saes}}}{{*}}{{{layer_display}}}"
+                        if n_saes > 1
+                        else layer_display
+                    )
+                else:
+                    row.append("")
+
+                row.append(esc(sae_name))
+
+                metrics = layers[layer_key][sae_name]
+                for metric in SAEBENCH_SUMMARY_METRICS:
+                    row.append(_fmt_saebench(metrics.get(metric)))
+
+                rows.append(" & ".join(row) + r" \\")
+
+    rows.append(r"\bottomrule")
+    rows.append(r"\end{tabular}")
+    rows.append(r"}% end resizebox")
+    rows.append(r"\end{table*}")
+
+    return "\n".join(rows)
+
+
 # ── CLI ────────────────────────────────────────────────────────────────────────
 
 @app.command()
@@ -512,3 +650,25 @@ def generate(
         out_path = paper_dir / filename
         out_path.write_text(content)
         typer.echo(f"Written: {out_path}")
+
+
+@app.command(name="saebench")
+def generate_saebench(
+    saebench_results_path: Path = typer.Option(SAEBENCH_RESULTS_PATH, help="Path to saebench_results.json"),
+    output_dir: Path = typer.Option(DEFAULT_OUTPUT_DIR, help="Parent directory; table is written to <output-dir>/paper/"),
+) -> None:
+    """Generate SAEBench core metrics LaTeX table from saebench_results.json."""
+    import json
+
+    if not saebench_results_path.exists():
+        typer.echo(f"Error: {saebench_results_path} not found. Run 'smixae saebench run-all' first.", err=True)
+        raise typer.Exit(1)
+
+    with open(saebench_results_path) as f:
+        saebench_results = json.load(f)
+
+    paper_dir = output_dir / "paper"
+    paper_dir.mkdir(parents=True, exist_ok=True)
+    out_path = paper_dir / "table_saebench.tex"
+    out_path.write_text(build_saebench_table(saebench_results))
+    typer.echo(f"Written: {out_path}")

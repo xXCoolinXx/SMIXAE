@@ -35,14 +35,16 @@ SMIXAE/
 │   │   ├── scatter3d.py             # Flexible 3-D Plotly scatter with per-class means, labels, and colorbar
 │   │   ├── colors.py                # Shared colour/colorbar/legend backend (Plotly traces + PIL PNGs)
 │   │   ├── _html_save.py            # Client-side JS injected into experts.html for figure capture via save server
+│   │   ├── saebench_core.py         # SAEBench core eval reimplemented (HuggingFace, no TransformerLens)
 │   │   └── pretokenize.py           # Converts HuggingFace datasets to SAELens tokenized format
 │   ├── latex/
 │   │   ├── save_server.py           # Local HTTP server (port 7788) for interactive figure collection
 │   │   ├── camera_ready.py          # Camera-ready LaTeX figure assembly with PIL legends
-│   │   └── tables.py                # LaTeX table generation from results.json
+│   │   └── tables.py                # LaTeX table generation from results.json + saebench_results.json
 │   └── cli/
 │       ├── cli.py                   # Centralized CLI entry point (smixae command)
-│       └── train.py                 # smixae train subcommand — all training options as CLI flags
+│       ├── train.py                 # smixae train subcommand — all training options as CLI flags
+│       └── saebench.py              # smixae saebench subcommands (run-all, run-single)
 ├── docs/
 │   ├── ARCHITECTURE.md              # Encoding/decoding pipelines, tensor shapes, dead expert recovery
 │   ├── ANALYSIS.md                  # Probing workflow, scoring metrics, dataset format
@@ -57,6 +59,8 @@ SMIXAE/
 ├── experiments/                     # Self-contained experiment scripts (one per run configuration)
 │   └── gemma_2_9b_l11.sh            # Gemma 2-9B layer 11: train → probe → newline
 ├── results/                         # All outputs, created at runtime (not committed)
+│   ├── results.json                 # Probing + newline metrics (written by probe/newline steps)
+│   ├── saebench_results.json        # SAEBench core metrics (written by saebench step)
 │   └── {experiment_name}/
 │       ├── model/                   # Final inference-ready SAE (fixed path, used by analysis scripts)
 │       ├── checkpoints/             # Intermediate training checkpoints (run_id subdir, for resume only)
@@ -342,10 +346,14 @@ smixae
 │   └── main                     # Newline-position manifold analysis
 ├── steer
 │   └── main                     # Steering experiments (coordinate substitution)
+├── saebench
+│   ├── run-all                  # Evaluate all experiments in results.json vs GemmaScope baselines
+│   └── run-single               # Evaluate one SMIXAE checkpoint (+ optional baseline)
 └── latex
     ├── save-server              # Start local HTTP figure-collection server (port 7788)
     ├── figures                  # Assemble camera-ready PNGs into LaTeX figure files
-    └── tables                   # Generate four LaTeX tables (probing + newline, summary + appendix) from results.json
+    ├── tables                   # Generate four LaTeX tables (probing + newline, summary + appendix) from results.json
+    └── saebench-table           # Generate SAEBench core metrics table from saebench_results.json
 ```
 
 ```bash
@@ -387,6 +395,19 @@ smixae steer main \
     --base-model-name google/gemma-2-9b \
     --hook-point model.layers.11 \
     --output-dir results/my_run/steer
+
+# SAEBench: evaluate all experiments in results.json vs GemmaScope 16k baselines
+smixae saebench run-all \
+    --results-json results/results.json \
+    --output-json results/saebench_results.json
+
+# SAEBench: evaluate a single checkpoint (GemmaScope baseline loaded from defaults)
+smixae saebench run-single results/my_run/model \
+    --base-model-name google/gemma-2-9b \
+    --hook-point model.layers.11
+
+# Generate the SAEBench LaTeX table
+smixae latex saebench-table --output-dir results/
 ```
 
 `smixae_run.py` is a thin shim that calls the CLI with hardcoded Gemma 2-9B defaults — use it via PBS or `python smixae_run.py` for quick invocation without arguments.
@@ -405,6 +426,68 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 4. **Review and save**: visit `http://127.0.0.1:7788/` to inspect the gallery, remove unwanted figures, and batch-save all to disk (auto-crops white borders).
 5. **Assemble LaTeX**: `smixae latex figures --camera-ready-dir … --output-dir results/` — reads saved PNGs, generates PIL legends, and writes `.tex` files + `camera_ready/` + `legends/` into `<output-dir>/paper/`. `\includegraphics` paths are written as `paper/camera_ready/…` / `paper/legends/…`, so a main document sitting next to the `paper/` folder can `\input{paper/probe_<exp>.tex}` and the images resolve correctly.
 6. **Generate tables**: `smixae latex tables [--output-dir results/]` — reads `results.json` and writes four `.tex` files to `<output-dir>/paper/` (same layout as figures): `table_probing.tex` (summary with `\pm` CV std), `table_newline.tex` (summary), `table_probing_appendix.tex` (all 10 experts per model/hypothesis), `table_newline_appendix.tex` (all 10 experts per model/line-length). Requires `booktabs`, `multirow` packages.
+7. **SAEBench table**: `smixae latex saebench-table [--output-dir results/]` — reads `saebench_results.json` and writes `table_saebench.tex`.
+
+---
+
+## SAEBench Evaluation
+
+Implemented in `src/analysis/saebench_core.py`. Reimplements SAEBench core metrics using HuggingFace directly — **no TransformerLens dependency**.
+
+### Metrics computed
+
+| Metric | Definition |
+|--------|-----------|
+| `l0` | Mean active features per token (count of non-zero elements in flat feature vector) |
+| `mse` | Normalised MSE: mean `‖x − x̂‖² / ‖x‖²` per token |
+| `explained_variance` | `1 − residual_var / total_var` (correct formula) |
+| `cosine_similarity` | Mean cosine similarity between reconstruction and input |
+| `l2_ratio` | Mean `‖x̂‖ / ‖x‖` per token |
+| `ce_loss_score` | `(CE_ablation − CE_SAE) / (CE_ablation − CE_orig)`, higher = better |
+| `ce_loss_without_sae` | Baseline CE loss |
+| `ce_loss_with_sae` | CE loss with SAE reconstruction patched in at hook point |
+| `ce_loss_with_ablation` | CE loss with zero-ablation at hook point |
+
+### SMIXAE wrapper
+
+SMIXAE's `encode()` returns `(batch, n_experts, d_bottleneck)`.  `SMIXAEBenchWrapper` flattens this to `(batch, n_experts × d_bottleneck)` for metric computation, and unflattens before calling `decode()`.  The effective L0 for SMIXAE is `k_experts × d_bottleneck` per token (≈ 64 × 3 = 192 with default settings).
+
+### GemmaScope baselines
+
+Loaded via SAELens `SAE.from_pretrained()`.  Default comparison paths (closest width-16k L0 to 192):
+
+| Model | Layer | SAELens release | sae_id |
+|-------|-------|-----------------|--------|
+| Gemma 2 2B | 12 | `gemma-scope-2b-pt-res` | `layer_12/width_16k/average_l0_176` |
+| Gemma 2 9B | 11 | `gemma-scope-9b-pt-res` | `layer_11/width_16k/average_l0_131` |
+| Gemma 2 9B | 20 | `gemma-scope-9b-pt-res` | `layer_20/width_16k/average_l0_131` |
+
+Override with `--gemmascope-release` / `--gemmascope-sae-id` in `run-single`, or edit `GEMMASCOPE_BASELINES` in `saebench_core.py`.
+
+### Results JSON structure
+
+`results/saebench_results.json` has the hierarchy: **model → layer → SAE name → metrics**.  Human-readable SAE names are used as keys (e.g. `"SMIXAE"`, `"GemmaScope 9B 16k (L0≈131)"`).
+
+```json
+{
+  "google/gemma-2-9b": {
+    "layer_11": {
+      "SMIXAE": { "l0": 191.2, "ce_loss_score": 0.89, ... },
+      "GemmaScope 9B 16k (L0≈131)": { "l0": 130.8, "ce_loss_score": 0.92, ... }
+    }
+  }
+}
+```
+
+### `src/analysis/saebench_core.py`
+
+- **`SMIXAEBenchWrapper`**: Wraps SMIXAE; flattens 3D encode output to 2D.
+- **`GemmaScopeBenchWrapper`**: Thin wrapper around a SAELens SAE; ensures consistent device placement.
+- **`SAEBenchCoreConfig`**: Dataclass: `dataset`, `context_size`, `n_reconstruction_batches`, `n_sparsity_batches`, `batch_size`, `device`, `dtype`.
+- **`run_core_eval(sae, model, tokenizer, hook_name, cfg)`**: Runs all metrics for one SAE.
+- **`evaluate_experiment(...)`**: Evaluates SMIXAE + GemmaScope baseline(s) for one experiment.
+- **`run_all_from_results_json(...)`**: Batch eval of all experiments in `results.json`.
+- **`save_saebench_results(results, path)`**: Deep-merges and writes `saebench_results.json`.
 
 ---
 
@@ -412,4 +495,4 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
 - [ ] **LaTeX table fixes**: Color bar in regenerated figures is too small and unreadable. Need a shared colorbar utility used by both `scatter3d.py` and `camera_ready.py`.
-- [ ] **SAEBench evaluation**: Test SMIXAE on SAEBench core, benchmarked against comparable Gemma Scope models. Requires monkey-patching SAEBench (upstream is not well-structured for custom architectures).
+- [x] **SAEBench evaluation**: Implemented as `smixae saebench run-all` / `smixae saebench run-single`. Reimplements SAEBench core metrics (L0, MSE, explained variance, CE loss score) using HuggingFace — no TransformerLens dependency. Results written to `results/saebench_results.json`; LaTeX table via `smixae latex saebench-table`.
