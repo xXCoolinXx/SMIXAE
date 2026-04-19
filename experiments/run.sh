@@ -135,15 +135,15 @@ fi
 
 # --------------------------------------------------------------------------- #
 # 4. SAEBench core evaluation                                                   #
-# Evaluates the trained SMIXAE against GemmaScope 16k baselines.               #
+# Evaluates the trained SMIXAE against a GemmaScope 16k baseline.              #
 # Add "saebench" to --steps to run this step.                                  #
 # --------------------------------------------------------------------------- #
 if _has_step saebench; then
-    smixae saebench run-single \
-        "${RESULTS_DIR}/model" \
+    smixae core "${RESULTS_DIR}/model" \
         --base-model-name "${MODEL}" \
         --hook-point "${HOOK}" \
-        --output-json "results/saebench_results.json"
+        --display-name SMIXAE \
+        --output-json "results/core_eval_results.json"
 fi
 
 # --------------------------------------------------------------------------- #
