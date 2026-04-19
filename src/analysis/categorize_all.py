@@ -73,9 +73,9 @@ class ProbeRunConfig:
     random_seed: int = 42
 
     # Density-aware subsampling (random-sample path only)
-    random_sample_n_input_samples: int = 5000
+    random_sample_n_input_samples: int = 30000
     random_sample_min_active_fraction: float = 0.75
-    random_sample_max_points: int = 10000
+    random_sample_max_points: int = 50000
     density_subsample_k: int = 12
     density_subsample_target: int = 1000
 
@@ -521,9 +521,9 @@ def single(
     color_scale: str = typer.Option("Plasma", help="Plotly continuous colorscale name (e.g. Plasma, Viridis, RdBu)"),
     output_dir: str = typer.Option("expert_plots", help="Base directory to save the HTML plots"),
     # ── density subsampling (random-sample path only) ──
-    random_sample_n_input_samples: int = typer.Option(5000, help="Number of prompts for unlabeled random-sample path"),
+    random_sample_n_input_samples: int = typer.Option(30000, help="Number of prompts for unlabeled random-sample path"),
     random_sample_min_active_fraction: float = typer.Option(0.75, help="Min active fraction for random-sample candidates (0–1)"),
-    random_sample_max_points: int = typer.Option(10000, help="Max points collected per expert in random-sample path"),
+    random_sample_max_points: int = typer.Option(50000, help="Max points collected per expert in random-sample path"),
     density_subsample_k: int = typer.Option(12, help="k-NN neighbor count for density estimation"),
     density_subsample_target: int = typer.Option(1000, help="Final point count after density-aware thinning"),
 ):
@@ -648,9 +648,9 @@ def all_datasets(
         "Leave empty to skip.",
     ),
     # ── density subsampling (random-sample path only) ──
-    random_sample_n_input_samples: int = typer.Option(5000, help="Number of prompts for unlabeled random-sample path"),
+    random_sample_n_input_samples: int = typer.Option(30000, help="Number of prompts for unlabeled random-sample path"),
     random_sample_min_active_fraction: float = typer.Option(0.75, help="Min active fraction for random-sample candidates (0–1)"),
-    random_sample_max_points: int = typer.Option(10000, help="Max points collected per expert in random-sample path"),
+    random_sample_max_points: int = typer.Option(50000, help="Max points collected per expert in random-sample path"),
     density_subsample_k: int = typer.Option(12, help="k-NN neighbor count for density estimation"),
     density_subsample_target: int = typer.Option(1000, help="Final point count after density-aware thinning"),
 ):

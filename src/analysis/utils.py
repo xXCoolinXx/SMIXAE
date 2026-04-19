@@ -871,22 +871,27 @@ class Expert:
     def density_subsample(self, max_points: int, k: int = 12) -> None:
         """Thin activations to *max_points* via k-NN density rejection.
 
-        Keeps points in sparse regions (low local density) with high
-        probability and aggressively thins dense clusters, producing a
-        spatially stratified sample across the learned manifold.
+        Estimates local density from the distance to each point's k-th nearest
+        neighbor, then keeps each point with probability inversely proportional
+        to a power of its density.  This aggressively thins dense clusters while
+        preserving sparse manifold structure.
         """
         X = self.expert_activations
         n = X.shape[0]
         if n <= max_points:
             return
 
-        eps = 1e-12
         D = torch.cdist(X, X)
         r_k = D.topk(k + 1, largest=False).values[:, -1]
         del D
 
-        inv_rho = r_k + eps  # proportional to 1/density
-        p = (max_points * inv_rho / inv_rho.sum()).clamp(max=1.0)
+        # Power-law weighting: raise inv_density to a power > 1 to amplify
+        # preference for sparse regions.  Power = 2 means keep probability
+        # scales as 1/rho^2 rather than 1/rho, much more aggressive thinning.
+        eps = 1e-12
+        inv_rho = r_k + eps
+        weights = inv_rho ** 2
+        p = (max_points * weights / weights.sum()).clamp(max=1.0)
 
         keep_mask = torch.rand(n) < p
         n_kept = int(keep_mask.sum().item())
