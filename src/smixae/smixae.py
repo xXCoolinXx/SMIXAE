@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 import torch
 from sae_lens.saes.batchtopk_sae import BatchTopK
@@ -252,7 +253,7 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         # Undo rescaling from encoding: feature_acts shape is (batch, n_experts, d_bottleneck)
         if self.cfg.rescale_acts_by_decoder_norm:
             # effective_decoder_norm shape is (n_experts,), reshape to (1, n_experts, 1) for broadcasting
-            norm_factor = self.effective_decoder_norm.view(1, -1, 1)
+            norm_factor = self.effective_decoder_norm.view(1, -1, 1).clamp(min=1e-8)
             feature_acts = feature_acts / norm_factor
 
         sae_out_pre = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec)
@@ -296,6 +297,7 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
             ``hidden_pre``, ``loss`` (scalar), ``losses`` (per-term dict), and
             ``metrics`` (dict of float tensors).
         """
+        self._normalize_W_latent_dec()
         feature_acts, hidden_pre = self.encode_with_hidden_pre(step_input.sae_in)
         sae_out = self.decode(self.h_bottleneck)
 
@@ -525,6 +527,34 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
 
         return torch.linalg.matrix_norm(W_eff, ord="fro", dim=(-2, -1))
 
+    @torch.no_grad()
+    def _normalize_W_latent_dec(self) -> None:
+        """Normalize each expert's W_latent_dec slice to unit Frobenius norm.
+
+        With symmetric decode (Fix B), effective_decoder_norm cancels from the
+        reconstruction gradient path, removing the loss-side force that previously
+        bounded it.  W_latent_dec gains a gauge degree of freedom (scale by alpha,
+        compensate W_bottleneck by 1/alpha — loss invariant).  Normalising here
+        mirrors what SAELens does to W_dec after each step, anchoring Eff to the
+        W_dec row norms rather than letting it drift.
+        """
+        norms = self.W_latent_dec.data.view(self.cfg.n_experts, -1).norm(dim=-1)
+        self.W_latent_dec.data /= norms.clamp(min=1e-8).view(self.cfg.n_experts, 1, 1)
+
+    @torch.no_grad()
+    def fold_activation_norm_scaling_factor(self, scaling_factor: float) -> None:
+        """Fold the activation-norm scaling factor, capturing Eff_train before fold modifies W_dec.
+
+        The base fold divides W_dec by scaling_factor, which would change
+        effective_decoder_norm from Eff_train to Eff_train/sf. We capture
+        Eff_train first and store it so process_state_dict_for_saving_inference
+        folds the correct norm into W_bottleneck (giving hpb_inf = hpb_train
+        exactly at inference, not hpb_train/sf).
+        """
+        eff_train = self.effective_decoder_norm.detach().clone().clamp(min=1e-8)
+        super().fold_activation_norm_scaling_factor(scaling_factor)
+        self.register_buffer("_eff_for_fold", eff_train)
+
     def get_activation_fn(self) -> Callable[[torch.Tensor], torch.Tensor]:
         """Return LeakyReLU(1e-4) to avoid dead neurons while preserving expert norms."""
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
@@ -534,14 +564,19 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
     def process_state_dict_for_saving_inference(
         self, state_dict: dict[str, Any]
     ) -> None:
-        
         super().process_state_dict_for_saving_inference(state_dict)
 
         if self.cfg.rescale_acts_by_decoder_norm:
+            # Use Eff captured before fold_activation_norm_scaling_factor changed W_dec.
+            # Falling back to self.effective_decoder_norm uses Eff_train/sf instead of
+            # Eff_train, which inflates hpb_inf by 1/sf and breaks threshold matching.
+            eff = state_dict.pop("_eff_for_fold", None)
+            if eff is None:
+                eff = self.effective_decoder_norm.clamp(min=1e-8)
             _fold_effective_norm(
-                W_bottleneck = state_dict['W_bottleneck'],
-                W_latent_dec = state_dict['W_latent_dec'],
-                effective_decoder_norm = self.effective_decoder_norm.clamp(1e-8),
+                W_bottleneck=state_dict["W_bottleneck"],
+                W_latent_dec=state_dict["W_latent_dec"],
+                effective_decoder_norm=eff,
             )
 
 
@@ -620,6 +655,8 @@ def smixae_encode(
     Args:
         sae: Either an :class:`SMIXAE` (inference) or :class:`SMIXAETraining` instance.
         x: Input activations of shape ``(batch, d_model)``.
+        decoder_norm_override: If ``True``, skip the ``effective_decoder_norm`` rescale.
+            Used at inference when the norm is already folded into ``W_bottleneck``.
 
     Returns:
         h_latent: Post-activation expert space activations, shape
