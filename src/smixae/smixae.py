@@ -92,7 +92,7 @@ class SMIXAE(SAE[SMIXAEConfig]):
 
     def encode(self, x: torch.Tensor) -> torch.Tensor:
         """Encode the input tensor into the feature space."""
-        _, _, hidden_pre_bottleneck = smixae_encode(self, x)  # (batch, n_experts, d_bottleneck)
+        _, _, hidden_pre_bottleneck = smixae_encode(self, x, decoder_norm_override=True)  # (batch, n_experts, d_bottleneck)
 
         bottleneck_mask = hidden_pre_bottleneck.norm(dim=-1) > self.threshold  # type: ignore # (batch, n_experts) mask
 
@@ -105,19 +105,28 @@ class SMIXAE(SAE[SMIXAEConfig]):
             bottleneck:  ``(batch, n_experts, d_bottleneck)`` — same as ``encode()``.
             h_latent:    ``(batch, n_experts * d_expert)`` — latent activations before bottleneck projection.
         """
-        h_latent, _, hidden_pre_bottleneck = smixae_encode(self, x)
+        h_latent, _, hidden_pre_bottleneck = smixae_encode(self, x, decoder_norm_override=True)
         bottleneck_mask = hidden_pre_bottleneck.norm(dim=-1) > self.threshold  # type: ignore
         bottleneck = hidden_pre_bottleneck * bottleneck_mask.unsqueeze(-1)
         return bottleneck, h_latent
 
     def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
-        """Decode feature activations back to the input space.
+        """Decode bottleneck activations back to the input space.
 
-        Reverses hook_z reshaping if it was applied during input processing.
+        Applies the latent decoder, flattens expert dimensions, and projects through
+        ``W_dec``. The bias is added only at the output to avoid collapsing manifold structure.
         """
+        # Undo rescaling from encoding: feature_acts shape is (batch, n_experts, d_bottleneck)
+        # if self.cfg.rescale_acts_by_decoder_norm:
+        #     # effective_decoder_norm shape is (n_experts,), reshape to (1, n_experts, 1) for broadcasting
+        #     norm_factor = self.effective_decoder_norm.view(1, -1, 1)
+        #     feature_acts = feature_acts / norm_factor
+
         sae_out_pre = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec)
         sae_out_pre = sae_out_pre.flatten(-2, -1)
-        sae_out_pre = sae_out_pre @ self.W_dec + self.b_dec
+        sae_out_pre = (
+            sae_out_pre @ self.W_dec + self.b_dec
+        )  # Bias term destroys manifold structure, so only add it to the output
 
         sae_out_pre = self.hook_sae_recons(sae_out_pre)
         sae_out_pre = self.run_time_activation_norm_fn_out(sae_out_pre)
@@ -127,20 +136,6 @@ class SMIXAE(SAE[SMIXAEConfig]):
         """Return LeakyReLU(1e-4) to avoid dead neurons while preserving expert norms."""
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
-
-    @property
-    def effective_decoder_norm(self) -> torch.Tensor:
-        """Compute the Frobenius norm of the effective bottleneck-to-residual projection.
-
-        Returns a tensor of shape ``(n_experts,)``.
-        """
-        W_dec_reshaped = self.W_dec.view(self.cfg.n_experts, self.cfg.d_expert, -1)
-
-        # W_latent_dec: (n_experts, d_bottleneck, d_expert)
-        # W_dec_reshaped: (n_experts, d_expert, d_model)
-        W_eff = self.W_latent_dec @ W_dec_reshaped
-
-        return torch.linalg.matrix_norm(W_eff, ord="fro", dim=(-2, -1))
 
 
 @dataclass
@@ -254,6 +249,12 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         Applies the latent decoder, flattens expert dimensions, and projects through
         ``W_dec``. The bias is added only at the output to avoid collapsing manifold structure.
         """
+        # Undo rescaling from encoding: feature_acts shape is (batch, n_experts, d_bottleneck)
+        if self.cfg.rescale_acts_by_decoder_norm:
+            # effective_decoder_norm shape is (n_experts,), reshape to (1, n_experts, 1) for broadcasting
+            norm_factor = self.effective_decoder_norm.view(1, -1, 1)
+            feature_acts = feature_acts / norm_factor
+
         sae_out_pre = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec)
         sae_out_pre = sae_out_pre.flatten(-2, -1)
         sae_out_pre = (
@@ -529,6 +530,21 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
 
+    @override
+    def process_state_dict_for_saving_inference(
+        self, state_dict: dict[str, Any]
+    ) -> None:
+        
+        super().process_state_dict_for_saving_inference(state_dict)
+
+        norm = sae.effective_decoder_norm.clamp(1e-8)
+        if self.cfg.rescale_acts_by_decoder_norm:
+            _fold_effective_norm(
+                W_bottleneck = state_dict['W_bottleneck'],
+                W_latent_dec = state_dict['W_latent_dec'],
+                effective_decoder_norm = self.effective_decoder_norm.clamp(1e-8),
+            )
+
 
 def _init_weights_smixae(
     sae: SAE[SMIXAEConfig] | TrainingSAE[SMIXAETrainingConfig],
@@ -591,7 +607,7 @@ def _init_weights_smixae(
 
 
 def smixae_encode(
-    sae: SMIXAE | SMIXAETraining, x: torch.Tensor
+    sae: SMIXAE | SMIXAETraining, x: torch.Tensor, decoder_norm_override = False,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """Shared encoding logic for both inference and training SMIXAE models.
 
@@ -627,7 +643,21 @@ def smixae_encode(
         # + sae.b_bottleneck - this causes flattening
     )  # (batch_size, n_experts, d_bottelneck)
 
-    if sae.cfg.rescale_acts_by_decoder_norm:
+    if sae.cfg.rescale_acts_by_decoder_norm and not decoder_norm_override:
         hidden_pre_bottleneck = hidden_pre_bottleneck * sae.effective_decoder_norm.unsqueeze(-1)
 
     return h_latent, hidden_pre_latent, hidden_pre_bottleneck
+
+
+
+@torch.no_grad()
+def _fold_effective_norm(
+    W_bottleneck : torch.Tensor,
+    W_latent_dec : torch.Tensor,
+    effective_decoder_norm : torch.Tensor
+):
+    norm = effective_decoder_norm.view(-1, 1, 1) # (n_experts, 1, 1)
+
+    W_bottleneck.data = W_bottleneck.data * norm
+    W_latent_dec.data = W_latent_dec.data / norm
+
