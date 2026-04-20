@@ -34,10 +34,10 @@ eval_sae "SMIXAE 9B L11" \
 
 eval_sae "GemmaScope 9B L11" \
     --hf-release gemma-scope-9b-pt-res \
-    --hf-sae-id layer_11/width_16k/average_l0_131 \
+    --hf-sae-id layer_11/width_16k/average_l0_118 \
     --base-model-name google/gemma-2-9b \
     --hook-point model.layers.11 \
-    --display-name "GemmaScope 9B 16k (L0≈131)"
+    --display-name "GemmaScope 9B 16k (L0=118)"
 
 # ── Gemma 2 9B, Layer 20 ──────────────────────────────────────────────────── #
 eval_sae "SMIXAE 9B L20" \
@@ -48,10 +48,10 @@ eval_sae "SMIXAE 9B L20" \
 
 eval_sae "GemmaScope 9B L20" \
     --hf-release gemma-scope-9b-pt-res \
-    --hf-sae-id layer_20/width_16k/average_l0_131 \
+    --hf-sae-id layer_20/width_16k/average_l0_138 \
     --base-model-name google/gemma-2-9b \
     --hook-point model.layers.20 \
-    --display-name "GemmaScope 9B 16k (L0≈131)"
+    --display-name "GemmaScope 9B 16k (L0=138)"
 
 # ── Gemma 2 2B, Layer 12 ──────────────────────────────────────────────────── #
 eval_sae "SMIXAE 2B L12" \
@@ -65,4 +65,4 @@ eval_sae "GemmaScope 2B L12" \
     --hf-sae-id layer_12/width_16k/average_l0_176 \
     --base-model-name google/gemma-2-2b \
     --hook-point model.layers.12 \
-    --display-name "GemmaScope 2B 16k (L0≈176)"
+    --display-name "GemmaScope 2B 16k (L0=176)"

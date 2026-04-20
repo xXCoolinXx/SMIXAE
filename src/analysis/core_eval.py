@@ -136,6 +136,12 @@ def _build_token_batches(
 ) -> list[torch.Tensor]:
     """Stream a dataset and pack into fixed-length token batches.
 
+    Matches SAELens' pretokenizer defaults (``begin_batch_token = bos``,
+    ``sequence_separator_token = bos``): every window starts with BOS, and
+    documents are joined by BOS inside the packed buffer. Without this, eval
+    sees a different token distribution than training and inference metrics
+    (L0, reconstruction norm) drift.
+
     Args:
         dataset_name: HuggingFace dataset identifier.
         tokenizer: HuggingFace tokenizer (must have ``encode``).
@@ -149,14 +155,24 @@ def _build_token_batches(
     needed = n_batches * batch_size
     ds = load_dataset(dataset_name, split="train", streaming=True, trust_remote_code=True)
 
+    bos_id = tokenizer.bos_token_id
+    payload_size = context_size - 1 if bos_id is not None else context_size
+
     buffer: list[int] = []
     chunks: list[list[int]] = []
 
     for example in ds:
-        buffer.extend(tokenizer.encode(example["text"], add_special_tokens=False))
-        while len(buffer) >= context_size:
-            chunks.append(buffer[:context_size])
-            buffer = buffer[context_size:]
+        doc_tokens = tokenizer.encode(example["text"], add_special_tokens=False)
+        if bos_id is not None:
+            buffer.append(bos_id)  # sequence_separator_token = bos
+        buffer.extend(doc_tokens)
+        while len(buffer) >= payload_size:
+            payload = buffer[:payload_size]
+            buffer = buffer[payload_size:]
+            if bos_id is not None:
+                chunks.append([bos_id, *payload])
+            else:
+                chunks.append(payload)
         if len(chunks) >= needed:
             break
 
