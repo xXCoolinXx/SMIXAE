@@ -537,7 +537,6 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         
         super().process_state_dict_for_saving_inference(state_dict)
 
-        norm = sae.effective_decoder_norm.clamp(1e-8)
         if self.cfg.rescale_acts_by_decoder_norm:
             _fold_effective_norm(
                 W_bottleneck = state_dict['W_bottleneck'],
