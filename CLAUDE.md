@@ -415,10 +415,10 @@ smixae core results/my_run/model \
 # Core SAE evaluation: GemmaScope baseline from HuggingFace
 smixae core \
     --hf-release gemma-scope-9b-pt-res \
-    --hf-sae-id layer_11/width_16k/average_l0_131 \
+    --hf-sae-id layer_11/width_16k/average_l0_118 \
     --base-model-name google/gemma-2-9b \
     --hook-point model.layers.11 \
-    --display-name "GemmaScope 9B 16k (L0≈131)"
+    --display-name "GemmaScope 9B 16k (L0=118)"
 
 # Batch over all experiments + GemmaScope baselines
 bash experiments/core_eval.sh
@@ -472,21 +472,21 @@ Loaded via SAELens `SAE.from_pretrained()`. Typical width-16k comparison paths:
 | Model | Layer | SAELens release | sae_id |
 |-------|-------|-----------------|--------|
 | Gemma 2 2B | 12 | `gemma-scope-2b-pt-res` | `layer_12/width_16k/average_l0_176` |
-| Gemma 2 9B | 11 | `gemma-scope-9b-pt-res` | `layer_11/width_16k/average_l0_131` |
-| Gemma 2 9B | 20 | `gemma-scope-9b-pt-res` | `layer_20/width_16k/average_l0_131` |
+| Gemma 2 9B | 11 | `gemma-scope-9b-pt-res` | `layer_11/width_16k/average_l0_118` |
+| Gemma 2 9B | 20 | `gemma-scope-9b-pt-res` | `layer_20/width_16k/average_l0_138` |
 
 Passed as `--hf-release` / `--hf-sae-id` to `smixae core`. See `experiments/core_eval.sh` for the full set of invocations used in the paper.
 
 ### Results JSON structure
 
-`results/core_eval_results.json` has the hierarchy **model → layer → SAE name → metrics**. Human-readable SAE names are used as keys (e.g. `"SMIXAE"`, `"GemmaScope 9B 16k (L0≈131)"`). Re-running an evaluation with the same name overwrites the metrics block; different names coexist under the same layer.
+`results/core_eval_results.json` has the hierarchy **model → layer → SAE name → metrics**. Human-readable SAE names are used as keys (e.g. `"SMIXAE"`, `"GemmaScope 9B 16k (L0=118)"`). Re-running an evaluation with the same name overwrites the metrics block; different names coexist under the same layer.
 
 ```json
 {
   "google/gemma-2-9b": {
     "layer_11": {
       "SMIXAE": { "l0": 191.2, "ce_loss_score": 0.89, ... },
-      "GemmaScope 9B 16k (L0≈131)": { "l0": 130.8, "ce_loss_score": 0.92, ... }
+      "GemmaScope 9B 16k (L0=118)": { "l0": 118.3, "ce_loss_score": 0.92, ... }
     }
   }
 }

@@ -22,10 +22,10 @@ Usage examples::
     # Evaluate a GemmaScope SAE from HuggingFace
     smixae core \\
         --hf-release gemma-scope-9b-pt-res \\
-        --hf-sae-id layer_11/width_16k/average_l0_131 \\
+        --hf-sae-id layer_11/width_16k/average_l0_118 \\
         --base-model-name google/gemma-2-9b \\
         --hook-point model.layers.11 \\
-        --display-name "GemmaScope 9B 16k (L0≈131)"
+        --display-name "GemmaScope 9B 16k (L0=118)"
 """
 
 from pathlib import Path
@@ -47,9 +47,8 @@ app = typer.Typer()
 _DEFAULT_DATASET = "Skylion007/openwebtext"
 
 
-@app.callback(invoke_without_command=True)
-def main(
-    ctx: typer.Context,
+@app.command()
+def core(
     checkpoint_path: Path = typer.Argument(
         None,
         help="Path to a local SAE checkpoint directory.  Mutually exclusive with --hf-release.",
@@ -62,7 +61,7 @@ def main(
     hf_sae_id: str = typer.Option(
         "",
         help="SAELens sae_id for HuggingFace download "
-        "(e.g. 'layer_11/width_16k/average_l0_131').  Requires --hf-release.",
+        "(e.g. 'layer_11/width_16k/average_l0_118').  Requires --hf-release.",
     ),
     base_model_name: str = typer.Option(
         ...,
