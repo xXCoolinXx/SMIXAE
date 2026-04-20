@@ -7,4 +7,4 @@ bash "$(dirname "$0")/run.sh" \
     --hook              model.layers.12 \
     --d-in              2304 \
     --tokenized-dataset datasets/tokenized/pile-uncopyrighted-gemma2 \
-    --steps probe,newline
+    --steps train,probe,newline

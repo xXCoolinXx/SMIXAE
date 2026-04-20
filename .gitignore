@@ -18,4 +18,6 @@ datasets/tokenized/*
 wandb
 results/*/checkpoints
 results/*/model
+results_old/*/checkpoints
+results_old/*/model
 .wandb_key
