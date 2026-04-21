@@ -35,14 +35,16 @@ SMIXAE/
 │   │   ├── scatter3d.py             # Flexible 3-D Plotly scatter with per-class means, labels, and colorbar
 │   │   ├── colors.py                # Shared colour/colorbar/legend backend (Plotly traces + PIL PNGs)
 │   │   ├── _html_save.py            # Client-side JS injected into experts.html for figure capture via save server
+│   │   ├── core_eval.py             # Core SAE eval metrics (SAEBench reimplemented, HuggingFace, no TransformerLens)
 │   │   └── pretokenize.py           # Converts HuggingFace datasets to SAELens tokenized format
 │   ├── latex/
 │   │   ├── save_server.py           # Local HTTP server (port 7788) for interactive figure collection
 │   │   ├── camera_ready.py          # Camera-ready LaTeX figure assembly with PIL legends
-│   │   └── tables.py                # LaTeX table generation from results.json
+│   │   └── tables.py                # LaTeX table generation from results.json + core_eval_results.json
 │   └── cli/
 │       ├── cli.py                   # Centralized CLI entry point (smixae command)
-│       └── train.py                 # smixae train subcommand — all training options as CLI flags
+│       ├── train.py                 # smixae train subcommand — all training options as CLI flags
+│       └── core_eval.py             # smixae core subcommand — evaluate a single SAE on core metrics
 ├── docs/
 │   ├── ARCHITECTURE.md              # Encoding/decoding pipelines, tensor shapes, dead expert recovery
 │   ├── ANALYSIS.md                  # Probing workflow, scoring metrics, dataset format
@@ -54,9 +56,15 @@ SMIXAE/
 │   │   ├── dataset_config.json      # Probing dataset configs — read by categorize_all.py only
 │   │   └── newline_config.json      # Newline color info — read by camera_ready.py only
 │   └── steering/                    # Steering prompt datasets (populated by generate_steering_data.py)
-├── experiments/                     # Self-contained experiment scripts (one per run configuration)
-│   └── gemma_2_9b_l11.sh            # Gemma 2-9B layer 11: train → probe → newline
+├── experiments/                     # Experiment scripts
+│   ├── run.sh                       # Generic runner: --model/--hook/--experiment-name/--steps → train/probe/newline/saebench/steer
+│   ├── core_eval.sh                 # Core eval for all experiments + GemmaScope baselines
+│   ├── gemma_2_2b_l12.sh            # Gemma 2-2B layer 12: thin wrapper over run.sh
+│   ├── gemma_2_9b_l11_newline.sh    # Gemma 2-9B layer 11: probe + newline only
+│   └── gemma_2_9b_l20_general.sh    # Gemma 2-9B layer 20: thin wrapper over run.sh
 ├── results/                         # All outputs, created at runtime (not committed)
+│   ├── results.json                 # Probing + newline metrics (written by probe/newline steps)
+│   ├── core_eval_results.json       # Core eval metrics (written by smixae core)
 │   └── {experiment_name}/
 │       ├── model/                   # Final inference-ready SAE (fixed path, used by analysis scripts)
 │       ├── checkpoints/             # Intermediate training checkpoints (run_id subdir, for resume only)
@@ -279,8 +287,15 @@ The whole point of SMIXAE is that features can be nonlinear manifolds. Don't app
 ## Training Workflow
 
 ```bash
-# Run a full experiment (train → probe → newline):
-bash experiments/gemma_2_9b_l11.sh
+# Run a full experiment (train → probe → newline) via the generic runner:
+bash experiments/run.sh \
+    --experiment-name gemma_2_9b_l20 \
+    --model google/gemma-2-9b \
+    --hook model.layers.20 \
+    --d-in 3584
+
+# Or use one of the pre-configured wrapper scripts:
+bash experiments/gemma_2_9b_l20_general.sh
 
 # Or via the generic PBS wrapper:
 qsub run_sae.pbs
@@ -309,17 +324,19 @@ The `smixae train` command exposes all `LanguageModelSAERunnerConfig` and `SMIXA
 
 ### Experiment Scripts
 
-Each file in `experiments/` is a self-contained bash script for one run configuration. It chains training → probing → newline analysis, with all outputs consolidated under `results/{experiment_name}/`:
+`experiments/run.sh` is the single generic runner — it accepts `--experiment-name`, `--model`, `--hook`, `--d-in` plus optional flags for training scale, dataset paths, and a `--steps` selector (comma-separated subset of `train,probe,newline,saebench,steer`). The other scripts in `experiments/` (e.g. `gemma_2_9b_l20_general.sh`) are thin wrappers that call `run.sh` with a specific set of flags for one paper configuration. Outputs are consolidated under `results/{experiment_name}/`:
 
 ```
 results/{experiment_name}/
 ├── model/          # Final SAE (output_path) — used by all downstream scripts
 ├── checkpoints/    # Intermediate checkpoints (for resume only)
 ├── probe/          # categorize_all HTML outputs
-└── newline/        # anthropic_newline outputs
+├── newline_80/     # anthropic_newline outputs (80-char line length)
+├── newline_150/    # anthropic_newline outputs (150-char line length)
+└── steer/          # steer.py outputs (only when --steps includes steer)
 ```
 
-Add a new experiment by copying an existing script and adjusting the variables at the top.
+Add a new experiment by writing a new wrapper that calls `run.sh` with the relevant flags, or invoke `run.sh` directly.
 
 ---
 
@@ -342,10 +359,11 @@ smixae
 │   └── main                     # Newline-position manifold analysis
 ├── steer
 │   └── main                     # Steering experiments (coordinate substitution)
+├── core                         # Evaluate a single SAE (local checkpoint or HuggingFace) on core metrics
 └── latex
     ├── save-server              # Start local HTTP figure-collection server (port 7788)
     ├── figures                  # Assemble camera-ready PNGs into LaTeX figure files
-    └── tables                   # Generate four LaTeX tables (probing + newline, summary + appendix) from results.json
+    └── tables                   # Generate all LaTeX tables (probing + newline + core eval) from results.json
 ```
 
 ```bash
@@ -387,6 +405,23 @@ smixae steer main \
     --base-model-name google/gemma-2-9b \
     --hook-point model.layers.11 \
     --output-dir results/my_run/steer
+
+# Core SAE evaluation: local SMIXAE checkpoint
+smixae core results/my_run/model \
+    --base-model-name google/gemma-2-9b \
+    --hook-point model.layers.11 \
+    --display-name SMIXAE
+
+# Core SAE evaluation: GemmaScope baseline from HuggingFace
+smixae core \
+    --hf-release gemma-scope-9b-pt-res \
+    --hf-sae-id layer_11/width_16k/average_l0_118 \
+    --base-model-name google/gemma-2-9b \
+    --hook-point model.layers.11 \
+    --display-name "GemmaScope 9B 16k (L0=118)"
+
+# Batch over all experiments + GemmaScope baselines
+bash experiments/core_eval.sh
 ```
 
 `smixae_run.py` is a thin shim that calls the CLI with hardcoded Gemma 2-9B defaults — use it via PBS or `python smixae_run.py` for quick invocation without arguments.
@@ -404,7 +439,77 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 3. **Queue figures**: click the save button on any expert panel — the JS POSTs a 2200×1700px Plotly PNG to the server.
 4. **Review and save**: visit `http://127.0.0.1:7788/` to inspect the gallery, remove unwanted figures, and batch-save all to disk (auto-crops white borders).
 5. **Assemble LaTeX**: `smixae latex figures --camera-ready-dir … --output-dir results/` — reads saved PNGs, generates PIL legends, and writes `.tex` files + `camera_ready/` + `legends/` into `<output-dir>/paper/`. `\includegraphics` paths are written as `paper/camera_ready/…` / `paper/legends/…`, so a main document sitting next to the `paper/` folder can `\input{paper/probe_<exp>.tex}` and the images resolve correctly.
-6. **Generate tables**: `smixae latex tables [--output-dir results/]` — reads `results.json` and writes four `.tex` files to `<output-dir>/paper/` (same layout as figures): `table_probing.tex` (summary with `\pm` CV std), `table_newline.tex` (summary), `table_probing_appendix.tex` (all 10 experts per model/hypothesis), `table_newline_appendix.tex` (all 10 experts per model/line-length). Requires `booktabs`, `multirow` packages.
+6. **Generate tables**: `smixae latex tables [--output-dir results/]` — reads `results.json` and writes four `.tex` files to `<output-dir>/paper/` (same layout as figures): `table_probing.tex` (summary with `\pm` CV std), `table_newline.tex` (summary), `table_probing_appendix.tex` (all 10 experts per model/hypothesis), `table_newline_appendix.tex` (all 10 experts per model/line-length). If `results/core_eval_results.json` exists, `table_core_eval.tex` is also generated (one row per SAE per layer, one block per model). Requires `booktabs`, `multirow` packages.
+
+---
+
+## Core SAE Evaluation (SAEBench Reimplementation)
+
+Implemented in `src/analysis/core_eval.py` and exposed as `smixae core`. Reimplements SAEBench core metrics using HuggingFace directly — **no TransformerLens dependency**. One invocation evaluates a single SAE (SMIXAE checkpoint or any SAELens-compatible SAE loadable via `SAE.from_pretrained`) and merges results into `results/core_eval_results.json`.
+
+### Metrics computed
+
+| Metric | Definition |
+|--------|-----------|
+| `l0` | Mean active features per token (count of non-zero elements in flat feature vector) |
+| `mse` | Normalised MSE: mean `‖x − x̂‖² / ‖x‖²` per token |
+| `explained_variance` | `1 − residual_var / total_var` (correct formula) |
+| `cosine_similarity` | Mean cosine similarity between reconstruction and input |
+| `l2_ratio` | Mean `‖x̂‖ / ‖x‖` per token |
+| `ce_loss_score` | `(CE_ablation − CE_SAE) / (CE_ablation − CE_orig)`, higher = better |
+| `ce_loss_without_sae` | Baseline CE loss |
+| `ce_loss_with_sae` | CE loss with SAE reconstruction patched in at hook point |
+| `ce_loss_with_ablation` | CE loss with zero-ablation at hook point |
+
+### SMIXAE encode/decode adapter
+
+SMIXAE's `encode()` returns `(batch, n_experts, d_bottleneck)`. The closures built by `_make_sae_fns` in `core_eval.py` flatten this to `(batch, n_experts × d_bottleneck)` for metric computation and unflatten before calling `decode()`. Inputs are cast to the SAE's parameter dtype so bfloat16 LLM activations work against float32 SAE weights (GemmaScope default). The effective L0 for SMIXAE is `k_experts × d_bottleneck` per token (e.g. 64 × 3 = 192 with default settings).
+
+### GemmaScope baselines
+
+Loaded via SAELens `SAE.from_pretrained()`. Typical width-16k comparison paths:
+
+| Model | Layer | SAELens release | sae_id |
+|-------|-------|-----------------|--------|
+| Gemma 2 2B | 12 | `gemma-scope-2b-pt-res` | `layer_12/width_16k/average_l0_176` |
+| Gemma 2 9B | 11 | `gemma-scope-9b-pt-res` | `layer_11/width_16k/average_l0_118` |
+| Gemma 2 9B | 20 | `gemma-scope-9b-pt-res` | `layer_20/width_16k/average_l0_138` |
+
+Passed as `--hf-release` / `--hf-sae-id` to `smixae core`. See `experiments/core_eval.sh` for the full set of invocations used in the paper.
+
+### Results JSON structure
+
+`results/core_eval_results.json` has the hierarchy **model → layer → SAE name → metrics**. Human-readable SAE names are used as keys (e.g. `"SMIXAE"`, `"GemmaScope 9B 16k (L0=118)"`). Re-running an evaluation with the same name overwrites the metrics block; different names coexist under the same layer.
+
+```json
+{
+  "google/gemma-2-9b": {
+    "layer_11": {
+      "SMIXAE": { "l0": 191.2, "ce_loss_score": 0.89, ... },
+      "GemmaScope 9B 16k (L0=118)": { "l0": 118.3, "ce_loss_score": 0.92, ... }
+    }
+  }
+}
+```
+
+### `src/analysis/core_eval.py`
+
+- **`CoreEvalConfig`**: Dataclass — `dataset`, `context_size`, `n_reconstruction_batches`, `n_sparsity_batches`, `batch_size`, `device`, `dtype`.
+- **`_make_sae_fns(sae)`**: Returns `(encode, decode, d_sae)` closures; SMIXAE detected via `hasattr(sae.cfg, "n_experts")` and flattened automatically.
+- **`_build_token_batches(...)`**: Streams a HuggingFace dataset and packs fixed-length token windows into batches (no padding needed).
+- **`_compute_sparsity_variance_metrics(...)`**: L0, MSE, explained variance, cosine similarity, L2 ratio/norms. Metric math runs in float32 for precision over `d_model` dims.
+- **`_compute_ce_loss_metrics(...)`**: `ce_loss_without_sae`, `ce_loss_with_sae` (SAE reconstruction patched in via forward hook), `ce_loss_with_ablation` (zero-ablation at hook point), and the derived `ce_loss_score`.
+- **`run_core_eval(...)`**: End-to-end metrics for one SAE; called by `run_single_eval(sae, ...)` after building the closures.
+- **`load_sae_from_path(path, device)`** / **`load_sae_from_hf(release, sae_id, device)`**: Source-selector helpers.
+- **`save_core_eval_results(results, path)`**: Deep-merges and writes `core_eval_results.json`.
+
+### `src/cli/core_eval.py`
+
+Exposes `smixae core` with a single positional `checkpoint_path` argument (mutually exclusive with `--hf-release` + `--hf-sae-id`). Always writes to `results/core_eval_results.json` unless `--output-json` is overridden, keyed by `base_model_name` / derived `layer_{N}` / `display-name`.
+
+### `experiments/core_eval.sh`
+
+Self-contained batch script that runs `smixae core` for each trained experiment plus its GemmaScope 16k baseline. Chain with `bash experiments/core_eval.sh --verbose` to enable per-batch progress bars.
 
 ---
 
@@ -412,5 +517,6 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
 - [ ] **LaTeX table fixes**: Color bar in regenerated figures is too small and unreadable. Need a shared colorbar utility used by both `scatter3d.py` and `camera_ready.py`.
+- [x] **SAEBench core evaluation**: Implemented as `smixae core` (single-SAE invocation). Reimplements SAEBench core metrics (L0, MSE, explained variance, cosine similarity, CE loss score) using HuggingFace — no TransformerLens dependency. Results written to `results/core_eval_results.json`; `smixae latex tables` auto-includes `table_core_eval.tex` when that file exists. Batch script: `experiments/core_eval.sh`.
 - [ ] **Monkey-patch old checkpoints**: Models trained before the `fold_activation_norm_scaling_factor` threshold fix were saved with an unscaled threshold. At load time in `load_sae()` (or wherever checkpoints are loaded), detect these old models and apply `sae.threshold /= scaling_factor` to correct the saved threshold. The scaling factor is `d_in**0.5 / mean_activation_norm` (same convention as SAELens). Old models can be identified by the absence of a version marker or by checkpoint date.
 - [ ] **SAEBench evaluation**: Test SMIXAE on SAEBench core, benchmarked against comparable Gemma Scope models. Requires monkey-patching SAEBench (upstream is not well-structured for custom architectures).
