@@ -517,6 +517,7 @@ Self-contained batch script that runs `smixae core` for each trained experiment 
 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
 - [ ] **LaTeX table fixes**: Color bar in regenerated figures is too small and unreadable. Need a shared colorbar utility used by both `scatter3d.py` and `camera_ready.py`.
-- [x] **SAEBench core evaluation**: Implemented as `smixae core` (single-SAE invocation). Reimplements SAEBench core metrics (L0, MSE, explained variance, cosine similarity, CE loss score) using HuggingFace — no TransformerLens dependency. Results written to `results/core_eval_results.json`; `smixae latex tables` auto-includes `table_core_eval.tex` when that file exists. Batch script: `experiments/core_eval.sh`.
 - [ ] **Monkey-patch old checkpoints**: Models trained before the `fold_activation_norm_scaling_factor` threshold fix were saved with an unscaled threshold. At load time in `load_sae()` (or wherever checkpoints are loaded), detect these old models and apply `sae.threshold /= scaling_factor` to correct the saved threshold. The scaling factor is `d_in**0.5 / mean_activation_norm` (same convention as SAELens). Old models can be identified by the absence of a version marker or by checkpoint date.
 - [ ] **SAEBench evaluation**: Test SMIXAE on SAEBench core, benchmarked against comparable Gemma Scope models. Requires monkey-patching SAEBench (upstream is not well-structured for custom architectures).
+- [ ] Verify FVE calculation correctness. looks a bit sus, possibly inflated.
+- [ ] Add model stats (params, architecture, etc) to core eval output so it can be included in a table

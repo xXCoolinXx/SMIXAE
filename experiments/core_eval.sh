@@ -25,6 +25,20 @@ eval_sae() {
     smixae core "${@:2}" --output-json "${OUTPUT_JSON}" ${EXTRA_FLAGS}
 }
 
+# ── Gemma 2 2B, Layer 12 ──────────────────────────────────────────────────── #
+eval_sae "SMIXAE 2B L12" \
+    "results/gemma_2_2b_l12/model" \
+    --base-model-name google/gemma-2-2b \
+    --hook-point model.layers.12 \
+    --display-name SMIXAE
+
+eval_sae "GemmaScope 2B L12" \
+    --hf-release gemma-scope-2b-pt-res \
+    --hf-sae-id layer_12/width_16k/average_l0_176 \
+    --base-model-name google/gemma-2-2b \
+    --hook-point model.layers.12 \
+    --display-name "GemmaScope 2B 16k (L0=176)"
+
 # ── Gemma 2 9B, Layer 11 ──────────────────────────────────────────────────── #
 eval_sae "SMIXAE 9B L11" \
     "results/gemma_2_9b_l11/model" \
@@ -52,17 +66,3 @@ eval_sae "GemmaScope 9B L20" \
     --base-model-name google/gemma-2-9b \
     --hook-point model.layers.20 \
     --display-name "GemmaScope 9B 16k (L0=138)"
-
-# ── Gemma 2 2B, Layer 12 ──────────────────────────────────────────────────── #
-eval_sae "SMIXAE 2B L12" \
-    "results/gemma_2_2b_l12/model" \
-    --base-model-name google/gemma-2-2b \
-    --hook-point model.layers.12 \
-    --display-name SMIXAE
-
-eval_sae "GemmaScope 2B L12" \
-    --hf-release gemma-scope-2b-pt-res \
-    --hf-sae-id layer_12/width_16k/average_l0_176 \
-    --base-model-name google/gemma-2-2b \
-    --hook-point model.layers.12 \
-    --display-name "GemmaScope 2B 16k (L0=176)"

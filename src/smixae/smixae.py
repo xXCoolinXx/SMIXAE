@@ -132,15 +132,28 @@ class SMIXAE(SAE[SMIXAEConfig]):
     def fold_activation_norm_scaling_factor(self, scaling_factor: float) -> None:
         """Fold activation scaling into weights and rescale threshold to match.
 
-        The base fold divides ``W_dec`` by ``scaling_factor``, which multiplies
-        ``effective_decoder_norm`` by ``1/scaling_factor``.  Since
-        ``smixae_encode`` rescales bottleneck activations by the current
-        ``effective_decoder_norm``, inference norms are ``1/scaling_factor``
-        times larger after the fold.  The threshold must be scaled by the same
-        factor so gating behaviour is preserved.
+        The base fold sets ``W_dec /= scaling_factor``, enlarging
+        ``effective_decoder_norm`` by ``1/scaling_factor``.
+
+        When ``rescale_acts_by_decoder_norm=True``, ``smixae_encode`` multiplies
+        bottleneck activations by ``effective_decoder_norm``.  The decode then
+        sees both a ``1/scaling_factor``-enlarged bottleneck *and* a
+        ``1/scaling_factor``-enlarged ``W_dec``, giving net output scale
+        ``x / scaling_factor`` instead of the desired ``x``.
+
+        Fix: after ``super()``, multiply ``W_dec`` back by ``sqrt(scaling_factor)``
+        so the net ``W_dec`` factor is ``1/sqrt(scaling_factor)`` and the combined
+        scale is ``1/scaling_factor``, which exactly cancels the training-time target
+        ``x * scaling_factor``.  The threshold is divided by ``sqrt(scaling_factor)``
+        to match the corrected ``effective_decoder_norm = N_train / sqrt(scaling_factor)``.
         """
         super().fold_activation_norm_scaling_factor(scaling_factor)
-        self.threshold = self.threshold / scaling_factor
+        if self.cfg.rescale_acts_by_decoder_norm:
+            sf_sqrt = scaling_factor**0.5
+            self.W_dec.data *= sf_sqrt
+            self.threshold = self.threshold / sf_sqrt
+        else:
+            self.threshold = self.threshold / scaling_factor
 
     @property
     def effective_decoder_norm(self) -> torch.Tensor:
@@ -552,7 +565,12 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         derivation; the logic is identical for the training class.
         """
         super().fold_activation_norm_scaling_factor(scaling_factor)
-        self.threshold = self.threshold / scaling_factor
+        if self.cfg.rescale_acts_by_decoder_norm:
+            sf_sqrt = scaling_factor**0.5
+            self.W_dec.data *= sf_sqrt
+            self.threshold = self.threshold / sf_sqrt
+        else:
+            self.threshold = self.threshold / scaling_factor
 
 
 def _init_weights_smixae(

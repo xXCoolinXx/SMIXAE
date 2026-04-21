@@ -233,6 +233,7 @@ def _compute_sparsity_variance_metrics(
     device: str,
     llm_dtype: torch.dtype,
     verbose: bool = False,
+    bos_id: int | None = None,
 ) -> dict[str, float]:
     r"""Compute sparsity and reconstruction quality metrics.
 
@@ -245,6 +246,7 @@ def _compute_sparsity_variance_metrics(
         device: Compute device string.
         llm_dtype: Dtype to cast activations to before encoding.
         verbose: Show progress bar.
+        bos_id: Token ID to exclude from all metrics (avoids BOS-spike bias).
 
     Returns:
         Dict with keys ``l0``, ``mse``, ``explained_variance``,
@@ -269,14 +271,19 @@ def _compute_sparsity_variance_metrics(
         original = _collect_acts(model, tokens, hook_name).to(llm_dtype)
         b, s, d = original.shape
 
+        if bos_id is not None:
+            valid = (tokens != bos_id).reshape(-1)
+        else:
+            valid = torch.ones(b * s, dtype=torch.bool, device=tokens.device)
+
         with torch.no_grad():
             feat = encode_fn(original).to(device)
             recon = decode_fn(feat).to(device, llm_dtype)
 
         # Metric math in float32 — bfloat16 sums over d_model (~3584 dims) lose precision.
-        flat_in = original.reshape(-1, d).float()
-        flat_out = recon.reshape(-1, d).float()
-        flat_feat = feat.reshape(-1, feat.shape[-1])
+        flat_in = original.reshape(-1, d).float()[valid]
+        flat_out = recon.reshape(-1, d).float()[valid]
+        flat_feat = feat.reshape(-1, feat.shape[-1])[valid]
 
         l0_list.append((flat_feat != 0).float().sum(-1))
 
@@ -323,6 +330,7 @@ def _compute_ce_loss_metrics(
     device: str,
     llm_dtype: torch.dtype,
     verbose: bool = False,
+    bos_id: int | None = None,
 ) -> dict[str, float]:
     r"""Compute CE-loss metrics: baseline, with-SAE, and zero-ablation.
 
@@ -335,6 +343,7 @@ def _compute_ce_loss_metrics(
         device: Compute device string.
         llm_dtype: Dtype for activations.
         verbose: Show progress bar.
+        bos_id: Token ID to exclude from CE loss (avoids BOS-spike bias).
 
     Returns:
         Dict with keys ``ce_loss_without_sae``, ``ce_loss_with_sae``,
@@ -349,10 +358,14 @@ def _compute_ce_loss_metrics(
 
     def _ce_from_logits(logits: torch.Tensor, tokens: torch.Tensor) -> float:
         shift_logits = logits[:, :-1].contiguous().float()
-        shift_labels = tokens[:, 1:].contiguous()
+        shift_labels = tokens[:, 1:].contiguous().clone()
+        if bos_id is not None:
+            bos_mask = (tokens[:, :-1] == bos_id) | (tokens[:, 1:] == bos_id)
+            shift_labels[bos_mask] = -100
         return F.cross_entropy(
             shift_logits.reshape(-1, vocab_size),
             shift_labels.reshape(-1),
+            ignore_index=-100,
         ).item()
 
     def _run_with_hook(tokens: torch.Tensor, hook_fn: Any | None) -> torch.Tensor:
@@ -428,6 +441,7 @@ def run_core_eval(
         Dict of scalar metric values.
     """
     llm_dtype = cfg.llm_dtype()
+    bos_id = getattr(tokenizer, "bos_token_id", None)
     n_total = cfg.n_reconstruction_batches + cfg.n_sparsity_batches
     logger.info(f"Tokenising {n_total} batches × {cfg.batch_size} seqs × {cfg.context_size} tokens …")
     all_batches = _build_token_batches(
@@ -438,13 +452,13 @@ def run_core_eval(
 
     logger.info("Computing sparsity/variance metrics …")
     metrics = _compute_sparsity_variance_metrics(
-        encode_fn, decode_fn, model, sparsity_batches, hook_name, cfg.device, llm_dtype, verbose=verbose
+        encode_fn, decode_fn, model, sparsity_batches, hook_name, cfg.device, llm_dtype, verbose=verbose, bos_id=bos_id
     )
 
     logger.info("Computing CE-loss metrics …")
     metrics.update(
         _compute_ce_loss_metrics(
-            encode_fn, decode_fn, model, recon_batches, hook_name, cfg.device, llm_dtype, verbose=verbose
+            encode_fn, decode_fn, model, recon_batches, hook_name, cfg.device, llm_dtype, verbose=verbose, bos_id=bos_id
         )
     )
 
