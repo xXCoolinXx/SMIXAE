@@ -128,6 +128,20 @@ class SMIXAE(SAE[SMIXAEConfig]):
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
 
+    @override
+    def fold_activation_norm_scaling_factor(self, scaling_factor: float) -> None:
+        """Fold activation scaling into weights and rescale threshold to match.
+
+        The base fold divides ``W_dec`` by ``scaling_factor``, which multiplies
+        ``effective_decoder_norm`` by ``1/scaling_factor``.  Since
+        ``smixae_encode`` rescales bottleneck activations by the current
+        ``effective_decoder_norm``, inference norms are ``1/scaling_factor``
+        times larger after the fold.  The threshold must be scaled by the same
+        factor so gating behaviour is preserved.
+        """
+        super().fold_activation_norm_scaling_factor(scaling_factor)
+        self.threshold = self.threshold / scaling_factor
+
     @property
     def effective_decoder_norm(self) -> torch.Tensor:
         """Compute the Frobenius norm of the effective bottleneck-to-residual projection.
@@ -528,6 +542,17 @@ class SMIXAETraining(TrainingSAE[SMIXAETrainingConfig]):
         """Return LeakyReLU(1e-4) to avoid dead neurons while preserving expert norms."""
         # use leaky relu to avoid dead neurons; small negative slope avoids impacting expert norm
         return nn.LeakyReLU(negative_slope=1e-4)
+
+    @override
+    def fold_activation_norm_scaling_factor(self, scaling_factor: float) -> None:
+        """Fold activation scaling into weights and rescale threshold to match.
+
+        Called by the SAELens trainer at the end of training before saving.
+        See :meth:`SMIXAE.fold_activation_norm_scaling_factor` for the full
+        derivation; the logic is identical for the training class.
+        """
+        super().fold_activation_norm_scaling_factor(scaling_factor)
+        self.threshold = self.threshold / scaling_factor
 
 
 def _init_weights_smixae(
