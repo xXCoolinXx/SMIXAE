@@ -134,7 +134,20 @@ if _has_step newline; then
 fi
 
 # --------------------------------------------------------------------------- #
-# 4. Steering                                                                    #
+# 4. SAEBench core evaluation                                                   #
+# Evaluates the trained SMIXAE against a GemmaScope 16k baseline.              #
+# Add "saebench" to --steps to run this step.                                  #
+# --------------------------------------------------------------------------- #
+if _has_step saebench; then
+    smixae core "${RESULTS_DIR}/model" \
+        --base-model-name "${MODEL}" \
+        --hook-point "${HOOK}" \
+        --display-name SMIXAE \
+        --output-json "results/core_eval_results.json"
+fi
+
+# --------------------------------------------------------------------------- #
+# 5. Steering                                                                    #
 # Experts are auto-selected from cyc_24h hypothesis in results.json.            #
 # Use --sweep-layers true to sweep across layers below the trained layer.       #
 # --------------------------------------------------------------------------- #

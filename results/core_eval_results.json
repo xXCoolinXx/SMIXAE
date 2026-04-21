@@ -1,0 +1,90 @@
+{
+  "google/gemma-2-9b": {
+    "layer_11": {
+      "SMIXAE": {
+        "l0": 899.3711547851562,
+        "mse": 2.4016385078430176,
+        "explained_variance": -2.0642714500427246,
+        "cosine_similarity": 0.8970779180526733,
+        "l2_ratio": 2.381084680557251,
+        "l2_norm_in": 150.1981964111328,
+        "l2_norm_out": 359.40093994140625,
+        "ce_loss_without_sae": 2.8697377932071686,
+        "ce_loss_with_sae": 3.1484512650966643,
+        "ce_loss_with_ablation": 12.452930450439453,
+        "ce_loss_score": 0.9709164271691522
+      },
+      "GemmaScope 9B 16k (L0=118)": {
+        "l0": 185.76803588867188,
+        "mse": 0.18721529841423035,
+        "explained_variance": -1.8911945819854736,
+        "cosine_similarity": 0.9204133152961731,
+        "l2_ratio": 0.9351339936256409,
+        "l2_norm_in": 150.1981964111328,
+        "l2_norm_out": 156.9575653076172,
+        "ce_loss_without_sae": 2.8697377932071686,
+        "ce_loss_with_sae": 3.7149013102054598,
+        "ce_loss_with_ablation": 12.452930450439453,
+        "ce_loss_score": 0.9118077287657849
+      }
+    },
+    "layer_20": {
+      "SMIXAE": {
+        "l0": 1826.5418701171875,
+        "mse": 11.70105266571045,
+        "explained_variance": -15.62287712097168,
+        "cosine_similarity": 0.8983743190765381,
+        "l2_ratio": 4.286684513092041,
+        "l2_norm_in": 252.0304718017578,
+        "l2_norm_out": 1075.843505859375,
+        "ce_loss_without_sae": 2.8697377932071686,
+        "ce_loss_with_sae": 3.905813676118851,
+        "ce_loss_with_ablation": 12.452930450439453,
+        "ce_loss_score": 0.8918861459965919
+      },
+      "GemmaScope 9B 16k (L0=138)": {
+        "l0": 161.46888732910156,
+        "mse": 0.13828739523887634,
+        "explained_variance": 0.4452873468399048,
+        "cosine_similarity": 0.9302918910980225,
+        "l2_ratio": 0.9368607401847839,
+        "l2_norm_in": 252.0304718017578,
+        "l2_norm_out": 244.7572021484375,
+        "ce_loss_without_sae": 2.8697377932071686,
+        "ce_loss_with_sae": 3.9746996116638185,
+        "ce_loss_with_ablation": 12.452930450439453,
+        "ce_loss_score": 0.8846979428646116
+      }
+    }
+  },
+  "google/gemma-2-2b": {
+    "layer_12": {
+      "SMIXAE": {
+        "l0": 1704.357177734375,
+        "mse": 7.9270524978637695,
+        "explained_variance": -7.225250244140625,
+        "cosine_similarity": 0.907184362411499,
+        "l2_ratio": 3.682675838470459,
+        "l2_norm_in": 164.7130126953125,
+        "l2_norm_out": 599.0968017578125,
+        "ce_loss_without_sae": 3.0202564251422883,
+        "ce_loss_with_sae": 3.899197276830673,
+        "ce_loss_with_ablation": 12.452930450439453,
+        "ce_loss_score": 0.9068195446594064
+      },
+      "GemmaScope 2B 16k (L0=176)": {
+        "l0": 219.6161651611328,
+        "mse": 0.13377134501934052,
+        "explained_variance": -0.6424816846847534,
+        "cosine_similarity": 0.9374935030937195,
+        "l2_ratio": 0.9477971792221069,
+        "l2_norm_in": 164.7130126953125,
+        "l2_norm_out": 170.46475219726562,
+        "ce_loss_without_sae": 3.0202564251422883,
+        "ce_loss_with_sae": 3.6194487905502317,
+        "ce_loss_with_ablation": 12.452930450439453,
+        "ce_loss_score": 0.9364769339886273
+      }
+    }
+  }
+}
