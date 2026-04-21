@@ -412,4 +412,5 @@ The browser-side capture and LaTeX assembly pipeline works as follows:
 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
 - [ ] **LaTeX table fixes**: Color bar in regenerated figures is too small and unreadable. Need a shared colorbar utility used by both `scatter3d.py` and `camera_ready.py`.
+- [ ] **Monkey-patch old checkpoints**: Models trained before the `fold_activation_norm_scaling_factor` threshold fix were saved with an unscaled threshold. At load time in `load_sae()` (or wherever checkpoints are loaded), detect these old models and apply `sae.threshold /= scaling_factor` to correct the saved threshold. The scaling factor is `d_in**0.5 / mean_activation_norm` (same convention as SAELens). Old models can be identified by the absence of a version marker or by checkpoint date.
 - [ ] **SAEBench evaluation**: Test SMIXAE on SAEBench core, benchmarked against comparable Gemma Scope models. Requires monkey-patching SAEBench (upstream is not well-structured for custom architectures).
