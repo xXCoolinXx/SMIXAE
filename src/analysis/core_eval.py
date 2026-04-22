@@ -163,8 +163,6 @@ def _build_token_batches(
 
     for example in ds:
         doc_tokens = tokenizer.encode(example["text"], add_special_tokens=False)
-        if bos_id is not None:
-            buffer.append(bos_id)  # sequence_separator_token = bos
         buffer.extend(doc_tokens)
         while len(buffer) >= payload_size:
             payload = buffer[:payload_size]
@@ -259,9 +257,10 @@ def _compute_sparsity_variance_metrics(
     l2_out_list: list[torch.Tensor] = []
     l2_ratio_list: list[torch.Tensor] = []
 
-    # FVE accumulators: 1 - mean(||x-x̂||²) / mean(||x||²).
-    x_sq_list: list[torch.Tensor] = []
-    resid_sq_list: list[torch.Tensor] = []
+    # FVE accumulators: running sums for token-weighted explained variance.
+    sum_x_sq: float = 0.0
+    sum_resid_sq: float = 0.0
+    n_tokens_total: int = 0
 
     batch_iter = tqdm(token_batches, desc="Sparsity/variance", leave=False) if verbose else token_batches
 
@@ -289,8 +288,10 @@ def _compute_sparsity_variance_metrics(
         resid = flat_in - flat_out
         mse_list.append(resid.pow(2).sum(-1) / (flat_in.pow(2).sum(-1) + 1e-8))
 
-        x_sq_list.append(flat_in.pow(2).sum(-1).mean())
-        resid_sq_list.append(resid.pow(2).sum(-1).mean())
+        n_valid = flat_in.shape[0]
+        sum_x_sq += flat_in.pow(2).sum(-1).sum().item()
+        sum_resid_sq += resid.pow(2).sum(-1).sum().item()
+        n_tokens_total += n_valid
 
         cossim_list.append(F.cosine_similarity(flat_in, flat_out, dim=-1))
 
@@ -300,9 +301,7 @@ def _compute_sparsity_variance_metrics(
         l2_out_list.append(l2_out)
         l2_ratio_list.append(l2_out / (l2_in + 1e-8))
 
-    mean_x_sq = torch.stack(x_sq_list).mean()
-    mean_resid_sq = torch.stack(resid_sq_list).mean()
-    explained_var = (1.0 - mean_resid_sq / mean_x_sq).item()
+    explained_var = 1.0 - (sum_resid_sq / n_tokens_total) / (sum_x_sq / n_tokens_total)
 
     return {
         "l0": torch.cat(l0_list).mean().item(),
@@ -346,21 +345,26 @@ def _compute_ce_loss_metrics(
     vocab_size = model.config.vocab_size  # type: ignore[union-attr]
     hook_module = _get_named_module(model, hook_name)
 
-    ce_orig_list: list[float] = []
-    ce_sae_list: list[float] = []
-    ce_abl_list: list[float] = []
+    total_ce_orig: float = 0.0
+    total_ce_sae: float = 0.0
+    total_ce_abl: float = 0.0
+    n_valid_total: int = 0
 
-    def _ce_from_logits(logits: torch.Tensor, tokens: torch.Tensor) -> float:
+    def _ce_from_logits(logits: torch.Tensor, tokens: torch.Tensor) -> tuple[float, int]:
         shift_logits = logits[:, :-1].contiguous().float()
         shift_labels = tokens[:, 1:].contiguous().clone()
         if bos_id is not None:
             bos_mask = (tokens[:, :-1] == bos_id) | (tokens[:, 1:] == bos_id)
             shift_labels[bos_mask] = -100
-        return F.cross_entropy(
+        per_token_loss = F.cross_entropy(
             shift_logits.reshape(-1, vocab_size),
             shift_labels.reshape(-1),
-            ignore_index=-100,
-        ).item()
+            reduction="none",
+        )
+        valid_mask = shift_labels.reshape(-1) != -100
+        total_loss = per_token_loss[valid_mask].sum().item()
+        n_valid = valid_mask.sum().item()
+        return total_loss, n_valid
 
     def _run_with_hook(tokens: torch.Tensor, hook_fn: Any | None) -> torch.Tensor:
         handle = hook_module.register_forward_hook(hook_fn) if hook_fn is not None else None
@@ -390,13 +394,17 @@ def _compute_ce_loss_metrics(
         logits_sae = _run_with_hook(tokens, _replacement_hook)
         logits_abl = _run_with_hook(tokens, _zero_ablation_hook)
 
-        ce_orig_list.append(_ce_from_logits(logits_orig, tokens))
-        ce_sae_list.append(_ce_from_logits(logits_sae, tokens))
-        ce_abl_list.append(_ce_from_logits(logits_abl, tokens))
+        loss_orig, n = _ce_from_logits(logits_orig, tokens)
+        loss_sae, _ = _ce_from_logits(logits_sae, tokens)
+        loss_abl, _ = _ce_from_logits(logits_abl, tokens)
+        total_ce_orig += loss_orig
+        total_ce_sae += loss_sae
+        total_ce_abl += loss_abl
+        n_valid_total += n
 
-    ce_orig = sum(ce_orig_list) / len(ce_orig_list)
-    ce_sae = sum(ce_sae_list) / len(ce_sae_list)
-    ce_abl = sum(ce_abl_list) / len(ce_abl_list)
+    ce_orig = total_ce_orig / n_valid_total
+    ce_sae = total_ce_sae / n_valid_total
+    ce_abl = total_ce_abl / n_valid_total
     ce_score = (ce_abl - ce_sae) / (ce_abl - ce_orig + 1e-8)
 
     return {
