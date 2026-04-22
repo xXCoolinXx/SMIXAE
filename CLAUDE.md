@@ -453,7 +453,7 @@ Implemented in `src/analysis/core_eval.py` and exposed as `smixae core`. Reimple
 |--------|-----------|
 | `l0` | Mean active features per token (count of non-zero elements in flat feature vector) |
 | `mse` | Normalised MSE: mean `‖x − x̂‖² / ‖x‖²` per token |
-| `explained_variance` | `1 − residual_var / total_var` (correct formula) |
+| `explained_variance` | `1 − mean(‖x−x̂‖²) / mean(‖x‖²)` (normalised-MSE form; less inflated than mean-centred variance for deep LLM layers) |
 | `cosine_similarity` | Mean cosine similarity between reconstruction and input |
 | `l2_ratio` | Mean `‖x̂‖ / ‖x‖` per token |
 | `ce_loss_score` | `(CE_ablation − CE_SAE) / (CE_ablation − CE_orig)`, higher = better |
@@ -518,6 +518,6 @@ Self-contained batch script that runs `smixae core` for each trained experiment 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
 - [ ] **LaTeX table fixes**: Color bar in regenerated figures is too small and unreadable. Need a shared colorbar utility used by both `scatter3d.py` and `camera_ready.py`.
 - [ ] **Monkey-patch old checkpoints**: Models trained before the `fold_activation_norm_scaling_factor` threshold fix were saved with an unscaled threshold. At load time in `load_sae()` (or wherever checkpoints are loaded), detect these old models and apply `sae.threshold /= scaling_factor` to correct the saved threshold. The scaling factor is `d_in**0.5 / mean_activation_norm` (same convention as SAELens). Old models can be identified by the absence of a version marker or by checkpoint date.
-- [ ] **SAEBench evaluation**: Test SMIXAE on SAEBench core, benchmarked against comparable Gemma Scope models. Requires monkey-patching SAEBench (upstream is not well-structured for custom architectures).
-- [ ] Verify FVE calculation correctness. looks a bit sus, possibly inflated.
-- [ ] Add model stats (params, architecture, etc) to core eval output so it can be included in a table
+- [x] **SAEBench evaluation**: Reimplemented as `smixae core` in `src/analysis/core_eval.py` (HuggingFace, no TransformerLens, no monkey-patching required).
+- [x] Verify FVE calculation correctness. Changed to `1 - mean(‖x-x̂‖²) / mean(‖x‖²)` (normalised-MSE form; less inflated than mean-centred variance when the residual stream has a large DC mean).
+- [x] Add model stats (params, architecture, etc) to core eval output: `width` (flattened latent dim) and `total_params` are now written to `core_eval_results.json` and surfaced in the LaTeX table.
