@@ -7,8 +7,8 @@ Metrics computed (matching SAEBench definitions):
 
   l0                  Mean active features per token (count of non-zero elements).
   mse                 Normalised reconstruction error: mean ||x - x̂||² / ||x||² per token.
-  explained_variance  1 - E[||x - x̂||²] / (E[||x||²] - ||E[x]||²).  Total variance is
-                      mean-centred per input; the residual is taken as-is (SAEBench convention).
+  explained_variance  1 - mean(||x - x̂||²) / mean(||x||²).  Normalised-MSE form; less
+                      inflated than mean-centred variance when the residual stream has a large DC mean.
   cosine_similarity   Mean cosine similarity between reconstruction and input.
   l2_ratio            Mean ||x̂|| / ||x|| per token.
   ce_loss_without_sae Baseline cross-entropy loss.
@@ -259,9 +259,8 @@ def _compute_sparsity_variance_metrics(
     l2_out_list: list[torch.Tensor] = []
     l2_ratio_list: list[torch.Tensor] = []
 
-    # Explained-variance accumulators.
-    sum_sq_list: list[torch.Tensor] = []
-    mean_per_dim_list: list[torch.Tensor] = []
+    # FVE accumulators: 1 - mean(||x-x̂||²) / mean(||x||²).
+    x_sq_list: list[torch.Tensor] = []
     resid_sq_list: list[torch.Tensor] = []
 
     batch_iter = tqdm(token_batches, desc="Sparsity/variance", leave=False) if verbose else token_batches
@@ -290,10 +289,7 @@ def _compute_sparsity_variance_metrics(
         resid = flat_in - flat_out
         mse_list.append(resid.pow(2).sum(-1) / (flat_in.pow(2).sum(-1) + 1e-8))
 
-        # Accumulate for mean-centred explained variance:
-        #   total_var = E[||x||^2] - ||E[x]||^2
-        sum_sq_list.append(flat_in.pow(2).sum(-1).mean())
-        mean_per_dim_list.append(flat_in.mean(0))
+        x_sq_list.append(flat_in.pow(2).sum(-1).mean())
         resid_sq_list.append(resid.pow(2).sum(-1).mean())
 
         cossim_list.append(F.cosine_similarity(flat_in, flat_out, dim=-1))
@@ -304,11 +300,9 @@ def _compute_sparsity_variance_metrics(
         l2_out_list.append(l2_out)
         l2_ratio_list.append(l2_out / (l2_in + 1e-8))
 
-    mean_sum_sq = torch.stack(sum_sq_list).mean()
-    mean_per_dim = torch.stack(mean_per_dim_list).mean(0)
-    total_var = mean_sum_sq - mean_per_dim.pow(2).sum()
+    mean_x_sq = torch.stack(x_sq_list).mean()
     mean_resid_sq = torch.stack(resid_sq_list).mean()
-    explained_var = (1.0 - mean_resid_sq / total_var).item()
+    explained_var = (1.0 - mean_resid_sq / mean_x_sq).item()
 
     return {
         "l0": torch.cat(l0_list).mean().item(),
@@ -487,7 +481,27 @@ def run_single_eval(
         Dict of scalar metric values.
     """
     enc, dec, _ = _make_sae_fns(sae)
-    return run_core_eval(enc, dec, model, tokenizer, hook_name, cfg, verbose=verbose)
+    metrics = run_core_eval(enc, dec, model, tokenizer, hook_name, cfg, verbose=verbose)
+    metrics.update(_extract_model_info(sae))
+    return metrics
+
+
+def _extract_model_info(sae: Any) -> dict[str, Any]:
+    """Extract architecture stats from a loaded SAE for inclusion in results.
+
+    Returns:
+        Dict with ``total_params`` and, when detectable, ``width`` (flattened
+        latent dimension: ``n_experts * d_bottleneck`` for SMIXAE, ``d_sae``
+        for standard SAELens SAEs).
+    """
+    info: dict[str, Any] = {"total_params": sum(p.numel() for p in sae.parameters())}
+    cfg = getattr(sae, "cfg", None)
+    if cfg is not None:
+        if hasattr(cfg, "n_experts"):
+            info["width"] = cfg.n_experts * cfg.d_bottleneck
+        elif hasattr(cfg, "d_sae"):
+            info["width"] = cfg.d_sae
+    return info
 
 
 def load_sae_from_path(path: str, device: str) -> Any:

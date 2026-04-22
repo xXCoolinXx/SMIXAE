@@ -493,6 +493,8 @@ def build_newline_appendix_tables(results: dict) -> str:
 CORE_EVAL_RESULTS_PATH = Path("results/core_eval_results.json")
 
 CORE_EVAL_METRIC_LABELS: dict[str, str] = {
+    "width":               "Width",
+    "total_params":        "Params",
     "l0":                  "L0",
     "mse":                 "MSE (norm.)",
     "explained_variance":  "Expl. Var.",
@@ -505,6 +507,8 @@ CORE_EVAL_METRIC_LABELS: dict[str, str] = {
 }
 
 CORE_EVAL_SUMMARY_METRICS = [
+    "width",
+    "total_params",
     "l0",
     "explained_variance",
     "ce_loss_score",
@@ -523,12 +527,14 @@ CORE_EVAL_MODEL_DISPLAY: dict[str, str] = {
 }
 
 
-def _fmt_core_eval(v: float | str | None, decimals: int = 3) -> str:
+def _fmt_core_eval(v: int | float | str | None, decimals: int = 3) -> str:
     """Format a core eval metric value for LaTeX output."""
     if v is None:
         return "--"
     if isinstance(v, str):
         return esc(v[:20])  # truncate error messages
+    if isinstance(v, int):
+        return f"{v:,}"
     return f"{v:.{decimals}f}"
 
 
