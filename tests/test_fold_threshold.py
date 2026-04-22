@@ -21,10 +21,10 @@ The gating invariant holds exactly (not approximately) because:
   threshold_fold = t / sf  →  comparison  (norm/sf > t/sf)  ↔  (norm > t)
 """
 
-import torch
 import pytest
-from smixae.smixae import SMIXAE, SMIXAEConfig, SMIXAETraining, SMIXAETrainingConfig, smixae_encode
+import torch
 
+from smixae.smixae import SMIXAE, SMIXAEConfig, SMIXAETraining, SMIXAETrainingConfig, smixae_encode
 
 # ---------------------------------------------------------------------------
 # Helpers

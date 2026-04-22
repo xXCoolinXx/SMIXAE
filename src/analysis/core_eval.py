@@ -398,12 +398,27 @@ def _compute_ce_loss_metrics(
                 handle.remove()
         return out.logits  # type: ignore[union-attr]
 
-    def _replacement_hook(module: nn.Module, inp: Any, out: Any) -> Any:
+    def _replacement_hook_old(module: nn.Module, inp: Any, out: Any) -> Any:
         acts = out[0] if isinstance(out, tuple) else out
         recon = decode_fn(encode_fn(acts.to(llm_dtype))).to(acts.device, acts.dtype)
+       
+        return (recon,) + out[1:] if isinstance(out, tuple) else recon
+ 
+    def _replacement_hook(module: nn.Module, inp: Any, out: Any) -> Any:
+        acts = out[0] if isinstance(out, tuple) else out
+        
+        # Standard SAE reconstruction
+        recon = decode_fn(encode_fn(acts.to(llm_dtype))).to(acts.device, acts.dtype)
+        
+        # Splicing logic to bypass the SAE for BOS tokens (matching SAEBench)
+        if bos_id is not None:
+            # 'tokens' is safely captured from the outer 'for tokens in batch_iter:' loop
+            bos_mask = (tokens == bos_id).unsqueeze(-1).to(acts.device)
+            recon = torch.where(bos_mask, acts, recon)
+            
         return (recon,) + out[1:] if isinstance(out, tuple) else recon
 
-    def _zero_ablation_hook(module: nn.Module, inp: Any, out: Any) -> Any:
+    def zero_ablation_hook(module: nn.Module, inp: Any, out: Any) -> Any:
         acts = out[0] if isinstance(out, tuple) else out
         zero = torch.zeros_like(acts)
         return (zero,) + out[1:] if isinstance(out, tuple) else zero
