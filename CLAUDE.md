@@ -496,7 +496,7 @@ Passed as `--hf-release` / `--hf-sae-id` to `smixae core`. See `experiments/core
 
 - **`CoreEvalConfig`**: Dataclass — `dataset`, `context_size`, `n_reconstruction_batches`, `n_sparsity_batches`, `batch_size`, `device`, `dtype`.
 - **`_make_sae_fns(sae)`**: Returns `(encode, decode, d_sae)` closures; SMIXAE detected via `hasattr(sae.cfg, "n_experts")` and flattened automatically.
-- **`_build_token_batches(...)`**: Streams a HuggingFace dataset and packs fixed-length token windows into batches (no padding needed).
+- **`_make_act_store(...)`**: Tokenises a streaming HuggingFace dataset on the fly (BOS prepended, short docs filtered), wraps it as a pretokenized ``IterableDataset``, and creates an SAELens ``ActivationsStore``. Call ``get_batch_tokens(n)`` to stream ``(n, context_size)`` batches. No TransformerLens adapter code needed.
 - **`_compute_sparsity_variance_metrics(...)`**: L0, MSE, explained variance, cosine similarity, L2 ratio/norms. Metric math runs in float32 for precision over `d_model` dims.
 - **`_compute_ce_loss_metrics(...)`**: `ce_loss_without_sae`, `ce_loss_with_sae` (SAE reconstruction patched in via forward hook), `ce_loss_with_ablation` (zero-ablation at hook point), and the derived `ce_loss_score`.
 - **`run_core_eval(...)`**: End-to-end metrics for one SAE; called by `run_single_eval(sae, ...)` after building the closures.
