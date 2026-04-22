@@ -7,8 +7,8 @@ Metrics computed (matching SAEBench definitions):
 
   l0                  Mean active features per token (count of non-zero elements).
   mse                 Normalised reconstruction error: mean ||x - x̂||² / ||x||² per token.
-  explained_variance  1 - mean(||x - x̂||²) / mean(||x||²).  Normalised-MSE form; less
-                      inflated than mean-centred variance when the residual stream has a large DC mean.
+  explained_variance  1 - mean(||x - x̂||²) / var(x).  Standard mean-centred form
+                      (denominator uses global per-feature mean).
   cosine_similarity   Mean cosine similarity between reconstruction and input.
   l2_ratio            Mean ||x̂|| / ||x|| per token.
   ce_loss_without_sae Baseline cross-entropy loss.
@@ -257,8 +257,10 @@ def _compute_sparsity_variance_metrics(
     l2_out_list: list[torch.Tensor] = []
     l2_ratio_list: list[torch.Tensor] = []
 
-    # FVE accumulators: running sums for token-weighted explained variance.
-    sum_x_sq: float = 0.0
+    # FVE accumulators: running sums for token-weighted, mean-centred explained variance.
+    # Uses variance decomposition: var(x) = E[||x||²] - ||E[x]||²
+    sum_x: torch.Tensor | None = None  # global vector sum (shape d), for computing ||E[x]||²
+    sum_x_sq: float = 0.0  # global sum of ||x||²
     sum_resid_sq: float = 0.0
     n_tokens_total: int = 0
 
@@ -289,8 +291,10 @@ def _compute_sparsity_variance_metrics(
         mse_list.append(resid.pow(2).sum(-1) / (flat_in.pow(2).sum(-1) + 1e-8))
 
         n_valid = flat_in.shape[0]
-        sum_x_sq += flat_in.pow(2).sum(-1).sum().item()
-        sum_resid_sq += resid.pow(2).sum(-1).sum().item()
+        batch_sum_x = flat_in.sum(dim=0).cpu()
+        sum_x = batch_sum_x if sum_x is None else sum_x + batch_sum_x
+        sum_x_sq += flat_in.pow(2).sum().item()
+        sum_resid_sq += resid.pow(2).sum().item()
         n_tokens_total += n_valid
 
         cossim_list.append(F.cosine_similarity(flat_in, flat_out, dim=-1))
@@ -301,7 +305,12 @@ def _compute_sparsity_variance_metrics(
         l2_out_list.append(l2_out)
         l2_ratio_list.append(l2_out / (l2_in + 1e-8))
 
-    explained_var = 1.0 - (sum_resid_sq / n_tokens_total) / (sum_x_sq / n_tokens_total)
+    # Mean-centred explained variance: 1 - mean(||x - x̂||²) / var(x)
+    # var(x) = E[||x||²] - ||E[x]||²
+    uncentered_mean = sum_x_sq / n_tokens_total
+    mean_sq_norm = sum_x.pow(2).sum().item() / (n_tokens_total**2)
+    centered_var = uncentered_mean - mean_sq_norm
+    explained_var = 1.0 - (sum_resid_sq / n_tokens_total) / centered_var
 
     return {
         "l0": torch.cat(l0_list).mean().item(),
@@ -354,7 +363,7 @@ def _compute_ce_loss_metrics(
         shift_logits = logits[:, :-1].contiguous().float()
         shift_labels = tokens[:, 1:].contiguous().clone()
         if bos_id is not None:
-            bos_mask = (tokens[:, :-1] == bos_id) | (tokens[:, 1:] == bos_id)
+            bos_mask = tokens[:, :-1] == bos_id
             shift_labels[bos_mask] = -100
         per_token_loss = F.cross_entropy(
             shift_logits.reshape(-1, vocab_size),
