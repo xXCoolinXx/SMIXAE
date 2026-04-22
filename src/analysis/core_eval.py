@@ -1,7 +1,9 @@
 """SAEBench core evaluation reimplemented using HuggingFace.
 
-Computes the same metrics as SAEBench core without depending on TransformerLens.
-Supports both SMIXAE checkpoints and GemmaScope baselines loaded via SAELens.
+Computes the same metrics as SAEBench core without depending on TransformerLens
+for model loading or activation collection.  Tokenisation uses SAELens'
+``ActivationsStore`` so that the packed-token distribution exactly matches
+training.  Supports both SMIXAE checkpoints and GemmaScope baselines.
 
 Metrics computed (matching SAEBench definitions):
 
@@ -60,6 +62,7 @@ class CoreEvalConfig:
     batch_size: int = 16
     device: str = "cuda"
     dtype: str = "bfloat16"
+    seed: int = 42
 
     def llm_dtype(self) -> torch.dtype:
         """Return the torch dtype corresponding to ``self.dtype``."""
@@ -124,64 +127,74 @@ def _make_sae_fns(
 
 
 # ---------------------------------------------------------------------------
-# Dataset tokenisation
+# ActivationsStore helper
 # ---------------------------------------------------------------------------
 
-def _build_token_batches(
-    dataset_name: str,
+def _make_act_store(
+    model: nn.Module,
     tokenizer: Any,
+    dataset_name: str,
     context_size: int,
-    n_batches: int,
     batch_size: int,
-) -> list[torch.Tensor]:
-    """Stream a dataset and pack into fixed-length token batches.
+    hook_name: str,
+    seed: int = 42,
+) -> Any:
+    """Create an SAELens ``ActivationsStore`` backed by a pretokenized dataset.
 
-    Matches SAELens' pretokenizer defaults (``begin_batch_token = bos``,
-    ``sequence_separator_token = bos``): every window starts with BOS, and
-    documents are joined by BOS inside the packed buffer. Without this, eval
-    sees a different token distribution than training and inference metrics
-    (L0, reconstruction norm) drift.
+    Tokenises the streaming dataset on the fly into a ``tokens`` column (BOS
+    prepended), filters out short documents, and passes the result to
+    ActivationsStore.  The store detects the ``tokens`` column and streams
+    fixed-length batches without calling any TransformerLens methods.
 
     Args:
+        model: HuggingFace LLM (used only for device detection).
+        tokenizer: HuggingFace tokenizer.
         dataset_name: HuggingFace dataset identifier.
-        tokenizer: HuggingFace tokenizer (must have ``encode``).
-        context_size: Number of tokens per sequence.
-        n_batches: Number of batches to produce.
+        context_size: Tokens per sequence.
         batch_size: Sequences per batch.
+        hook_name: Hook point name (stored but not used for tokenisation).
+        seed: Random seed for shuffling the dataset.
 
     Returns:
-        List of ``(batch_size, context_size)`` long tensors.
+        An ``ActivationsStore`` instance; call ``get_batch_tokens(n)`` to
+        stream ``(n, context_size)`` token tensors.
     """
-    needed = n_batches * batch_size
-    ds = load_dataset(dataset_name, split="train", streaming=True, trust_remote_code=True)
+    from sae_lens.training.activations_store import ActivationsStore
 
-    bos_id = tokenizer.bos_token_id
-    payload_size = context_size - 1 if bos_id is not None else context_size
+    bos_id = getattr(tokenizer, "bos_token_id", None)
 
-    buffer: list[int] = []
-    chunks: list[list[int]] = []
+    ds = load_dataset(
+        dataset_name, split="train", streaming=True, trust_remote_code=True
+    ).shuffle(seed=seed, buffer_size=10_000)
 
-    for example in ds:
-        doc_tokens = tokenizer.encode(example["text"], add_special_tokens=False)
-        buffer.extend(doc_tokens)
-        while len(buffer) >= payload_size:
-            payload = buffer[:payload_size]
-            buffer = buffer[payload_size:]
-            if bos_id is not None:
-                chunks.append([bos_id, *payload])
-            else:
-                chunks.append(payload)
-        if len(chunks) >= needed:
-            break
+    def _tokenize(example: dict[str, Any]) -> dict[str, Any]:
+        tokens = tokenizer.encode(example["text"], add_special_tokens=False)
+        if bos_id is not None:
+            tokens = [bos_id, *tokens]
+        return {"tokens": tokens}
 
-    chunks = chunks[:needed]
-    batches: list[torch.Tensor] = []
-    for i in range(0, len(chunks) - batch_size + 1, batch_size):
-        batch = chunks[i : i + batch_size]
-        if len(batch) == batch_size:
-            batches.append(torch.tensor(batch, dtype=torch.long))
+    tokenized_ds = ds.map(_tokenize).filter(
+        lambda x: len(x["tokens"]) >= context_size
+    )
 
-    return batches
+    return ActivationsStore(
+        model=model,
+        dataset=tokenized_ds,
+        streaming=True,
+        hook_name=hook_name,
+        hook_head_index=None,
+        context_size=context_size,
+        d_in=1,  # placeholder; only used by get_activations, which we don't call
+        n_batches_in_buffer=4,
+        total_training_tokens=10**9,
+        store_batch_size_prompts=batch_size,
+        train_batch_size_tokens=batch_size * context_size,
+        prepend_bos=False,  # BOS already in the tokenized rows
+        normalize_activations="none",
+        device=torch.device("cpu"),
+        dtype="bfloat16",
+        dataset_trust_remote_code=True,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -453,11 +466,14 @@ def run_core_eval(
     """
     llm_dtype = cfg.llm_dtype()
     bos_id = getattr(tokenizer, "bos_token_id", None)
-    n_total = cfg.n_reconstruction_batches + cfg.n_sparsity_batches
-    logger.info(f"Tokenising {n_total} batches × {cfg.batch_size} seqs × {cfg.context_size} tokens …")
-    all_batches = _build_token_batches(
-        cfg.dataset, tokenizer, cfg.context_size, n_total, cfg.batch_size
+
+    act_store = _make_act_store(
+        model, tokenizer, cfg.dataset, cfg.context_size, cfg.batch_size, hook_name,
+        seed=cfg.seed,
     )
+    n_total = cfg.n_reconstruction_batches + cfg.n_sparsity_batches
+    logger.info(f"Streaming {n_total} batches × {cfg.batch_size} seqs × {cfg.context_size} tokens …")
+    all_batches = [act_store.get_batch_tokens(cfg.batch_size) for _ in range(n_total)]
     recon_batches = all_batches[: cfg.n_reconstruction_batches]
     sparsity_batches = all_batches[cfg.n_reconstruction_batches :]
 

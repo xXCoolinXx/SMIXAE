@@ -87,6 +87,7 @@ def core(
     batch_size: int = typer.Option(16, help="Sequences per batch."),
     context_size: int = typer.Option(128, help="Token context length."),
     dataset: str = typer.Option(_DEFAULT_DATASET, help="HuggingFace dataset."),
+    seed: int = typer.Option(42, help="Random seed for dataset shuffling."),
     verbose: bool = typer.Option(False, help="Show per-batch progress bars."),
 ) -> None:
     """Evaluate a single SAE on core metrics."""
@@ -98,6 +99,7 @@ def core(
         batch_size=batch_size,
         device=device,
         dtype=dtype,
+        seed=seed,
     )
 
     from_hf = bool(hf_release)
