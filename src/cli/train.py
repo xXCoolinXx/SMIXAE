@@ -8,55 +8,30 @@ all others default to the standard experiment settings.
 import re as _re
 from typing import Optional
 
-import sae_lens.training.activations_store as _acts_store
-import torch
 import typer
-from datasets import load_from_disk as _load_from_disk
-from sae_lens import LanguageModelSAERunnerConfig, LanguageModelSAETrainingRunner, LoggingConfig
 
-from smixae import AffineSMIXAETrainingConfig, SMIXAETrainingConfig  # also registers architecture via __init__
-
-# Patch ActivationsStore to auto-detect datasets saved with save_to_disk (state.json sentinel)
-# and redirect to load_from_disk, so callers don't need to distinguish loading methods.
-
-_orig_load_dataset = _acts_store.load_dataset
+# Monkey-patch definitions (applied lazily by _apply_patches on first invocation).
+# The patch functions themselves only use stdlib at definition time.
 
 
 def _auto_load_dataset(path, *args, **kwargs):
     """Try ``load_from_disk`` first; fall back to SAELens' ``load_dataset`` for HuggingFace paths."""
     if isinstance(path, str):
         try:
+            from datasets import load_from_disk as _load_from_disk
             return _load_from_disk(path)
         except Exception:
             pass
-    return _orig_load_dataset(path, *args, **kwargs)
-
-
-_acts_store.load_dataset = _auto_load_dataset
-
-# Patch tokenizer validation to support local save_to_disk datasets.
-# SAELens only catches HfHubHTTPError, but local paths trigger HFValidationError.
-# We instead read sae_lens.json directly from the local directory when present.
-_orig_validate = _acts_store.validate_pretokenized_dataset_tokenizer
+    import sae_lens.training.activations_store as _acts_store
+    return _acts_store.load_dataset(path, *args, **kwargs)
 
 
 def _smart_validate(dataset_path: str, model_tokenizer) -> None:  # type: ignore[type-arg]
-    """Validate pretokenized dataset tokenizer, supporting local ``save_to_disk`` paths.
-
-    SAELens' built-in validator only catches ``HfHubHTTPError`` (for Hub paths).
-    Local datasets saved with ``Dataset.save_to_disk`` raise ``HFValidationError``
-    instead, which the original code does not handle.
-
-    This patch reads ``sae_lens.json`` directly from the local directory (when present)
-    and compares vocabularies.  Falls back to the original validator for Hub paths.
-
-    Args:
-        dataset_path: Path to a local dataset directory or a HuggingFace Hub identifier.
-        model_tokenizer: The model's tokenizer, used for vocabulary comparison.
-    """
+    """Validate pretokenized dataset tokenizer, supporting local ``save_to_disk`` paths."""
     import json
     from pathlib import Path
 
+    import sae_lens.training.activations_store as _acts_store
     from transformers import AutoTokenizer
 
     local_cfg = Path(dataset_path) / "sae_lens.json"
@@ -69,48 +44,37 @@ def _smart_validate(dataset_path: str, model_tokenizer) -> None:  # type: ignore
                     f"Dataset tokenizer '{tokenizer_name}' does not match model tokenizer."
                 )
         except Exception:
-            pass  # Can't load tokenizer to compare — skip check
+            pass
         return
-    _orig_validate(dataset_path, model_tokenizer)
-
-
-_acts_store.validate_pretokenized_dataset_tokenizer = _smart_validate
-
-# Patch stop_at_layer extraction to support HuggingFace-style hook names like
-# "model.layers.11" (no trailing dot). SAELens regex r"\.(\d+)\." requires a dot
-# after the layer number, so it returns None for these names → full forward pass
-# including lm_head → OOM on large vocab (Gemma 2: 256k tokens).
-_orig_extract_stop = _acts_store.extract_stop_at_layer_from_tlens_hook_name
+    _acts_store.validate_pretokenized_dataset_tokenizer(dataset_path, model_tokenizer)
 
 
 def _smart_extract_stop(hook_name: str) -> int | None:
-    r"""Extract ``stop_at_layer`` from a hook name, handling HuggingFace-style names.
+    r"""Extract ``stop_at_layer`` from a hook name, handling HuggingFace-style names."""
+    import sae_lens.training.activations_store as _acts_store
 
-    SAELens' regex ``r"\\.(\\d+)\\."`` requires a trailing dot after the layer number,
-    so it returns ``None`` for names like ``"model.layers.11"`` (no trailing dot).
-    When that happens, the full forward pass including ``lm_head`` runs, causing OOM
-    on large vocabularies (e.g. Gemma 2 with 256k tokens).
-
-    This patch falls back to matching ``r"\\.(\\d+)$"`` (end-of-string) for
-    HuggingFace-style hook names and returns ``layer_num + 1`` as the stop layer.
-
-    Args:
-        hook_name: Hook point string, e.g. ``"model.layers.11"`` or
-            ``"blocks.11.hook_resid_post"`` (TransformerLens style).
-
-    Returns:
-        The layer index at which to stop the forward pass, or ``None`` if the
-        hook name does not match any known pattern.
-    """
-    result = _orig_extract_stop(hook_name)
+    result = _acts_store.extract_stop_at_layer_from_tlens_hook_name(hook_name)
     if result is not None:
         return result
-    # HuggingFace format ends with ".N" (no trailing dot)
     match = _re.search(r"\.(\d+)$", hook_name)
     return None if match is None else int(match.group(1)) + 1
 
 
-_acts_store.extract_stop_at_layer_from_tlens_hook_name = _smart_extract_stop
+_patches_applied = False
+
+
+def _apply_patches() -> None:
+    """Apply SAELens monkey-patches.  Called once on first invocation of train()."""
+    global _patches_applied
+    if _patches_applied:
+        return
+    _patches_applied = True
+
+    import sae_lens.training.activations_store as _acts_store
+
+    _acts_store.load_dataset = _auto_load_dataset
+    _acts_store.validate_pretokenized_dataset_tokenizer = _smart_validate
+    _acts_store.extract_stop_at_layer_from_tlens_hook_name = _smart_extract_stop
 
 app = typer.Typer()
 
@@ -301,6 +265,13 @@ def train(
     use_affine_smixae : str = typer.Option("false", help="Whether to use affine smixae or not, defaults false (bool)", rich_help_panel="Model"),
 ) -> None:
     """Train a SMIXAE on a language model using SAELens."""
+    _apply_patches()
+
+    import torch
+    from sae_lens import LanguageModelSAERunnerConfig, LanguageModelSAETrainingRunner, LoggingConfig
+
+    from smixae import AffineSMIXAETrainingConfig, SMIXAETrainingConfig
+
     torch.set_float32_matmul_precision("high")
     torch._dynamo.config.capture_scalar_outputs = True  # silence graph-break warning
 
