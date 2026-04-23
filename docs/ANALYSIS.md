@@ -134,6 +134,18 @@ The 3-D scatter is the raw bottleneck output — coordinates are exactly the 3 b
 
 ## Extending Analysis
 
+### New Analysis Scripts
+
+Analysis scripts are **standalone** — they do not inherit from a base class. Follow the pattern in `categorize_all.py`:
+
+1. Load the LLM with `load_llm()` (uses `AutoModelForCausalLM` / SAELens internals — **not TransformerLens**)
+2. Load the SMIXAE checkpoint with `load_sae()` (returns an `SMIXAE` instance)
+3. Collect activations at a hook point using `collect_activations()` or a similar streaming loop
+4. Run `model.encode(activations)` to get bottleneck activations per expert
+5. Filter/score experts, then visualize or save results
+
+For regression-based metrics, see `anthropic_newline.py` as a reference pattern.
+
 ### Adding a New Probing Dataset
 
 1. Add a generator function to `src/analysis/generate_probing_data.py`:
