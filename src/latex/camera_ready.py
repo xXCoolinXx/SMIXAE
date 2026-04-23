@@ -52,12 +52,6 @@ from typing import Optional
 
 import typer
 
-from analysis.colors import (
-    render_continuous_colorbar_png,
-    render_discrete_from_scale_png,
-    render_discrete_legend_png,
-)
-
 app = typer.Typer()
 
 # ------------------------- Tunable layout constants ----------------------------
@@ -453,6 +447,12 @@ def _render_group_legend(group: LegendGroup, output_path: Path) -> None:
       :func:`analysis.colors.sample_named_scale_discrete`).
     - ``labels`` alone   → fallback discrete legend using a qualitative palette.
     """
+    from analysis.colors import (
+        render_continuous_colorbar_png,
+        render_discrete_from_scale_png,
+        render_discrete_legend_png,
+    )
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     if group.color_map:
