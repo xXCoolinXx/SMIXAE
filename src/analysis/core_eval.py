@@ -57,8 +57,8 @@ class CoreEvalConfig:
 
     dataset: str = "Skylion007/openwebtext"
     context_size: int = 128
-    n_reconstruction_batches: int = 200
-    n_sparsity_batches: int = 2000
+    n_reconstruction_batches: int = 1000
+    n_sparsity_batches: int = 10000
     batch_size: int = 16
     device: str = "cuda"
     dtype: str = "bfloat16"
@@ -418,7 +418,7 @@ def _compute_ce_loss_metrics(
             
         return (recon,) + out[1:] if isinstance(out, tuple) else recon
 
-    def zero_ablation_hook(module: nn.Module, inp: Any, out: Any) -> Any:
+    def _zero_ablation_hook(module: nn.Module, inp: Any, out: Any) -> Any:
         acts = out[0] if isinstance(out, tuple) else out
         zero = torch.zeros_like(acts)
         return (zero,) + out[1:] if isinstance(out, tuple) else zero
