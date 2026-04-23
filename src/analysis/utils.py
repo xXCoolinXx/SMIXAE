@@ -670,11 +670,15 @@ class ExpertFilterConfig:
     Attributes:
         active_threshold:     Minimum L2 norm for an expert activation to count as active.
         min_active_fraction:  Drop experts active on fewer than this fraction of tokens.
+                              Ignored when ``min_active_tokens`` is set.
+        min_active_tokens:    Absolute minimum active-token count. When not ``None``,
+                              overrides ``min_active_fraction``.
         max_points:           Randomly downsample experts exceeding this count (0 = no cap).
     """
 
     active_threshold: float = 1e-5
     min_active_fraction: float = 0.10
+    min_active_tokens: int | None = None
     max_points: int = 1000
 
 
@@ -866,67 +870,6 @@ class Expert:
             raise ValueError(f"Unknown sort_by: {sort_by}. Options: {', '.join(mapping.keys())}")
         v = mapping[sort_by]
         return v if v is not None else float("-inf")
-
-    # ── density-aware subsampling ──────────────────────────────────────
-    def density_subsample(self, max_points: int, k: int = 12) -> None:
-        """Thin activations to *max_points* via k-NN density rejection.
-
-        Estimates local density from the distance to each point's k-th nearest
-        neighbor, then keeps each point with probability inversely proportional
-        to a power of its density.  This aggressively thins dense clusters while
-        preserving sparse manifold structure.
-        """
-        X = self.expert_activations
-        n = X.shape[0]
-        if n <= max_points:
-            return
-
-        D = torch.cdist(X, X)
-        r_k = D.topk(k + 1, largest=False).values[:, -1]
-        del D
-
-        # Power-law weighting: raise inv_density to a power > 1 to amplify
-        # preference for sparse regions.  Power = 2 means keep probability
-        # scales as 1/rho^2 rather than 1/rho, much more aggressive thinning.
-        eps = 1e-12
-        inv_rho = r_k + eps
-        weights = inv_rho ** 2
-        p = (max_points * weights / weights.sum()).clamp(max=1.0)
-
-        keep_mask = torch.rand(n) < p
-        n_kept = int(keep_mask.sum().item())
-
-        if n_kept > max_points:
-            kept_idx = keep_mask.nonzero(as_tuple=True)[0]
-            trim = kept_idx[torch.randperm(n_kept)[:max_points]]
-            keep_mask = torch.zeros(n, dtype=torch.bool)
-            keep_mask[trim] = True
-        elif n_kept < max_points:
-            rejected = (~keep_mask).nonzero(as_tuple=True)[0]
-            n_need = max_points - n_kept
-            if n_need <= rejected.numel():
-                pad = rejected[torch.randperm(rejected.numel())[:n_need]]
-            else:
-                pad = rejected
-            keep_mask[pad] = True
-
-        self._apply_mask(keep_mask)
-
-    def _apply_mask(self, mask: torch.Tensor) -> None:
-        """Apply a boolean mask to all stored per-sample tensors."""
-        self.expert_activations = self.expert_activations[mask]
-        if self.llm_activations is not None:
-            self.llm_activations = self.llm_activations[mask]
-        if self.labels is not None:
-            self.labels = self.labels[mask]
-        if self.fisher_labels is not None:
-            self.fisher_labels = self.fisher_labels[mask]
-        if self.regression_targets is not None:
-            self.regression_targets = self.regression_targets[mask]
-        kept_indices = [self.active_indices[i] for i in mask.nonzero(as_tuple=True)[0].tolist()]
-        self.active_indices = kept_indices
-        if self.local_continuity_scores is not None:
-            self.local_continuity_scores = self.local_continuity_scores[mask]
 
     # ── continuity (unlabelled) ───────────────────────────────────────
     def evaluate_manifold(self, k_neighbors: int = 10, device: str = "cuda") -> torch.Tensor:
@@ -1529,13 +1472,18 @@ def get_sae_activations(
 
     # When last_token_only=True, S=1 so B*S = B (number of samples); otherwise all tokens.
     n_total = B * S
-    min_points_abs = max(1, int(filter_cfg.min_active_fraction * n_total))
+    if filter_cfg.min_active_tokens is not None:
+        min_points_abs = max(1, filter_cfg.min_active_tokens)
+        filter_desc = f"min_active_tokens={min_points_abs}"
+    else:
+        min_points_abs = max(1, int(filter_cfg.min_active_fraction * n_total))
+        filter_desc = f"min_active_fraction={filter_cfg.min_active_fraction:.2%} → min_points={min_points_abs}"
     activations_flat = activations.reshape(n_total, D)
 
     sae_activations_cat, mean_latent_l0 = encode_sae_batched(sae, activations_flat, sae_batch_size, return_latent_l0=True)  # type: ignore[misc]
     sae_activations_cat = sae_activations_cat.view(B, S, sae_activations_cat.shape[1], sae_activations_cat.shape[2])
     print(f"Mean latent L0 (pre-bottleneck dims > 0 per token): {mean_latent_l0:.2f}")
-    print(f"min_active_fraction={filter_cfg.min_active_fraction:.2%} → min_points={min_points_abs} / {n_total} tokens")
+    print(f"{filter_desc} / {n_total} tokens")
 
     experts: list[Expert] = []
     n_experts = sae_activations_cat.shape[-2]

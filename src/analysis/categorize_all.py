@@ -44,6 +44,10 @@ class ProbeRunConfig:
         max_points:                   Cap on active tokens per expert (0 = no cap).
         n_interesting_experts_to_plot: Top-N experts to include in the HTML report.
         context_window_display:       Surrounding tokens shown on hover.
+        random_sample_n_input_samples: Number of prompts for the unlabelled random-sample path.
+        random_sample_min_active_fraction: Minimum fraction of ``random_sample_max_points`` an
+            expert must fire on in the random-sample path (e.g. 0.1 → ≥10% of max_points).
+        random_sample_max_points: Max points collected per expert in the random-sample path.
     """
 
     device: str
@@ -63,12 +67,10 @@ class ProbeRunConfig:
     context_window_display: int = 10
     random_seed: int = 42
 
-    # Density-aware subsampling (random-sample path only)
+    # Random-sample path only (overrides main filter params for unlabelled auto mode)
     random_sample_n_input_samples: int = 30000
-    random_sample_min_active_fraction: float = 0.75
-    random_sample_max_points: int = 50000
-    density_subsample_k: int = 12
-    density_subsample_target: int = 1000
+    random_sample_min_active_fraction: float = 0.1
+    random_sample_max_points: int = 1000
 
 
 # ======================================================================
@@ -260,16 +262,21 @@ def run_pipeline(
     )
 
     # ── 2. SAE encoding ───────────────────────────────────────────────
-    max_points = (
-        run_cfg.random_sample_max_points
-        if _will_random_sample
-        else run_cfg.max_points
-    )
-    filter_cfg = ExpertFilterConfig(
-        active_threshold=run_cfg.active_threshold,
-        min_active_fraction=run_cfg.min_active_fraction,
-        max_points=max_points,
-    )
+    if _will_random_sample:
+        # Random-sample path: threshold as a fraction of max_points, not total tokens.
+        max_points = run_cfg.random_sample_max_points
+        min_active_tokens = max(1, int(run_cfg.random_sample_min_active_fraction * max_points))
+        filter_cfg = ExpertFilterConfig(
+            active_threshold=run_cfg.active_threshold,
+            min_active_tokens=min_active_tokens,
+            max_points=max_points,
+        )
+    else:
+        filter_cfg = ExpertFilterConfig(
+            active_threshold=run_cfg.active_threshold,
+            min_active_fraction=run_cfg.min_active_fraction,
+            max_points=run_cfg.max_points,
+        )
     experts = get_sae_activations(
         sae=sae,
         device=run_cfg.device,
@@ -309,18 +316,10 @@ def run_pipeline(
     use_random_sample = not batch.is_labelled and run_cfg.sort_by == "auto"
 
     if use_random_sample:
-        min_pts = int(run_cfg.random_sample_min_active_fraction * run_cfg.random_sample_max_points)
-        candidates = [e for e in experts if e.expert_activations.shape[0] > min_pts]
-        print(f"Random sampling: {len(candidates)} eligible experts with >{min_pts} points (seed={run_cfg.random_seed})…")
+        print(f"Random sampling: {len(experts)} eligible experts (seed={run_cfg.random_seed})…")
         rng = random.Random(run_cfg.random_seed)
-        n_to_plot = min(run_cfg.n_interesting_experts_to_plot, len(candidates))
-        top_experts = rng.sample(candidates, n_to_plot)
-        print(f"Density subsampling {len(top_experts)} experts (k={run_cfg.density_subsample_k}, target={run_cfg.density_subsample_target})…")
-        for expert in top_experts:
-            expert.density_subsample(
-                max_points=run_cfg.density_subsample_target,
-                k=run_cfg.density_subsample_k,
-            )
+        n_to_plot = min(run_cfg.n_interesting_experts_to_plot, len(experts))
+        top_experts = rng.sample(experts, n_to_plot)
     else:
         print(f"Sorting by {effective_sort_by} ({'ascending' if run_cfg.sort_ascending else 'descending'})…")
         experts.sort(key=lambda e: e.sort_key(effective_sort_by), reverse=not run_cfg.sort_ascending)
@@ -521,12 +520,10 @@ def single(
     ),
     color_scale: str = typer.Option("Plasma", help="Plotly continuous colorscale name (e.g. Plasma, Viridis, RdBu)"),
     output_dir: str = typer.Option("expert_plots", help="Base directory to save the HTML plots"),
-    # ── density subsampling (random-sample path only) ──
-    random_sample_n_input_samples: int = typer.Option(1000, help="Number of prompts for unlabeled random-sample path"),
-    random_sample_min_active_fraction: float = typer.Option(0.75, help="Min active fraction for random-sample candidates (0–1)"),
-    random_sample_max_points: int = typer.Option(5000, help="Max points collected per expert in random-sample path"),
-    density_subsample_k: int = typer.Option(12, help="k-NN neighbor count for density estimation"),
-    density_subsample_target: int = typer.Option(1000, help="Final point count after density-aware thinning"),
+    # ── random-sample path (unlabelled auto mode) ──
+    random_sample_n_input_samples: int = typer.Option(10000, help="Number of prompts for unlabeled random-sample path"),
+    random_sample_min_active_fraction: float = typer.Option(0.1, help="Min fraction of random_sample_max_points an expert must fire on (0–1)"),
+    random_sample_max_points: int = typer.Option(1000, help="Max points collected per expert in random-sample path"),
 ):
     """Probe a single dataset against a SMIXAE checkpoint and write an HTML report.
 
@@ -586,8 +583,6 @@ def single(
         random_sample_n_input_samples=random_sample_n_input_samples,
         random_sample_min_active_fraction=random_sample_min_active_fraction,
         random_sample_max_points=random_sample_max_points,
-        density_subsample_k=density_subsample_k,
-        density_subsample_target=density_subsample_target,
     )
 
     run_pipeline(
@@ -652,12 +647,10 @@ def all_datasets(
         "When set, probe results for each dataset are merged into this file keyed by run name. "
         "Leave empty to skip.",
     ),
-    # ── density subsampling (random-sample path only) ──
-    random_sample_n_input_samples: int = typer.Option(1000, help="Number of prompts for unlabeled random-sample path"),
-    random_sample_min_active_fraction: float = typer.Option(0.75, help="Min active fraction for random-sample candidates (0–1)"),
-    random_sample_max_points: int = typer.Option(5000, help="Max points collected per expert in random-sample path"),
-    density_subsample_k: int = typer.Option(12, help="k-NN neighbor count for density estimation"),
-    density_subsample_target: int = typer.Option(1000, help="Final point count after density-aware thinning"),
+    # ── random-sample path (unlabelled auto mode) ──
+    random_sample_n_input_samples: int = typer.Option(10_000, help="Number of prompts for unlabeled random-sample path"),
+    random_sample_min_active_fraction: float = typer.Option(0.1, help="Min fraction of random_sample_max_points an expert must fire on (0–1)"),
+    random_sample_max_points: int = typer.Option(1000, help="Max points collected per expert in random-sample path"),
 ):
     """Probe all datasets listed in a JSON config file, then run an unlabelled continuity pass.
 
@@ -729,8 +722,6 @@ def all_datasets(
         random_sample_n_input_samples=random_sample_n_input_samples,
         random_sample_min_active_fraction=random_sample_min_active_fraction,
         random_sample_max_points=random_sample_max_points,
-        density_subsample_k=density_subsample_k,
-        density_subsample_target=density_subsample_target,
     )
 
     for cfg in dataset_cfgs:
