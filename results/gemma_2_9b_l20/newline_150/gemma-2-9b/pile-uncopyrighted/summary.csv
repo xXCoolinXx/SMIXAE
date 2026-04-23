@@ -1,2 +1,2 @@
 hook_name,n_experts,d_bottleneck,n_harmonics,line_length,n_tokens,n_classes,threshold,top1_expert_id,top1_periodic_gain,top5_mean_periodic_gain,top10_mean_periodic_gain
-model.layers.20,2048,3,3,150,49443,150,3.212310791015625,1749,0.3200930493545547,0.1378204450873478,0.07809634829109412
+model.layers.20,2048,3,3,150,49443,150,6.507286548614502,1749,0.31957929333596313,0.13492153572699622,0.07674452317871008
