@@ -32,18 +32,9 @@ from pathlib import Path
 
 import typer
 
-from analysis.core_eval import (
-    CORE_EVAL_RESULTS_PATH,
-    CoreEvalConfig,
-    load_llm_for_eval,
-    load_sae_from_hf,
-    load_sae_from_path,
-    run_single_eval,
-    save_core_eval_results,
-)
-
 app = typer.Typer()
 
+_CORE_EVAL_RESULTS_PATH = Path("results/core_eval_results.json")
 _DEFAULT_DATASET = "Skylion007/openwebtext"
 
 
@@ -77,7 +68,7 @@ def core(
         "Defaults to the last path component or the hf-sae-id.",
     ),
     output_json: Path = typer.Option(
-        CORE_EVAL_RESULTS_PATH,
+        _CORE_EVAL_RESULTS_PATH,
         help="Output JSON path.",
     ),
     device: str = typer.Option("cuda", help="Torch device."),
@@ -91,6 +82,15 @@ def core(
     verbose: bool = typer.Option(False, help="Show per-batch progress bars."),
 ) -> None:
     """Evaluate a single SAE on core metrics."""
+    from analysis.core_eval import (
+        CoreEvalConfig,
+        load_llm_for_eval,
+        load_sae_from_hf,
+        load_sae_from_path,
+        run_single_eval,
+        save_core_eval_results,
+    )
+
     cfg = CoreEvalConfig(
         dataset=dataset,
         context_size=context_size,

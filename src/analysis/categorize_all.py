@@ -5,25 +5,16 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-import torch
 import typer
-from tqdm import tqdm
-from transformers.modeling_utils import PreTrainedModel
-from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
-from analysis.utils import (
-    DatasetConfig,
-    ExpertFilterConfig,
-    _collect_target_cols,
-    build_dataset_html,
-    collect_activations,
-    get_sae_activations,
-    load_llm,
-    load_sae,
-)
-from smixae import SMIXAE
+if TYPE_CHECKING:
+    from transformers.modeling_utils import PreTrainedModel
+    from transformers.tokenization_utils_base import PreTrainedTokenizerBase
+
+    from analysis.utils import DatasetConfig
+    from smixae import SMIXAE
 
 
 # ======================================================================
@@ -226,6 +217,16 @@ def run_pipeline(
         run_name: Optional run identifier used as a top-level key in ``results.json``.
         model_name_for_json: Human-readable model label stored alongside results in ``results.json``.
     """
+    from tqdm import tqdm
+
+    from analysis.utils import (
+        ExpertFilterConfig,
+        _collect_target_cols,
+        build_dataset_html,
+        collect_activations,
+        get_sae_activations,
+    )
+
     subdir = cfg.output_subdir or Path(cfg.dataframe_path).stem
     output_dir = os.path.join(final_output_dir, subdir)
     os.makedirs(output_dir, exist_ok=True)
@@ -538,6 +539,10 @@ def single(
     continuity).  If neither ``--dataset-name`` nor ``--dataframe-path`` is given,
     defaults to streaming ``monology/pile-uncopyrighted``.
     """
+    import torch
+
+    from analysis.utils import DatasetConfig, load_llm, load_sae
+
     if dataset_name is None and dataframe_path is None:
         dataset_name = "monology/pile-uncopyrighted"
         print(f"No data source specified — defaulting to {dataset_name}")
@@ -669,6 +674,10 @@ def all_datasets(
     per dataset (named by ``output_subdir`` or the CSV stem) and a ``continuity/``
     sub-directory for the unlabelled pass.
     """
+    import torch
+
+    from analysis.utils import DatasetConfig, load_llm, load_sae
+
     config_dir = Path(datasets_config).resolve().parent
     with open(datasets_config) as f:
         raw_configs = json.load(f)

@@ -18,23 +18,12 @@ import json
 import os
 import re
 from contextlib import contextmanager
-from typing import Generator
+from typing import TYPE_CHECKING, Generator
 
-import pandas as pd
-import torch
 import typer
-from tqdm import tqdm
 
-from analysis.utils import (
-    DatasetConfig,
-    ExpertFilterConfig,
-    _strip_prefix,
-    collect_activations,
-    extract_layer_from_hook,
-    get_sae_activations,
-    load_llm,
-    load_sae,
-)
+if TYPE_CHECKING:
+    import torch
 
 app = typer.Typer()
 
@@ -114,6 +103,8 @@ def decode_single_expert(
     Returns:
         ``(batch, d_model)`` reconstruction from expert ``expert_id`` alone.
     """
+    import torch
+
     z_mask = torch.zeros_like(bottleneck)
     z_mask[:, expert_id, :] = bottleneck[:, expert_id, :]
     return sae.decode(z_mask)
@@ -140,6 +131,8 @@ def steering_hook(
 
     The hook is removed on context exit.
     """
+    import torch
+
     sae_device = next(sae.parameters()).device
     sae_dtype = next(sae.parameters()).dtype
     tgt = tgt_means.to(device=sae_device, dtype=sae_dtype)  # (batch, d_bottleneck)
@@ -182,6 +175,8 @@ def steering_hook(
 
 def build_hour_map(label_names: dict[int, str]) -> dict[str, int]:
     """Build a mapping from stripped hour string (e.g. '6PM') to class id."""
+    from analysis.utils import _strip_prefix
+
     return {_strip_prefix(v): k for k, v in label_names.items()}
 
 
@@ -192,6 +187,8 @@ def generate_text_batch(
     model, tokenizer, prompts: list[str], max_new_tokens: int, device: str
 ) -> list[str]:
     """Batched generation. Tokenizer must have padding_side='left'."""
+    import torch
+
     enc = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True).to(device)
     input_len = enc["input_ids"].shape[1]
     with torch.no_grad():
@@ -282,6 +279,20 @@ def main(
     ),
 ):
     """Run SMIXAE steering experiments on hours-of-day prompts."""
+    import pandas as pd
+    import torch
+    from tqdm import tqdm
+
+    from analysis.utils import (
+        DatasetConfig,
+        ExpertFilterConfig,
+        collect_activations,
+        extract_layer_from_hook,
+        get_sae_activations,
+        load_llm,
+        load_sae,
+    )
+
     os.makedirs(output_dir, exist_ok=True)
 
     # ── 1. Load models ────────────────────────────────────────────────

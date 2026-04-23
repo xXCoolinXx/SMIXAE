@@ -11,38 +11,22 @@ Generates a tabbed HTML of top experts ranked by periodic_gain.
 
 Code is loosely based on the reproduction paper from Sinii et. al.
 """
+from __future__ import annotations
 
 import json
 import os
 import textwrap
 from itertools import islice
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
-import torch
 import typer
-from accelerate.utils import set_seed
-from datasets import Dataset, load_dataset
-from loguru import logger
-from plotly.subplots import make_subplots
-from torch.utils.data import DataLoader
-from tqdm import tqdm
-from transformers import DataCollatorWithPadding
 
-from analysis.scatter3d import plot_3d_scatter
-from analysis.utils import (
-    build_dataset_html,
-    collect_hook_activations,
-    encode_sae_batched,
-    extract_layer_from_hook,
-    flush_gpu,
-    gpu_mem_mb,
-    load_llm,
-    load_sae,
-)
+if TYPE_CHECKING:
+    import numpy as np
+    import pandas as pd
+    import plotly.graph_objects as go
+    import torch
 
 # ═══════════════════════ Constants ═══════════════════════════════════════
 
@@ -216,7 +200,7 @@ def collect_hook_hiddens(
     batch_size: int,
     num_workers: int = 0,
     max_seq_len: int | None = None,
-) -> list[torch.Tensor]:
+) -> list["torch.Tensor"]:
     """Collect per-token hidden states at a named hook point for an entire dataset.
 
     Pads each batch to ``max_seq_len`` (or the batch's longest sequence), runs the
@@ -240,6 +224,13 @@ def collect_hook_hiddens(
         A list of ``len(dataset)`` tensors, each of shape ``(seq_len_i, d_model)``,
         containing the hidden states for the non-padding tokens of example ``i``.
     """
+    import torch
+    from loguru import logger
+    from torch.utils.data import DataLoader
+    from tqdm import tqdm
+    from transformers import DataCollatorWithPadding
+
+    from analysis.utils import collect_hook_activations, gpu_mem_mb
     model.eval()
     device = next(model.parameters()).device
 
@@ -332,6 +323,10 @@ def compute_expert_scores(
         ``decode_r2``, ``encode_linear_r2``, ``encode_periodic_r2``, ``periodic_gain``,
         and per-dimension ``dim{j}_corr``, ``dim{j}_linear_r2``, ``dim{j}_periodic_r2``.
     """
+    import pandas as pd
+    import torch
+    from tqdm import tqdm
+
     N, n_experts, d = expert_acts.shape
     chars = labels.double()
 
@@ -423,11 +418,22 @@ def compute_expert_class_stats(
     Returns:
         A 3-tuple of ``(means, rates, unique_classes)`` where:
 
+    Args:
+        expert_acts: Bottleneck activations for one expert, shape ``(N, d_bottleneck)``.
+        labels: Integer class labels, shape ``(N,)``.
+        threshold: L2 norm below which an expert is considered inactive.
+
+    Returns:
+        A 3-tuple of ``(means, rates, unique_classes)`` where:
+
         - ``means``: shape ``(n_classes, d_bottleneck)`` — per-class mean activations.
         - ``rates``: shape ``(n_classes, d_bottleneck)`` — per-class firing rates
           (fraction of samples with norm > ``threshold``).
         - ``unique_classes``: 1-D array of the unique class values in sorted order.
     """
+    import numpy as np
+    import torch
+
     unique = torch.unique(labels).tolist()
     norms = expert_acts.norm(dim=-1)
     means, rates = [], []
@@ -458,6 +464,12 @@ def plot_newline_experts_html(
       • scatter  — raw bottleneck activations colored by chars_since_nl
       • means    — class-mean trajectory, connected in order
     """
+    import numpy as np
+    from loguru import logger
+
+    from analysis.scatter3d import plot_3d_scatter
+    from analysis.utils import build_dataset_html
+
     if len(scores_df) == 0:
         logger.warning("No experts to plot")
         return
@@ -565,8 +577,13 @@ def plot_expert_dim_analysis(
     n_harmonics: int = 3,
     max_points: int = 20_000,
     output_path: str = "dim_analysis.html",
-) -> go.Figure:
+) -> "go.Figure":
     """Per-dimension scatter with fitted linear + periodic curves for one expert."""
+    import numpy as np
+    import plotly.graph_objects as go
+    from loguru import logger
+    from plotly.subplots import make_subplots
+
     N, _, d = expert_acts.shape
 
     if max_points < N:
@@ -719,6 +736,22 @@ def main(
     ),
 ) -> None:
     """Analyse SMIXAE experts for newline-position manifold structure."""
+    import numpy as np
+    import pandas as pd
+    import torch
+    from accelerate.utils import set_seed
+    from datasets import Dataset, load_dataset
+    from loguru import logger
+
+    from analysis.utils import (
+        encode_sae_batched,
+        extract_layer_from_hook,
+        flush_gpu,
+        gpu_mem_mb,
+        load_llm,
+        load_sae,
+    )
+
     set_seed(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.set_grad_enabled(False)
