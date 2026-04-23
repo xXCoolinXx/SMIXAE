@@ -1937,56 +1937,11 @@
             {
               "rank": 1,
               "expert_id": 462,
-              "score": 0.39509767293930054
-            },
-            {
-              "rank": 2,
-              "expert_id": 739,
-              "score": 0.38881680369377136
-            },
-            {
-              "rank": 3,
-              "expert_id": 1711,
-              "score": 0.38706091046333313
-            },
-            {
-              "rank": 4,
-              "expert_id": 1842,
-              "score": 0.3831251859664917
-            },
-            {
-              "rank": 5,
-              "expert_id": 887,
-              "score": 0.3820350468158722
-            },
-            {
-              "rank": 6,
-              "expert_id": 1021,
-              "score": 0.38121935725212097
-            },
-            {
-              "rank": 7,
-              "expert_id": 636,
-              "score": 0.37948110699653625
-            },
-            {
-              "rank": 8,
-              "expert_id": 1729,
-              "score": 0.3785914182662964
-            },
-            {
-              "rank": 9,
-              "expert_id": 76,
-              "score": 0.3785364031791687
-            },
-            {
-              "rank": 10,
-              "expert_id": 1827,
-              "score": 0.377985417842865
+              "score": 0.3907609283924103
             }
           ],
-          "top5_mean": 0.38722712397575376,
-          "top10_mean": 0.38319493234157564
+          "top5_mean": 0.3907609283924103,
+          "top10_mean": 0.3907609283924103
         }
       }
     },
@@ -1999,61 +1954,61 @@
         "line_length": 150,
         "n_tokens": 49443,
         "n_classes": 150,
-        "threshold": 3.54109787940979,
+        "threshold": 5.556046962738037,
         "top1_expert_id": 541,
-        "top1_periodic_gain": 0.5668366890394717,
-        "top5_mean_periodic_gain": 0.30116091897257263,
-        "top10_mean_periodic_gain": 0.16295599921256157,
+        "top1_periodic_gain": 0.5477232049765671,
+        "top5_mean_periodic_gain": 0.2866742516366535,
+        "top10_mean_periodic_gain": 0.1521248502923716,
         "top10_experts": [
           {
             "rank": 1,
             "expert_id": 541,
-            "periodic_gain": 0.5668366890394717
+            "periodic_gain": 0.5477232049765671
           },
           {
             "rank": 2,
             "expert_id": 1521,
-            "periodic_gain": 0.49701827216706124
+            "periodic_gain": 0.5004233670888634
           },
           {
             "rank": 3,
             "expert_id": 1204,
-            "periodic_gain": 0.318156616781708
+            "periodic_gain": 0.3167362694656172
           },
           {
             "rank": 4,
             "expert_id": 1224,
-            "periodic_gain": 0.06795865136791446
+            "periodic_gain": 0.040902065815326294
           },
           {
             "rank": 5,
-            "expert_id": 1475,
-            "periodic_gain": 0.05583436550670769
+            "expert_id": 2039,
+            "periodic_gain": 0.027586350836893318
           },
           {
             "rank": 6,
-            "expert_id": 2039,
-            "periodic_gain": 0.03055810029216906
+            "expert_id": 1131,
+            "periodic_gain": 0.027472845486790336
           },
           {
             "rank": 7,
-            "expert_id": 1131,
-            "periodic_gain": 0.02946969195520432
+            "expert_id": 865,
+            "periodic_gain": 0.026541445186436047
           },
           {
             "rank": 8,
-            "expert_id": 579,
-            "periodic_gain": 0.026716476308712878
+            "expert_id": 1470,
+            "periodic_gain": 0.014959059283748041
           },
           {
             "rank": 9,
-            "expert_id": 865,
-            "periodic_gain": 0.024515810190545863
+            "expert_id": 1646,
+            "periodic_gain": 0.009835497575683841
           },
           {
             "rank": 10,
-            "expert_id": 1437,
-            "periodic_gain": 0.012495318516120549
+            "expert_id": 1166,
+            "periodic_gain": 0.009068397207790402
           }
         ]
       },
@@ -2065,61 +2020,61 @@
         "line_length": 80,
         "n_tokens": 36860,
         "n_classes": 80,
-        "threshold": 3.54109787940979,
+        "threshold": 5.556046962738037,
         "top1_expert_id": 541,
-        "top1_periodic_gain": 0.5575785247219435,
-        "top5_mean_periodic_gain": 0.29580404579560426,
-        "top10_mean_periodic_gain": 0.15718842129812854,
+        "top1_periodic_gain": 0.5577257482513934,
+        "top5_mean_periodic_gain": 0.28995930463980757,
+        "top10_mean_periodic_gain": 0.15518830506787107,
         "top10_experts": [
           {
             "rank": 1,
             "expert_id": 541,
-            "periodic_gain": 0.5575785247219435
+            "periodic_gain": 0.5577257482513934
           },
           {
             "rank": 2,
             "expert_id": 1521,
-            "periodic_gain": 0.45468445058798257
+            "periodic_gain": 0.4296085766921861
           },
           {
             "rank": 3,
             "expert_id": 1204,
-            "periodic_gain": 0.3508896744855889
+            "periodic_gain": 0.39221524696317445
           },
           {
             "rank": 4,
-            "expert_id": 1224,
-            "periodic_gain": 0.07230923948835906
+            "expert_id": 2039,
+            "periodic_gain": 0.03874523786790511
           },
           {
             "rank": 5,
-            "expert_id": 2039,
-            "periodic_gain": 0.043558339694147276
+            "expert_id": 1224,
+            "periodic_gain": 0.03150171342437883
           },
           {
             "rank": 6,
             "expert_id": 1131,
-            "periodic_gain": 0.02474602479121616
+            "periodic_gain": 0.02569330464162119
           },
           {
             "rank": 7,
             "expert_id": 865,
-            "periodic_gain": 0.0236400451187105
+            "periodic_gain": 0.024638700785847328
           },
           {
             "rank": 8,
             "expert_id": 1646,
-            "periodic_gain": 0.01735931788894755
+            "periodic_gain": 0.018489582816665167
           },
           {
             "rank": 9,
-            "expert_id": 753,
-            "periodic_gain": 0.014081858576767064
+            "expert_id": 1470,
+            "periodic_gain": 0.01798272008706762
           },
           {
             "rank": 10,
-            "expert_id": 1437,
-            "periodic_gain": 0.013036737627623068
+            "expert_id": 753,
+            "periodic_gain": 0.015282219148471388
           }
         ]
       }
@@ -4063,56 +4018,26 @@
             {
               "rank": 1,
               "expert_id": 1903,
-              "score": 0.526380181312561
+              "score": 0.5465478301048279
             },
             {
               "rank": 2,
-              "expert_id": 611,
-              "score": 0.5168043375015259
+              "expert_id": 1554,
+              "score": 0.5189282298088074
             },
             {
               "rank": 3,
-              "expert_id": 874,
-              "score": 0.5161712765693665
+              "expert_id": 864,
+              "score": 0.513346791267395
             },
             {
               "rank": 4,
-              "expert_id": 1979,
-              "score": 0.5161141753196716
-            },
-            {
-              "rank": 5,
-              "expert_id": 1547,
-              "score": 0.5160008668899536
-            },
-            {
-              "rank": 6,
-              "expert_id": 261,
-              "score": 0.5157709717750549
-            },
-            {
-              "rank": 7,
-              "expert_id": 1364,
-              "score": 0.513562798500061
-            },
-            {
-              "rank": 8,
-              "expert_id": 309,
-              "score": 0.5112109780311584
-            },
-            {
-              "rank": 9,
-              "expert_id": 1466,
-              "score": 0.5111660361289978
-            },
-            {
-              "rank": 10,
-              "expert_id": 430,
-              "score": 0.5109113454818726
+              "expert_id": 1314,
+              "score": 0.5130850672721863
             }
           ],
-          "top5_mean": 0.5182941675186157,
-          "top10_mean": 0.5154092967510223
+          "top5_mean": 0.5229769796133041,
+          "top10_mean": 0.5229769796133041
         }
       }
     },
@@ -4125,61 +4050,61 @@
         "line_length": 150,
         "n_tokens": 49443,
         "n_classes": 150,
-        "threshold": 3.212310791015625,
+        "threshold": 6.507286548614502,
         "top1_expert_id": 1749,
-        "top1_periodic_gain": 0.3200930493545547,
-        "top5_mean_periodic_gain": 0.1378204450873478,
-        "top10_mean_periodic_gain": 0.07809634829109412,
+        "top1_periodic_gain": 0.31957929333596313,
+        "top5_mean_periodic_gain": 0.13492153572699622,
+        "top10_mean_periodic_gain": 0.07674452317871008,
         "top10_experts": [
           {
             "rank": 1,
             "expert_id": 1749,
-            "periodic_gain": 0.3200930493545547
+            "periodic_gain": 0.31957929333596313
           },
           {
             "rank": 2,
             "expert_id": 1520,
-            "periodic_gain": 0.28439076566489974
+            "periodic_gain": 0.27964377292957543
           },
           {
             "rank": 3,
-            "expert_id": 1250,
-            "periodic_gain": 0.03651385396996313
+            "expert_id": 779,
+            "periodic_gain": 0.026165022382026448
           },
           {
             "rank": 4,
-            "expert_id": 779,
-            "periodic_gain": 0.025164933976555802
+            "expert_id": 633,
+            "periodic_gain": 0.02473076755216367
           },
           {
             "rank": 5,
-            "expert_id": 1041,
-            "periodic_gain": 0.02293962247076568
+            "expert_id": 881,
+            "periodic_gain": 0.024488822435252376
           },
           {
             "rank": 6,
-            "expert_id": 1263,
-            "periodic_gain": 0.0221396553928996
+            "expert_id": 1250,
+            "periodic_gain": 0.02374923150943146
           },
           {
             "rank": 7,
-            "expert_id": 1566,
-            "periodic_gain": 0.019657934310910823
+            "expert_id": 1877,
+            "periodic_gain": 0.020719718483661647
           },
           {
             "rank": 8,
-            "expert_id": 633,
-            "periodic_gain": 0.017672213541353954
+            "expert_id": 1263,
+            "periodic_gain": 0.02048878110598007
           },
           {
             "rank": 9,
-            "expert_id": 881,
-            "periodic_gain": 0.017004282874273136
+            "expert_id": 1041,
+            "periodic_gain": 0.017110065959475985
           },
           {
             "rank": 10,
-            "expert_id": 925,
-            "periodic_gain": 0.01538717135476464
+            "expert_id": 1493,
+            "periodic_gain": 0.010769756093570818
           }
         ]
       },
@@ -4191,61 +4116,61 @@
         "line_length": 80,
         "n_tokens": 36860,
         "n_classes": 80,
-        "threshold": 3.212310791015625,
+        "threshold": 6.507286548614502,
         "top1_expert_id": 1520,
-        "top1_periodic_gain": 0.4903605173741399,
-        "top5_mean_periodic_gain": 0.1797962754686485,
-        "top10_mean_periodic_gain": 0.0996650950959152,
+        "top1_periodic_gain": 0.5069532181302411,
+        "top5_mean_periodic_gain": 0.1779908112867613,
+        "top10_mean_periodic_gain": 0.09924075658088824,
         "top10_experts": [
           {
             "rank": 1,
             "expert_id": 1520,
-            "periodic_gain": 0.4903605173741399
+            "periodic_gain": 0.5069532181302411
           },
           {
             "rank": 2,
             "expert_id": 1749,
-            "periodic_gain": 0.3111242520407161
+            "periodic_gain": 0.3032633198963087
           },
           {
             "rank": 3,
             "expert_id": 1041,
-            "periodic_gain": 0.037710190740500374
+            "periodic_gain": 0.030759023430788998
           },
           {
             "rank": 4,
-            "expert_id": 1250,
-            "periodic_gain": 0.03292040169566498
+            "expert_id": 1263,
+            "periodic_gain": 0.025326143844082386
           },
           {
             "rank": 5,
-            "expert_id": 1263,
-            "periodic_gain": 0.026866015492221156
+            "expert_id": 779,
+            "periodic_gain": 0.023652351132385434
           },
           {
             "rank": 6,
-            "expert_id": 779,
-            "periodic_gain": 0.022973107142129006
+            "expert_id": 633,
+            "periodic_gain": 0.02279466741170111
           },
           {
             "rank": 7,
-            "expert_id": 133,
-            "periodic_gain": 0.019365324338708377
+            "expert_id": 881,
+            "periodic_gain": 0.022396487312259922
           },
           {
             "rank": 8,
-            "expert_id": 1493,
-            "periodic_gain": 0.01889162822024985
+            "expert_id": 1877,
+            "periodic_gain": 0.022392183919748322
           },
           {
             "rank": 9,
-            "expert_id": 925,
-            "periodic_gain": 0.01830426793914408
+            "expert_id": 1493,
+            "periodic_gain": 0.019716359961403307
           },
           {
             "rank": 10,
-            "expert_id": 1566,
-            "periodic_gain": 0.018135245975678244
+            "expert_id": 1250,
+            "periodic_gain": 0.015153810769963215
           }
         ]
       }
@@ -6154,57 +6079,27 @@
           "top10_experts": [
             {
               "rank": 1,
-              "expert_id": 1674,
-              "score": 0.43452712893486023
+              "expert_id": 69,
+              "score": 0.4581318199634552
             },
             {
               "rank": 2,
-              "expert_id": 1712,
-              "score": 0.4339648485183716
+              "expert_id": 693,
+              "score": 0.40935376286506653
             },
             {
               "rank": 3,
-              "expert_id": 350,
-              "score": 0.4295920729637146
+              "expert_id": 1009,
+              "score": 0.38608691096305847
             },
             {
               "rank": 4,
-              "expert_id": 1282,
-              "score": 0.425141304731369
-            },
-            {
-              "rank": 5,
-              "expert_id": 485,
-              "score": 0.42491090297698975
-            },
-            {
-              "rank": 6,
-              "expert_id": 1550,
-              "score": 0.4152423143386841
-            },
-            {
-              "rank": 7,
-              "expert_id": 1964,
-              "score": 0.41246557235717773
-            },
-            {
-              "rank": 8,
-              "expert_id": 693,
-              "score": 0.41196978092193604
-            },
-            {
-              "rank": 9,
-              "expert_id": 1191,
-              "score": 0.4087049961090088
-            },
-            {
-              "rank": 10,
-              "expert_id": 2000,
-              "score": 0.40736475586891174
+              "expert_id": 221,
+              "score": 0.3750874996185303
             }
           ],
-          "top5_mean": 0.42962725162506105,
-          "top10_mean": 0.42038836777210237
+          "top5_mean": 0.4071649983525276,
+          "top10_mean": 0.4071649983525276
         }
       }
     },
@@ -6217,61 +6112,61 @@
         "line_length": 150,
         "n_tokens": 49443,
         "n_classes": 150,
-        "threshold": 2.9003052711486816,
+        "threshold": 5.321302890777588,
         "top1_expert_id": 1895,
-        "top1_periodic_gain": 0.40981347900089293,
-        "top5_mean_periodic_gain": 0.16971852597141276,
-        "top10_mean_periodic_gain": 0.09758280174184383,
+        "top1_periodic_gain": 0.40573566647067477,
+        "top5_mean_periodic_gain": 0.15251376531459632,
+        "top10_mean_periodic_gain": 0.08536020956095386,
         "top10_experts": [
           {
             "rank": 1,
             "expert_id": 1895,
-            "periodic_gain": 0.40981347900089293
+            "periodic_gain": 0.40573566647067477
           },
           {
             "rank": 2,
             "expert_id": 647,
-            "periodic_gain": 0.22751738210563888
+            "periodic_gain": 0.22482195951444717
           },
           {
             "rank": 3,
-            "expert_id": 1254,
-            "periodic_gain": 0.09018056652833879
+            "expert_id": 953,
+            "periodic_gain": 0.06071989417283405
           },
           {
             "rank": 4,
-            "expert_id": 1572,
-            "periodic_gain": 0.06362400836386868
+            "expert_id": 1225,
+            "periodic_gain": 0.04664690520319831
           },
           {
             "rank": 5,
-            "expert_id": 953,
-            "periodic_gain": 0.057457193858324485
+            "expert_id": 1852,
+            "periodic_gain": 0.024644401211827354
           },
           {
             "rank": 6,
-            "expert_id": 1225,
-            "periodic_gain": 0.035829150573958024
+            "expert_id": 892,
+            "periodic_gain": 0.022454538376772915
           },
           {
             "rank": 7,
             "expert_id": 816,
-            "periodic_gain": 0.024935061514666068
+            "periodic_gain": 0.02200263843101465
           },
           {
             "rank": 8,
-            "expert_id": 1852,
-            "periodic_gain": 0.02360420822072229
+            "expert_id": 961,
+            "periodic_gain": 0.02034422140529757
           },
           {
             "rank": 9,
-            "expert_id": 1856,
-            "periodic_gain": 0.022049737538541628
+            "expert_id": 1360,
+            "periodic_gain": 0.019064909405724917
           },
           {
             "rank": 10,
-            "expert_id": 912,
-            "periodic_gain": 0.02081722971348669
+            "expert_id": 221,
+            "periodic_gain": 0.0071669614177468635
           }
         ]
       },
@@ -6283,61 +6178,61 @@
         "line_length": 80,
         "n_tokens": 36860,
         "n_classes": 80,
-        "threshold": 2.9003052711486816,
+        "threshold": 5.321302890777588,
         "top1_expert_id": 647,
-        "top1_periodic_gain": 0.3800823742207967,
-        "top5_mean_periodic_gain": 0.16378774888879233,
-        "top10_mean_periodic_gain": 0.09296261309785693,
+        "top1_periodic_gain": 0.38150477823038204,
+        "top5_mean_periodic_gain": 0.1706740116995185,
+        "top10_mean_periodic_gain": 0.09607143551121936,
         "top10_experts": [
           {
             "rank": 1,
             "expert_id": 647,
-            "periodic_gain": 0.3800823742207967
+            "periodic_gain": 0.38150477823038204
           },
           {
             "rank": 2,
             "expert_id": 1895,
-            "periodic_gain": 0.28046197696415737
+            "periodic_gain": 0.340524683323211
           },
           {
             "rank": 3,
             "expert_id": 953,
-            "periodic_gain": 0.07814452010184877
+            "periodic_gain": 0.05735547991154699
           },
           {
             "rank": 4,
             "expert_id": 816,
-            "periodic_gain": 0.04507727725566498
+            "periodic_gain": 0.0376507303604818
           },
           {
             "rank": 5,
-            "expert_id": 1225,
-            "periodic_gain": 0.0351725959014938
+            "expert_id": 1360,
+            "periodic_gain": 0.03633438667197072
           },
           {
             "rank": 6,
-            "expert_id": 1360,
-            "periodic_gain": 0.03377904564818594
+            "expert_id": 1225,
+            "periodic_gain": 0.03605305951994542
           },
           {
             "rank": 7,
-            "expert_id": 349,
-            "periodic_gain": 0.024527451680372587
+            "expert_id": 1852,
+            "periodic_gain": 0.02224747064011186
           },
           {
             "rank": 8,
-            "expert_id": 1852,
-            "periodic_gain": 0.021537319331916344
+            "expert_id": 961,
+            "periodic_gain": 0.020153439067327434
           },
           {
             "rank": 9,
-            "expert_id": 961,
-            "periodic_gain": 0.01630209461931705
+            "expert_id": 892,
+            "periodic_gain": 0.020073089651272337
           },
           {
             "rank": 10,
-            "expert_id": 898,
-            "periodic_gain": 0.014541475254815677
+            "expert_id": 1894,
+            "periodic_gain": 0.00881723773594397
           }
         ]
       }
