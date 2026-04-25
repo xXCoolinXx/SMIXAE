@@ -81,5 +81,6 @@
         "score_std": null
       }
     ]
-  }
+  },
+  "connect_means": true
 }
