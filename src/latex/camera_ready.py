@@ -571,14 +571,14 @@ _HYP_DISPLAY: dict[str, str] = {
     "am_pm":           "AM vs PM",
     "cyc_12m":         "12-Month Ring",
     "season":          "Season",
-    "linear_f":        r"Linear \textdegree F",
-    "log_f":           r"Log \textdegree F",
-    "log_duration":    "log Duration",
+    "linear_f":        "Fahrenheit",
+    "log_f":           r"$\log$ Fahrenheit",
+    "log_duration":    r"$\log_{10}$ Duration",
     "plant_animal":    "Plant vs Animal",
     "taxonomy":        "Taxonomy",
     "hue_wheel":       "Hue Ring",
     "rgb":             "RGB",
-    "warm_nat_cool":   "Warm/Cool",
+    "warm_nat_cool":   "Warm/Natural/Cool",
     "valence_arousal": "Valence-Arousal",
     "quadrant":        "Quadrant",
     "periodic_gain":   "Periodic Gain",
@@ -667,7 +667,7 @@ def _caption_text(
     if newline_wrap is not None:
         suffix = " Points represent individual token activations in the bottleneck space, colored by distance since the last newline."
     else:
-        suffix = " Larger points denote class mean activations in the bottleneck space; smaller points are individual token activations."
+        suffix = " Each plot shows the 3-D bottleneck activations of a single SMIXAE expert; small points are individual token activations colored by ground-truth label, and larger points mark per-class means."
     return f"{prefix} {'  '.join(parts)}{suffix}"
 
 

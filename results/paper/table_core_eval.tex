@@ -2,20 +2,20 @@
 \begin{table*}[htbp]
 \centering
 \small
-\caption{SAEBench core metrics for SMIXAE and GemmaScope 16k baselines. Evaluated on OpenWebText (context 128 tokens). L0 = mean active features per token; Expl.\ Var.\ = explained variance; CE Score $= (\text{CE}_\text{abl} - \text{CE}_\text{SAE}) / (\text{CE}_\text{abl} - \text{CE}_\text{orig})$, higher is better.}
+\caption{Core evaluation metrics comparing SMIXAE against GemmaScope SAE baselines, evaluated on OpenWebText (128-token context windows). L0 and width are unflattened numbers for SMIXAE.}
 \label{tab:saebench}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{ll r r r r r r r r r r r}
+\begin{tabular}{ll r r r r r r r}
 \toprule
-Model / Layer & SAE & Width & Params & L0 & Expl. Var. & CE Score & CE (orig.) & CE (SAE) & CE (ablation) & MSE (norm.) & Cos. Sim. & $\|$recon$\|/\|$in$\|$ \\
+Model / Layer & SAE & Width & Params & L0 & Expl. Var. & CE Score & MSE (norm.) & Cos. Sim. \\
 \midrule
-\multirow{2}{*}{Gemma 2 2B} & \multirow{2}{*}{Layer 12} & SMIXAE & 6,144 & 151,226,624 & 230.778 & 0.752 & 0.984 & 2.520 & 2.679 & 12.453 & 0.188 & 0.901 & 0.900 \\
- &  & GemmaScope 2B 16k (L0=176) & 16,384 & 75,532,544 & 184.535 & 0.841 & 0.994 & 2.520 & 2.583 & 12.453 & 0.121 & 0.938 & 0.938 \\
+\multirow{2}{*}{Gemma 2 2B} & \multirow{2}{*}{Layer 12} & SMIXAE & 6,144 & 151,226,624 & 230.778 & 0.752 & 0.984 & 0.188 & 0.901 \\
+ &  & GemmaScope 2B 16k (L0=176) & 16,384 & 75,532,544 & 184.535 & 0.841 & 0.994 & 0.121 & 0.938 \\
 \midrule
-\multirow{4}{*}{Gemma 2 9B} & \multirow{2}{*}{Layer 11} & SMIXAE & 6,144 & 235,113,984 & 229.389 & 0.655 & 0.985 & 2.358 & 2.511 & 12.453 & 0.231 & 0.876 & 0.876 \\
- &  & GemmaScope 9B 16k (L0=118) & 16,384 & 117,476,864 & 130.275 & 0.774 & 0.995 & 2.358 & 2.405 & 12.453 & 0.150 & 0.922 & 0.921 \\
- & \multirow{2}{*}{Layer 20} & SMIXAE & 6,144 & 235,113,984 & 212.189 & 0.736 & 0.978 & 2.358 & 2.578 & 12.453 & 0.201 & 0.895 & 0.895 \\
- &  & GemmaScope 9B 16k (L0=138) & 16,384 & 117,476,864 & 139.555 & 0.819 & 0.991 & 2.358 & 2.446 & 12.453 & 0.137 & 0.929 & 0.930 \\
+\multirow{4}{*}{Gemma 2 9B} & \multirow{2}{*}{Layer 11} & SMIXAE & 6,144 & 235,113,984 & 229.389 & 0.655 & 0.985 & 0.231 & 0.876 \\
+ &  & GemmaScope 9B 16k (L0=118) & 16,384 & 117,476,864 & 130.275 & 0.774 & 0.995 & 0.150 & 0.922 \\
+ & \multirow{2}{*}{Layer 20} & SMIXAE & 6,144 & 235,113,984 & 212.189 & 0.736 & 0.978 & 0.201 & 0.895 \\
+ &  & GemmaScope 9B 16k (L0=138) & 16,384 & 117,476,864 & 139.555 & 0.819 & 0.991 & 0.137 & 0.929 \\
 \bottomrule
 \end{tabular}
 }% end resizebox

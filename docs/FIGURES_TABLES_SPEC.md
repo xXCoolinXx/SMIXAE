@@ -47,8 +47,8 @@ Editing a row here and reconciling will update both.
 | `pile-uncopyrighted` | Newline Position            | *(not in tables)*         |
 | `continuity`       | Random Experts (Unlabeled)    | Continuity                |
 
-> **Note**: `body_parts` and `continuity` are excluded from the main probing table and
-> appendix (see `SKIP_DATASETS` in §1e). They appear only in figure `.tex` files.
+> **Note**: `body_parts`, `continuity`, and `emotions` are excluded from the main probing
+> table and appendix (see `SKIP_DATASETS` in §1e). They still appear in figure `.tex` files.
 
 ### 1b. Hypothesis Display Names
 
@@ -62,16 +62,16 @@ Table cells use the `"description"` field from `datasets/probing/dataset_config.
 | `cyc_24h`         | 24-Hour Ring                  | 24-Hour Ring                                |
 | `cyc_12h`         | 12-Hour Ring                  | 12-Hour Ring                                |
 | `am_pm`           | AM vs PM                      | AM vs PM                                    |
-| `linear_f`        | Linear \textdegree F          | Linear Fahrenheit                           |
-| `log_f`           | Log \textdegree F             | $\log$-Compressed Fahrenheit                |
-| `log_duration`    | log Duration                  | $\log_{10}$ Duration                        |
+| `linear_f`        | Fahrenheit          | Linear Fahrenheit                           |
+| `log_f`           | $\log$ Fahrenheit             | $\log$ Fahrenheit                |
+| `log_duration`    | $\log_{10}$ Duration                  | $\log_{10}$ Duration                        |
 | `plant_animal`    | Plant vs Animal               | Plant vs Animal                             |
 | `taxonomy`        | Taxonomy                      | Taxonomic Group                             |
 | `cyc_12m`         | 12-Month Ring                 | 12-Month Ring                               |
 | `season`          | Season                        | Season                                      |
 | `hue_wheel`       | Hue Ring                      | Hue Ring                                    |
 | `rgb`             | RGB                           | Normalized RGB                              |
-| `warm_nat_cool`   | Warm/Cool                     | Warm / Natural / Cool                       |
+| `warm_nat_cool`   | Warm/Natural/Cool                     | Warm / Natural / Cool                       |
 | `valence_arousal` | Valence-Arousal               | Valence-Arousal Circumplex                  |
 | `quadrant`        | Quadrant                      | Affective Quadrant                          |
 | `periodic_gain`   | Periodic Gain                 | *(newline figures only)*                    |
@@ -119,11 +119,11 @@ The figures use the full `"Gemma 2 9B, Layer 11"` form; the tables use the short
 The following datasets are excluded from `table_probing.tex` and `table_probing_appendix.tex`:
 
 ```python
-SKIP_DATASETS = {"body_parts", "continuity"}
+SKIP_DATASETS = {"body_parts", "continuity", "emotions"}
 ```
 
-They still appear in figure `.tex` files (body parts as a probe figure, continuity as a
-random-sample figure).
+They still appear in figure `.tex` files (body parts and emotions as probe figures,
+continuity as a random-sample figure). Body parts and emotions are excluded due to issues with those probing tasks. Continuity is excluded because there currently isn't a meaningful metric to assess how "interpretable" the random sample is other than visualization. 
 
 ---
 
@@ -132,13 +132,13 @@ random-sample figure).
 Two filtering rules apply before any hypothesis appears in a table or figure:
 
 1. **Ordinal hypotheses are suppressed** unless they are the only hypothesis for a dataset.
-   This hides `cyc_7d`'s partner `ordinal` for weekdays, `ordinal` for hours and months, etc.
+   This hides `cyc_7d`'s partner `ordinal` for weekdays, `ordinal` for hours and months, etc. This is because the ordinal task is much lower quality for probing than the specific hypotheses.
    Rule lives in `hypotheses_to_show()` in `tables.py`.
 
 2. **`hypothesis_color_overrides`** in `dataset_config.json` cause a task's entries to be split
    into two `LegendGroup` objects in `camera_ready.py`: one per overridden hypothesis (with its
    own discrete color map) and one for all remaining hypotheses (with the default color
-   scale). Currently only `living_things` uses this, for the `plant_animal` hypothesis.
+   scale). Currently only `living_things` uses this, for the `plant_animal` hypothesis. This is usually not rendered (since the model does not perform well on either task), but this capability should be preserved.
 
 ---
 
@@ -158,11 +158,14 @@ All five files are written to `<output-dir>/paper/`. Required LaTeX packages: `b
 #### Caption (verbatim)
 
 ```latex
-\caption{Probing results across tasks and models.
-For each hypothesis the top-1 score and mean over the top-5 experts are reported.
-$\pm$ values show the per-expert cross-validation standard deviation (top-1)
-and the mean of CV standard deviations across the top-5 experts (Top-5$_{\mu}$).
-Where $R^2$ coefficient of determination and Acc. is classification accuracy.}
+\caption{Probing results for SMIXAE experts across several tasks.
+Each hypothesis targets a structured property that may be geometrically encoded in a 3-D expert bottleneck.
+For each hypothesis we fit a regression or classifier directly to the bottleneck activations
+of the top-performing experts and report the score of the single best expert (Top-1)
+and the mean over the top-5 experts (Top-5$_{\mu}$).
+$\pm$ values are cross-validation standard deviations; for Top-5$_{\mu}$, the standard deviation is averaged across the top-5 experts.
+$R^2$ is the coefficient of determination (linear and ridge regression);
+Acc.\ is classification accuracy (logistic and multinomial regression).}
 ```
 
 #### Header Structure
@@ -215,10 +218,6 @@ Time Units       & $\log_{10}$ Duration       & Linear     & $R^2$ & 0.894 ± 0.
                  & Hue Ring                   & Linear     & $R^2$ & 0.827 ± 0.018 & 0.775 ± 0.026 & 0.575 ± 0.016 & 0.441 ± 0.032 & 0.655 ± 0.024 & 0.546 ± 0.020 \\
                  & Normalized RGB             & Linear     & $R^2$ & 0.789 ± 0.028 & 0.689 ± 0.027 & 0.452 ± 0.017 & 0.400 ± 0.027 & 0.596 ± 0.020 & 0.491 ± 0.023 \\
                  & Warm / Natural / Cool      & Multinomial & Acc. & 0.995 ± 0.004 & 0.947 ± 0.012 & 0.888 ± 0.017 & 0.806 ± 0.024 & 0.865 ± 0.034 & 0.844 ± 0.032 \\
-\midrule
-\multirow{2}{*}{Emotions}
-                 & Valence-Arousal Circumplex & Ridge      & $R^2$ & 0.033 ± 0.012 & 0.015 ± 0.006 & 0.035 ± 0.003 & 0.018 ± 0.004 & 0.017 ± 0.004 & 0.011 ± 0.004 \\
-                 & Affective Quadrant         & Multinomial & Acc. & 0.213 ± 0.007 & 0.206 ± 0.002 & 0.208 ± 0.002 & 0.206 ± 0.002 & 0.204 ± 0.000 & 0.203 ± 0.000 \\
 \bottomrule
 \end{tabular}}
 \end{table*}
@@ -226,7 +225,7 @@ Time Units       & $\log_{10}$ Duration       & Linear     & $R^2$ & 0.894 ± 0.
 
 **Row ordering**: follows the key order in `results.json["<first_model>"]["probe"]`.
 With the current results file this is: Weekdays → Hours → Temperature → Time Units →
-*(Body Parts — skipped)* → Living Things → Months → Colors → Emotions → *(Continuity — skipped)*.
+*(Body Parts — skipped)* → Living Things → Months → Colors → *(Emotions — skipped)* → *(Continuity — skipped)*.
 
 **`\multirow` spans**: the Task cell spans all hypothesis rows for that dataset.
 `Time Units` (1 hypothesis) does not get a `\multirow`.
@@ -236,7 +235,7 @@ With the current results file this is: Weekdays → Hours → Temperature → Ti
 ### 3.2 `table_newline.tex`
 
 **Environment**: `table` (single column)
-**Column spec**: `l cc cc`  (line-length column + 2 score columns per 9B model)
+**Column spec**: `l cc cc`  (line-length column + 2 score columns per model)
 **Packages**: `booktabs`
 
 Only 9B models appear (those with `"9b"` in the experiment ID key).
@@ -244,10 +243,15 @@ Only 9B models appear (those with `"9b"` in the experiment ID key).
 #### Caption (verbatim)
 
 ```latex
-\caption{Newline position encoding results (Gemma 2 9B).
-$\Delta R^2_{\text{periodic}} = R^2_{\text{periodic}} - R^2_{\text{linear}}$ on the bottleneck;
-positive values indicate ring or spiral geometry.
-Top-1 and mean over top-5 experts reported.}
+\caption{Newline position encoding in SMIXAE experts at layers 11 and 20 of Gemma 2 9B,
+evaluated at two nominal line lengths.
+We fit both a linear and a periodic (ring or spiral) model to each expert's 3-D bottleneck
+activations using the number of characters since the previous newline as the target.
+$\Delta R^2_{\text{periodic}} = R^2_{\text{periodic}} - R^2_{\text{linear}}$ measures the
+additional variance explained by curved geometry beyond a linear fit: values near zero indicate
+a linear arrangement, while large positive values indicate ring or helical structure in the
+bottleneck.
+Top-1 is the score of the single best expert; Top-5$_{\mu}$ is the mean across the top-5 experts.}
 ```
 
 #### Full ASCII Example (real data)
@@ -285,15 +289,17 @@ Line length  & Top-1 $\Delta R^2_{\text{per.}}$ & Top-5μ $\Delta R^2_{\text{per
 #### Caption Template (verbatim, `{MODEL}` filled per model)
 
 ```latex
-\caption{Probing expert detail --- {MODEL}.
-All top-10 experts per hypothesis.
-Score $\pm$ cross-validation standard deviation.}
+\caption{Complete probing scores for all top-10 experts in {MODEL}, listed per task and
+hypothesis.
+Experts are ranked by their cross-validated score on each hypothesis independently,
+so the same expert may appear under multiple hypotheses if it encodes more than one concept.
+Score $\pm$ standard deviation reports the cross-validated score and its standard deviation across folds for each expert.}
 ```
 
 Concrete examples:
-- `\caption{Probing expert detail --- 9B, Layer 11. All top-10 experts per hypothesis. Score $\pm$ cross-validation standard deviation.}`
-- `\caption{Probing expert detail --- 9B, Layer 20. ...}`
-- `\caption{Probing expert detail --- 2B, Layer 12. ...}`
+- `\caption{Complete probing scores for all top-10 experts in 9B, Layer 11, listed per task and hypothesis. ...}`
+- `\caption{Complete probing scores for all top-10 experts in 9B, Layer 20, ...}`
+- `\caption{Complete probing scores for all top-10 experts in 2B, Layer 12, ...}`
 
 #### Labels (verbatim)
 
@@ -367,8 +373,9 @@ The Hypothesis, Regression, and Score cells each span 10 rows (one per expert).
 #### Caption Template (verbatim)
 
 ```latex
-\caption{Newline position expert detail --- {MODEL}.
-All top-10 experts per line length, ranked by $\Delta R^2_{\text{periodic}}$.}
+\caption{Complete newline-position probing scores for all top-10 experts in {MODEL} at each
+line length, ranked by $\Delta R^2_{\text{periodic}}$.
+This table supports Table\ref{tab:newline}.}
 ```
 
 #### Labels
@@ -436,11 +443,7 @@ Line length & Rank & Expert ID & $\Delta R^2_{\text{per.}}$ \\
 #### Caption (verbatim)
 
 ```latex
-\caption{SAEBench core metrics for SMIXAE and GemmaScope 16k baselines.
-Evaluated on OpenWebText (context 128 tokens).
-L0 = mean active features per token; Expl.\ Var.\ = explained variance;
-CE Score $= (\text{CE}_\text{abl} - \text{CE}_\text{SAE}) /
-(\text{CE}_\text{abl} - \text{CE}_\text{orig})$, higher is better.}
+\caption{Core evaluation metrics comparing SMIXAE against GemmaScope SAE baselines, evaluated on OpenWebText (128-token context windows). L0 and width are unflattened numbers for SMIXAE.}
 ```
 
 #### Metric Column Order and Labels
@@ -452,12 +455,8 @@ CORE_EVAL_SUMMARY_METRICS = [
     "l0",                  # L0
     "explained_variance",  # Expl. Var.
     "ce_loss_score",       # CE Score
-    "ce_loss_without_sae", # CE (orig.)
-    "ce_loss_with_sae",    # CE (SAE)
-    "ce_loss_with_ablation", # CE (ablation)
     "mse",                 # MSE (norm.)
     "cosine_similarity",   # Cos. Sim.
-    "l2_ratio",            # ||recon||/||in||
 ]
 ```
 
@@ -472,19 +471,19 @@ places. Missing values render as `--`.
 \caption{...}
 \label{tab:saebench}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{ll rrrrrrrrrrr}
+\begin{tabular}{ll rrrrrrr}
 \toprule
-Model / Layer  & SAE                          & Width  & Params        &    L0 & Expl. Var. & CE Score & CE (orig.) & CE (SAE) & CE (ablation) &   MSE & Cos. Sim. & ||recon||/||in|| \\
+Model / Layer  & SAE                          & Width  & Params        &    L0 & Expl. Var. & CE Score &   MSE & Cos. Sim. \\
 \midrule
 \multirow{4}{*}{Gemma 2 2B}
-  & SMIXAE                       &  6,144 &   151,226,624 & 230.778 &      0.752 &    0.984 &      2.520 &    2.679 &        12.453 & 0.188 &     0.901 &           0.900 \\
-  & GemmaScope 2B 16k (L0=176)   & 16,384 &    75,532,544 & 184.535 &      0.841 &    0.994 &      2.520 &    2.583 &        12.453 & 0.121 &     0.938 &           0.938 \\
+  & SMIXAE                       &  6,144 &   151,226,624 & 230.778 &      0.752 &    0.984 & 0.188 &     0.901 \\
+  & GemmaScope 2B 16k (L0=176)   & 16,384 &    75,532,544 & 184.535 &      0.841 &    0.994 & 0.121 &     0.938 \\
 \midrule
 \multirow{4}{*}{Gemma 2 9B}
-  & [Layer 11] SMIXAE             &  6,144 &   235,113,984 & 229.389 &      0.655 &    0.985 &      2.358 &    2.511 &        12.453 & 0.231 &     0.876 &           0.876 \\
-  & [Layer 11] GemmaScope 9B 16k  & 16,384 &   117,476,864 & 130.275 &      0.774 &    0.995 &      2.358 &    2.405 &        12.453 & 0.150 &     0.922 &           0.921 \\
-  & [Layer 20] SMIXAE             &  6,144 &   235,113,984 & 212.189 &      0.736 &    0.978 &      2.358 &    2.578 &        12.453 & 0.201 &     0.895 &           0.895 \\
-  & [Layer 20] GemmaScope 9B 16k  & 16,384 &   117,476,864 & 139.555 &      0.819 &    0.991 &      2.358 &    2.446 &        12.453 & 0.137 &     0.929 &           0.930 \\
+  & [Layer 11] SMIXAE             &  6,144 &   235,113,984 & 229.389 &      0.655 &    0.985 & 0.231 &     0.876 \\
+  & [Layer 11] GemmaScope 9B 16k  & 16,384 &   117,476,864 & 130.275 &      0.774 &    0.995 & 0.150 &     0.922 \\
+  & [Layer 20] SMIXAE             &  6,144 &   235,113,984 & 212.189 &      0.736 &    0.978 & 0.201 &     0.895 \\
+  & [Layer 20] GemmaScope 9B 16k  & 16,384 &   117,476,864 & 139.555 &      0.819 &    0.991 & 0.137 &     0.929 \\
 \bottomrule
 \end{tabular}}
 \end{table*}
@@ -694,19 +693,19 @@ Three file types are generated per experiment ID:
 
 | File                      | Tasks included                       | `is_newline` | Caption suffix                                                |
 |---------------------------|--------------------------------------|:------------:|---------------------------------------------------------------|
-| `probe_{exp_id}.tex`      | All except `pile-uncopyrighted`, `continuity` | No | "Larger points denote class mean activations in the bottleneck space; smaller points are individual token activations." |
-| `newline_{exp_id}.tex`    | `pile-uncopyrighted` only            | Yes          | "Points represent individual token activations in the bottleneck space, colored by distance since the last newline." |
-| `random_{exp_id}.tex`     | `continuity` only                    | No           | "Larger points denote class mean activations in the bottleneck space; smaller points are individual token activations." |
+| `probe_{exp_id}.tex`      | All except `pile-uncopyrighted`, `continuity` | No | "Each plot shows..." (see Caption Format below) |
+| `newline_{exp_id}.tex`    | `pile-uncopyrighted` only            | Yes          | "Points represent..." (see Caption Format below) |
+| `random_{exp_id}.tex`     | `continuity` only                    | No           | "Each plot shows..." (see Caption Format below) |
 
 #### Caption Format — Probe Figures
 
 ```
-{Model}.  \textbf{Task1}: (a) Expert {id}, rank {rank}, {Hypothesis} ({score_label}\,=\,{score}). (b) Expert {id}, rank {rank}, {Hypothesis} ({score_label}\,=\,{score}).  \textbf{Task2}: ...  Larger points denote class mean activations in the bottleneck space; smaller points are individual token activations.
+{Model}.  \textbf{Task1}: (a) Expert {id}, rank {rank}, {Hypothesis} ({score_label}\,=\,{score}). (b) Expert {id}, rank {rank}, {Hypothesis} ({score_label}\,=\,{score}).  \textbf{Task2}: ...  Each plot shows the 3-D bottleneck activations of a single SMIXAE expert; small points are individual token activations colored by ground-truth label, and larger points mark per-class means.
 ```
 
 **Concrete example** (Weekdays, 2 panels):
 ```
-Gemma 2 9B, Layer 11.  \textbf{Weekdays}: (a) Expert 76, rank 1, 7-Day Ring ($R^2$\,=\,0.855). (b) Expert 76, rank 1, 7-Day Ring ($R^2$\,=\,0.855).  Larger points denote class mean activations in the bottleneck space; smaller points are individual token activations.
+Gemma 2 9B, Layer 11.  \textbf{Weekdays}: (a) Expert 76, rank 1, 7-Day Ring ($R^2$\,=\,0.855). (b) Expert 76, rank 1, 7-Day Ring ($R^2$\,=\,0.855).  Each plot shows the 3-D bottleneck activations of a single SMIXAE expert; small points are individual token activations colored by ground-truth label, and larger points mark per-class means.
 ```
 
 The `rank N` field is omitted if `--results-dir` was not passed to `smixae latex figures`.
