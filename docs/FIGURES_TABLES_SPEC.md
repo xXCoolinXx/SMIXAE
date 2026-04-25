@@ -710,6 +710,16 @@ Gemma 2 9B, Layer 11.  \textbf{Weekdays}: (a) Expert 76, rank 1, 7-Day Ring ($R^
 
 The `rank N` field is omitted if `--results-dir` was not passed to `smixae latex figures`.
 
+#### Caption Format — Random Figures
+
+```
+{Model}.  \textbf{Random Experts}: (a) Expert {id}. (b) Expert {id}.  Each plot shows the 3-D bottleneck activations of a single SMIXAE expert; points are individual token activations colored by distance from the origin.
+```
+
+No rank and no hypothesis name are included. The task label is always "Random Experts" regardless of internal task key.
+
+---
+
 #### Caption Format — Newline Figures
 
 ```
