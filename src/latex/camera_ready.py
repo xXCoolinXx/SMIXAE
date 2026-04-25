@@ -627,7 +627,7 @@ def _next_letter(idx: int) -> str:
 def _entry_description(entry: PNGEntry, *, is_random: bool = False) -> str:
     score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
     if is_random:
-        return f"Expert {entry.expert_id} ({score_lbl}\\,=\\,{entry.score:.3f})."
+        return f"Expert {entry.expert_id}."
     hyp_disp = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
     rank_str = f", rank {entry.expert_rank}" if entry.expert_rank is not None else ""
     return f"Expert {entry.expert_id}{rank_str}, {_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})."
@@ -670,6 +670,8 @@ def _caption_text(
 
     if newline_wrap is not None:
         suffix = " Points represent per-class mean activations in the bottleneck space, colored by distance since the last newline."
+    elif is_random:
+        suffix = " Each plot shows the 3-D bottleneck activations of a single SMIXAE expert; points are individual token activations colored by distance from the origin."
     else:
         suffix = " Each plot shows the 3-D bottleneck activations of a single SMIXAE expert; small points are individual token activations colored by ground-truth label, and larger points mark per-class means."
     return f"{prefix} {'  '.join(parts)}{suffix}"
