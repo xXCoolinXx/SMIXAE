@@ -29,18 +29,18 @@ SMIXAE/
 │   │   ├── utils.py                 # Shared infrastructure: load_llm, load_sae, collect_hook_activations, Expert, ExpertFilterConfig, DatasetConfig
 │   │   ├── generate_probing_data.py # Synthetic probing dataset generation (outputs to datasets/probing/)
 │   │   ├── generate_steering_data.py # Steering prompt dataset generation (outputs to datasets/steering/)
-│   │   ├── categorize_all.py        # Expert probing pipeline: load checkpoint, evaluate experts, produce HTML visualizations
+│   │   ├── categorize_all.py        # Expert probing pipeline: load checkpoint, evaluate experts, write index.json + experts/ task dirs
 │   │   ├── anthropic_newline.py     # Newline-position manifold analysis
 │   │   ├── steer.py                 # Steering experiments: coordinate substitution via top Fisher expert
 │   │   ├── scatter3d.py             # Flexible 3-D Plotly scatter with per-class means, labels, and colorbar
 │   │   ├── colors.py                # Shared colour/colorbar/legend backend (Plotly traces + PIL PNGs)
-│   │   ├── _html_save.py            # Client-side JS injected into experts.html for figure capture via save server
 │   │   ├── core_eval.py             # Core SAE eval metrics (SAEBench reimplemented, HuggingFace, no TransformerLens)
 │   │   └── pretokenize.py           # Converts HuggingFace datasets to SAELens tokenized format
 │   ├── latex/
 │   │   ├── save_server.py           # Local HTTP server (port 7788) for interactive figure collection
 │   │   ├── camera_ready.py          # Camera-ready LaTeX figure assembly with PIL legends
-│   │   └── tables.py                # LaTeX table generation from results.json + core_eval_results.json
+│   │   ├── tables.py                # LaTeX table generation from results.json + core_eval_results.json
+│   │   └── viewer/                  # Static SPA viewer (index.html, viewer.js, scatter.js, save_client.js, viewer.css)
 │   └── cli/
 │       ├── cli.py                   # Centralized CLI entry point (smixae command)
 │       ├── train.py                 # smixae train subcommand — all training options as CLI flags

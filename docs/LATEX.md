@@ -7,12 +7,14 @@ The `src/latex/` package provides a browser→server→LaTeX pipeline for assemb
 ## Overview
 
 ```
-experts.html (browser)
-    │  JS polls localhost:7788/ping
-    │  POSTs 2200×1700px Plotly PNG on user click
+smixae probe  (src/analysis/categorize_all.py)
+    │  Writes index.json + experts/ task data directories
     ▼
 smixae latex save-server  (src/latex/save_server.py)
-    │  Gallery at http://127.0.0.1:7788/
+    │  Browse tasks at http://127.0.0.1:7788/
+    │  Click task → /viewer/index.html?task=<rel>
+    │  JS in viewer polls localhost:7788/ping
+    │  POSTs 2200×1700px Plotly PNG on user click
     │  Review, remove, batch-save to disk (PIL auto-crops white borders)
     ▼
 smixae latex figures      (src/latex/camera_ready.py)
@@ -138,7 +140,7 @@ Legends are rendered by the shared backend in `src/analysis/colors.py` (PIL, not
 - Discrete legends: colored swatches + label text, one per class
 - Continuous legends: vertical colorbar gradient using a named Plotly colorscale
 
-The `continuous_color` field in `dataset_config.json` picks which one to render, and is also honoured by the interactive `experts.html` figures — a dataset with `continuous_color: false` and a named `color_scale` (e.g. `hours.csv` + `phase`) renders as a discrete swatch legend both on the paper and in the browser.
+The `continuous_color` field in `dataset_config.json` picks which one to render, and is also honoured by the interactive viewer figures — a dataset with `continuous_color: false` and a named `color_scale` (e.g. `hours.csv` + `phase`) renders as a discrete swatch legend both on the paper and in the browser.
 
 For named scales, `sample_named_scale_discrete` samples at `(i + 1) / (n + 1)` positions (instead of `0, …, 1`) so circular scales don't collide at the endpoints — the first and last class are guaranteed visually distinct. `plot_3d_scatter`'s colorbar widget inherits the same clipping via `build_clipped_colorscale`.
 
