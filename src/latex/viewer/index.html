@@ -25,9 +25,15 @@
         <button class="save-btn" onclick="saveFigurePNG('active-scatter','scatter')">Save scatter</button>
         <button class="save-btn" id="save-means-btn" style="display:none"
                 onclick="saveFigurePNG('active-mean','means')">Save means</button>
+        <button class="save-btn" id="add-label-btn" onclick="createAnnotation()">Add Label</button>
+        <button class="save-btn" id="lock-btn" onclick="toggleLockView()">Lock View</button>
       </div>
       <div id="reg-scores-container"></div>
-      <div class="plot-box" id="active-scatter"></div>
+      <div id="scatter-wrapper">
+        <div class="plot-box" id="active-scatter"></div>
+        <div id="plot-lock-mask"></div>
+        <div id="annotation-overlay"></div>
+      </div>
       <div class="plot-box" id="active-mean" style="display:none"></div>
     </main>
   </div>

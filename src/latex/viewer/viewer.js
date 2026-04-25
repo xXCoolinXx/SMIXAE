@@ -61,6 +61,7 @@ const Viewer = (() => {
 
   // ── Expert selection ──────────────────────────────────────────────────
   async function selectExpert(viewName, expertId, rank, total) {
+    clearAnnotations();
     currentView = viewName;
     currentExpertId = expertId;
 
@@ -213,5 +214,99 @@ const Viewer = (() => {
 
   return { loadTask, init };
 })();
+
+// ── Annotation helpers ────────────────────────────────────────────────────
+function clearAnnotations() {
+  const overlay = document.getElementById('annotation-overlay');
+  if (overlay) overlay.innerHTML = '';
+}
+
+function createAnnotation() {
+  const overlay = document.getElementById('annotation-overlay');
+  if (!overlay) return;
+  const div = document.createElement('div');
+  div.className = 'annotation-label';
+  div.style.left = '40px';
+  div.style.top  = '40px';
+
+  const handle = document.createElement('div');
+  handle.className = 'annotation-handle';
+
+  const del = document.createElement('span');
+  del.className = 'annotation-delete';
+  del.textContent = '×';
+  del.addEventListener('click', () => div.remove());
+  handle.appendChild(del);
+
+  const text = document.createElement('div');
+  text.className = 'annotation-text';
+  text.contentEditable = 'true';
+  text.spellcheck = false;
+  text.textContent = 'Label';
+
+  div.appendChild(handle);
+  div.appendChild(text);
+  overlay.appendChild(div);
+
+  text.focus();
+  const range = document.createRange();
+  range.selectNodeContents(text);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// ── Orientation lock ──────────────────────────────────────────────────────
+let _lockOrientation = false;
+
+function toggleLockView() {
+  _lockOrientation = !_lockOrientation;
+  const mask = document.getElementById('plot-lock-mask');
+  const btn  = document.getElementById('lock-btn');
+  if (mask) mask.style.display = _lockOrientation ? 'block' : 'none';
+  if (btn) {
+    btn.textContent = _lockOrientation ? 'Unlock View' : 'Lock View';
+    btn.style.background = _lockOrientation ? '#333' : '';
+    btn.style.color      = _lockOrientation ? '#fff' : '';
+    btn.style.borderColor = _lockOrientation ? '#333' : '';
+  }
+}
+
+// ── Annotation drag ───────────────────────────────────────────────────────
+let _dragAnn = null, _dragOffX = 0, _dragOffY = 0;
+
+document.addEventListener('mousedown', e => {
+  const handle = e.target.closest('.annotation-handle');
+  if (!handle) return;
+  const label = handle.closest('.annotation-label');
+  if (!label) return;
+  _dragAnn = label;
+  const rect = label.getBoundingClientRect();
+  _dragOffX = e.clientX - rect.left;
+  _dragOffY = e.clientY - rect.top;
+  // Block Plotly from receiving mouse events during drag
+  const mask = document.getElementById('plot-lock-mask');
+  if (mask) mask.style.display = 'block';
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', e => {
+  if (!_dragAnn) return;
+  const overlay = document.getElementById('annotation-overlay');
+  if (!overlay) return;
+  const or = overlay.getBoundingClientRect();
+  _dragAnn.style.left = (e.clientX - or.left - _dragOffX) + 'px';
+  _dragAnn.style.top  = (e.clientY - or.top  - _dragOffY) + 'px';
+});
+
+document.addEventListener('mouseup', () => {
+  if (!_dragAnn) return;
+  _dragAnn = null;
+  // Restore Plotly interactivity unless orientation is locked
+  if (!_lockOrientation) {
+    const mask = document.getElementById('plot-lock-mask');
+    if (mask) mask.style.display = 'none';
+  }
+});
 
 document.addEventListener('DOMContentLoaded', Viewer.init);
