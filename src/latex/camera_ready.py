@@ -624,9 +624,11 @@ def _next_letter(idx: int) -> str:
     return _next_letter(idx // 26 - 1) + _string.ascii_uppercase[idx % 26]
 
 
-def _entry_description(entry: PNGEntry) -> str:
-    hyp_disp = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
+def _entry_description(entry: PNGEntry, *, is_random: bool = False) -> str:
     score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
+    if is_random:
+        return f"Expert {entry.expert_id} ({score_lbl}\\,=\\,{entry.score:.3f})."
+    hyp_disp = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
     rank_str = f", rank {entry.expert_rank}" if entry.expert_rank is not None else ""
     return f"Expert {entry.expert_id}{rank_str}, {_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})."
 
@@ -635,6 +637,8 @@ def _caption_text(
     model_disp: str,
     labeled: list[tuple[str, PNGEntry]],
     newline_wrap: int | None = None,
+    *,
+    is_random: bool = False,
 ) -> str:
     if newline_wrap is not None:
         prefix = f"Newline Position ({newline_wrap} chars) --- {model_disp}."
@@ -658,9 +662,9 @@ def _caption_text(
 
     parts: list[str] = []
     for task, items in task_groups:
-        task_disp = _TASK_DISPLAY.get(task, task.replace("_", " ").title())
+        task_disp = "Random Experts" if is_random else _TASK_DISPLAY.get(task, task.replace("_", " ").title())
         descriptions = " ".join(
-            f"({letter.lower()}) {_entry_description(e)}" for letter, e in items
+            f"({letter.lower()}) {_entry_description(e, is_random=is_random)}" for letter, e in items
         )
         parts.append(f"\\textbf{{{_esc_text(task_disp)}}}: {descriptions}")
 
@@ -915,6 +919,7 @@ def generate_figure_tex(
     cols: int = 3,
     *,
     is_newline: bool = False,
+    is_random: bool = False,
 ) -> None:
     """Write a LaTeX ``figure*`` block for one experiment, laying out plots and legends into rows."""
     output_tex.parent.mkdir(parents=True, exist_ok=True)
@@ -935,7 +940,7 @@ def generate_figure_tex(
             except ValueError:
                 pass
 
-    caption = _caption_text(model_disp, labeled, newline_wrap)
+    caption = _caption_text(model_disp, labeled, newline_wrap, is_random=is_random)
 
     lines: list[str] = [
         "% Requires: \\usepackage{graphicx,tikz}",
@@ -1105,7 +1110,7 @@ def figures(
         if random_groups:
             tex_path = paper_dir / f"random_{exp_id}.tex"
             typer.echo(f"\nRandom sample ({exp_id}): {len(random_groups)} group(s)")
-            generate_figure_tex(exp_id, random_groups, legend_paths, tex_path, cols, is_newline=False)
+            generate_figure_tex(exp_id, random_groups, legend_paths, tex_path, cols, is_newline=False, is_random=True)
 
     typer.echo(f"\nDone. Output written to {output_dir}")
 
