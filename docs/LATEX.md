@@ -37,7 +37,7 @@ All commands are under the `smixae latex` subcommand group.
 smixae latex save-server [--output-dir PATH] [--port INT] [--results-dir PATH]
 
 # 2. Assemble camera-ready figures (writes .tex, camera_ready/, legends/ into <output-dir>/paper/)
-smixae latex figures --camera-ready-dir PATH --output-dir PATH [--results-json PATH] [OPTIONS]
+smixae latex figures --camera-ready-dir PATH --output-dir PATH [--results-json PATH] [--results-dir PATH] [OPTIONS]
 
 # 3. Generate tables (writes 4 .tex files into <output-dir>/paper/)
 smixae latex tables [--output-dir results/]
@@ -160,10 +160,12 @@ Required LaTeX packages: `graphicx`, `booktabs`, `multirow`, `caption`.
 Captions are generated automatically by `_caption_text()`. The format is:
 
 ```
-{Model Display Name}. \textbf{Task}: (a) Expert {id}, {Hypothesis} ({score_label}\,=\,{value}). (b) ...
+{Model Display Name}. \textbf{Task}: (a) Expert {id}, rank~{rank}, {Hypothesis} ({score_label}\,=\,{value}). (b) ...
 ```
 
-Example: `Gemma 2 9B, Layer 11. \textbf{Hours}: (a) Expert 541, 24-Hour Ring ($R^2$\,=\,0.876). (b) Expert 1521, 12-Hour Ring ($R^2$\,=\,0.734).`
+Example: `Gemma 2 9B, Layer 11. \textbf{Hours}: (a) Expert 541, rank~1, 24-Hour Ring ($R^2$\,=\,0.876). (b) Expert 1521, rank~3, 12-Hour Ring ($R^2$\,=\,0.734).`
+
+The `rank~N` field is the expert's rank among all experts for that hypothesis (1 = top expert). It is populated by passing `--results-dir` to `smixae latex figures`, which scans the results directory for probe `index.json` files. If `--results-dir` is omitted or an expert is not found in the index, the rank is silently omitted from that entry's caption text.
 
 Score labels: `$R^2$`, `Accuracy`, `Score`, `$\Delta R^2_{\mathrm{per}}$`, `Cont.`
 

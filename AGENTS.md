@@ -147,4 +147,4 @@ The whole point of SMIXAE is that features can be nonlinear manifolds. Don't app
 ## Known TODOs
 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
-- [ ] Add the rank of the experts chosen for visualization on the probing task to avoid cherry picking claims
+- [x] Add the rank of the experts chosen for visualization on the probing task to avoid cherry picking claims

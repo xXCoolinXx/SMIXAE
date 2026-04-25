@@ -92,6 +92,7 @@ class PNGEntry:
     experiment_id: str
     task: str
     expert_id: int
+    expert_rank: int | None  # populated from probe index.json via apply_rank_lookup
     hyp_name: str
     score_type: str
     score: float
@@ -111,12 +112,45 @@ def scan_camera_ready(camera_ready_dir: Path) -> list[PNGEntry]:
             experiment_id=m.group("experiment_id"),
             task=m.group("task"),
             expert_id=int(m.group("expert_id")),
+            expert_rank=None,
             hyp_name=m.group("hyp_name"),
             score_type=m.group("score_type"),
             score=float(m.group("score")),
             figure_type=m.group("figure_type"),
         ))
     return entries
+
+
+# ----------------------- Expert rank lookup from results ----------------------
+
+def load_rank_lookup(results_dir: Path) -> dict[tuple[str, str, str, int], int]:
+    """Build ``(experiment_id, task, hyp_name, expert_id) → rank`` from probe ``index.json`` files."""
+    lookup: dict[tuple[str, str, str, int], int] = {}
+    for index_path in sorted(results_dir.glob("**/index.json")):
+        try:
+            with open(index_path) as f:
+                idx = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+        exp_id = idx.get("experiment_id", "")
+        task = idx.get("dataset_name", "")
+        for hyp_name, rankings in idx.get("experts_by_view", {}).items():
+            for r in rankings:
+                eid = r.get("expert_id")
+                rank = r.get("rank")
+                if exp_id and task and eid is not None and rank is not None:
+                    lookup[(exp_id, task, hyp_name, int(eid))] = int(rank)
+    return lookup
+
+
+def apply_rank_lookup(
+    entries: list[PNGEntry],
+    rank_lookup: dict[tuple[str, str, str, int], int],
+) -> None:
+    """Fill ``expert_rank`` on each entry in-place using the rank lookup."""
+    for e in entries:
+        key = (e.experiment_id, _canonical_task(e.task), e.hyp_name, e.expert_id)
+        e.expert_rank = rank_lookup.get(key)
 
 
 # ------------------------ Task-name canonicalisation ---------------------------
@@ -593,7 +627,8 @@ def _next_letter(idx: int) -> str:
 def _entry_description(entry: PNGEntry) -> str:
     hyp_disp = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
     score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
-    return f"Expert {entry.expert_id}, {_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})."
+    rank_str = f", rank~{entry.expert_rank}" if entry.expert_rank is not None else ""
+    return f"Expert {entry.expert_id}{rank_str}, {_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})."
 
 
 def _caption_text(
@@ -954,6 +989,10 @@ def figures(
         None,
         help="Path to results.json; used to resolve newline wrap lengths per expert",
     ),
+    results_dir: Optional[Path] = typer.Option(
+        None,
+        help="Root results directory scanned for probe index.json files (populates expert rank in captions)",
+    ),
     cols: int = typer.Option(3, help="Max number of PLOTS per physical row (legends do not count)"),
 ) -> None:
     """CLI entry: assemble camera-ready PNGs into per-experiment LaTeX figure files."""
@@ -966,6 +1005,14 @@ def figures(
     if not entries:
         typer.echo("No matching PNGs found.")
         raise typer.Exit(0)
+
+    if results_dir is not None and results_dir.exists():
+        typer.echo(f"Loading rank lookup from {results_dir} …")
+        rank_lookup = load_rank_lookup(results_dir)
+        typer.echo(f"  {len(rank_lookup)} (experiment, task, hyp, expert) → rank entries loaded.")
+        apply_rank_lookup(entries, rank_lookup)
+    elif results_dir is not None:
+        typer.echo(f"  [warn] --results-dir not found: {results_dir}", err=True)
 
     paper_dir = output_dir / "paper"
     paper_dir.mkdir(parents=True, exist_ok=True)
