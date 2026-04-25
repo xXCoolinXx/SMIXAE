@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "task_type": "labeled_probe",
+  "experiment_id": "gemma_2_9b_l11",
+  "dataset_name": "living_things",
+  "title": "living_things \u2014 Expert Analysis",
+  "model_name": "google/gemma-2-9b",
+  "hook_name": "model.layers.11",
+  "d_bottleneck": 3,
+  "n_experts_total": 2048,
+  "scatter_size": 1.0,
+  "color": {
+    "mode": "discrete",
+    "scale": "Plasma",
+    "color_map": null,
+    "continuous_label": null,
+    "skip_endpoints": true
+  },
+  "label_names": {
+    "0": "moss",
+    "1": "fern",
+    "2": "grass",
+    "3": "flower",
+    "4": "shrub",
+    "5": "tree",
+    "6": "insect",
+    "7": "arachnid",
+    "8": "crustacean",
+    "9": "fish",
+    "10": "amphibian",
+    "11": "reptile",
+    "12": "bird",
+    "13": "mammal"
+  },
+  "hypotheses": [
+    {
+      "name": "plant_animal",
+      "description": "Plant vs Animal",
+      "regression_type": "logistic",
+      "score_type": "acc",
+      "color_override": {
+        "moss": "#27ae60",
+        "fern": "#27ae60",
+        "grass": "#27ae60",
+        "flower": "#27ae60",
+        "shrub": "#27ae60",
+        "tree": "#27ae60",
+        "insect": "#e74c3c",
+        "arachnid": "#e74c3c",
+        "crustacean": "#e74c3c",
+        "fish": "#e74c3c",
+        "amphibian": "#e74c3c",
+        "reptile": "#e74c3c",
+        "bird": "#e74c3c",
+        "mammal": "#e74c3c"
+      }
+    },
+    {
+      "name": "taxonomy",
+      "description": "Taxonomic Group",
+      "regression_type": "multinomial",
+      "score_type": "acc",
+      "color_override": null
+    }
+  ],
+  "experts_by_view": {
+    "plant_animal": [
+      {
+        "rank": 1,
+        "expert_id": 1326,
+        "score": 0.9633229313532192,
+        "score_std": 0.007929404945634353
+      },
+      {
+        "rank": 2,
+        "expert_id": 1929,
+        "score": 0.945431506849315,
+        "score_std": 0.013537396647198097
+      },
+      {
+        "rank": 3,
+        "expert_id": 1871,
+        "score": 0.9438746071733017,
+        "score_std": 0.011745135613825645
+      },
+      {
+        "rank": 4,
+        "expert_id": 1711,
+        "score": 0.9407626193535906,
+        "score_std": 0.008359612340988991
+      },
+      {
+        "rank": 5,
+        "expert_id": 870,
+        "score": 0.9354224985160364,
+        "score_std": 0.012826540717032089
+      },
+      {
+        "rank": 6,
+        "expert_id": 1596,
+        "score": 0.9345447921841364,
+        "score_std": 0.014272392963390258
+      },
+      {
+        "rank": 7,
+        "expert_id": 591,
+        "score": 0.9288317757009346,
+        "score_std": 0.009193680304068067
+      },
+      {
+        "rank": 8,
+        "expert_id": 1729,
+        "score": 0.9273214440371433,
+        "score_std": 0.00878307303166578
+      },
+      {
+        "rank": 9,
+        "expert_id": 952,
+        "score": 0.9209270446190413,
+        "score_std": 0.01638271286209061
+      },
+      {
+        "rank": 10,
+        "expert_id": 577,
+        "score": 0.9080597218097217,
+        "score_std": 0.010195976924238598
+      }
+    ],
+    "taxonomy": [
+      {
+        "rank": 1,
+        "expert_id": 622,
+        "score": 0.9264793894826063,
+        "score_std": 0.020095187148596354
+      },
+      {
+        "rank": 2,
+        "expert_id": 1264,
+        "score": 0.8084021749832855,
+        "score_std": 0.04093307565229451
+      },
+      {
+        "rank": 3,
+        "expert_id": 674,
+        "score": 0.7995369536562915,
+        "score_std": 0.013425136927292787
+      },
+      {
+        "rank": 4,
+        "expert_id": 870,
+        "score": 0.7932605712996875,
+        "score_std": 0.012274224448410732
+      },
+      {
+        "rank": 5,
+        "expert_id": 591,
+        "score": 0.7827164023861509,
+        "score_std": 0.022549023989026105
+      },
+      {
+        "rank": 6,
+        "expert_id": 982,
+        "score": 0.7797666623363169,
+        "score_std": 0.01599987315100029
+      },
+      {
+        "rank": 7,
+        "expert_id": 1326,
+        "score": 0.7659578342584664,
+        "score_std": 0.03425916405333691
+      },
+      {
+        "rank": 8,
+        "expert_id": 732,
+        "score": 0.7649215092304823,
+        "score_std": 0.06976096427356074
+      },
+      {
+        "rank": 9,
+        "expert_id": 329,
+        "score": 0.7511395599258582,
+        "score_std": 0.02152309078087144
+      },
+      {
+        "rank": 10,
+        "expert_id": 1365,
+        "score": 0.7340226369896001,
+        "score_std": 0.03881615356289812
+      }
+    ]
+  }
+}

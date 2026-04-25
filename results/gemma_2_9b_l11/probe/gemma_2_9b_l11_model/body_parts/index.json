@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "task_type": "labeled_probe",
+  "experiment_id": "gemma_2_9b_l11",
+  "dataset_name": "body_parts",
+  "title": "body_parts \u2014 Expert Analysis",
+  "model_name": "google/gemma-2-9b",
+  "hook_name": "model.layers.11",
+  "d_bottleneck": 3,
+  "n_experts_total": 2048,
+  "scatter_size": 1.0,
+  "color": {
+    "mode": "discrete",
+    "scale": "Cividis",
+    "color_map": null,
+    "continuous_label": null,
+    "skip_endpoints": true
+  },
+  "label_names": {
+    "0": "head",
+    "1": "face",
+    "2": "neck",
+    "3": "shoulder",
+    "4": "chest",
+    "5": "back",
+    "6": "arm",
+    "7": "elbow",
+    "8": "wrist",
+    "9": "hand",
+    "10": "abdomen",
+    "11": "hip",
+    "12": "leg",
+    "13": "knee",
+    "14": "ankle",
+    "15": "foot"
+  },
+  "hypotheses": [],
+  "experts_by_view": {
+    "fisher": [
+      {
+        "rank": 1,
+        "expert_id": 982,
+        "score": 158.0331573486328,
+        "score_std": null
+      },
+      {
+        "rank": 2,
+        "expert_id": 179,
+        "score": 139.6974639892578,
+        "score_std": null
+      },
+      {
+        "rank": 3,
+        "expert_id": 1574,
+        "score": 137.7212677001953,
+        "score_std": null
+      },
+      {
+        "rank": 4,
+        "expert_id": 76,
+        "score": 89.50011444091797,
+        "score_std": null
+      },
+      {
+        "rank": 5,
+        "expert_id": 622,
+        "score": 88.84713745117188,
+        "score_std": null
+      },
+      {
+        "rank": 6,
+        "expert_id": 1304,
+        "score": 83.93282318115234,
+        "score_std": null
+      },
+      {
+        "rank": 7,
+        "expert_id": 1729,
+        "score": 72.00595092773438,
+        "score_std": null
+      },
+      {
+        "rank": 8,
+        "expert_id": 1787,
+        "score": 67.28689575195312,
+        "score_std": null
+      },
+      {
+        "rank": 9,
+        "expert_id": 247,
+        "score": 61.50572204589844,
+        "score_std": null
+      },
+      {
+        "rank": 10,
+        "expert_id": 1871,
+        "score": 56.96861267089844,
+        "score_std": null
+      },
+      {
+        "rank": 11,
+        "expert_id": 282,
+        "score": 53.692047119140625,
+        "score_std": null
+      },
+      {
+        "rank": 12,
+        "expert_id": 732,
+        "score": 48.73454284667969,
+        "score_std": null
+      },
+      {
+        "rank": 13,
+        "expert_id": 1395,
+        "score": 45.44935607910156,
+        "score_std": null
+      },
+      {
+        "rank": 14,
+        "expert_id": 870,
+        "score": 43.42576599121094,
+        "score_std": null
+      },
+      {
+        "rank": 15,
+        "expert_id": 591,
+        "score": 39.00825881958008,
+        "score_std": null
+      },
+      {
+        "rank": 16,
+        "expert_id": 409,
+        "score": 38.29945373535156,
+        "score_std": null
+      },
+      {
+        "rank": 17,
+        "expert_id": 1365,
+        "score": 34.6065673828125,
+        "score_std": null
+      },
+      {
+        "rank": 18,
+        "expert_id": 1650,
+        "score": 33.26926040649414,
+        "score_std": null
+      },
+      {
+        "rank": 19,
+        "expert_id": 739,
+        "score": 33.161319732666016,
+        "score_std": null
+      },
+      {
+        "rank": 20,
+        "expert_id": 295,
+        "score": 32.82259750366211,
+        "score_std": null
+      },
+      {
+        "rank": 21,
+        "expert_id": 786,
+        "score": 24.119422912597656,
+        "score_std": null
+      },
+      {
+        "rank": 22,
+        "expert_id": 549,
+        "score": 22.86173439025879,
+        "score_std": null
+      },
+      {
+        "rank": 23,
+        "expert_id": 1992,
+        "score": 20.678028106689453,
+        "score_std": null
+      },
+      {
+        "rank": 24,
+        "expert_id": 1192,
+        "score": 19.474706649780273,
+        "score_std": null
+      },
+      {
+        "rank": 25,
+        "expert_id": 560,
+        "score": 17.444345474243164,
+        "score_std": null
+      },
+      {
+        "rank": 26,
+        "expert_id": 840,
+        "score": 14.310089111328125,
+        "score_std": null
+      },
+      {
+        "rank": 27,
+        "expert_id": 1919,
+        "score": 13.91184139251709,
+        "score_std": null
+      },
+      {
+        "rank": 28,
+        "expert_id": 952,
+        "score": 12.4307222366333,
+        "score_std": null
+      },
+      {
+        "rank": 29,
+        "expert_id": 449,
+        "score": 9.72386646270752,
+        "score_std": null
+      },
+      {
+        "rank": 30,
+        "expert_id": 787,
+        "score": 8.738181114196777,
+        "score_std": null
+      },
+      {
+        "rank": 31,
+        "expert_id": 636,
+        "score": 7.393924236297607,
+        "score_std": null
+      },
+      {
+        "rank": 32,
+        "expert_id": 1904,
+        "score": 7.339757919311523,
+        "score_std": null
+      },
+      {
+        "rank": 33,
+        "expert_id": 347,
+        "score": 7.104949951171875,
+        "score_std": null
+      },
+      {
+        "rank": 34,
+        "expert_id": 1873,
+        "score": 5.554959774017334,
+        "score_std": null
+      },
+      {
+        "rank": 35,
+        "expert_id": 1084,
+        "score": 4.893494606018066,
+        "score_std": null
+      },
+      {
+        "rank": 36,
+        "expert_id": 354,
+        "score": 4.619956016540527,
+        "score_std": null
+      },
+      {
+        "rank": 37,
+        "expert_id": 831,
+        "score": 3.266690969467163,
+        "score_std": null
+      },
+      {
+        "rank": 38,
+        "expert_id": 1929,
+        "score": 2.694584369659424,
+        "score_std": null
+      },
+      {
+        "rank": 39,
+        "expert_id": 1492,
+        "score": 2.6862969398498535,
+        "score_std": null
+      },
+      {
+        "rank": 40,
+        "expert_id": 577,
+        "score": 2.622105360031128,
+        "score_std": null
+      },
+      {
+        "rank": 41,
+        "expert_id": 1711,
+        "score": 2.5031657218933105,
+        "score_std": null
+      },
+      {
+        "rank": 42,
+        "expert_id": 2039,
+        "score": 2.316180944442749,
+        "score_std": null
+      },
+      {
+        "rank": 43,
+        "expert_id": 462,
+        "score": 2.0629167556762695,
+        "score_std": null
+      },
+      {
+        "rank": 44,
+        "expert_id": 777,
+        "score": 2.0550005435943604,
+        "score_std": null
+      },
+      {
+        "rank": 45,
+        "expert_id": 662,
+        "score": 1.939441442489624,
+        "score_std": null
+      },
+      {
+        "rank": 46,
+        "expert_id": 1207,
+        "score": 1.888379693031311,
+        "score_std": null
+      },
+      {
+        "rank": 47,
+        "expert_id": 236,
+        "score": 1.6976914405822754,
+        "score_std": null
+      },
+      {
+        "rank": 48,
+        "expert_id": 1848,
+        "score": 1.5648221969604492,
+        "score_std": null
+      },
+      {
+        "rank": 49,
+        "expert_id": 1691,
+        "score": 1.3769923448562622,
+        "score_std": null
+      },
+      {
+        "rank": 50,
+        "expert_id": 1730,
+        "score": 1.3496313095092773,
+        "score_std": null
+      }
+    ]
+  }
+}
