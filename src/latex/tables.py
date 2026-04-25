@@ -337,8 +337,11 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
             r"The same expert may appear under multiple hypotheses if it encodes more than one concept.}"
         )
         rows.append(rf"\label{{tab:probing_appendix_{mk}}}")
+        rows.append(r"\resizebox{\linewidth}{!}{%")
         rows.append(r"\begin{tabular}{" + col_spec + "}")
         rows.append(r"\toprule")
+        rows.append(r" & & & & \multicolumn{" + str(n_ranks) + r"}{c}{Expert rank} \\")
+        rows.append(r"\cmidrule(lr){5-" + str(4 + n_ranks) + "}")
         rows.append(r"Task & Hypothesis & Regression & Score & " + rank_headers + r" \\")
         rows.append(r"\midrule")
 
@@ -399,7 +402,7 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
                 rows.append(" & ".join(row) + r" \\")
 
         rows.append(r"\bottomrule")
-        rows.append(r"\end{tabular}")
+        rows.append(r"\end{tabular}}% end resizebox")
         rows.append(r"\end{table*}")
         parts.append("\n".join(rows))
 
@@ -432,8 +435,11 @@ def build_newline_appendix_tables(results: dict) -> str:
             r"This table supports Table\ref{tab:newline}.}"
         )
         rows.append(rf"\label{{tab:newline_appendix_{mk}}}")
+        rows.append(r"\resizebox{\linewidth}{!}{%")
         rows.append(r"\begin{tabular}{" + col_spec.strip() + "}")
         rows.append(r"\toprule")
+        rows.append(r" & \multicolumn{" + str(n_ranks) + r"}{c}{Expert rank} \\")
+        rows.append(r"\cmidrule(lr){2-" + str(1 + n_ranks) + "}")
         rows.append(r"Line length & " + rank_headers + r" \\")
         rows.append(r"\midrule")
 
@@ -452,7 +458,7 @@ def build_newline_appendix_tables(results: dict) -> str:
             rows.append(" & ".join(row) + r" \\")
 
         rows.append(r"\bottomrule")
-        rows.append(r"\end{tabular}")
+        rows.append(r"\end{tabular}}% end resizebox")
         rows.append(r"\end{table}")
         parts.append("\n".join(rows))
 
