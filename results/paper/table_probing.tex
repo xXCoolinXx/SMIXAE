@@ -1,0 +1,41 @@
+% Required packages: booktabs, multirow
+\begin{table*}[htbp]
+\centering
+\small
+\caption{Probing results across tasks and models. For each hypothesis the top-1 score and mean over the top-5 experts are reported. $\pm$ values show the per-expert cross-validation standard deviation (top-1) and the mean of CV standard deviations across the top-5 experts (Top-5$_{\mu}$). Where $R^2$ coefficient of determination and Acc. is classification accuracy.}
+\label{tab:probing}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{ll ll rr rr rr}
+\toprule
+\multicolumn{4}{l}{Gemma 2} & \multicolumn{2}{c}{9B, Layer 11} & \multicolumn{2}{c}{9B, Layer 20} & \multicolumn{2}{c}{2B, Layer 12} \\
+\cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10}
+Task & Hypothesis & Regression & Score & Top-1 & Top-5$_{\mu}$ & Top-1 & Top-5$_{\mu}$ & Top-1 & Top-5$_{\mu}$ \\
+\midrule
+\multirow{2}{*}{Weekdays} & 7-Day Ring & Linear & $R^2$ & 0.855 $\pm$ 0.012 & 0.751 $\pm$ 0.014 & 0.724 $\pm$ 0.025 & 0.594 $\pm$ 0.019 & 0.579 $\pm$ 0.028 & 0.487 $\pm$ 0.023 \\
+ & Weekday vs Weekend & Logistic & Acc. & 1.000 $\pm$ 0.000 & 0.994 $\pm$ 0.005 & 0.998 $\pm$ 0.003 & 0.944 $\pm$ 0.010 & 0.973 $\pm$ 0.015 & 0.935 $\pm$ 0.020 \\
+\midrule
+\multirow{3}{*}{Hours} & 24-Hour Ring & Linear & $R^2$ & 0.671 $\pm$ 0.023 & 0.593 $\pm$ 0.026 & 0.590 $\pm$ 0.027 & 0.494 $\pm$ 0.028 & 0.681 $\pm$ 0.016 & 0.491 $\pm$ 0.028 \\
+ & 12-Hour Ring & Linear & $R^2$ & 0.657 $\pm$ 0.011 & 0.539 $\pm$ 0.024 & 0.397 $\pm$ 0.027 & 0.266 $\pm$ 0.025 & 0.425 $\pm$ 0.036 & 0.333 $\pm$ 0.037 \\
+ & AM vs PM & Logistic & Acc. & 1.000 $\pm$ 0.000 & 0.984 $\pm$ 0.009 & 1.000 $\pm$ 0.000 & 0.911 $\pm$ 0.013 & 1.000 $\pm$ 0.000 & 0.939 $\pm$ 0.016 \\
+\midrule
+\multirow{2}{*}{Temperature} & Linear Fahrenheit & Linear & $R^2$ & 0.916 $\pm$ 0.007 & 0.610 $\pm$ 0.024 & 0.875 $\pm$ 0.015 & 0.531 $\pm$ 0.038 & 0.663 $\pm$ 0.014 & 0.559 $\pm$ 0.034 \\
+ & $\log$-Compressed Fahrenheit & Linear & $R^2$ & 0.950 $\pm$ 0.007 & 0.629 $\pm$ 0.036 & 0.887 $\pm$ 0.022 & 0.510 $\pm$ 0.043 & 0.682 $\pm$ 0.038 & 0.509 $\pm$ 0.056 \\
+\midrule
+Time Units & $\log\_{10}$ Duration & Linear & $R^2$ & 0.894 $\pm$ 0.008 & 0.737 $\pm$ 0.021 & 0.856 $\pm$ 0.016 & 0.672 $\pm$ 0.021 & 0.695 $\pm$ 0.028 & 0.617 $\pm$ 0.029 \\
+\midrule
+\multirow{2}{*}{Living Things} & Plant vs Animal & Logistic & Acc. & 0.963 $\pm$ 0.008 & 0.946 $\pm$ 0.011 & 0.914 $\pm$ 0.010 & 0.886 $\pm$ 0.016 & 0.998 $\pm$ 0.003 & 0.965 $\pm$ 0.010 \\
+ & Taxonomic Group & Multinomial & Acc. & 0.926 $\pm$ 0.020 & 0.822 $\pm$ 0.022 & 0.780 $\pm$ 0.048 & 0.666 $\pm$ 0.046 & 0.911 $\pm$ 0.019 & 0.781 $\pm$ 0.030 \\
+\midrule
+\multirow{2}{*}{Months} & 12-Month Ring & Linear & $R^2$ & 0.659 $\pm$ 0.024 & 0.411 $\pm$ 0.021 & 0.469 $\pm$ 0.022 & 0.215 $\pm$ 0.020 & 0.487 $\pm$ 0.040 & 0.201 $\pm$ 0.028 \\
+ & Season & Multinomial & Acc. & 0.838 $\pm$ 0.036 & 0.704 $\pm$ 0.035 & 0.872 $\pm$ 0.021 & 0.531 $\pm$ 0.032 & 0.674 $\pm$ 0.029 & 0.464 $\pm$ 0.045 \\
+\midrule
+\multirow{3}{*}{Colors} & Hue Ring & Linear & $R^2$ & 0.827 $\pm$ 0.018 & 0.775 $\pm$ 0.026 & 0.575 $\pm$ 0.016 & 0.441 $\pm$ 0.032 & 0.655 $\pm$ 0.024 & 0.546 $\pm$ 0.020 \\
+ & Normalized RGB & Linear & $R^2$ & 0.789 $\pm$ 0.028 & 0.689 $\pm$ 0.027 & 0.452 $\pm$ 0.017 & 0.400 $\pm$ 0.027 & 0.596 $\pm$ 0.020 & 0.491 $\pm$ 0.023 \\
+ & Warm / Natural / Cool & Multinomial & Acc. & 0.995 $\pm$ 0.004 & 0.947 $\pm$ 0.012 & 0.888 $\pm$ 0.017 & 0.806 $\pm$ 0.024 & 0.865 $\pm$ 0.034 & 0.844 $\pm$ 0.032 \\
+\midrule
+\multirow{2}{*}{Emotions} & Valence-Arousal Circumplex & Ridge & $R^2$ & 0.033 $\pm$ 0.012 & 0.015 $\pm$ 0.006 & 0.035 $\pm$ 0.003 & 0.018 $\pm$ 0.004 & 0.017 $\pm$ 0.004 & 0.011 $\pm$ 0.004 \\
+ & Affective Quadrant & Multinomial & Acc. & 0.213 $\pm$ 0.007 & 0.206 $\pm$ 0.002 & 0.208 $\pm$ 0.002 & 0.206 $\pm$ 0.002 & 0.204 $\pm$ 0.000 & 0.203 $\pm$ 0.000 \\
+\bottomrule
+\end{tabular}
+}% end resizebox
+\end{table*}
