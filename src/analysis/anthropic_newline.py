@@ -7,7 +7,8 @@ Scores each expert with four metrics:
   • encode_periodic_r2: mean R² of  bottleneck_dim ~ linear(chars) + Fourier(chars)
   • periodic_gain:      encode_periodic_r2 − encode_linear_r2
 
-Generates a tabbed HTML of top experts ranked by periodic_gain.
+Writes a probing-task directory (index.json + per-expert .pth/.json) viewable
+via the save server.
 
 Code is loosely based on the reproduction paper from Sinii et. al.
 """
@@ -444,91 +445,6 @@ def compute_expert_class_stats(
     return np.stack(means), np.stack(rates), np.array(unique)
 
 
-# ═══════════════════════ Visualisation ═══════════════════════════════════
-
-
-def plot_newline_experts_html(
-    expert_acts: torch.Tensor,
-    labels: torch.Tensor,
-    class_means: np.ndarray,
-    class_labels_arr: np.ndarray,
-    scores_df: pd.DataFrame,
-    top_k: int = 10,
-    max_points: int = 50_000,
-    output_path: str = "top_experts.html",
-    experiment_id: str = "",
-) -> None:
-    """Build a tabbed HTML of top experts ranked by periodic_gain.
-
-    Each tab shows two plots side-by-side:
-      • scatter  — raw bottleneck activations colored by chars_since_nl
-      • means    — class-mean trajectory, connected in order
-    """
-    import numpy as np
-    from loguru import logger
-
-    from analysis.scatter3d import plot_3d_scatter
-    from analysis.utils import build_dataset_html
-
-    if len(scores_df) == 0:
-        logger.warning("No experts to plot")
-        return
-
-    N = expert_acts.shape[0]
-    ranked = scores_df.sort_values("periodic_gain", ascending=False).head(top_k)
-
-    if max_points < N:
-        idx = np.sort(np.random.default_rng(0).choice(N, max_points, replace=False))
-    else:
-        idx = np.arange(N)
-
-    labels_sub = labels[idx].numpy().astype(np.int32)
-
-    # Derive a dataset title from the output_path leaf dir (e.g. newline_150)
-    dataset_title = Path(output_path).parent.name
-
-    expert_entries = []
-    for _, row in ranked.iterrows():
-        eid = int(row["expert_id"])
-        val = float(row["periodic_gain"])
-
-        scatter_fig = plot_3d_scatter(
-            expert_acts[idx, eid, :].numpy(),
-            labels_sub,
-            colorscale="Viridis",
-            continuous_color=True,
-            colorbar_title="chars since \\n",
-            connect_means=True,
-            scatter_alpha=0.4,
-            colorbar_tick_increment=20,
-            title=f"Expert {eid}  (\u0394per={val:.4f})",
-        )
-        mean_fig = plot_3d_scatter(
-            class_means[:, eid, :],
-            class_labels_arr,
-            colorscale="Viridis",
-            continuous_color=True,
-            colorbar_title="chars since \\n",
-            connect_means=True,
-            scatter_alpha=0.0,
-            colorbar_tick_increment=20,
-            title=f"Expert {eid}  (\u0394per={val:.4f}) [class means]",
-        )
-        tab_label = f"E{eid}  \u0394per={val:.4f}"
-        expert_meta = {
-            "expert_id": str(eid),
-            "hyp_name": "periodic_gain",
-            "hyp_score": val,
-            "score_type": "per_gain",
-        }
-        expert_entries.append((tab_label, scatter_fig, mean_fig, {}, expert_meta))
-
-    html_str = build_dataset_html(
-        expert_entries, dataset_title, experiment_id=experiment_id,
-    )
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(html_str)
-    logger.info(f"Saved top experts HTML → {output_path}")
 
 
 def _build_newline_summary(
@@ -875,19 +791,73 @@ def main(
         threshold=threshold,
     )
 
-    # ── Top experts HTML (ranked by periodic_gain) ───────────────────────
-    _nl_exp_id = Path(output_path).parent.name  # e.g. gemma_2_9b_l11
-    plot_newline_experts_html(
-        expert_acts,
-        all_labels,
-        class_means,
-        class_labels_arr,
-        scores_df,
-        top_k=plot_top_k,
-        max_points=plot_max_points,
-        output_path=os.path.join(out_dir, "top_experts.html"),
+    # ── Build Expert objects for top-k and write probing task ──────────
+    import torch as _torch
+
+    from analysis import probing_io
+    from analysis.utils import Expert
+
+    ranked = scores_df.sort_values(RANK_BY, ascending=False)
+    top_df = ranked.head(plot_top_k)
+
+    expert_records: list[probing_io.ExpertRecord] = []
+    for _, row in top_df.iterrows():
+        eid = int(row["expert_id"])
+        if plot_max_points < expert_acts.shape[0]:
+            idx = np.sort(np.random.default_rng(0).choice(expert_acts.shape[0], plot_max_points, replace=False))
+            pts = expert_acts[idx, eid, :].float().contiguous()
+            lbls = all_labels[idx].long().contiguous()
+        else:
+            pts = expert_acts[:, eid, :].float().contiguous()
+            lbls = all_labels.long().contiguous()
+
+        all_true = _torch.ones(pts.shape[0], dtype=_torch.bool)
+        expert = Expert(
+            active_mask=all_true,
+            expert_id=eid,
+            llm_activations=None,
+            expert_activations=pts,
+            labels=lbls,
+            n_classes=int(lbls.max().item()) + 1 if lbls.numel() > 0 else 0,
+        )
+        record = expert.to_probing_record()  # str_tokens=None → empty hover
+        # Attach newline-specific metrics from scores_df
+        record.metrics["decode_r2"] = float(row.get("decode_r2", 0))
+        record.metrics["encode_linear_r2"] = float(row.get("encode_linear_r2", 0))
+        record.metrics["encode_periodic_r2"] = float(row.get("encode_periodic_r2", 0))
+        record.metrics["periodic_gain"] = float(row.get("periodic_gain", 0))
+        for d in range(d_bn_cfg):
+            record.metrics[f"dim{d}_corr"] = float(row.get(f"dim{d}_corr", 0))
+            record.metrics[f"dim{d}_linear_r2"] = float(row.get(f"dim{d}_linear_r2", 0))
+            record.metrics[f"dim{d}_periodic_r2"] = float(row.get(f"dim{d}_periodic_r2", 0))
+        expert_records.append(record)
+
+    _nl_exp_id = Path(output_path).parent.name
+    newline_rankings = [
+        probing_io.ExpertRanking(
+            rank=i + 1, expert_id=int(row["expert_id"]), score=float(row[RANK_BY]),
+        )
+        for i, (_, row) in enumerate(top_df.iterrows())
+    ]
+    task_index = probing_io.TaskIndex(
+        task_type="newline",
         experiment_id=_nl_exp_id,
+        dataset_name=os.path.basename(out_dir),
+        title=f"{os.path.basename(out_dir)} — Newline Expert Analysis",
+        model_name=model_name,
+        hook_name=hook_name,
+        d_bottleneck=d_bn_cfg,
+        n_experts_total=n_experts_cfg,
+        color=probing_io.ColorSpec(
+            mode="continuous", scale="Viridis", continuous_label="chars since newline",
+        ),
+        label_names=None,
+        hypotheses=[],
+        experts_by_view={RANK_BY: newline_rankings},
+        scatter_size=1.0,
     )
+    probing_io.write_probing_task(out_dir, index=task_index, experts=expert_records)
+    logger.info(f"Wrote probing task for {len(expert_records)} experts → {out_dir}")
 
     # ── Save numerical results ───────────────────────────────────────────
     scores_df.to_csv(os.path.join(out_dir, "expert_scores.csv"), index=False)
