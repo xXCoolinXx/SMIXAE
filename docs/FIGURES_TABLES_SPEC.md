@@ -283,7 +283,7 @@ Line length  & Top-1 $\Delta R^2_{\text{per.}}$ & Top-5μ $\Delta R^2_{\text{per
 ### 3.3 `table_probing_appendix.tex`
 
 **Environment**: one `table*` block per model (concatenated in a single file)
-**Column spec**: `llll rr`  *(6 columns; header row has 7 cells — known discrepancy)*
+**Column spec**: `llll rrr`  (7 columns)
 **Packages**: `booktabs`, `multirow`
 
 #### Caption Template (verbatim, `{MODEL}` filled per model)
@@ -367,7 +367,7 @@ The Hypothesis, Regression, and Score cells each span 10 rows (one per expert).
 ### 3.4 `table_newline_appendix.tex`
 
 **Environment**: one `table` block per 9B model (concatenated in a single file)
-**Column spec**: `l rr`
+**Column spec**: `l rrr`
 **Packages**: `booktabs`, `multirow`
 
 #### Caption Template (verbatim)
@@ -436,7 +436,7 @@ Line length & Rank & Expert ID & $\Delta R^2_{\text{per.}}$ \\
 ### 3.5 `table_core_eval.tex`
 
 **Environment**: `table*` (spans both columns)
-**Column spec**: `ll rrrrrrrrrrr`  (model + layer label + 11 metric columns)
+**Column spec**: `lll rrrrrrr`  (model + layer + SAE label columns + 7 metric columns)
 **Packages**: `booktabs`, `multirow`, `\resizebox{\textwidth}{!}{...}`
 **Generated only if** `core_eval_results.json` exists.
 
@@ -471,9 +471,9 @@ places. Missing values render as `--`.
 \caption{...}
 \label{tab:saebench}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{ll rrrrrrr}
+\begin{tabular}{lll rrrrrrr}
 \toprule
-Model / Layer  & SAE                          & Width  & Params        &    L0 & Expl. Var. & CE Score &   MSE & Cos. Sim. \\
+Model          & Layer                        & SAE                          & Width  & Params        &    L0 & Expl. Var. & CE Score &   MSE & Cos. Sim. \\
 \midrule
 \multirow{4}{*}{Gemma 2 2B}
   & SMIXAE                       &  6,144 &   151,226,624 & 230.778 &      0.752 &    0.984 & 0.188 &     0.901 \\
