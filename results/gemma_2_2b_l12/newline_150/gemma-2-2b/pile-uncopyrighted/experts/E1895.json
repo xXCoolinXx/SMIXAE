@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "expert_id": 1895,
+  "n_points": 49443,
+  "metrics": {
+    "n_points": 49443,
+    "n_unique_labels": 150,
+    "decode_r2": 0.36915845926304836,
+    "encode_linear_r2": 0.3521377442533072,
+    "encode_periodic_r2": 0.757873410723982,
+    "periodic_gain": 0.40573566647067477,
+    "dim0_corr": -0.5967581774966586,
+    "dim0_linear_r2": 0.35612032240913316,
+    "dim0_periodic_r2": 0.7559188521136779,
+    "dim1_corr": 0.6057237874073915,
+    "dim1_linear_r2": 0.3669013066311547,
+    "dim1_periodic_r2": 0.739056904339541,
+    "dim2_corr": 0.5774007306192415,
+    "dim2_linear_r2": 0.3333916037196336,
+    "dim2_periodic_r2": 0.7786444757187272
+  },
+  "hover_text": [],
+  "tensor_path": "experts/E1895.pth",
+  "tensor_keys": [
+    "points",
+    "labels"
+  ]
+}

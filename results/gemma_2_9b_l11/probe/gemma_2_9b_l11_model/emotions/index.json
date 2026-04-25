@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "task_type": "labeled_probe",
+  "experiment_id": "gemma_2_9b_l11",
+  "dataset_name": "emotions",
+  "title": "emotions \u2014 Expert Analysis",
+  "model_name": "google/gemma-2-9b",
+  "hook_name": "model.layers.11",
+  "d_bottleneck": 3,
+  "n_experts_total": 2048,
+  "scatter_size": 1.0,
+  "color": {
+    "mode": "discrete",
+    "scale": "Plasma",
+    "color_map": {
+      "admiration": "#1a6fcc",
+      "amusement": "#1a6fcc",
+      "approval": "#1a6fcc",
+      "caring": "#1a6fcc",
+      "desire": "#1a6fcc",
+      "excitement": "#1a6fcc",
+      "gratitude": "#1a6fcc",
+      "joy": "#1a6fcc",
+      "love": "#1a6fcc",
+      "optimism": "#1a6fcc",
+      "pride": "#1a6fcc",
+      "relief": "#1a6fcc",
+      "anger": "#cc0000",
+      "annoyance": "#cc0000",
+      "disapproval": "#cc0000",
+      "disappointment": "#cc0000",
+      "disgust": "#cc0000",
+      "embarrassment": "#cc0000",
+      "fear": "#cc0000",
+      "grief": "#cc0000",
+      "nervousness": "#cc0000",
+      "remorse": "#cc0000",
+      "sadness": "#cc0000",
+      "confusion": "#e6c800",
+      "curiosity": "#e6c800",
+      "realization": "#e6c800",
+      "surprise": "#e6c800",
+      "neutral": "#888888"
+    },
+    "continuous_label": null,
+    "skip_endpoints": true
+  },
+  "label_names": {
+    "0": "admiration",
+    "1": "amusement",
+    "2": "anger",
+    "3": "annoyance",
+    "4": "approval",
+    "5": "caring",
+    "6": "confusion",
+    "7": "curiosity",
+    "8": "desire",
+    "9": "disappointment",
+    "10": "disapproval",
+    "11": "disgust",
+    "12": "embarrassment",
+    "13": "excitement",
+    "14": "fear",
+    "15": "gratitude",
+    "16": "grief",
+    "17": "joy",
+    "18": "love",
+    "19": "nervousness",
+    "20": "neutral",
+    "21": "optimism",
+    "22": "pride",
+    "23": "realization",
+    "24": "relief",
+    "25": "remorse",
+    "26": "sadness",
+    "27": "surprise"
+  },
+  "hypotheses": [
+    {
+      "name": "valence_arousal",
+      "description": "Valence-Arousal Circumplex",
+      "regression_type": "ridge",
+      "score_type": "r2",
+      "color_override": null
+    },
+    {
+      "name": "quadrant",
+      "description": "Affective Quadrant",
+      "regression_type": "multinomial",
+      "score_type": "acc",
+      "color_override": null
+    }
+  ],
+  "experts_by_view": {
+    "valence_arousal": [
+      {
+        "rank": 1,
+        "expert_id": 1691,
+        "score": 0.033329105377197264,
+        "score_std": 0.012035587452008861
+      },
+      {
+        "rank": 2,
+        "expert_id": 354,
+        "score": 0.012318915128707886,
+        "score_std": 0.004399788931133361
+      },
+      {
+        "rank": 3,
+        "expert_id": 562,
+        "score": 0.011471998691558839,
+        "score_std": 0.003841184296730202
+      },
+      {
+        "rank": 4,
+        "expert_id": 1307,
+        "score": 0.009684687852859497,
+        "score_std": 0.007790896374281931
+      },
+      {
+        "rank": 5,
+        "expert_id": 462,
+        "score": 0.006965732574462891,
+        "score_std": 0.0038079245507141924
+      },
+      {
+        "rank": 6,
+        "expert_id": 695,
+        "score": 0.006282228231430054,
+        "score_std": 0.003244260359738072
+      },
+      {
+        "rank": 7,
+        "expert_id": 1767,
+        "score": 0.005768024921417236,
+        "score_std": 0.004246329144622119
+      },
+      {
+        "rank": 8,
+        "expert_id": 1513,
+        "score": 0.004456597566604614,
+        "score_std": 0.003332704711272919
+      },
+      {
+        "rank": 9,
+        "expert_id": 952,
+        "score": 0.004353773593902588,
+        "score_std": 0.0016526213984735998
+      },
+      {
+        "rank": 10,
+        "expert_id": 378,
+        "score": 0.004196101427078247,
+        "score_std": 0.005749203911303861
+      }
+    ],
+    "quadrant": [
+      {
+        "rank": 1,
+        "expert_id": 378,
+        "score": 0.21263480866059387,
+        "score_std": 0.007130123139065233
+      },
+      {
+        "rank": 2,
+        "expert_id": 562,
+        "score": 0.2048788014040496,
+        "score_std": 0.0021983191720967655
+      },
+      {
+        "rank": 3,
+        "expert_id": 786,
+        "score": 0.2048723380023955,
+        "score_std": 0.0018138063471601618
+      },
+      {
+        "rank": 4,
+        "expert_id": 560,
+        "score": 0.20443764345830145,
+        "score_std": 0.0001874131402282566
+      },
+      {
+        "rank": 5,
+        "expert_id": 861,
+        "score": 0.20436211225109696,
+        "score_std": 8.942013504818041e-05
+      },
+      {
+        "rank": 6,
+        "expert_id": 1084,
+        "score": 0.20429872650247533,
+        "score_std": 5.9920435988403124e-05
+      },
+      {
+        "rank": 7,
+        "expert_id": 952,
+        "score": 0.20420440217093364,
+        "score_std": 0.00010790438789232675
+      },
+      {
+        "rank": 8,
+        "expert_id": 739,
+        "score": 0.20413580261084477,
+        "score_std": 0.00011573326800377012
+      },
+      {
+        "rank": 9,
+        "expert_id": 354,
+        "score": 0.20364440700728706,
+        "score_std": 0.00022907487623102774
+      },
+      {
+        "rank": 10,
+        "expert_id": 1767,
+        "score": 0.20353500158893695,
+        "score_std": 8.564304660589345e-05
+      }
+    ]
+  }
+}
