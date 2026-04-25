@@ -334,9 +334,11 @@ def run_pipeline(
        manifold continuity (unlabelled data).
     4. **Sort** — rank experts by the chosen metric.
     5. **Plot** — generate interactive 3D Plotly scatters for the top-N experts and
-       serialise everything into a single self-contained HTML file.
+       serialise them as structured data artifacts (``index.json`` + per-expert
+       ``experts/E{id}.json`` / ``experts/E{id}.pth``).
 
-    Output is written to ``{final_output_dir}/{subdir}/experts.html``.
+    Output is written to ``{final_output_dir}/{subdir}/`` as an ``index.json`` and
+    an ``experts/`` directory containing per-expert JSON metadata and tensor files.
 
     Args:
         model: Pre-loaded HuggingFace language model.
@@ -615,11 +617,11 @@ def single(
     random_sample_min_active_fraction: float = typer.Option(0.1, help="Min fraction of random_sample_max_points an expert must fire on (0–1)"),
     random_sample_max_points: int = typer.Option(1000, help="Max points collected per expert in random-sample path"),
 ):
-    """Probe a single dataset against a SMIXAE checkpoint and write an HTML report.
+    """Probe a single dataset against a SMIXAE checkpoint and write a task data directory.
 
     Loads the LLM and SAE once, runs :func:`run_pipeline` for the specified dataset,
-    and writes interactive 3D scatter plots of the top-N experts to
-    ``{output_dir}/{run_hash}_{step}/{dataset_stem}/experts.html``.
+    and writes structured data artifacts (``index.json`` + per-expert JSON/tensor files)
+    to ``{output_dir}/{run_hash}_{step}/{dataset_stem}/``.
 
     Supports both labelled data (CSV/Parquet/JSONL with a label column, scored by Fisher
     discriminant ratio) and unlabelled streaming (HuggingFace dataset, scored by manifold

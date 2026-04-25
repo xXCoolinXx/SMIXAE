@@ -6,11 +6,11 @@
 1. Generate probing datasets     smixae generate-probing-data generate
 2. Train SMIXAE                  smixae train ...
 3. Probe experts                 smixae probe single / all-datasets
-4. Interpret 3-D scatters        Open results/*/probe/top_experts.html in a browser
+4. Interpret 3-D scatters        smixae latex save-server --results-dir results/
 5. Steer                         smixae steer main (see docs/STEERING.md)
 ```
 
-The probe step is the core of the analysis. It runs the LLM + SMIXAE on a labeled dataset, scores every active expert, and writes ranked HTML visualizations.
+The probe step is the core of the analysis. It runs the LLM + SMIXAE on a labeled dataset, scores every active expert, and writes ranked structured data artifacts (``index.json`` + per-expert JSON/tensor files) under the task output directory.
 
 ---
 

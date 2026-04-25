@@ -110,37 +110,6 @@ def _ssh_banner_html(port: int) -> str:
     )
 
 
-def _scan_html_files(probe_dir: Path | None) -> list[dict]:
-    """Return sorted list of {rel, label} dicts for browsable HTML files under probe_dir.
-
-    Only includes ``experts.html`` (probing) and ``top_experts.html`` (newline).
-    """
-    if probe_dir is None or not probe_dir.exists():
-        return []
-    entries = []
-    for p in sorted(probe_dir.rglob("*.html")):
-        if p.name not in ("experts.html", "top_experts.html"):
-            continue
-        rel = str(p.relative_to(probe_dir))
-        # Exclude old/ directories
-        if "/old/" in rel or rel.startswith("old/"):
-            continue
-        # Derive a display label:
-        #   experts.html  → parent folder (e.g. "hours", "colors")
-        #   top_experts.html → first "newline_*" ancestor (e.g. "newline_150")
-        if p.name == "top_experts.html":
-            label = None
-            for part in p.relative_to(probe_dir).parts:
-                if part.startswith("newline"):
-                    label = part
-                    break
-            if label is None:
-                label = p.parent.name
-        else:
-            label = p.parent.name
-        entries.append({"rel": rel, "label": label})
-    return entries
-
 
 def _scan_task_dirs(results_dir: Path | None) -> list[dict]:
     """Walk results_dir and return all probing-task directories."""
@@ -306,7 +275,7 @@ def _gallery_html(output_dir: Path, port: int, probe_dir: Path | None = None) ->
       <div id="grid"></div>
       <div id="empty-msg" style="display:none">
         No figures queued yet.<br>
-        Open an <b>experts.html</b> page from the left panel and click
+        Open a task from the left panel and click
         <b>Save scatter</b> or <b>Save means</b>.
       </div>
     </div>
@@ -390,9 +359,9 @@ def _gallery_html(output_dir: Path, port: int, probe_dir: Path | None = None) ->
 
     async function loadNav() {{
       try {{
-        const r = await fetch(BASE + '/html-files');
+        const r = await fetch(BASE + '/tasks');
         const data = await r.json();
-        _navItems = data.files || [];
+        _navItems = data.tasks || [];
       }} catch {{ _navItems = []; }}
       renderNav(_navItems);
     }}
@@ -400,7 +369,7 @@ def _gallery_html(output_dir: Path, port: int, probe_dir: Path | None = None) ->
     function renderNav(items) {{
       const list = document.getElementById('nav-list');
       if (!items.length) {{
-        list.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:#999">No experts.html files found</div>';
+        list.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:#999">No probing tasks found</div>';
         return;
       }}
       // Group by first path component (experiment), then by second (probe / newline_*)
@@ -417,8 +386,9 @@ def _gallery_html(output_dir: Path, port: int, probe_dir: Path | None = None) ->
       for (const [grp, grpItems] of Object.entries(groups)) {{
         html += `<div class="nav-group">${{grp}}</div>`;
         grpItems.forEach(item => {{
-          html += `<a class="nav-item" href="${{BASE}}/view?p=${{encodeURIComponent(item.rel)}}"
-                      target="expert-frame" title="${{item.rel}}">${{item.label}}</a>`;
+          const label = item.dataset_name || item.rel.split('/').pop();
+          html += `<a class="nav-item" href="${{BASE}}/viewer/index.html?task=${{encodeURIComponent(item.rel)}}"
+                      target="_blank" title="${{item.rel}}">${{label}}</a>`;
         }});
       }}
       list.innerHTML = html;
@@ -426,7 +396,7 @@ def _gallery_html(output_dir: Path, port: int, probe_dir: Path | None = None) ->
 
     function filterNav(q) {{
       const filtered = q
-        ? _navItems.filter(i => i.label.toLowerCase().includes(q.toLowerCase()) ||
+        ? _navItems.filter(i => (i.dataset_name || i.rel).toLowerCase().includes(q.toLowerCase()) ||
                                 i.rel.toLowerCase().includes(q.toLowerCase()))
         : _navItems;
       renderNav(filtered);
@@ -491,10 +461,6 @@ class _Handler(BaseHTTPRequestHandler):
 
         elif path == "/queue":
             self._json(200, {"items": list(_queue.keys()), "count": len(_queue)})
-
-        elif path == "/html-files":
-            files = _scan_html_files(self.server.probe_dir)
-            self._json(200, {"files": files})
 
         elif path == "/tasks":
             results_dir = self.server.probe_dir
@@ -564,13 +530,6 @@ class _Handler(BaseHTTPRequestHandler):
             skip = qs.get("skip_endpoints", ["true"])[0].lower() == "true"
             colors = _get_colorscale(name, n, skip)
             self._json(200, {"colors": colors})
-
-        elif path == "/view":
-            rel = unquote(qs.get("p", [""])[0])
-            self.send_response(302)
-            self.send_header("Location", f"/viewer/index.html?task={rel}")
-            self._cors()
-            self.end_headers()
 
         elif path.startswith("/viewer/"):
             asset = path[len("/viewer/"):]
@@ -670,7 +629,7 @@ class _SaveServer(HTTPServer):
     def __init__(self, output_dir: Path, port: int, results_dir: Path | None = None) -> None:
         self.output_dir = output_dir
         self.port = port
-        self.probe_dir = results_dir  # used by handler as the root to scan/serve HTML from
+        self.probe_dir = results_dir  # root to scan for index.json-based task directories
         super().__init__(("127.0.0.1", port), _Handler)
 
 
@@ -679,7 +638,7 @@ class _SaveServer(HTTPServer):
 @app.command()
 def save_server(
     output_dir: Path = typer.Option(..., help="Directory where PNGs will be written on Save All"),
-    results_dir: Path = typer.Option(None, help="Root results directory to scan for experts.html files (shown in left nav; scans recursively)"),
+    results_dir: Path = typer.Option(None, help="Root results directory to scan for probing task directories (index.json-based; shown in left nav; scans recursively)"),
     port: int = typer.Option(_DEFAULT_PORT, help="Local port to listen on (default 7788)"),
 ) -> None:
     """Start the camera-ready save server.
