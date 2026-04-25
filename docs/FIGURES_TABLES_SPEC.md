@@ -691,11 +691,11 @@ top-left of the image.
 
 Three file types are generated per experiment ID:
 
-| File                      | Tasks included                       | `is_newline` | Caption suffix                                                |
-|---------------------------|--------------------------------------|:------------:|---------------------------------------------------------------|
-| `probe_{exp_id}.tex`      | All except `pile-uncopyrighted`, `continuity` | No | "Each plot shows..." (see Caption Format below) |
-| `newline_{exp_id}.tex`    | `pile-uncopyrighted` only            | Yes          | "Points represent..." (see Caption Format below) |
-| `random_{exp_id}.tex`     | `continuity` only                    | No           | "Each plot shows..." (see Caption Format below) |
+| File                      | Tasks included                       | `is_newline` | Label                         | Caption suffix                                                |
+|---------------------------|--------------------------------------|:------------:|-------------------------------|---------------------------------------------------------------|
+| `probe_{exp_id}.tex`      | All except `pile-uncopyrighted`, `continuity` | No | `fig:probe_{exp_id}`  | "Each plot shows..." (see Caption Format below) |
+| `newline_{exp_id}.tex`    | `pile-uncopyrighted` only            | Yes          | `fig:newline_{exp_id}`        | "Points represent..." (see Caption Format below) |
+| `random_{exp_id}.tex`     | `continuity` only                    | No           | `fig:random_{exp_id}`         | "Each plot shows..." (see Caption Format below) |
 
 #### Caption Format — Probe Figures
 
