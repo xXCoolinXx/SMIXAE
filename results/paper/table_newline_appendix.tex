@@ -4,15 +4,18 @@
 \small
 \caption{Complete newline-position probing scores for all top-10 experts in 9B, Layer 11 at each line length, ranked by $\Delta R^2_{\text{periodic}}$. This table supports Table\ref{tab:newline}.}
 \label{tab:newline_appendix_gemma_2_9b_l11}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{l r r r r r r r r r r}
 \toprule
+ & \multicolumn{10}{c}{Expert rank} \\
+\cmidrule(lr){2-11}
 Line length & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
 \midrule
 80 chars & 0.558 & 0.430 & 0.392 & 0.039 & 0.032 & 0.026 & 0.025 & 0.018 & 0.018 & 0.015 \\
 \midrule
 150 chars & 0.548 & 0.500 & 0.317 & 0.041 & 0.028 & 0.027 & 0.027 & 0.015 & 0.010 & 0.009 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}% end resizebox
 \end{table}
 
 % Required packages: booktabs, multirow
@@ -21,13 +24,16 @@ Line length & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
 \small
 \caption{Complete newline-position probing scores for all top-10 experts in 9B, Layer 20 at each line length, ranked by $\Delta R^2_{\text{periodic}}$. This table supports Table\ref{tab:newline}.}
 \label{tab:newline_appendix_gemma_2_9b_l20}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{l r r r r r r r r r r}
 \toprule
+ & \multicolumn{10}{c}{Expert rank} \\
+\cmidrule(lr){2-11}
 Line length & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
 \midrule
 80 chars & 0.507 & 0.303 & 0.031 & 0.025 & 0.024 & 0.023 & 0.022 & 0.022 & 0.020 & 0.015 \\
 \midrule
 150 chars & 0.320 & 0.280 & 0.026 & 0.025 & 0.024 & 0.024 & 0.021 & 0.020 & 0.017 & 0.011 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}% end resizebox
 \end{table}
