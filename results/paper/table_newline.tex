@@ -1,7 +1,7 @@
 \begin{table}[htbp]
 \centering
 \small
-\caption{Newline position encoding results (Gemma 2 9B). $\Delta R^2_{\text{periodic}} = R^2_{\text{periodic}} - R^2_{\text{linear}}$ on the bottleneck; positive values indicate ring or spiral geometry. Top-1 and mean over top-5 experts reported.}
+\caption{Newline position encoding in SMIXAE experts at layers 11 and 20 of Gemma 2 9B, evaluated at two nominal line lengths. We fit both a linear and a periodic (ring or spiral) model to each expert's 3-D bottleneck activations using the number of characters since the previous newline as the target. $\Delta R^2_{\text{periodic}} = R^2_{\text{periodic}} - R^2_{\text{linear}}$ measures the additional variance explained by curved geometry beyond a linear fit: values near zero indicate a linear arrangement, while large positive values indicate ring or helical structure in the bottleneck. Top-1 is the score of the single best expert; Top-5$_{\mu}$ is the mean across the top-5 experts.}
 \label{tab:newline}
 \begin{tabular}{l cc cc}
 \toprule

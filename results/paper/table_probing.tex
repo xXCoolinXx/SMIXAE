@@ -2,7 +2,7 @@
 \begin{table*}[htbp]
 \centering
 \small
-\caption{Probing results across tasks and models. For each hypothesis the top-1 score and mean over the top-5 experts are reported. $\pm$ values show the per-expert cross-validation standard deviation (top-1) and the mean of CV standard deviations across the top-5 experts (Top-5$_{\mu}$). Where $R^2$ coefficient of determination and Acc. is classification accuracy.}
+\caption{Probing results for SMIXAE experts across several tasks. Each hypothesis targets a structured property that may be geometrically encoded in a 3-D expert bottleneck. For each hypothesis we fit a regression or classifier directly to the bottleneck activations of the top-performing experts and report the score of the single best expert (Top-1) and the mean over the top-5 experts (Top-5$_{\mu}$). $\pm$ values are cross-validation standard deviations; for Top-5$_{\mu}$, the standard deviation is averaged across the top-5 experts. $R^2$ is the coefficient of determination (linear and ridge regression); Acc.\ is classification accuracy (logistic and multinomial regression).}
 \label{tab:probing}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{ll ll rr rr rr}
@@ -32,9 +32,6 @@ Time Units & $\log\_{10}$ Duration & Linear & $R^2$ & 0.894 $\pm$ 0.008 & 0.737 
 \multirow{3}{*}{Colors} & Hue Ring & Linear & $R^2$ & 0.827 $\pm$ 0.018 & 0.775 $\pm$ 0.026 & 0.575 $\pm$ 0.016 & 0.441 $\pm$ 0.032 & 0.655 $\pm$ 0.024 & 0.546 $\pm$ 0.020 \\
  & Normalized RGB & Linear & $R^2$ & 0.789 $\pm$ 0.028 & 0.689 $\pm$ 0.027 & 0.452 $\pm$ 0.017 & 0.400 $\pm$ 0.027 & 0.596 $\pm$ 0.020 & 0.491 $\pm$ 0.023 \\
  & Warm / Natural / Cool & Multinomial & Acc. & 0.995 $\pm$ 0.004 & 0.947 $\pm$ 0.012 & 0.888 $\pm$ 0.017 & 0.806 $\pm$ 0.024 & 0.865 $\pm$ 0.034 & 0.844 $\pm$ 0.032 \\
-\midrule
-\multirow{2}{*}{Emotions} & Valence-Arousal Circumplex & Ridge & $R^2$ & 0.033 $\pm$ 0.012 & 0.015 $\pm$ 0.006 & 0.035 $\pm$ 0.003 & 0.018 $\pm$ 0.004 & 0.017 $\pm$ 0.004 & 0.011 $\pm$ 0.004 \\
- & Affective Quadrant & Multinomial & Acc. & 0.213 $\pm$ 0.007 & 0.206 $\pm$ 0.002 & 0.208 $\pm$ 0.002 & 0.206 $\pm$ 0.002 & 0.204 $\pm$ 0.000 & 0.203 $\pm$ 0.000 \\
 \bottomrule
 \end{tabular}
 }% end resizebox

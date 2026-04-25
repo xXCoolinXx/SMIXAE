@@ -46,7 +46,7 @@ DATASET_NAMES: dict[str, str] = {
     "continuity":   "Continuity",
 }
 
-SKIP_DATASETS: set[str] = {"body_parts", "continuity"}
+SKIP_DATASETS: set[str] = {"body_parts", "continuity", "emotions"}
 
 SCORE_LABEL: dict[str, str] = {
     "linear":      r"$R^2$",
@@ -136,11 +136,14 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
     rows.append(r"\centering")
     rows.append(r"\small")
     rows.append(
-        r"\caption{Probing results across tasks and models. "
-        r"For each hypothesis the top-1 score and mean over the top-5 experts are reported. "
-        r"$\pm$ values show the per-expert cross-validation standard deviation (top-1) "
-        r"and the mean of CV standard deviations across the top-5 experts (Top-5$_{\mu}$). "
-        r"Where $R^2$ coefficient of determination and Acc. is classification accuracy.}"
+        r"\caption{Probing results for SMIXAE experts across several tasks. "
+        r"Each hypothesis targets a structured property that may be geometrically encoded in a 3-D expert bottleneck. "
+        r"For each hypothesis we fit a regression or classifier directly to the bottleneck activations "
+        r"of the top-performing experts and report the score of the single best expert (Top-1) "
+        r"and the mean over the top-5 experts (Top-5$_{\mu}$). "
+        r"$\pm$ values are cross-validation standard deviations; for Top-5$_{\mu}$, the standard deviation is averaged across the top-5 experts. "
+        r"$R^2$ is the coefficient of determination (linear and ridge regression); "
+        r"Acc.\ is classification accuracy (logistic and multinomial regression).}"
     )
     rows.append(r"\label{tab:probing}")
     rows.append(r"\resizebox{\textwidth}{!}{%")
@@ -258,10 +261,14 @@ def build_newline_table(results: dict) -> str:
     rows.append(r"\centering")
     rows.append(r"\small")
     rows.append(
-        r"\caption{Newline position encoding results (Gemma 2 9B). "
-        r"$\Delta R^2_{\text{periodic}} = R^2_{\text{periodic}} - R^2_{\text{linear}}$ on the bottleneck; "
-        r"positive values indicate ring or spiral geometry. "
-        r"Top-1 and mean over top-5 experts reported.}"
+        r"\caption{Newline position encoding in SMIXAE experts at layers 11 and 20 of Gemma 2 9B, "
+        r"evaluated at two nominal line lengths. "
+        r"We fit both a linear and a periodic (ring or spiral) model to each expert's 3-D bottleneck "
+        r"activations using the number of characters since the previous newline as the target. "
+        r"$\Delta R^2_{\text{periodic}} = R^2_{\text{periodic}} - R^2_{\text{linear}}$ measures the "
+        r"additional variance explained by curved geometry beyond a linear fit: values near zero indicate "
+        r"a linear arrangement, while large positive values indicate ring or helical structure in the bottleneck. "
+        r"Top-1 is the score of the single best expert; Top-5$_{\mu}$ is the mean across the top-5 experts.}"
     )
     rows.append(r"\label{tab:newline}")
     rows.append(r"\begin{tabular}{" + col_spec + "}")
@@ -320,10 +327,12 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
         rows.append(r"\centering")
         rows.append(r"\small")
         rows.append(
-            r"\caption{Probing expert detail --- "
+            r"\caption{Complete probing scores for all top-10 experts in "
             + model_display
-            + r". All top-10 experts per hypothesis. "
-            r"Score $\pm$ cross-validation standard deviation.}"
+            + r", listed per task and hypothesis. "
+            r"Experts are ranked by their cross-validated score on each hypothesis independently, "
+            r"so the same expert may appear under multiple hypotheses if it encodes more than one concept. "
+            r"Score $\pm$ standard deviation reports the cross-validated score and its standard deviation across folds for each expert.}"
         )
         rows.append(rf"\label{{tab:probing_appendix_{mk}}}")
         rows.append(r"\begin{tabular}{" + col_spec + "}")
@@ -447,10 +456,10 @@ def build_newline_appendix_tables(results: dict) -> str:
         rows.append(r"\centering")
         rows.append(r"\small")
         rows.append(
-            r"\caption{Newline position expert detail --- "
+            r"\caption{Complete newline-position probing scores for all top-10 experts in "
             + model_display
-            + r". All top-10 experts per line length, ranked by "
-            r"$\Delta R^2_{\text{periodic}}$.}"
+            + r" at each line length, ranked by $\Delta R^2_{\text{periodic}}$. "
+            r"This table supports Table\ref{tab:newline}.}"
         )
         rows.append(rf"\label{{tab:newline_appendix_{mk}}}")
         rows.append(r"\begin{tabular}{" + col_spec + "}")
@@ -512,12 +521,8 @@ CORE_EVAL_SUMMARY_METRICS = [
     "l0",
     "explained_variance",
     "ce_loss_score",
-    "ce_loss_without_sae",
-    "ce_loss_with_sae",
-    "ce_loss_with_ablation",
     "mse",
     "cosine_similarity",
-    "l2_ratio",
 ]
 
 # Human-readable model names reused from existing table helpers.
@@ -556,11 +561,9 @@ def build_core_eval_table(core_eval_results: dict) -> str:
     rows.append(r"\centering")
     rows.append(r"\small")
     rows.append(
-        r"\caption{SAEBench core metrics for SMIXAE and GemmaScope 16k baselines. "
-        r"Evaluated on OpenWebText (context 128 tokens). "
-        r"L0 = mean active features per token; Expl.\ Var.\ = explained variance; "
-        r"CE Score $= (\text{CE}_\text{abl} - \text{CE}_\text{SAE}) / "
-        r"(\text{CE}_\text{abl} - \text{CE}_\text{orig})$, higher is better.}"
+        r"\caption{Core evaluation metrics comparing SMIXAE against GemmaScope SAE baselines, "
+        r"evaluated on OpenWebText (128-token context windows). "
+        r"L0 and width are unflattened numbers for SMIXAE.}"
     )
     rows.append(r"\label{tab:saebench}")
     rows.append(r"\resizebox{\textwidth}{!}{%")
