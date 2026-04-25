@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SMIXAE Expert Viewer</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+  <header>
+    <h1 id="task-title">SMIXAE Expert Viewer</h1>
+    <span id="queue-badge" style="display:none">
+      <a id="badge-link" href="#" target="_blank">0 queued → Gallery</a>
+    </span>
+  </header>
+
+  <div id="layout">
+    <nav id="views-nav">
+      <div id="view-list"></div>
+    </nav>
+    <main id="main">
+      <div id="tab-strip"></div>
+      <div id="expert-header"></div>
+      <div id="save-bar" style="display:none">
+        <button class="save-btn" onclick="saveFigurePNG('active-scatter','scatter')">Save scatter</button>
+        <button class="save-btn" id="save-means-btn" style="display:none"
+                onclick="saveFigurePNG('active-mean','means')">Save means</button>
+        <button class="save-btn" id="add-label-btn" onclick="createAnnotation()">Add Label</button>
+        <button class="save-btn" id="lock-btn" onclick="toggleLockView()">Lock View</button>
+      </div>
+      <div id="reg-scores-container"></div>
+      <div id="scatter-wrapper">
+        <div class="plot-box" id="active-scatter"></div>
+        <div id="plot-lock-mask"></div>
+        <div id="annotation-overlay"></div>
+      </div>
+      <div class="plot-box" id="active-mean" style="display:none"></div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="scatter.js"></script>
+  <script src="save_client.js"></script>
+  <script src="viewer.js"></script>
+</body>
+</html>

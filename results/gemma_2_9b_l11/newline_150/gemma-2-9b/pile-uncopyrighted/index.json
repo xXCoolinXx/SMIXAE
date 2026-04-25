@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "task_type": "newline",
+  "experiment_id": "gemma_2_9b_l11",
+  "dataset_name": "pile-uncopyrighted",
+  "title": "pile-uncopyrighted \u2014 Newline Expert Analysis",
+  "model_name": "google/gemma-2-9b",
+  "hook_name": "model.layers.11",
+  "d_bottleneck": 3,
+  "n_experts_total": 2048,
+  "scatter_size": 1.0,
+  "color": {
+    "mode": "continuous",
+    "scale": "Viridis",
+    "color_map": null,
+    "continuous_label": "chars since newline",
+    "skip_endpoints": true
+  },
+  "label_names": null,
+  "hypotheses": [],
+  "experts_by_view": {
+    "periodic_gain": [
+      {
+        "rank": 1,
+        "expert_id": 541,
+        "score": 0.5477232049765671,
+        "score_std": null
+      },
+      {
+        "rank": 2,
+        "expert_id": 1521,
+        "score": 0.5004233670888634,
+        "score_std": null
+      },
+      {
+        "rank": 3,
+        "expert_id": 1204,
+        "score": 0.3167362694656172,
+        "score_std": null
+      },
+      {
+        "rank": 4,
+        "expert_id": 1224,
+        "score": 0.040902065815326294,
+        "score_std": null
+      },
+      {
+        "rank": 5,
+        "expert_id": 2039,
+        "score": 0.027586350836893318,
+        "score_std": null
+      },
+      {
+        "rank": 6,
+        "expert_id": 1131,
+        "score": 0.027472845486790336,
+        "score_std": null
+      },
+      {
+        "rank": 7,
+        "expert_id": 865,
+        "score": 0.026541445186436047,
+        "score_std": null
+      },
+      {
+        "rank": 8,
+        "expert_id": 1470,
+        "score": 0.014959059283748041,
+        "score_std": null
+      },
+      {
+        "rank": 9,
+        "expert_id": 1646,
+        "score": 0.009835497575683841,
+        "score_std": null
+      },
+      {
+        "rank": 10,
+        "expert_id": 1166,
+        "score": 0.009068397207790402,
+        "score_std": null
+      }
+    ]
+  },
+  "connect_means": true
+}
