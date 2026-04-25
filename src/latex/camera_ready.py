@@ -665,7 +665,7 @@ def _caption_text(
         parts.append(f"\\textbf{{{_esc_text(task_disp)}}}: {descriptions}")
 
     if newline_wrap is not None:
-        suffix = " Points represent individual token activations in the bottleneck space, colored by distance since the last newline."
+        suffix = " Points represent per-class mean activations in the bottleneck space, colored by distance since the last newline."
     else:
         suffix = " Each plot shows the 3-D bottleneck activations of a single SMIXAE expert; small points are individual token activations colored by ground-truth label, and larger points mark per-class means."
     return f"{prefix} {'  '.join(parts)}{suffix}"

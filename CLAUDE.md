@@ -1,1 +1,1 @@
-Please deeply and thoroughly read the [AGENTS.md] file to understand the project
+Please deeply and thoroughly read the [AGENTS.md](AGENTS.md) file to understand the project
