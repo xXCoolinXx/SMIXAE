@@ -315,12 +315,14 @@ def build_newline_table(results: dict) -> str:
 # ── Probing appendix table ─────────────────────────────────────────────────────
 
 def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
-    """One table* per model listing all 10 experts for each dataset × hypothesis."""
+    """One table* per model: one row per hypothesis, one column per rank (1–10)."""
+    n_ranks = 10
+    rank_headers = " & ".join(str(r) for r in range(1, n_ranks + 1))
     parts: list[str] = []
 
     for mk, run_data in results.items():
         model_display = esc(MODEL_NAMES.get(mk, mk))
-        col_spec = "llll rrr"
+        col_spec = "ll ll " + "r" * n_ranks
 
         rows: list[str] = []
         rows.append(r"% Required packages: booktabs, multirow")
@@ -331,25 +333,16 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
             r"\caption{Complete probing scores for all top-10 experts in "
             + model_display
             + r", listed per task and hypothesis. "
-            r"Experts are ranked by their cross-validated score on each hypothesis independently, "
-            r"so the same expert may appear under multiple hypotheses if it encodes more than one concept. "
-            r"Score $\pm$ standard deviation reports the cross-validated score and its standard deviation across folds for each expert.}"
+            r"Columns 1--10 are rank positions; each cell shows score $\pm$ cross-validation standard deviation. "
+            r"The same expert may appear under multiple hypotheses if it encodes more than one concept.}"
         )
         rows.append(rf"\label{{tab:probing_appendix_{mk}}}")
         rows.append(r"\begin{tabular}{" + col_spec + "}")
         rows.append(r"\toprule")
-        rows.append(r"Task & Hypothesis & Regression & Score & Rank & Expert ID & Score $\pm$ Std \\")
+        rows.append(r"Task & Hypothesis & Regression & Score & " + rank_headers + r" \\")
         rows.append(r"\midrule")
 
         all_datasets = list(run_data.get("probe", {}).keys())
-        # last_ds = None
-        for ds_name in all_datasets:
-            if ds_name in SKIP_DATASETS:
-                continue
-            hyps = hypotheses_to_show(ds_name, hyp_map)
-            if hyps:
-                # last_ds = ds_name
-                pass
 
         first_ds = True
         for ds_name in all_datasets:
@@ -365,17 +358,7 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
 
             ds_display = esc(DATASET_NAMES.get(ds_name, ds_name.title()))
             hyp_list = list(hyps.items())
-            # n_hyps = len(hyp_list)
-            total_rows = sum(
-                len(
-                    run_data.get("probe", {})
-                    .get(ds_name, {})
-                    .get("hypotheses", {})
-                    .get(hyp_name, {})
-                    .get("top10_experts", [])
-                )
-                for hyp_name, _ in hyp_list
-            )
+            n_hyps = len(hyp_list)
 
             ds_cell_written = False
             for i, (hyp_name, hyp_info) in enumerate(hyp_list):
@@ -386,50 +369,34 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
                     .get(hyp_name, {})
                 )
                 experts = hyp_data.get("top10_experts", []) if hyp_data else []
-                n_experts = len(experts)
-                if not n_experts:
+                if not experts:
                     continue
 
                 hyp_display = esc(hyp_info["description"])
                 reg_label = REGRESSION_LABEL.get(hyp_info["regression_type"], "?")
                 score_label = SCORE_LABEL.get(hyp_info["regression_type"], "?")
 
-                for j, entry in enumerate(experts):
-                    row: list[str] = []
+                row: list[str] = []
+                if not ds_cell_written:
+                    row.append(
+                        rf"\multirow{{{n_hyps}}}{{*}}{{{ds_display}}}"
+                        if n_hyps > 1
+                        else ds_display
+                    )
+                    ds_cell_written = True
+                else:
+                    row.append("")
 
-                    if j == 0 and not ds_cell_written:
-                        row.append(
-                            rf"\multirow{{{total_rows}}}{{*}}{{{ds_display}}}"
-                            if total_rows > 1
-                            else ds_display
-                        )
-                        ds_cell_written = True
+                row += [hyp_display, reg_label, score_label]
+
+                for rank in range(n_ranks):
+                    if rank < len(experts):
+                        e = experts[rank]
+                        row.append(fmt_with_std(e.get("score"), e.get("score_std")))
                     else:
-                        row.append("")
+                        row.append("--")
 
-                    if j == 0:
-                        row.append(
-                            rf"\multirow{{{n_experts}}}{{*}}{{{hyp_display}}}"
-                            if n_experts > 1
-                            else hyp_display
-                        )
-                        row.append(
-                            rf"\multirow{{{n_experts}}}{{*}}{{{reg_label}}}"
-                            if n_experts > 1
-                            else reg_label
-                        )
-                        row.append(
-                            rf"\multirow{{{n_experts}}}{{*}}{{{score_label}}}"
-                            if n_experts > 1
-                            else score_label
-                        )
-                    else:
-                        row += ["", "", ""]
-
-                    row.append(str(entry["rank"]))
-                    row.append(str(entry["expert_id"]))
-                    row.append(fmt_with_std(entry.get("score"), entry.get("score_std")))
-                    rows.append(" & ".join(row) + r" \\")
+                rows.append(" & ".join(row) + r" \\")
 
         rows.append(r"\bottomrule")
         rows.append(r"\end{tabular}")
@@ -442,14 +409,16 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
 # ── Newline appendix table ──────────────────────────────────────────────────────
 
 def build_newline_appendix_tables(results: dict) -> str:
-    """One table per 9B model listing all 10 experts for each line length."""
+    """One table per 9B model: one row per line length, one column per rank (1–10)."""
     nine_b_models = [mk for mk in results if "9b" in mk]
     line_length_keys = ["newline_80", "newline_150"]
+    n_ranks = 10
+    rank_headers = " & ".join(str(r) for r in range(1, n_ranks + 1))
     parts: list[str] = []
 
     for mk in nine_b_models:
         model_display = esc(MODEL_NAMES.get(mk, mk))
-        col_spec = "l rrr"
+        col_spec = "l " + "r " * n_ranks
 
         rows: list[str] = []
         rows.append(r"% Required packages: booktabs, multirow")
@@ -463,9 +432,9 @@ def build_newline_appendix_tables(results: dict) -> str:
             r"This table supports Table\ref{tab:newline}.}"
         )
         rows.append(rf"\label{{tab:newline_appendix_{mk}}}")
-        rows.append(r"\begin{tabular}{" + col_spec + "}")
+        rows.append(r"\begin{tabular}{" + col_spec.strip() + "}")
         rows.append(r"\toprule")
-        rows.append(r"Line length & Rank & Expert ID & $\Delta R^2_{\text{per.}}$ \\")
+        rows.append(r"Line length & " + rank_headers + r" \\")
         rows.append(r"\midrule")
 
         run_newline = results.get(mk, {}).get("newline", {})
@@ -474,21 +443,13 @@ def build_newline_appendix_tables(results: dict) -> str:
                 rows.append(r"\midrule")
             ll_display = ll_key.replace("newline_", "") + " chars"
             experts = run_newline.get(ll_key, {}).get("top10_experts", [])
-            n_experts = len(experts)
-            for j, entry in enumerate(experts):
-                row: list[str] = []
-                if j == 0:
-                    row.append(
-                        rf"\multirow{{{n_experts}}}{{*}}{{{ll_display}}}"
-                        if n_experts > 1
-                        else ll_display
-                    )
+            row: list[str] = [ll_display]
+            for rank in range(n_ranks):
+                if rank < len(experts):
+                    row.append(fmt(experts[rank].get("periodic_gain")))
                 else:
-                    row.append("")
-                row.append(str(entry["rank"]))
-                row.append(str(entry["expert_id"]))
-                row.append(fmt(entry.get("periodic_gain")))
-                rows.append(" & ".join(row) + r" \\")
+                    row.append("--")
+            rows.append(" & ".join(row) + r" \\")
 
         rows.append(r"\bottomrule")
         rows.append(r"\end{tabular}")
