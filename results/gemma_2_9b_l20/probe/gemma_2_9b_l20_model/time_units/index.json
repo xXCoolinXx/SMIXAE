@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "task_type": "labeled_probe",
+  "experiment_id": "gemma_2_9b_l20",
+  "dataset_name": "time_units",
+  "title": "time_units \u2014 Expert Analysis",
+  "model_name": "google/gemma-2-9b",
+  "hook_name": "model.layers.20",
+  "d_bottleneck": 3,
+  "n_experts_total": 2048,
+  "scatter_size": 1.0,
+  "color": {
+    "mode": "discrete",
+    "scale": "Viridis",
+    "color_map": null,
+    "continuous_label": null,
+    "skip_endpoints": true
+  },
+  "label_names": {
+    "0": "millisecond",
+    "1": "second",
+    "2": "minute",
+    "3": "hour",
+    "4": "day",
+    "5": "week",
+    "6": "month",
+    "7": "year",
+    "8": "decade",
+    "9": "century"
+  },
+  "hypotheses": [
+    {
+      "name": "log_duration",
+      "description": "$\\log_{10}$ Duration",
+      "regression_type": "linear",
+      "score_type": "r2",
+      "color_override": null
+    }
+  ],
+  "experts_by_view": {
+    "log_duration": [
+      {
+        "rank": 1,
+        "expert_id": 923,
+        "score": 0.8555734038352967,
+        "score_std": 0.015618524674159508
+      },
+      {
+        "rank": 2,
+        "expert_id": 1096,
+        "score": 0.7043460130691528,
+        "score_std": 0.019120594999762975
+      },
+      {
+        "rank": 3,
+        "expert_id": 864,
+        "score": 0.6271056056022644,
+        "score_std": 0.025791989094747086
+      },
+      {
+        "rank": 4,
+        "expert_id": 693,
+        "score": 0.6205569505691528,
+        "score_std": 0.016083504206795343
+      },
+      {
+        "rank": 5,
+        "expert_id": 287,
+        "score": 0.5532724738121033,
+        "score_std": 0.027456224380203616
+      },
+      {
+        "rank": 6,
+        "expert_id": 1263,
+        "score": 0.5147963881492614,
+        "score_std": 0.04807069561355321
+      },
+      {
+        "rank": 7,
+        "expert_id": 822,
+        "score": 0.5023365616798401,
+        "score_std": 0.09287907956411798
+      },
+      {
+        "rank": 8,
+        "expert_id": 918,
+        "score": 0.47396825551986693,
+        "score_std": 0.06480739402436564
+      },
+      {
+        "rank": 9,
+        "expert_id": 759,
+        "score": 0.44230884313583374,
+        "score_std": 0.05340292572447415
+      },
+      {
+        "rank": 10,
+        "expert_id": 255,
+        "score": 0.44142266511917116,
+        "score_std": 0.06609658537046509
+      }
+    ]
+  }
+}

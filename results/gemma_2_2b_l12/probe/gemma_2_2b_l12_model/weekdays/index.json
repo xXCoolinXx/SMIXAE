@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "task_type": "labeled_probe",
+  "experiment_id": "gemma_2_2b_l12",
+  "dataset_name": "weekdays",
+  "title": "weekdays \u2014 Expert Analysis",
+  "model_name": "google/gemma-2-2b",
+  "hook_name": "model.layers.12",
+  "d_bottleneck": 3,
+  "n_experts_total": 2048,
+  "scatter_size": 1.0,
+  "color": {
+    "mode": "discrete",
+    "scale": "mygbm",
+    "color_map": null,
+    "continuous_label": null,
+    "skip_endpoints": true
+  },
+  "label_names": {
+    "0": "Monday",
+    "1": "Tuesday",
+    "2": "Wednesday",
+    "3": "Thursday",
+    "4": "Friday",
+    "5": "Saturday",
+    "6": "Sunday"
+  },
+  "hypotheses": [
+    {
+      "name": "cyc_7d",
+      "description": "7-Day Ring",
+      "regression_type": "linear",
+      "score_type": "r2",
+      "color_override": null
+    },
+    {
+      "name": "weekday_weekend",
+      "description": "Weekday vs Weekend",
+      "regression_type": "logistic",
+      "score_type": "acc",
+      "color_override": null
+    },
+    {
+      "name": "ordinal",
+      "description": "Day Ordinal",
+      "regression_type": "linear",
+      "score_type": "r2",
+      "color_override": null
+    }
+  ],
+  "experts_by_view": {
+    "cyc_7d": [
+      {
+        "rank": 1,
+        "expert_id": 1928,
+        "score": 0.5793328642845154,
+        "score_std": 0.028406325702366293
+      },
+      {
+        "rank": 2,
+        "expert_id": 1259,
+        "score": 0.5313230752944946,
+        "score_std": 0.019958209284351793
+      },
+      {
+        "rank": 3,
+        "expert_id": 1050,
+        "score": 0.4848130583763123,
+        "score_std": 0.015540295445927292
+      },
+      {
+        "rank": 4,
+        "expert_id": 1580,
+        "score": 0.4563992977142334,
+        "score_std": 0.021118645711433338
+      },
+      {
+        "rank": 5,
+        "expert_id": 1868,
+        "score": 0.3826663553714752,
+        "score_std": 0.029794741234432435
+      },
+      {
+        "rank": 6,
+        "expert_id": 540,
+        "score": 0.3559193551540375,
+        "score_std": 0.034178922948725134
+      },
+      {
+        "rank": 7,
+        "expert_id": 145,
+        "score": 0.3376652419567108,
+        "score_std": 0.017368186903402104
+      },
+      {
+        "rank": 8,
+        "expert_id": 1586,
+        "score": 0.22173115611076355,
+        "score_std": 0.009301307467629385
+      },
+      {
+        "rank": 9,
+        "expert_id": 1636,
+        "score": 0.18066548705101013,
+        "score_std": 0.024109927932811782
+      },
+      {
+        "rank": 10,
+        "expert_id": 348,
+        "score": 0.09049251079559326,
+        "score_std": 0.025728242768717366
+      }
+    ],
+    "weekday_weekend": [
+      {
+        "rank": 1,
+        "expert_id": 1928,
+        "score": 0.973286180194075,
+        "score_std": 0.014900020362550722
+      },
+      {
+        "rank": 2,
+        "expert_id": 145,
+        "score": 0.9619594221567906,
+        "score_std": 0.019065134196709875
+      },
+      {
+        "rank": 3,
+        "expert_id": 1050,
+        "score": 0.9509054551271797,
+        "score_std": 0.017351778491765682
+      },
+      {
+        "rank": 4,
+        "expert_id": 1580,
+        "score": 0.9130727143227142,
+        "score_std": 0.015992832148840532
+      },
+      {
+        "rank": 5,
+        "expert_id": 540,
+        "score": 0.8758635236767187,
+        "score_std": 0.03389936977608519
+      },
+      {
+        "rank": 6,
+        "expert_id": 1259,
+        "score": 0.8455057542814011,
+        "score_std": 0.02693000077095324
+      },
+      {
+        "rank": 7,
+        "expert_id": 1586,
+        "score": 0.8184195190774138,
+        "score_std": 0.019062270978641174
+      },
+      {
+        "rank": 8,
+        "expert_id": 1636,
+        "score": 0.8105549315832746,
+        "score_std": 0.04751013061385194
+      },
+      {
+        "rank": 9,
+        "expert_id": 348,
+        "score": 0.7366300408101161,
+        "score_std": 0.026013005934660605
+      },
+      {
+        "rank": 10,
+        "expert_id": 1868,
+        "score": 0.6949488011988011,
+        "score_std": 0.0349815520283886
+      }
+    ],
+    "ordinal": [
+      {
+        "rank": 1,
+        "expert_id": 1580,
+        "score": 0.7432799220085144,
+        "score_std": 0.032443828339220465
+      },
+      {
+        "rank": 2,
+        "expert_id": 1050,
+        "score": 0.48545337915420533,
+        "score_std": 0.036859795998820964
+      },
+      {
+        "rank": 3,
+        "expert_id": 1586,
+        "score": 0.4110655903816223,
+        "score_std": 0.028370122863821505
+      },
+      {
+        "rank": 4,
+        "expert_id": 1928,
+        "score": 0.4093716859817505,
+        "score_std": 0.040998619554295804
+      },
+      {
+        "rank": 5,
+        "expert_id": 1259,
+        "score": 0.39541590213775635,
+        "score_std": 0.0402513229120539
+      },
+      {
+        "rank": 6,
+        "expert_id": 1868,
+        "score": 0.37105876207351685,
+        "score_std": 0.04423175360305804
+      },
+      {
+        "rank": 7,
+        "expert_id": 1636,
+        "score": 0.33424810171127317,
+        "score_std": 0.07027187664550408
+      },
+      {
+        "rank": 8,
+        "expert_id": 145,
+        "score": 0.31884716749191283,
+        "score_std": 0.026265107579063942
+      },
+      {
+        "rank": 9,
+        "expert_id": 540,
+        "score": 0.28469123840332033,
+        "score_std": 0.06791124617007183
+      },
+      {
+        "rank": 10,
+        "expert_id": 348,
+        "score": 0.1868569016456604,
+        "score_std": 0.041698935309677505
+      }
+    ]
+  }
+}

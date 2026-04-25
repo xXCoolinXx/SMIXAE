@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "task_type": "labeled_probe",
+  "experiment_id": "gemma_2_9b_l20",
+  "dataset_name": "colors",
+  "title": "colors \u2014 Expert Analysis",
+  "model_name": "google/gemma-2-9b",
+  "hook_name": "model.layers.20",
+  "d_bottleneck": 3,
+  "n_experts_total": 2048,
+  "scatter_size": 1.0,
+  "color": {
+    "mode": "discrete",
+    "scale": "Plasma",
+    "color_map": {
+      "red": "red",
+      "orange": "orange",
+      "yellow": "#e6c800",
+      "green": "#00b300",
+      "blue": "#1a6fcc",
+      "indigo": "#4b0082",
+      "violet": "#8f00ff",
+      "pink": "#ff69b4"
+    },
+    "continuous_label": null,
+    "skip_endpoints": true
+  },
+  "label_names": {
+    "0": "red",
+    "1": "orange",
+    "2": "yellow",
+    "3": "green",
+    "4": "blue",
+    "5": "indigo",
+    "6": "violet",
+    "7": "pink"
+  },
+  "hypotheses": [
+    {
+      "name": "hue_wheel",
+      "description": "Hue Ring",
+      "regression_type": "linear",
+      "score_type": "r2",
+      "color_override": null
+    },
+    {
+      "name": "rgb",
+      "description": "Normalized RGB",
+      "regression_type": "linear",
+      "score_type": "r2",
+      "color_override": null
+    },
+    {
+      "name": "warm_nat_cool",
+      "description": "Warm / Natural / Cool",
+      "regression_type": "multinomial",
+      "score_type": "acc",
+      "color_override": null
+    }
+  ],
+  "experts_by_view": {
+    "hue_wheel": [
+      {
+        "rank": 1,
+        "expert_id": 1463,
+        "score": 0.5752322196960449,
+        "score_std": 0.01573654209628824
+      },
+      {
+        "rank": 2,
+        "expert_id": 693,
+        "score": 0.45688421130180357,
+        "score_std": 0.03899620889151449
+      },
+      {
+        "rank": 3,
+        "expert_id": 1777,
+        "score": 0.4429220676422119,
+        "score_std": 0.03537073650969298
+      },
+      {
+        "rank": 4,
+        "expert_id": 923,
+        "score": 0.36848010420799254,
+        "score_std": 0.04309636333707282
+      },
+      {
+        "rank": 5,
+        "expert_id": 68,
+        "score": 0.3639655351638794,
+        "score_std": 0.028384949565431614
+      },
+      {
+        "rank": 6,
+        "expert_id": 307,
+        "score": 0.33747354745864866,
+        "score_std": 0.015315768759361786
+      },
+      {
+        "rank": 7,
+        "expert_id": 647,
+        "score": 0.32735222578048706,
+        "score_std": 0.02837001005617464
+      },
+      {
+        "rank": 8,
+        "expert_id": 1979,
+        "score": 0.2960352599620819,
+        "score_std": 0.03828577457697332
+      },
+      {
+        "rank": 9,
+        "expert_id": 214,
+        "score": 0.28533384799957273,
+        "score_std": 0.019907760030275383
+      },
+      {
+        "rank": 10,
+        "expert_id": 261,
+        "score": 0.2018606722354889,
+        "score_std": 0.039696266110059934
+      }
+    ],
+    "rgb": [
+      {
+        "rank": 1,
+        "expert_id": 1463,
+        "score": 0.4521264970302582,
+        "score_std": 0.01661310857134215
+      },
+      {
+        "rank": 2,
+        "expert_id": 1777,
+        "score": 0.4515471041202545,
+        "score_std": 0.02436319265713586
+      },
+      {
+        "rank": 3,
+        "expert_id": 693,
+        "score": 0.41343540549278257,
+        "score_std": 0.04250406319738894
+      },
+      {
+        "rank": 4,
+        "expert_id": 1440,
+        "score": 0.36455124616622925,
+        "score_std": 0.02788139161418082
+      },
+      {
+        "rank": 5,
+        "expert_id": 68,
+        "score": 0.31609630584716797,
+        "score_std": 0.021381421697428758
+      },
+      {
+        "rank": 6,
+        "expert_id": 923,
+        "score": 0.31288967132568357,
+        "score_std": 0.031484669246431125
+      },
+      {
+        "rank": 7,
+        "expert_id": 307,
+        "score": 0.3114725947380066,
+        "score_std": 0.03346763657367345
+      },
+      {
+        "rank": 8,
+        "expert_id": 214,
+        "score": 0.24922994375228882,
+        "score_std": 0.014221904841798397
+      },
+      {
+        "rank": 9,
+        "expert_id": 1979,
+        "score": 0.24484868049621583,
+        "score_std": 0.037141176342966355
+      },
+      {
+        "rank": 10,
+        "expert_id": 647,
+        "score": 0.19323385655879974,
+        "score_std": 0.03463731086347631
+      }
+    ],
+    "warm_nat_cool": [
+      {
+        "rank": 1,
+        "expert_id": 693,
+        "score": 0.8881112448107658,
+        "score_std": 0.017013732390367527
+      },
+      {
+        "rank": 2,
+        "expert_id": 1463,
+        "score": 0.881136813861746,
+        "score_std": 0.020210167986628374
+      },
+      {
+        "rank": 3,
+        "expert_id": 307,
+        "score": 0.7736859723094389,
+        "score_std": 0.03455944712127862
+      },
+      {
+        "rank": 4,
+        "expert_id": 1777,
+        "score": 0.7520570494114283,
+        "score_std": 0.02565155620017637
+      },
+      {
+        "rank": 5,
+        "expert_id": 1440,
+        "score": 0.7333289390451754,
+        "score_std": 0.02215310506110035
+      },
+      {
+        "rank": 6,
+        "expert_id": 923,
+        "score": 0.7256846740722548,
+        "score_std": 0.025324965897281112
+      },
+      {
+        "rank": 7,
+        "expert_id": 647,
+        "score": 0.6637787715615954,
+        "score_std": 0.028501494823049173
+      },
+      {
+        "rank": 8,
+        "expert_id": 68,
+        "score": 0.657252260252309,
+        "score_std": 0.02476470539998382
+      },
+      {
+        "rank": 9,
+        "expert_id": 404,
+        "score": 0.6549589553336385,
+        "score_std": 0.01320007230395547
+      },
+      {
+        "rank": 10,
+        "expert_id": 214,
+        "score": 0.5893151478214778,
+        "score_std": 0.021869634143720017
+      }
+    ]
+  }
+}

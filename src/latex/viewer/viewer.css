@@ -1,0 +1,97 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+       background: #f5f5f5; color: #333; height: 100vh; display: flex;
+       flex-direction: column; }
+header { background: #1a1a2e; color: #eee; padding: 0 24px; height: 48px;
+         display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+header h1 { font-size: 16px; font-weight: 600; flex: 1; }
+#queue-badge { font-size: 12px; }
+#queue-badge a { color: #88aaff; text-decoration: none; }
+#queue-badge a:hover { text-decoration: underline; }
+
+#layout { display: flex; flex: 1; overflow: hidden; }
+nav { width: 180px; background: #fff; border-right: 1px solid #e0e0e0;
+      overflow-y: auto; flex-shrink: 0; padding: 8px 0; }
+.view-group { font-size: 10px; font-weight: 700; color: #999;
+              letter-spacing: .06em; text-transform: uppercase;
+              padding: 8px 12px 2px; }
+.view-btn { display: block; padding: 4px 12px; font-size: 11px; color: #333;
+            text-decoration: none; border-left: 3px solid transparent;
+            cursor: pointer; background: none; border-top: none;
+            border-bottom: none; border-right: none; text-align: left;
+            width: 100%; white-space: nowrap; overflow: hidden;
+            text-overflow: ellipsis; }
+.view-btn:hover { background: #f0f0f0; border-left-color: #1a1a2e; }
+.view-btn.active { background: #eef2ff; border-left-color: #4c6ef5;
+                   color: #4c6ef5; font-weight: 600; }
+
+main { flex: 1; overflow-y: auto; padding: 12px 20px; }
+#tab-strip { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 8px; }
+.tab-btn { padding: 3px 8px; cursor: pointer; border: 1px solid #bbb;
+           border-radius: 3px; background: #f4f4f4; font-size: 11px;
+           white-space: nowrap; }
+.tab-btn.active { background: #333; color: #fff; border-color: #333; }
+#expert-header { font-size: 13px; color: #222; margin-bottom: 6px; padding: 4px 0; }
+#save-bar { margin: 2px 0 6px; display: none; gap: 6px; }
+.save-btn { padding: 3px 10px; cursor: pointer; border: 1px solid #888;
+            border-radius: 3px; background: #f8f8f8; font-size: 12px; }
+.plot-box { width: 100%; height: 600px; }
+
+.toast { position: fixed; bottom: 20px; right: 20px; background: #323232;
+         color: #fff; padding: 9px 16px; border-radius: 4px; font-size: 13px;
+         opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 360px; }
+.toast.show { opacity: 1; }
+
+#scatter-wrapper { position: relative; isolation: isolate; }
+#plot-lock-mask {
+  display: none;
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 5;
+  cursor: default;
+}
+#annotation-overlay {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  transform: translateZ(0);
+}
+.annotation-label {
+  position: absolute;
+  pointer-events: all;
+  background: #fff;
+  border: 2px solid #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,.45);
+  min-width: 70px;
+  user-select: none;
+  will-change: transform;
+}
+.annotation-handle {
+  background: #333;
+  height: 16px;
+  cursor: grab;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 3px;
+}
+.annotation-handle:active { cursor: grabbing; }
+.annotation-delete {
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.annotation-delete:hover { color: #f88; }
+.annotation-text {
+  padding: 5px 9px;
+  min-width: 60px;
+  min-height: 18px;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: text;
+  user-select: text;
+  outline: none;
+}

@@ -10,428 +10,17 @@ from typing import Any, Iterable
 
 import numpy as np
 import pandas as pd
-import plotly.io as pio
-import plotly.offline as pyo
 import torch
 import torch.nn.functional as F
 from datasets import load_dataset
 from loguru import logger
-from plotly.graph_objects import Figure
 from sae_lens import SAE
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
-from analysis._html_save import SAVE_CLIENT_JS
-from analysis.scatter3d import plot_3d_scatter
 from smixae import SMIXAE
-
-# ── Tabbed HTML builder ───────────────────────────────────────────────────────
-
-_HTML_TEMPLATE = """\
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{title}</title>
-  <script>__PLOTLYJS__</script>
-  __SAVEJS__
-  <style>
-    body {{ font-family: sans-serif; margin: 8px; }}
-    .tab-strip {{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }}
-    .tab-btn {{ padding:4px 10px; cursor:pointer; border:1px solid #aaa;
-                border-radius:3px; background:#f0f0f0; font-size:13px; }}
-    .tab-btn.active {{ background:#333; color:#fff; }}
-    .tab-pane {{ display:none; flex-direction:column; gap:8px; }}
-    .tab-pane.active {{ display:flex; }}
-    .plot-box {{ width:100%; height:650px; }}
-    .save-bar {{ margin:2px 0 4px; display:flex; gap:6px; }}
-    .save-btn {{ padding:3px 10px; cursor:pointer; border:1px solid #888;
-                 border-radius:3px; background:#f8f8f8; font-size:12px; }}
-  </style>
-</head>
-<body>
-  <h2>{title}</h2>
-  <div class="tab-strip">{tab_buttons}</div>
-  {tab_panes}
-  <script>
-    const FIGURES = {{{figures_json}}};
-    const META = {meta_json};
-    const EXPERIMENT_ID = {experiment_id_js};
-    const DATASET_TITLE = {dataset_title_js};
-    const rendered = new Set();
-    function savePNG(divId, key, suffix) {{
-      const m = META[key];
-      const filename = m && m.hyp_name
-        ? [EXPERIMENT_ID, DATASET_TITLE,
-           'E' + m.expert_id, m.hyp_name,
-           m.score_type, m.hyp_score != null ? m.hyp_score.toFixed(4) : 'NA', suffix].join('__')
-        : [EXPERIMENT_ID, DATASET_TITLE,
-           'E' + (m ? m.expert_id : key), suffix].join('__');
-      _queueFigure(divId, filename);
-    }}
-    function renderTab(idx) {{
-      document.querySelectorAll('.tab-pane').forEach((pane, i) => {{
-        if (i !== idx) return;
-        pane.querySelectorAll('.plot-box').forEach(box => {{
-          if (!rendered.has(box.id)) {{
-            Plotly.newPlot(box.id, FIGURES[box.id].data, FIGURES[box.id].layout, {{responsive: true}});
-            rendered.add(box.id);
-          }} else {{
-            Plotly.Plots.resize(box);
-          }}
-        }});
-      }});
-    }}
-    function switchTab(idx) {{
-      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-      document.querySelectorAll('.tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
-      renderTab(idx);
-    }}
-    renderTab(0);
-  </script>
-</body>
-</html>"""
-
-
-def build_dataset_html(
-    expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]]],
-    dataset_title: str,
-    per_hypothesis_entries: "dict[str, tuple[str, list[tuple[str, Figure, Figure | None, dict[str, float]]]]] | None" = None,
-    experiment_id: str = "",
-) -> str:
-    """Build a self-contained HTML page containing Plotly figures for experts.
-
-    Two rendering modes:
-
-    **Per-hypothesis mode** (when ``per_hypothesis_entries`` is provided):
-        Renders one row-section per regression hypothesis, each containing a
-        horizontal tab strip of the top-10 experts for that hypothesis.  The
-        page scrolls vertically through the hypothesis rows.
-
-    **Flat mode** (fallback):
-        Renders all experts as a single horizontal tab strip (original behaviour).
-
-    Figures are embedded as JSON and rendered lazily (only when the tab is first
-    selected).  The Plotly.js bundle is inlined so the file is fully standalone.
-
-    Args:
-        expert_entries: Flat list of ``(tab_label, scatter_fig, mean_fig[, reg_scores])``
-            tuples used in flat mode.  Pass an empty list when using
-            ``per_hypothesis_entries``.
-        dataset_title: String shown as the page ``<h2>`` heading and ``<title>``.
-        per_hypothesis_entries: Optional dict mapping hypothesis name →
-            ``(description, [(tab_label, scatter_fig, mean_fig, reg_scores), ...])``.
-            When provided, the per-hypothesis row layout is used instead of
-            the flat tab strip.
-        experiment_id: Identifier embedded into the page for figure-capture
-            filenames; safe to leave empty.
-
-    Returns:
-        A complete UTF-8 HTML document as a string.
-    """
-    if per_hypothesis_entries:
-        return _build_per_hypothesis_html(per_hypothesis_entries, dataset_title, experiment_id)
-    return _build_flat_html(expert_entries, dataset_title, experiment_id)
-
-
-def _reg_scores_table(reg_scores: dict[str, float]) -> str:
-    """Return an HTML ``<details>`` block listing hypothesis scores, or empty string."""
-    if not reg_scores:
-        return ""
-    sorted_scores = sorted(reg_scores.items(), key=lambda kv: -(kv[1] if kv[1] == kv[1] else float("-inf")))
-    rows_html = "".join(
-        f"<tr><td style='padding:2px 8px;border:1px solid #ccc'>{n}</td>"
-        f"<td style='padding:2px 8px;border:1px solid #ccc'>{'%.4f' % v if v == v else 'nan'}</td></tr>"
-        for n, v in sorted_scores
-    )
-    return (
-        "<details style='margin-top:6px;font-size:12px'>"
-        "<summary style='cursor:pointer'>Regression scores</summary>"
-        "<table style='border-collapse:collapse;margin-top:4px'>"
-        "<thead><tr>"
-        "<th style='padding:2px 8px;border:1px solid #ccc'>Hypothesis</th>"
-        "<th style='padding:2px 8px;border:1px solid #ccc'>Score</th>"
-        "</tr></thead>"
-        f"<tbody>{rows_html}</tbody></table></details>"
-    )
-
-
-def _build_flat_html(
-    expert_entries: list[tuple[str, Figure, Figure | None] | tuple[str, Figure, Figure | None, dict[str, float]] | tuple[str, Figure, Figure | None, dict[str, float], dict]],
-    dataset_title: str,
-    experiment_id: str = "",
-) -> str:
-    import json as _json
-    tab_buttons: list[str] = []
-    tab_panes: list[str] = []
-    figures_json_parts: list[str] = []
-    meta_entries: dict[str, dict] = {}
-
-    for idx, entry in enumerate(expert_entries):
-        tab_label, scatter_fig, mean_fig = entry[0], entry[1], entry[2]
-        reg_scores: dict[str, float] = entry[3] if len(entry) > 3 else {}  # type: ignore[misc]
-        expert_meta: dict = entry[4] if len(entry) > 4 else {}  # type: ignore[misc]
-
-        scatter_id = f"scatter_{idx}"
-        mean_id = f"mean_{idx}"
-        key = str(idx)
-        has_mean = mean_fig is not None
-
-        meta_entries[key] = {
-            "expert_id":   expert_meta.get("expert_id", "?"),
-            "hyp_name":    expert_meta.get("hyp_name", ""),
-            "hyp_score":   expert_meta.get("hyp_score"),
-            "score_type":  expert_meta.get("score_type", "score"),
-            "has_mean":    has_mean,
-            "reg_scores":  {k: v for k, v in reg_scores.items() if v == v} if reg_scores else {},
-        }
-
-        active_cls = " active" if idx == 0 else ""
-
-        tab_buttons.append(f'<button class="tab-btn{active_cls}" onclick="switchTab({idx})">{tab_label}</button>')
-
-        save_means_html = ""
-        if has_mean:
-            save_means_html = (
-                f'<button class="save-btn" '
-                f"onclick=\"savePNG('{mean_id}','{key}','means')\">Save means</button>"
-            )
-            figures_json_parts.append(f'"{mean_id}": {pio.to_json(mean_fig, engine="json")}')
-
-        save_bar = (
-            f'<div class="save-bar">'
-            f'<button class="save-btn" '
-            f"onclick=\"savePNG('{scatter_id}','{key}','scatter')\">Save scatter</button>"
-            f"{save_means_html}"
-            f"</div>"
-        )
-        plot_divs = f'{_reg_scores_table(reg_scores)}\n    {save_bar}\n    <div class="plot-box" id="{scatter_id}"></div>'
-        if has_mean:
-            plot_divs += f'\n    <div class="plot-box" id="{mean_id}"></div>'
-
-        tab_panes.append(f'<div class="tab-pane{active_cls}">\n    {plot_divs}\n  </div>')
-        figures_json_parts.append(f'"{scatter_id}": {pio.to_json(scatter_fig, engine="json")}')
-
-    html = _HTML_TEMPLATE.format(
-        title=dataset_title,
-        tab_buttons="\n    ".join(tab_buttons),
-        tab_panes="\n  ".join(tab_panes),
-        figures_json=",\n    ".join(figures_json_parts),
-        meta_json=_json.dumps(meta_entries),
-        experiment_id_js=_json.dumps(experiment_id or ""),
-        dataset_title_js=_json.dumps(dataset_title.lower().replace(" ", "_")),
-    )
-    return (
-        html
-        .replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
-        .replace("__SAVEJS__", SAVE_CLIENT_JS, 1)
-    )
-
-
-def _build_per_hypothesis_html(
-    per_hypothesis_entries: "dict[str, tuple[str, list]]",
-    dataset_title: str,
-    experiment_id: str = "",
-) -> str:
-    """All hypothesis tab-rows at top; single shared plot area below.
-
-    Entry format per expert: ``(button_label, scatter_fig, mean_fig, reg_scores[, expert_meta])``.
-    ``expert_meta`` is an optional 5th element dict with keys ``expert_id``,
-    ``hyp_name``, ``hyp_score``, ``fisher_score``, ``n_points``.
-    """
-    import json as _json
-
-    figures_json_parts: list[str] = []
-    meta_entries: dict[str, dict] = {}
-    hyp_rows_html: list[str] = []
-    first_hyp: str | None = None
-
-    for hyp_name, (hyp_desc, entries) in per_hypothesis_entries.items():
-        if first_hyp is None:
-            first_hyp = hyp_name
-
-        btn_parts: list[str] = []
-        for rank, entry in enumerate(entries):
-            button_label: str = entry[0]
-            scatter_fig: Figure = entry[1]
-            mean_fig: "Figure | None" = entry[2]
-            reg_scores: dict = entry[3] if len(entry) > 3 else {}  # type: ignore[misc]
-            expert_meta: dict = entry[4] if len(entry) > 4 else {}  # type: ignore[misc]
-
-            key = f"{hyp_name}_{rank}"
-            figures_json_parts.append(f'"scatter_{key}": {pio.to_json(scatter_fig, engine="json")}')
-            has_mean = mean_fig is not None
-            if has_mean:
-                figures_json_parts.append(f'"mean_{key}": {pio.to_json(mean_fig, engine="json")}')
-
-            # Strip NaN from reg_scores so json.dumps doesn't choke
-            clean_scores = {k: v for k, v in reg_scores.items() if v == v}
-
-            meta_entries[key] = {
-                "expert_id":   expert_meta.get("expert_id", "?"),
-                "hyp_name":    expert_meta.get("hyp_name", hyp_name),
-                "hyp_score":   expert_meta.get("hyp_score"),
-                "fisher_score": expert_meta.get("fisher_score"),
-                "n_points":    expert_meta.get("n_points"),
-                "score_type":  expert_meta.get("score_type", "score"),
-                "has_mean":    has_mean,
-                "reg_scores":  clean_scores,
-            }
-
-            is_first = (rank == 0 and hyp_name == first_hyp)
-            active_cls = " active" if is_first else ""
-            btn_parts.append(
-                f'<button class="tab-btn{active_cls}" '
-                f'data-hyp="{hyp_name}" data-rank="{rank}" '
-                f'onclick="showExpert(\'{hyp_name}\',{rank})">{button_label}</button>'
-            )
-
-        hyp_rows_html.append(
-            f'<div class="hyp-row">'
-            f'<span class="hyp-label"><b>{hyp_name}</b> — {hyp_desc}</span>'
-            f'<div class="tab-strip">{"".join(btn_parts)}</div>'
-            f'</div>'
-        )
-
-    figures_json = ",\n    ".join(figures_json_parts)
-    meta_json = _json.dumps(meta_entries)
-    rows_html = "\n  ".join(hyp_rows_html)
-    experiment_id_js = _json.dumps(experiment_id or "")
-    dataset_title_js = _json.dumps(dataset_title.lower().replace(" ", "_"))
-
-    html = f"""\
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{dataset_title}</title>
-  <script>__PLOTLYJS__</script>
-  __SAVEJS__
-  <style>
-    body {{ font-family: sans-serif; margin: 8px; }}
-    #hyp-rows {{ margin-bottom: 0; }}
-    .hyp-row {{ display:flex; align-items:flex-start; gap:10px;
-                padding:5px 0; border-bottom:1px solid #e0e0e0; }}
-    .hyp-label {{ min-width:200px; max-width:200px; font-size:13px;
-                  color:#444; padding-top:3px; line-height:1.4; }}
-    .tab-strip {{ display:flex; flex-wrap:wrap; gap:3px; flex:1; }}
-    .tab-btn {{ padding:3px 8px; cursor:pointer; border:1px solid #bbb;
-                border-radius:3px; background:#f4f4f4; font-size:12px;
-                white-space:nowrap; }}
-    .tab-btn.active {{ background:#333; color:#fff; border-color:#333; }}
-    #plot-area {{ margin-top:16px; padding-top:10px; border-top:2px solid #888; }}
-    #expert-header {{ font-size:14px; color:#222; margin-bottom:6px;
-                      padding:4px 0; }}
-    .plot-box {{ width:100%; height:650px; }}
-    #save-bar {{ margin:2px 0 6px; display:none; gap:6px; }}
-    .save-btn {{ padding:3px 10px; cursor:pointer; border:1px solid #888;
-                 border-radius:3px; background:#f8f8f8; font-size:12px; }}
-  </style>
-</head>
-<body>
-  <h2>{dataset_title}</h2>
-  <div id="hyp-rows">
-  {rows_html}
-  </div>
-  <div id="plot-area">
-    <div id="expert-header"></div>
-    <div id="save-bar" style="display:none">
-      <button class="save-btn" onclick="saveFigurePNG('active-scatter','scatter')">Save scatter</button>
-      <button class="save-btn" id="save-means-btn" style="display:none"
-              onclick="saveFigurePNG('active-mean','means')">Save means</button>
-    </div>
-    <div id="reg-scores-container"></div>
-    <div class="plot-box" id="active-scatter"></div>
-    <div class="plot-box" id="active-mean" style="display:none"></div>
-  </div>
-  <script>
-    const FIGURES = {{{figures_json}}};
-    const META = {meta_json};
-    const EXPERIMENT_ID = {experiment_id_js};
-    const DATASET_TITLE = {dataset_title_js};
-    let currentKey = null;
-
-    function saveFigurePNG(divId, suffix) {{
-      const m = META[currentKey];
-      if (!m) return;
-      const scoreLabel = m.score_type || 'score';
-      const score = m.hyp_score != null ? m.hyp_score.toFixed(4) : 'NA';
-      const filename = [EXPERIMENT_ID, DATASET_TITLE,
-                        'E' + m.expert_id, m.hyp_name,
-                        scoreLabel, score, suffix].join('__');
-      _queueFigure(divId, filename);
-    }}
-
-    function buildRegTable(scores) {{
-      if (!scores || !Object.keys(scores).length) return '';
-      const rows = Object.entries(scores)
-        .sort((a, b) => b[1] - a[1])
-        .map(([k, v]) =>
-          '<tr>' +
-          '<td style="padding:2px 8px;border:1px solid #ccc">' + k + '</td>' +
-          '<td style="padding:2px 8px;border:1px solid #ccc">' +
-            (isNaN(v) ? 'nan' : v.toFixed(4)) + '</td></tr>'
-        ).join('');
-      return '<details style="margin-bottom:8px;font-size:12px">' +
-             '<summary style="cursor:pointer">All regression scores</summary>' +
-             '<table style="border-collapse:collapse;margin-top:4px">' +
-             '<thead><tr>' +
-             '<th style="padding:2px 8px;border:1px solid #ccc">Hypothesis</th>' +
-             '<th style="padding:2px 8px;border:1px solid #ccc">Score</th>' +
-             '</tr></thead><tbody>' + rows + '</tbody></table></details>';
-    }}
-
-    function showExpert(hyp, rank) {{
-      currentKey = hyp + '_' + rank;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      const btn = document.querySelector('[data-hyp="' + hyp + '"][data-rank="' + rank + '"]');
-      if (btn) btn.classList.add('active');
-
-      const key = currentKey;
-      const m = META[key];
-      if (!m) return;
-
-      const parts = ['<b>Expert ' + m.expert_id + '</b>'];
-      if (m.hyp_score != null) parts.push(m.hyp_name + ' = ' + m.hyp_score.toFixed(3));
-      if (m.fisher_score != null) parts.push('Fisher = ' + m.fisher_score.toFixed(2));
-      if (m.n_points != null) parts.push(m.n_points + ' points');
-      document.getElementById('expert-header').innerHTML = parts.join(' &nbsp;|&nbsp; ');
-      document.getElementById('reg-scores-container').innerHTML = buildRegTable(m.reg_scores);
-
-      document.getElementById('save-bar').style.display = 'flex';
-      document.getElementById('save-means-btn').style.display =
-        (m.has_mean) ? 'inline-block' : 'none';
-
-      Plotly.newPlot('active-scatter',
-        FIGURES['scatter_' + key].data,
-        FIGURES['scatter_' + key].layout,
-        {{responsive: true}});
-
-      const meanBox = document.getElementById('active-mean');
-      if (m.has_mean && FIGURES['mean_' + key]) {{
-        meanBox.style.display = 'block';
-        Plotly.newPlot('active-mean',
-          FIGURES['mean_' + key].data,
-          FIGURES['mean_' + key].layout,
-          {{responsive: true}});
-      }} else {{
-        meanBox.style.display = 'none';
-      }}
-    }}
-
-    showExpert('{first_hyp}', 0);
-  </script>
-</body>
-</html>"""
-
-    return (
-        html
-        .replace("__PLOTLYJS__", pyo.get_plotlyjs(), 1)
-        .replace("__SAVEJS__", SAVE_CLIENT_JS, 1)
-    )
-
 
 # ── GPU memory ────────────────────────────────────────────────────────────────
 
@@ -608,7 +197,7 @@ class DatasetConfig:
 
     Single source of truth for data-source options, pipeline per-dataset overrides,
     and visualization settings.  Used by :func:`collect_activations`,
-    :func:`run_pipeline`, and :meth:`Expert.get_plot` / :meth:`Expert.get_mean_plot`.
+    :func:`run_pipeline`, and :func:`run_pipeline`.
 
     Attributes:
         dataframe_path:     Path to a local CSV/Parquet/JSONL file.
@@ -757,7 +346,7 @@ class Expert:
     threshold), together with optional ground-truth labels, sequence positions, and
     LLM activations for continuity scoring.  Provides methods to score the expert
     (:meth:`evaluate_fisher`, :meth:`evaluate_manifold`) and to generate interactive
-    Plotly figures (:meth:`get_plot`, :meth:`get_mean_plot`).
+    probing-task records (:meth:`to_probing_record`).
 
     Attributes:
         expert_activations: Active bottleneck activations, shape ``(n_active, d_bottleneck)``.
@@ -1111,154 +700,77 @@ class Expert:
             contexts.append("".join(window).replace("\n", "<br>"))
         return contexts
 
-    # ── plotting ──────────────────────────────────────────────────────
-    def _make_title(self) -> str:
-        """Build a plot title string summarising this expert's key metrics."""
-        parts = [f"Expert {self.expert_id}  (n={self.expert_activations.shape[0]}"]
-        if self.mean_latent_l0 is not None:
-            parts.append(f"L0={self.mean_latent_l0:.1f}")
-        if self.n_unique_labels is not None:
-            parts.append(f"labels={self.n_unique_labels}")
-        if self.fisher_score is not None:
-            parts.append(f"fisher={self.fisher_score:.3f}")
-        if self.adjusted_fisher_score is not None:
-            parts.append(f"adj_fisher={self.adjusted_fisher_score:.3f}")
-        if self.mean_continuity is not None:
-            parts.append(f"cont={self.mean_continuity:.3f}")
-        if self.best_regression_name is not None and self.best_regression_score is not None:
-            parts.append(f"best_reg={self.best_regression_name}({self.best_regression_score:.3f})")
-        return ", ".join(parts) + ")"
-
-    def get_plot(
+    # ── probing I/O record ────────────────────────────────────────────
+    def to_probing_record(
         self,
-        str_tokens: list[list[str]],
-        cfg: DatasetConfig = DatasetConfig(),
-        label_names: "dict[int, str] | None" = None,
-        *,
-        hypothesis_name: str | None = None,
-        k_neighbors: int = 10,
+        str_tokens: list[list[str]] | None = None,
         context_window: int = 10,
-        device: str = "cuda",
-        scatter_size: float = 1,
-        unlabeled_color: str = "continuity",
-    ) -> Figure:
-        """Generate an interactive 3D scatter of this expert's bottleneck activations.
+    ) -> "Any":
+        """Convert this scored expert to a :class:`probing_io.ExpertRecord`.
 
-        Lazily evaluates manifold continuity if it hasn't been computed yet.
-        For labelled data, colours points by class (using ``cfg.color_map`` when
-        provided, else ``cfg.color_scale``). ``cfg.continuous_color`` selects
-        between a discrete swatch legend and a Plotly colorbar widget.
-        For unlabelled data, colours points by continuity score or Euclidean distance
-        from the origin, controlled by ``unlabeled_color``.
+        Pulls metrics from the expert's computed scores and builds hover text from
+        ``str_tokens``.  When ``str_tokens`` is ``None``, hover text is empty
+        (used by the newline pipeline which has no per-token text).
+
+        Color decisions live in the task-level
+        :class:`~analysis.probing_io.ColorSpec`, not per-expert.
 
         Args:
-            str_tokens: Nested list of string tokens for building hover context windows.
-            cfg: Dataset visualization settings (colorscale, color map, labels flag).
-            label_names: Map from integer label id to display string.
-            hypothesis_name: Optional hypothesis key used to look up a
-                per-hypothesis override in ``cfg.hypothesis_color_overrides``.
-            k_neighbors: Neighbourhood size for lazy continuity evaluation.
+            str_tokens: Per-sequence token strings for hover-text windows.
             context_window: Tokens on each side of the target in hover text.
-            device: Device for continuity computation.
-            scatter_size: Marker size for scatter points (default 1 for labeled, 5 for unlabeled).
-            unlabeled_color: ``"continuity"`` (default) or ``"distance"`` (Euclidean from origin).
 
         Returns:
-            A Plotly :class:`Figure` with a single 3D scatter trace.
+            A :class:`~analysis.probing_io.ExpertRecord` ready for
+            :func:`~analysis.probing_io.write_probing_task`.
         """
-        # Lazy-evaluate continuity
-        if self.local_continuity_scores is None:
-            self.evaluate_manifold(k_neighbors=k_neighbors, device=device)
+        from analysis.probing_io import ExpertRecord
 
-        contexts = self.get_context_windows(str_tokens, context_window=context_window)
-        pts = self.expert_activations.numpy()
-
-        if self.labels is not None and label_names is not None:
-            int_labels = self.labels.numpy()
-            lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
-            effective_color_map = (
-                cfg.hypothesis_color_overrides.get(hypothesis_name)
-                if hypothesis_name and cfg.hypothesis_color_overrides
-                else cfg.color_map
-            )
-            cscale = _resolve_colorscale(effective_color_map, label_names, int_labels)
-            fig = plot_3d_scatter(
-                pts, int_labels,
-                label_names=lnames,
-                colorscale=cscale if cscale is not None else cfg.color_scale,
-                continuous_color=cfg.continuous_color,
-                connect_means=False,
-                show_labels=cfg.show_labels,
-                title=self._make_title(),
-            )
-            # Inject per-token context windows into the scatter trace hover
-            fig.data[0].update(hovertext=contexts, hoverinfo="text")
-        else:
-            # Unlabeled: color by continuity score or Euclidean distance from origin
-            if unlabeled_color == "distance":
-                color_arr = np.linalg.norm(pts, axis=1).astype(np.float32)
-                colorbar_label = "Distance from origin"
-            else:
-                color_arr = (
-                    self.local_continuity_scores.numpy()
-                    if self.local_continuity_scores is not None
-                    else np.zeros(pts.shape[0], dtype=np.float32)
-                )
-                colorbar_label = "Continuity"
-            fig = plot_3d_scatter(
-                pts, color_arr,
-                colorscale="Viridis",
-                colorbar_title=colorbar_label,
-                scatter_alpha=1.0,
-                scatter_size=scatter_size,
-                title=self._make_title(),
-            )
-            fig.data[0].update(hovertext=contexts, hoverinfo="text")
-
-        return fig
-
-    def get_mean_plot(
-        self,
-        cfg: DatasetConfig = DatasetConfig(),
-        label_names: "dict[int, str] | None" = None,
-        hypothesis_name: str | None = None,
-    ) -> "Figure | None":
-        """Generate a 3D scatter showing only per-class mean bottleneck activations.
-
-        Uses the same colour/scale options as :meth:`get_plot` via ``cfg``, but
-        ``scatter_alpha=0.0`` so individual token points are hidden.  Returns ``None``
-        when labels or label names are unavailable.
-
-        Args:
-            cfg: Dataset visualization settings.
-            label_names: Map from integer label id to display string.
-            hypothesis_name: Optional hypothesis key used to look up a
-                per-hypothesis override in ``cfg.hypothesis_color_overrides``.
-
-        Returns:
-            A Plotly :class:`Figure` or ``None`` if unlabelled.
-        """
-        if self.labels is None or label_names is None:
-            return None
-
-        pts = self.expert_activations.numpy()
-        int_labels = self.labels.numpy()
-        lnames = {k: _strip_prefix(v) for k, v in label_names.items()}
-        effective_color_map = (
-            cfg.hypothesis_color_overrides.get(hypothesis_name)
-            if hypothesis_name and cfg.hypothesis_color_overrides
-            else cfg.color_map
+        points = self.expert_activations.detach().cpu().float().contiguous()
+        labels = (
+            self.labels.detach().cpu().long().contiguous()
+            if self.labels is not None else None
         )
-        cscale = _resolve_colorscale(effective_color_map, label_names, int_labels)
-        return plot_3d_scatter(
-            pts, int_labels,
-            label_names=lnames,
-            colorscale=cscale if cscale is not None else cfg.color_scale,
-            continuous_color=cfg.continuous_color,
-            scatter_alpha=0.0,
-            connect_means=False,
-            show_labels=cfg.show_labels,
-            title=self._make_title() + " [class means]",
+        continuity = (
+            self.local_continuity_scores.detach().cpu().float().contiguous()
+            if self.local_continuity_scores is not None else None
+        )
+
+        metrics: "dict[str, Any]" = {"n_points": int(points.shape[0])}
+        if self.mean_latent_l0 is not None:
+            metrics["mean_latent_l0"] = float(self.mean_latent_l0)
+        if self.n_unique_labels is not None:
+            metrics["n_unique_labels"] = int(self.n_unique_labels)
+        if self.fisher_score is not None:
+            metrics["fisher_score"] = float(self.fisher_score)
+        if self.adjusted_fisher_score is not None:
+            metrics["adjusted_fisher_score"] = float(self.adjusted_fisher_score)
+        if self.mean_continuity is not None:
+            metrics["mean_continuity"] = float(self.mean_continuity)
+        if self.regression_scores:
+            reg: "dict[str, Any]" = {}
+            for name, score in self.regression_scores.items():
+                entry: "dict[str, Any]" = {"mean": float(score)}
+                if self.regression_scores_std and name in self.regression_scores_std:
+                    entry["std"] = float(self.regression_scores_std[name])
+                reg[name] = entry
+            metrics["regression_scores"] = reg
+        if self.best_regression_name is not None:
+            metrics["best_regression_name"] = self.best_regression_name
+            metrics["best_regression_score"] = float(self.best_regression_score)
+
+        hover = (
+            self.get_context_windows(str_tokens, context_window=context_window)
+            if str_tokens is not None
+            else []
+        )
+
+        return ExpertRecord(
+            expert_id=int(self.expert_id),
+            metrics=metrics,
+            hover_text=hover,
+            points=points,
+            labels=labels,
+            continuity=continuity,
         )
 
 

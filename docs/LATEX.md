@@ -7,12 +7,14 @@ The `src/latex/` package provides a browser→server→LaTeX pipeline for assemb
 ## Overview
 
 ```
-experts.html (browser)
-    │  JS polls localhost:7788/ping
-    │  POSTs 2200×1700px Plotly PNG on user click
+smixae probe  (src/analysis/categorize_all.py)
+    │  Writes index.json + experts/ task data directories
     ▼
 smixae latex save-server  (src/latex/save_server.py)
-    │  Gallery at http://127.0.0.1:7788/
+    │  Browse tasks at http://127.0.0.1:7788/
+    │  Click task → /viewer/index.html?task=<rel>
+    │  JS in viewer polls localhost:7788/ping
+    │  POSTs 2200×1700px Plotly PNG on user click
     │  Review, remove, batch-save to disk (PIL auto-crops white borders)
     ▼
 smixae latex figures      (src/latex/camera_ready.py)
@@ -52,7 +54,7 @@ full flag reference.
 
 A minimal HTTP server (`BaseHTTPRequestHandler`) that receives Plotly-rendered PNGs from the browser and queues them for review.
 
-### Endpoints
+### Endpoints (Legacy + New)
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
@@ -61,6 +63,36 @@ A minimal HTTP server (`BaseHTTPRequestHandler`) that receives Plotly-rendered P
 | `/queue` | POST | Accept a base64-encoded PNG with a filename; add to queue |
 | `/thumbnail/<id>` | GET | Serve a queued PNG as a thumbnail |
 | `/save-all` | POST | Write all queued PNGs to `--output-dir`, applying PIL white-border crop |
+| `/tasks` | GET | List all probing tasks under `--results-dir` |
+| `/task?p=<rel>` | GET | Return task's `index.json` |
+| `/expert?p=<rel>&id=<id>` | GET | Return per-expert JSON metadata |
+| `/expert-tensors?p=<rel>&id=<id>` | GET | Return tensors as raw binary (application/octet-stream) |
+| `/colorscale?name=<name>&n=<n>` | GET | Return sampled colors from Plotly scale |
+| `/view?p=<rel>` | GET | Redirect to interactive viewer |
+| `/viewer/<asset>` | GET | Serve static viewer assets (index.html, viewer.js, etc.) |
+
+### Interactive Viewer
+
+The save server serves an interactive **browser-based viewer** at `/viewer/`:
+
+```
+src/latex/viewer/
+├── index.html     # Viewer shell with task navigation
+├── viewer.css    # Viewer styles
+├── viewer.js     # Main controller (task loading, tab strip, rendering)
+├── scatter.js    # Plotly 3D scatter trace builder
+└── save_client.js # PNG queue logic (same as legacy)
+```
+
+**Workflow:**
+1. Browse tasks via `/tasks` or the gallery nav
+2. Click a task to open `/viewer/index.html?task=<rel>`
+3. The viewer loads `index.json` and builds a tab strip from `experts_by_view`
+4. Click an expert tab to fetch `/expert?p=...&id=...` + `/expert-tensors?p=...&id=...`
+5. Render the 3D scatter via Plotly client-side
+6. Click "Save scatter" to queue a PNG (same filename convention as legacy)
+
+The PNG queue and filename convention are **unchanged** — `camera_ready.py` works identically.
 
 ### HPC usage
 
@@ -74,14 +106,9 @@ Then open `http://127.0.0.1:7788/` in your local browser.
 
 ---
 
-## `src/analysis/_html_save.py` — Browser-Side JS
+## Viewer Assets
 
-The string constant `SAVE_CLIENT_JS` is injected into every `experts.html` produced by `categorize_all.py`. It:
-
-- Polls `localhost:7788/ping` every 3s to detect save-server availability
-- Shows a floating badge displaying the current queue count when the server is reachable
-- Exposes `_queueFigure(divId, filename)`: uses `Plotly.toImage` to snapshot the 3D scatter at 2200×1700px (2× scale), hides legend/title/margins for a clean export, then POSTs the PNG to `/queue`
-- Falls back to a browser download if the server is unreachable
+The browser-side JavaScript is now served as static assets from `src/latex/viewer/` (previously was embedded in `experts.html` via `_html_save.py`):
 
 ---
 
@@ -113,7 +140,7 @@ Legends are rendered by the shared backend in `src/analysis/colors.py` (PIL, not
 - Discrete legends: colored swatches + label text, one per class
 - Continuous legends: vertical colorbar gradient using a named Plotly colorscale
 
-The `continuous_color` field in `dataset_config.json` picks which one to render, and is also honoured by the interactive `experts.html` figures — a dataset with `continuous_color: false` and a named `color_scale` (e.g. `hours.csv` + `phase`) renders as a discrete swatch legend both on the paper and in the browser.
+The `continuous_color` field in `dataset_config.json` picks which one to render, and is also honoured by the interactive viewer figures — a dataset with `continuous_color: false` and a named `color_scale` (e.g. `hours.csv` + `phase`) renders as a discrete swatch legend both on the paper and in the browser.
 
 For named scales, `sample_named_scale_discrete` samples at `(i + 1) / (n + 1)` positions (instead of `0, …, 1`) so circular scales don't collide at the endpoints — the first and last class are guaranteed visually distinct. `plot_3d_scatter`'s colorbar widget inherits the same clipping via `build_clipped_colorscale`.
 
