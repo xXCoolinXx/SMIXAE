@@ -13,6 +13,7 @@ CLI usage:
 Required LaTeX packages: booktabs, multirow
 """
 
+import re
 from pathlib import Path
 
 import typer
@@ -319,7 +320,7 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
 
     for mk, run_data in results.items():
         model_display = esc(MODEL_NAMES.get(mk, mk))
-        col_spec = "llll rr"
+        col_spec = "llll rrr"
 
         rows: list[str] = []
         rows.append(r"% Required packages: booktabs, multirow")
@@ -448,7 +449,7 @@ def build_newline_appendix_tables(results: dict) -> str:
 
     for mk in nine_b_models:
         model_display = esc(MODEL_NAMES.get(mk, mk))
-        col_spec = "l rr"
+        col_spec = "l rrr"
 
         rows: list[str] = []
         rows.append(r"% Required packages: booktabs, multirow")
@@ -569,11 +570,11 @@ def build_core_eval_table(core_eval_results: dict) -> str:
     rows.append(r"\resizebox{\textwidth}{!}{%")
 
     n_metrics = len(CORE_EVAL_SUMMARY_METRICS)
-    col_spec = "ll " + "r " * n_metrics
+    col_spec = "lll " + "r " * n_metrics
     rows.append(r"\begin{tabular}{" + col_spec.strip() + "}")
     rows.append(r"\toprule")
 
-    header = ["Model / Layer", "SAE"] + [CORE_EVAL_METRIC_LABELS[m] for m in CORE_EVAL_SUMMARY_METRICS]
+    header = ["Model", "Layer", "SAE"] + [CORE_EVAL_METRIC_LABELS[m] for m in CORE_EVAL_SUMMARY_METRICS]
     rows.append(" & ".join(header) + r" \\")
     rows.append(r"\midrule")
 
@@ -591,7 +592,7 @@ def build_core_eval_table(core_eval_results: dict) -> str:
         model_cell_written = False
 
         for layer_key in layer_keys:
-            layer_display = esc(layer_key.replace("_", " ").replace("layer", "Layer"))
+            layer_display = str(int(layer_key.split("_")[-1]))
             sae_names = list(layers[layer_key].keys())
             n_saes = len(sae_names)
 
@@ -619,7 +620,8 @@ def build_core_eval_table(core_eval_results: dict) -> str:
                 else:
                     row.append("")
 
-                row.append(esc(sae_name))
+                sae_display = re.sub(r"\s*\(L0=[^)]*\)", "", sae_name).strip()
+                row.append(esc(sae_display))
 
                 metrics = layers[layer_key][sae_name]
                 for metric in CORE_EVAL_SUMMARY_METRICS:
