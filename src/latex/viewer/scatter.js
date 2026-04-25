@@ -13,18 +13,24 @@
  *
  * buildScatter opts
  * -----------------
- *   scatterSize  (default 1)      marker size for scatter points
- *   meansOnly    (default false)  skip per-class/continuous scatter;
- *                                 render only means + origin
- *   hoverText    (default null)   string[] of per-point hover text;
- *                                 attached to scatter traces only (not means)
+ *   scatterSize    (default 1)      marker size for scatter points
+ *   meansOnly      (default false)  skip scatter; render only means + origin
+ *   connectMeans   (default false)  draw gradient line between adjacent means
+ *   hoverText      (default null)   string[] of per-point hover text (scatter only)
+ *
+ * Colorscale handling
+ * -------------------
+ * Named colorscales are always resolved server-side (Python's plotly) and sent
+ * as [[t, 'rgb(...)'], ...] arrays so the browser viewer matches the paper output
+ * exactly, regardless of which scales Plotly.js recognises natively.
  */
 
 const Scatter = (() => {
 
-  // ── Colorscale sampling ────────────────────────────────────────────────
+  // ── Colorscale cache ──────────────────────────────────────────────────
   const _colorCache = {};
 
+  // Fetch N discrete 'rgb(...)' strings from the server.
   async function fetchColorscale(name, n, skipEndpoints = true) {
     const key = `${name}_${n}_${skipEndpoints}`;
     if (_colorCache[key]) return _colorCache[key];
@@ -36,9 +42,21 @@ const Scatter = (() => {
     return data.colors;
   }
 
+  // Fetch a smooth [[t, 'rgb(...)'], ...] Plotly colorscale array.
+  // skip_endpoints=false gives full 0→1 coverage for continuous colorbars.
+  async function fetchColorscaleArray(name, n = 64) {
+    const key = `_arr_${name}_${n}`;
+    if (_colorCache[key]) return _colorCache[key];
+    const r = await fetch(
+      `/colorscale?name=${encodeURIComponent(name)}&n=${n}&skip_endpoints=false`
+    );
+    const data = await r.json();
+    const arr = data.colors.map((c, i) => [i / (n - 1), c]);
+    _colorCache[key] = arr;
+    return arr;
+  }
+
   // ── Axis helper ────────────────────────────────────────────────────────
-  // Mirrors Python scatter3d._make_axis(): grey panes, grid, zeroline,
-  // no tick labels, no spikes.
   function _axis() {
     return {
       title: '',
@@ -58,7 +76,7 @@ const Scatter = (() => {
   // ── Colorbar spec ──────────────────────────────────────────────────────
   function _colorbar(title) {
     return {
-      title: { text: title || '', side: 'right' },
+      title: { text: title || '', side: 'right', font: { size: 14 } },
       thickness: 30,
       len: 0.9,
       x: 1.02,
@@ -68,13 +86,11 @@ const Scatter = (() => {
       ticklen: 6,
       tickwidth: 1,
       tickcolor: 'black',
+      tickfont: { size: 13 },
     };
   }
 
   // ── Class mean computation ─────────────────────────────────────────────
-  // points: flat Float32Array [x0,y0,z0, x1,y1,z1, ...]
-  // labels: Int32Array
-  // returns: { classId(string): [mx, my, mz], ... }
   function classMeans(points, labels) {
     const byClass = {};
     for (let i = 0; i < labels.length; i++) {
@@ -93,7 +109,7 @@ const Scatter = (() => {
     return means;
   }
 
-  // ── Origin cross marker ────────────────────────────────────────────────
+  // ── Origin cross ──────────────────────────────────────────────────────
   function _originTrace() {
     return {
       type: 'scatter3d', mode: 'markers',
@@ -119,16 +135,17 @@ const Scatter = (() => {
    * @param {object} colorSpec             {mode, scale, color_map,
    *                                        continuous_label, skip_endpoints}
    * @param {object|null} labelNames       {id: name} or null.
-   * @param {object} opts                  {title, scatterSize, meansOnly, hoverText}
+   * @param {object} opts                  {title, scatterSize, meansOnly,
+   *                                        connectMeans, hoverText}
    * @returns {Promise<{data: Array, layout: object}>}
    */
   async function buildScatter(points, labels, continuity, colorSpec, labelNames, opts = {}) {
-    const n           = points.length / 3;
-    const scatterSize = opts.scatterSize || 1;
-    const meansOnly   = opts.meansOnly   || false;
-    const hoverText   = (opts.hoverText && opts.hoverText.length === n) ? opts.hoverText : null;
+    const n            = points.length / 3;
+    const scatterSize  = opts.scatterSize  || 1;
+    const meansOnly    = opts.meansOnly    || false;
+    const connectMeans = opts.connectMeans || false;
+    const hoverText    = (opts.hoverText && opts.hoverText.length === n) ? opts.hoverText : null;
 
-    // Unpack flat buffer.
     const xs = new Float32Array(n);
     const ys = new Float32Array(n);
     const zs = new Float32Array(n);
@@ -139,20 +156,17 @@ const Scatter = (() => {
     }
 
     const traces = [];
-
-    // mode === 'discrete' AND named labels → discrete swatch legend.
-    // Otherwise → continuous colorscale + colorbar.
-    // hasLabels drives means rendering independently.
     const isDiscrete = colorSpec.mode === 'discrete' && labelNames !== null && labels !== null;
     const hasLabels  = labels !== null;
 
     if (isDiscrete) {
-      // ── Discrete ────────────────────────────────────────────────────
+      // ── Discrete: named classes, swatch legend ────────────────────────
+
       const uniqueClasses = [...new Set(Array.from(labels))].sort((a, b) => a - b);
       const nClasses = uniqueClasses.length;
       const skipEp   = colorSpec.skip_endpoints !== false;
 
-      // Build colorMap: explicit map wins, else fetch sampled colors.
+      // colorMap keys: either display name or string class id.
       let colorMap = {};
       if (colorSpec.color_map) {
         colorMap = colorSpec.color_map;
@@ -166,7 +180,7 @@ const Scatter = (() => {
         return colorMap[name] || colorMap[String(c)] || colorMap[c] || '#888';
       }
 
-      // Per-class scatter — skipped in meansOnly mode.
+      // Per-class scatter (skipped in meansOnly mode).
       if (!meansOnly) {
         uniqueClasses.forEach(c => {
           const cx = [], cy = [], cz = [], ch = [];
@@ -182,13 +196,13 @@ const Scatter = (() => {
             marker: { size: scatterSize, color: classColor(c), opacity: 0.5, line: { width: 0 } },
             name: labelNames[c] || String(c),
             showlegend: true,
-            hovertext:  hoverText ? ch   : undefined,
-            hoverinfo:  hoverText ? 'text' : 'skip',
+            hovertext:  hoverText ? ch      : undefined,
+            hoverinfo:  hoverText ? 'text'  : 'skip',
           });
         });
       }
 
-      // Class means — mode:'markers' only, no text on the graph.
+      // Class means — no outline, no text labels on the graph.
       const means = classMeans(points, labels);
       const mx = [], my = [], mz = [], mc = [], mhover = [];
       for (const c in means) {
@@ -199,7 +213,7 @@ const Scatter = (() => {
       traces.push({
         type: 'scatter3d', mode: 'markers',
         x: mx, y: my, z: mz,
-        marker: { size: 5, color: mc, opacity: 1.0, line: { width: 1, color: 'black' } },
+        marker: { size: 5, color: mc, opacity: 1.0 },
         hovertext: mhover,
         hoverinfo: 'text',
         showlegend: false,
@@ -207,27 +221,31 @@ const Scatter = (() => {
       });
 
     } else {
-      // ── Continuous ──────────────────────────────────────────────────
+      // ── Continuous: colorscale gradient, colorbar ─────────────────────
+
       let colorArr;
       let cbarTitle = colorSpec.continuous_label || '';
-
       if (hasLabels) {
+        // Newline / temperature: integer bucket ids drive the colorscale.
         colorArr = Array.from(labels);
-      } else if (continuity !== null) {
-        colorArr = Array.from(continuity);
       } else {
+        // Unlabeled (continuity, random): color by distance from origin.
+        // The continuity tensor is metrics-only and must not affect the color.
         colorArr = [];
         for (let i = 0; i < n; i++) {
           colorArr.push(Math.sqrt(xs[i]*xs[i] + ys[i]*ys[i] + zs[i]*zs[i]));
         }
-        cbarTitle = 'Distance from origin';
+        if (!cbarTitle) cbarTitle = 'Distance from origin';
       }
 
-      const scale = colorSpec.scale || 'Viridis';
+      const scale    = colorSpec.scale || 'Viridis';
+      // Always fetch the colorscale array from the server so that custom/cmocean
+      // scales (e.g. 'thermal', 'phase', 'mygbm') render identically to Python.
+      const csArr    = await fetchColorscaleArray(scale);
+      const cbarSpec = _colorbar(cbarTitle);
 
       // Scatter trace — skipped in meansOnly mode.
-      // When labels are present the means trace carries the colorbar,
-      // so showscale is false here to avoid duplication.
+      // When means are also shown, they carry the colorbar; suppress it here.
       if (!meansOnly) {
         traces.push({
           type: 'scatter3d', mode: 'markers',
@@ -235,10 +253,10 @@ const Scatter = (() => {
           marker: {
             size: scatterSize,
             color: colorArr,
-            colorscale: scale,
+            colorscale: csArr,
             opacity: 0.8,
             showscale: !hasLabels,
-            colorbar: _colorbar(cbarTitle),
+            colorbar: cbarSpec,
             line: { width: 0 },
           },
           hovertext:  hoverText ? hoverText : undefined,
@@ -248,10 +266,8 @@ const Scatter = (() => {
         });
       }
 
-      // Continuous class means — rendered whenever labels are present.
-      // Colored by integer label index through the same colorscale,
-      // giving the helix/spiral structure for newline/temperature tasks.
-      // This trace always carries the colorbar (single bar, correct range).
+      // Continuous class means — whenever labels are present.
+      // Means carry the sole colorbar (scatter's is suppressed when both present).
       if (hasLabels) {
         const means = classMeans(points, labels);
         const sortedClasses = Object.keys(means).map(Number).sort((a, b) => a - b);
@@ -266,16 +282,32 @@ const Scatter = (() => {
           marker: {
             size: 5,
             color: mc,
-            colorscale: scale,
+            colorscale: csArr,
             opacity: 1.0,
             showscale: true,
-            colorbar: _colorbar(cbarTitle),
-            line: { width: 1, color: 'rgba(0,0,0,0.4)' },
+            colorbar: cbarSpec,
           },
           hoverinfo: 'skip',
           showlegend: false,
           name: 'means',
         });
+
+        // Gradient line connecting adjacent means — driven by connect_means in index.json.
+        if (connectMeans && sortedClasses.length > 1) {
+          traces.push({
+            type: 'scatter3d', mode: 'lines',
+            x: mx, y: my, z: mz,
+            line: {
+              color: mc,         // integer class ids → same scale as means dots
+              colorscale: csArr,
+              width: 4,
+              cauto: true,
+            },
+            hoverinfo: 'skip',
+            showlegend: false,
+            name: 'mean_line',
+          });
+        }
       }
     }
 
@@ -297,5 +329,5 @@ const Scatter = (() => {
     return { data: traces, layout };
   }
 
-  return { buildScatter, classMeans, fetchColorscale };
+  return { buildScatter, classMeans, fetchColorscale, fetchColorscaleArray };
 })();

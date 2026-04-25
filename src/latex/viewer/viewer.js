@@ -153,17 +153,29 @@ const Viewer = (() => {
       continuity = new Float32Array(tensorBuf, offset, nPts);
     }
 
+    // Resolve effective colorSpec: hypothesis color_override (if any) takes
+    // precedence over the task-level color_map for the current view.
+    const hypothesis = taskIndex.hypotheses &&
+      taskIndex.hypotheses.find(h => h.name === viewName);
+    const colorSpec = (hypothesis && hypothesis.color_override)
+      ? { ...taskIndex.color, color_map: hypothesis.color_override }
+      : taskIndex.color;
+
     // hover_text is per-point; pass null if absent or empty.
     const hoverText = (meta.hover_text && meta.hover_text.length > 0)
       ? meta.hover_text : null;
 
+    const connectMeans = taskIndex.connect_means || false;
+    const scatterSize  = taskIndex.scatter_size  || 1;
+
     const { data, layout } = await Scatter.buildScatter(
       floatView, labels, continuity,
-      taskIndex.color, taskIndex.label_names,
+      colorSpec, taskIndex.label_names,
       {
         title: `Expert ${expertId}`,
-        scatterSize: taskIndex.scatter_size || 1,
+        scatterSize,
         hoverText,
+        connectMeans,
       }
     );
 
@@ -174,12 +186,13 @@ const Viewer = (() => {
     if (labels !== null) {
       const { data: mData, layout: mLayout } = await Scatter.buildScatter(
         floatView, labels, null,
-        taskIndex.color, taskIndex.label_names,
+        colorSpec, taskIndex.label_names,
         {
           title: `Expert ${expertId} [class means]`,
-          scatterSize: taskIndex.scatter_size || 1,
+          scatterSize,
           meansOnly: true,
-          // hover_text omitted for means view — class name is the hover text
+          connectMeans,
+          // hoverText omitted — class name/index is used as hover text for means
         }
       );
       Plotly.newPlot('active-mean', mData, mLayout, { responsive: true });
