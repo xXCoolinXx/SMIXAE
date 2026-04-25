@@ -41,3 +41,57 @@ main { flex: 1; overflow-y: auto; padding: 12px 20px; }
          color: #fff; padding: 9px 16px; border-radius: 4px; font-size: 13px;
          opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 360px; }
 .toast.show { opacity: 1; }
+
+#scatter-wrapper { position: relative; isolation: isolate; }
+#plot-lock-mask {
+  display: none;
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 5;
+  cursor: default;
+}
+#annotation-overlay {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  transform: translateZ(0);
+}
+.annotation-label {
+  position: absolute;
+  pointer-events: all;
+  background: #fff;
+  border: 2px solid #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,.45);
+  min-width: 70px;
+  user-select: none;
+  will-change: transform;
+}
+.annotation-handle {
+  background: #333;
+  height: 16px;
+  cursor: grab;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 3px;
+}
+.annotation-handle:active { cursor: grabbing; }
+.annotation-delete {
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.annotation-delete:hover { color: #f88; }
+.annotation-text {
+  padding: 5px 9px;
+  min-width: 60px;
+  min-height: 18px;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: text;
+  user-select: text;
+  outline: none;
+}
