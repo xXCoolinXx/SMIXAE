@@ -52,7 +52,7 @@ full flag reference.
 
 A minimal HTTP server (`BaseHTTPRequestHandler`) that receives Plotly-rendered PNGs from the browser and queues them for review.
 
-### Endpoints
+### Endpoints (Legacy + New)
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
@@ -61,6 +61,36 @@ A minimal HTTP server (`BaseHTTPRequestHandler`) that receives Plotly-rendered P
 | `/queue` | POST | Accept a base64-encoded PNG with a filename; add to queue |
 | `/thumbnail/<id>` | GET | Serve a queued PNG as a thumbnail |
 | `/save-all` | POST | Write all queued PNGs to `--output-dir`, applying PIL white-border crop |
+| `/tasks` | GET | List all probing tasks under `--results-dir` |
+| `/task?p=<rel>` | GET | Return task's `index.json` |
+| `/expert?p=<rel>&id=<id>` | GET | Return per-expert JSON metadata |
+| `/expert-tensors?p=<rel>&id=<id>` | GET | Return tensors as raw binary (application/octet-stream) |
+| `/colorscale?name=<name>&n=<n>` | GET | Return sampled colors from Plotly scale |
+| `/view?p=<rel>` | GET | Redirect to interactive viewer |
+| `/viewer/<asset>` | GET | Serve static viewer assets (index.html, viewer.js, etc.) |
+
+### Interactive Viewer
+
+The save server serves an interactive **browser-based viewer** at `/viewer/`:
+
+```
+src/latex/viewer/
+├── index.html     # Viewer shell with task navigation
+├── viewer.css    # Viewer styles
+├── viewer.js     # Main controller (task loading, tab strip, rendering)
+├── scatter.js    # Plotly 3D scatter trace builder
+└── save_client.js # PNG queue logic (same as legacy)
+```
+
+**Workflow:**
+1. Browse tasks via `/tasks` or the gallery nav
+2. Click a task to open `/viewer/index.html?task=<rel>`
+3. The viewer loads `index.json` and builds a tab strip from `experts_by_view`
+4. Click an expert tab to fetch `/expert?p=...&id=...` + `/expert-tensors?p=...&id=...`
+5. Render the 3D scatter via Plotly client-side
+6. Click "Save scatter" to queue a PNG (same filename convention as legacy)
+
+The PNG queue and filename convention are **unchanged** — `camera_ready.py` works identically.
 
 ### HPC usage
 
@@ -74,14 +104,9 @@ Then open `http://127.0.0.1:7788/` in your local browser.
 
 ---
 
-## `src/analysis/_html_save.py` — Browser-Side JS
+## Viewer Assets
 
-The string constant `SAVE_CLIENT_JS` is injected into every `experts.html` produced by `categorize_all.py`. It:
-
-- Polls `localhost:7788/ping` every 3s to detect save-server availability
-- Shows a floating badge displaying the current queue count when the server is reachable
-- Exposes `_queueFigure(divId, filename)`: uses `Plotly.toImage` to snapshot the 3D scatter at 2200×1700px (2× scale), hides legend/title/margins for a clean export, then POSTs the PNG to `/queue`
-- Falls back to a browser download if the server is unreachable
+The browser-side JavaScript is now served as static assets from `src/latex/viewer/` (previously was embedded in `experts.html` via `_html_save.py`):
 
 ---
 
