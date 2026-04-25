@@ -713,12 +713,12 @@ The `rank N` field is omitted if `--results-dir` was not passed to `smixae latex
 #### Caption Format — Newline Figures
 
 ```
-Newline Position ({N} chars) --- {Model}.  \textbf{Newline Position}: (a) Expert {id}, rank {rank}, Periodic Gain ($\Delta R^2_{\mathrm{per}}$\,=\,{score}).  Points represent individual token activations in the bottleneck space, colored by distance since the last newline.
+Newline Position ({N} chars) --- {Model}.  \textbf{Newline Position}: (a) Expert {id}, rank {rank}, Periodic Gain ($\Delta R^2_{\mathrm{per}}$\,=\,{score}).  Points represent per-class mean activations in the bottleneck space, colored by distance since the last newline.
 ```
 
 **Concrete example** (150-char line length):
 ```
-Newline Position (150 chars) --- Gemma 2 9B, Layer 11.  \textbf{Newline Position}: (a) Expert 541, rank 1, Periodic Gain ($\Delta R^2_{\mathrm{per}}$\,=\,0.548).  Points represent individual token activations in the bottleneck space, colored by distance since the last newline.
+Newline Position (150 chars) --- Gemma 2 9B, Layer 11.  \textbf{Newline Position}: (a) Expert 541, rank 1, Periodic Gain ($\Delta R^2_{\mathrm{per}}$\,=\,0.548).  Points represent per-class mean activations in the bottleneck space, colored by distance since the last newline.
 ```
 
 ---
