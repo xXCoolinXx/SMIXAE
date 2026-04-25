@@ -108,27 +108,74 @@ Produced by `anthropic_newline.py`. Each metric is computed over the expert's bo
 
 ---
 
-## HTML Output Guide
+## Probing Task Output Format
 
-### `top_experts.html`
+After running a probing task, the output is written as data-only artifacts (no HTML). View visualizations via the save server (``smixae latex save-server --results-dir results/``).
 
-A ranked table of the top-N experts scored by Fisher or continuity. Each row has:
-- Expert ID
-- Score value
-- Thumbnail of the 3-D scatter (hover for label)
-- Links to the full per-expert page
+### Directory Layout
 
-Open in a browser. The Plotly figures are interactive — rotate, zoom, and hover over points to see label and sentence.
+```
+results/{experiment}/probe/{model_name}/{task}/
+├── index.json                  # task-level metadata
+└── experts/
+    ├── E{expert_id}.json       # per-expert metrics + hover text
+    └── E{expert_id}.pth        # per-expert tensors
+```
 
-### `dim_analysis_expert{id}.html`
+### `index.json` Schema
 
-Full analysis page for a single expert. Contains:
-- Full 3-D scatter of all active samples, colored by label
-- Mean scatter (one sphere per class mean)
-- Label annotations positioned around the class means
-- Score summary at the top
+| Field | Type | Description |
+|-------|------|-------------|
+| `task_type` | string | `"labeled_probe"`, `"unlabeled_probe"`, or `"newline"` |
+| `experiment_id` | string | Run identifier (e.g. `"gemma_2_9b_l11"`) |
+| `dataset_name` | string | Dataset slug (e.g. `"weekdays"`) |
+| `title` | string | Human-readable title |
+| `model_name` | string | HuggingFace model name |
+| `hook_name` | string | Hook point string |
+| `d_bottleneck` | int | SMIXAE bottleneck dimension |
+| `n_experts_total` | int | Total experts in the SAE |
+| `color` | object | Color specification (mode, scale, color_map) |
+| `label_names` | object | `{id: display_name}` or null |
+| `hypotheses` | array | Regression hypotheses with name, description, regression_type |
+| `experts_by_view` | object | `{view_name: [ExpertRanking, ...]}` for tab strip |
 
-The 3-D scatter is the raw bottleneck output — coordinates are exactly the 3 bottleneck dimensions, no PCA or reduction.
+### Per-Expert `E{id}.json` Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `expert_id` | int | Global expert index |
+| `n_points` | int | Number of active tokens |
+| `metrics` | object | Computed scores (fisher_score, adjusted_fisher_score, mean_continuity, etc.) |
+| `hover_text` | array | Per-point HTML hover strings |
+| `tensor_path` | string | Path to tensor file (e.g. `"experts/E123.pth"`) |
+| `tensor_keys` | array | Keys in the tensor file (e.g. `["points", "labels", "continuity"]`) |
+
+### Per-Expert `E{id}.pth` Tensor Keys
+
+| Key | Shape | Description |
+|-----|-------|-------------|
+| `points` | `(n_points, d_bottleneck)` | Bottleneck activations |
+| `labels` | `(n_points,)` | Class IDs (or null for unlabeled) |
+| `continuity` | `(n_points,)` | Per-point continuity scores (or null) |
+
+### Writer API
+
+Use `probing_io.write_probing_task()` to write a probing task:
+
+```python
+from analysis import probing_io
+
+probing_io.write_probing_task(
+    task_dir="results/exp/probe/model/task",
+    index=probing_io.TaskIndex(...),
+    experts=[probing_io.ExpertRecord(...)],
+)
+```
+
+Reader functions:
+- `probing_io.read_task_index(task_dir)` → dict
+- `probing_io.read_expert_meta(task_dir, expert_id)` → dict
+- `probing_io.read_expert_tensors(task_dir, expert_id)` → dict of tensors
 
 ---
 
