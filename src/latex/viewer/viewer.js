@@ -153,30 +153,35 @@ const Viewer = (() => {
       continuity = new Float32Array(tensorBuf, offset, nPts);
     }
 
+    // hover_text is per-point; pass null if absent or empty.
+    const hoverText = (meta.hover_text && meta.hover_text.length > 0)
+      ? meta.hover_text : null;
+
     const { data, layout } = await Scatter.buildScatter(
       floatView, labels, continuity,
       taskIndex.color, taskIndex.label_names,
       {
         title: `Expert ${expertId}`,
         scatterSize: taskIndex.scatter_size || 1,
-        showMeans: taskIndex.color.mode === 'discrete',
+        hoverText,
       }
     );
 
     Plotly.newPlot('active-scatter', data, layout, { responsive: true });
 
-    // Means plot (same data, scatter_alpha=0 → only class means)
-    if (labels && taskIndex.color.mode === 'discrete') {
+    // Means plot — class means only (no per-point scatter).
+    // Shown whenever labels are present (discrete OR continuous-with-labels).
+    if (labels !== null) {
       const { data: mData, layout: mLayout } = await Scatter.buildScatter(
         floatView, labels, null,
         taskIndex.color, taskIndex.label_names,
-        { title: `Expert ${expertId} [class means]`, scatterSize: 8 }
+        {
+          title: `Expert ${expertId} [class means]`,
+          scatterSize: taskIndex.scatter_size || 1,
+          meansOnly: true,
+          // hover_text omitted for means view — class name is the hover text
+        }
       );
-      // Hide the main scatter trace (first trace), keep means only
-      if (mData.length > 1) {
-        mData[0].marker.opacity = 0;
-        mData[0].marker.size = 0;
-      }
       Plotly.newPlot('active-mean', mData, mLayout, { responsive: true });
       document.getElementById('active-mean').style.display = 'block';
     } else {
