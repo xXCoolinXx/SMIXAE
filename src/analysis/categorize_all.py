@@ -9,6 +9,9 @@ from typing import TYPE_CHECKING, Any
 
 import typer
 
+from analysis import probing_io
+from analysis.utils import _strip_prefix
+
 if TYPE_CHECKING:
     from transformers.modeling_utils import PreTrainedModel
     from transformers.tokenization_utils_base import PreTrainedTokenizerBase
@@ -176,6 +179,135 @@ def _build_dataset_results(
 
 
 # ======================================================================
+# Probing-task helpers (build metadata, no visualization code)
+# ======================================================================
+
+
+def _build_color_spec(cfg: "DatasetConfig", batch: Any) -> "probing_io.ColorSpec":
+    """Build a :class:`probing_io.ColorSpec` from a DatasetConfig + ActivationBatch."""
+    if not batch.is_labelled:
+        return probing_io.ColorSpec(
+            mode="continuous",
+            scale="Viridis",
+            continuous_label="Distance from origin",
+        )
+    scale = cfg.color_scale or "Plasma"
+    mapped: dict[str, str] | None = None
+    if cfg.color_map:
+        mapped = {_strip_prefix(k): v for k, v in cfg.color_map.items()}
+    return probing_io.ColorSpec(
+        mode="continuous" if cfg.continuous_color else "discrete",
+        scale=scale,
+        color_map=mapped,
+    )
+
+
+def _build_hypothesis_specs_and_views(
+    cfg: "DatasetConfig",
+    hypotheses_with_indices: list[dict],
+    top_experts: list,
+    effective_sort_by: str,
+    use_random_sample: bool,
+    is_labelled: bool,
+) -> tuple[list[probing_io.HypothesisSpec], dict[str, list[probing_io.ExpertRanking]]]:
+    """Build hypothesis specs and per-view expert rankings for the task index."""
+    overrides = cfg.hypothesis_color_overrides or {}
+    hyp_specs: list[probing_io.HypothesisSpec] = []
+    for hyp in hypotheses_with_indices:
+        name = hyp["name"]
+        override = overrides.get(name)
+        mapped_override: dict[str, str] | None = None
+        if override:
+            mapped_override = {_strip_prefix(k): v for k, v in override.items()}
+        hyp_specs.append(
+            probing_io.HypothesisSpec(
+                name=name,
+                description=hyp.get("description", name),
+                regression_type=hyp.get("regression_type", ""),
+                score_type=_regression_score_type(hyp.get("regression_type", "")),
+                color_override=mapped_override,
+            )
+        )
+
+    experts_by_view: dict[str, list[probing_io.ExpertRanking]] = {}
+    if hypotheses_with_indices:
+        for hyp in hypotheses_with_indices:
+            name = hyp["name"]
+            sorted_for_hyp = sorted(
+                top_experts,
+                key=lambda e, n=name: e.regression_scores.get(n, float("-inf")),
+                reverse=True,
+            )[:10]
+            rankings: list[probing_io.ExpertRanking] = []
+            for rank, expert in enumerate(sorted_for_hyp, start=1):
+                score = expert.regression_scores.get(name)
+                std = (
+                    expert.regression_scores_std.get(name)
+                    if expert.regression_scores_std else None
+                )
+                rankings.append(
+                    probing_io.ExpertRanking(
+                        rank=rank,
+                        expert_id=int(expert.expert_id),
+                        score=float(score) if score is not None and score == score else None,
+                        score_std=float(std) if std is not None and std == std else None,
+                    )
+                )
+            experts_by_view[name] = rankings
+    else:
+        view_name = (
+            "random" if (use_random_sample and not is_labelled)
+            else ("continuity" if not is_labelled else effective_sort_by)
+        )
+        rankings = []
+        for rank, expert in enumerate(top_experts, start=1):
+            score_val = expert.sort_key(effective_sort_by)
+            rankings.append(
+                probing_io.ExpertRanking(
+                    rank=rank,
+                    expert_id=int(expert.expert_id),
+                    score=float(score_val) if score_val != float("-inf") else None,
+                )
+            )
+        experts_by_view[view_name] = rankings
+
+    return hyp_specs, experts_by_view
+
+
+def _legacy_per_hypothesis_for_results_json(
+    hypotheses_with_indices: list[dict],
+    top_experts: list,
+) -> dict[str, tuple[str, list]]:
+    """Reconstruct the legacy ``per_hypothesis_entries`` for ``_build_dataset_results``."""
+    if not hypotheses_with_indices:
+        return {}
+    out: dict[str, tuple[str, list]] = {}
+    for hyp in hypotheses_with_indices:
+        name = hyp["name"]
+        desc = hyp.get("description", name)
+        sorted_for_hyp = sorted(
+            top_experts,
+            key=lambda e, n=name: e.regression_scores.get(n, float("-inf")),
+            reverse=True,
+        )[:10]
+        entries = []
+        for expert in sorted_for_hyp:
+            score = expert.regression_scores.get(name, float("nan"))
+            std = (
+                expert.regression_scores_std.get(name)
+                if expert.regression_scores_std else None
+            )
+            meta = {
+                "expert_id": int(expert.expert_id),
+                "hyp_score": None if score != score else float(score),
+                "hyp_score_std": None if std is None or std != std else float(std),
+            }
+            entries.append((None, None, None, None, meta))
+        out[name] = (desc, entries)
+    return out
+
+
+# ======================================================================
 # Core pipeline (runs on one dataset with pre-loaded model + SAE)
 # ======================================================================
 def run_pipeline(
@@ -224,7 +356,6 @@ def run_pipeline(
     from analysis.utils import (
         ExpertFilterConfig,
         _collect_target_cols,
-        build_dataset_html,
         collect_activations,
         get_sae_activations,
     )
@@ -346,95 +477,54 @@ def run_pipeline(
         top_experts.sort(key=lambda e: e.sort_key("regression"), reverse=True)
         print("Re-sorted by best regression score.")
 
-    # ── 5. Plot ───────────────────────────────────────────────────────
-    print(f"\nBuilding HTML for top {n_to_plot} experts…")
+    # ── 5. Write probing-task artifacts ─────────────────────────────────
+    print(f"\nBuilding probing task for top {n_to_plot} experts…")
 
     _log_expert_summary(top_experts, batch.n_classes, effective_sort_by)
 
-    def _make_plot_entry(expert, tab_label: str, expert_meta: dict | None = None, hypothesis_name: str | None = None) -> tuple:
-        s_fig = expert.get_plot(
-            str_tokens=batch.str_tokens,
-            cfg=cfg,
-            label_names=batch.label_names,
-            hypothesis_name=hypothesis_name,
-            k_neighbors=run_cfg.k_neighbors,
-            context_window=run_cfg.context_window_display,
-            device=run_cfg.device,
-            scatter_size=5 if not batch.is_labelled else 1,
-            unlabeled_color="distance" if use_random_sample else "continuity",
-        )
-        m_fig = expert.get_mean_plot(cfg=cfg, label_names=batch.label_names, hypothesis_name=hypothesis_name)
-        entry: tuple = (tab_label, s_fig, m_fig, expert.regression_scores)
-        if expert_meta is not None:
-            entry = entry + (expert_meta,)
-        return entry
+    # Per-expert records via Expert.to_probing_record()
+    expert_records: list[probing_io.ExpertRecord] = [
+        expert.to_probing_record(batch.str_tokens, run_cfg.context_window_display)
+        for expert in top_experts
+    ]
 
-    # Build per-hypothesis top-10 rows (when regression hypotheses exist)
-    per_hypothesis_entries: dict[str, tuple[str, list]] = {}
-    expert_entries: list = []
-
-    if hypotheses_with_indices:
-        print("Building per-hypothesis top-10 plots…")
-        for hyp in hypotheses_with_indices:
-            name = hyp["name"]
-            desc = hyp.get("description", name)
-            sorted_for_hyp = sorted(
-                top_experts,
-                key=lambda e, n=name: e.regression_scores.get(n, float("-inf")),
-                reverse=True,
-            )[:10]
-            hyp_entries = []
-            for rank, expert in enumerate(sorted_for_hyp):
-                hyp_score = expert.regression_scores.get(name, float("nan"))
-                hyp_score_std = (
-                    expert.regression_scores_std.get(name)
-                    if expert.regression_scores_std else None
-                )
-                btn_label = f"E{expert.expert_id} ({hyp_score:.3f})"
-                fisher_val = expert.fisher_score
-                expert_meta = {
-                    "expert_id": expert.expert_id,
-                    "hyp_name": name,
-                    "hyp_score": None if (hyp_score != hyp_score) else hyp_score,
-                    "hyp_score_std": hyp_score_std,
-                    "fisher_score": None if fisher_val is None or fisher_val != fisher_val else fisher_val,
-                    "n_points": expert.expert_activations.shape[0],
-                    "score_type": _regression_score_type(hyp.get("regression_type", "")),
-                }
-                hyp_entries.append(_make_plot_entry(expert, btn_label, expert_meta, hypothesis_name=name))
-            per_hypothesis_entries[name] = (desc, hyp_entries)
-    else:
-        # No regression — flat tab strip sorted by Fisher/continuity (or random sample)
-        for i, expert in enumerate(top_experts):
-            score_val = expert.sort_key(effective_sort_by)
-            l0_str = f" L0={expert.mean_latent_l0:.1f}" if expert.mean_latent_l0 is not None else ""
-            if use_random_sample:
-                tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} (random, cont={score_val:.3f})"
-            else:
-                tab_label = f"#{i + 1} E{expert.expert_id}{l0_str} ({effective_sort_by}={score_val:.3f})"
-            # For unlabeled entries, include expert_meta so the browser save button generates
-            # a full parseable filename ({exp_id}__{task}__E{id}__random__cont__{score}__scatter.png).
-            flat_meta = {
-                "expert_id": expert.expert_id,
-                "hyp_name": "random" if use_random_sample else "continuity",
-                "hyp_score": score_val if score_val != float("-inf") else None,
-                "score_type": "cont",
-                "n_points": expert.expert_activations.shape[0],
-            } if not batch.is_labelled else None
-            expert_entries.append(_make_plot_entry(expert, tab_label, flat_meta))
-
-    html_str = build_dataset_html(
-        expert_entries,
-        f"{subdir} — Expert Analysis",
-        per_hypothesis_entries=per_hypothesis_entries or None,
-        experiment_id=run_name or "",
+    # Task-level colour spec (colour is not per-expert, it's per-task or per-hypothesis).
+    color_spec = _build_color_spec(cfg, batch)
+    label_names_int = (
+        {int(k): _strip_prefix(v) for k, v in batch.label_names.items()}
+        if batch.label_names else None
     )
-    output_path = os.path.join(output_dir, "experts.html")
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(html_str)
-    print(f"Saved: {output_path}")
+
+    # Hypothesis specs + per-view rankings.
+    hyp_specs, experts_by_view = _build_hypothesis_specs_and_views(
+        cfg, hypotheses_with_indices, top_experts, effective_sort_by, use_random_sample, batch.is_labelled,
+    )
+
+    task_type: probing_io.TaskType = "labeled_probe" if batch.is_labelled else "unlabeled_probe"
+    index = probing_io.TaskIndex(
+        task_type=task_type,
+        experiment_id=run_name or "",
+        dataset_name=subdir,
+        title=f"{subdir} — Expert Analysis",
+        model_name=model_name_for_json or "",
+        hook_name=run_cfg.hook_point,
+        d_bottleneck=int(top_experts[0].expert_activations.shape[1]),
+        n_experts_total=int(getattr(sae.cfg, "n_experts", 0)) or len(experts),
+        color=color_spec,
+        label_names=label_names_int,
+        hypotheses=hyp_specs,
+        experts_by_view=experts_by_view,
+        scatter_size=5.0 if not batch.is_labelled else 1.0,
+    )
+
+    probing_io.write_probing_task(output_dir, index=index, experts=expert_records)
+    print(f"Saved task: {output_dir}")
 
     # ── Write structured results into shared results JSON ─────────────
+    # Reconstruct the legacy per_hypothesis_entries shape that _build_dataset_results expects.
+    per_hypothesis_entries = _legacy_per_hypothesis_for_results_json(
+        hypotheses_with_indices, top_experts,
+    )
     if results_json_path and run_name:
         from analysis.utils import update_results_json
         update_results_json(

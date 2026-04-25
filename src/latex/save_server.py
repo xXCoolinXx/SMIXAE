@@ -1,9 +1,9 @@
-"""Local HTTP server for camera-ready figure collection.
+"""Local HTTP server for camera-ready figure collection and expert visualisation.
 
 Workflow:
-1. Start the server: ``smixae latex save-server --output-dir results/camera_ready/``
-2. Open any experts.html in your browser.  Each page detects the server and shows
-   a floating badge in the corner with the current queue count.
+1. Start the server: ``smixae latex save-server --output-dir results/camera_ready/ --results-dir results/``
+2. Open http://127.0.0.1:7788/ — the left panel lists all probing tasks found
+   under ``--results-dir``. Click a task to load the interactive viewer.
 3. Browse experts, rotate the 3D view, click "Save scatter" or "Save means" on
    figures you like.  Each click queues the figure server-side — no dialog.
 4. The badge updates as you accumulate figures.  Click it to open the gallery at
@@ -26,6 +26,9 @@ import typer
 app = typer.Typer()
 
 _DEFAULT_PORT = 7788
+
+# Viewer assets directory (sibling of this file)
+_VIEWER_DIR = Path(__file__).parent / "viewer"
 
 
 def _autocrop_png(data: bytes) -> bytes:
@@ -77,6 +80,16 @@ def _ssh_forward_hint(port: int) -> str | None:
 # filename (str) → PNG bytes
 _queue: dict[str, bytes] = {}
 
+# ── Task cache ────────────────────────────────────────────────────────────────
+# Pre-warmed at startup: {rel_path: index_json_dict}
+_task_cache: dict[str, dict] = {}
+# Per-expert meta: {(rel_path, expert_id): meta_dict}
+_expert_cache: dict[tuple[str, int], dict] = {}
+# Tensor buffer cache: {(rel_path, expert_id): bytes}
+_tensor_cache: dict[tuple[str, int], bytes] = {}
+# Colorscale cache: {(name, n, skip): [rgb_strings]}
+_colorscale_cache: dict[tuple[str, int, bool], list[str]] = {}
+
 
 # ── Gallery HTML ───────────────────────────────────────────────────────────────
 
@@ -127,6 +140,81 @@ def _scan_html_files(probe_dir: Path | None) -> list[dict]:
             label = p.parent.name
         entries.append({"rel": rel, "label": label})
     return entries
+
+
+def _scan_task_dirs(results_dir: Path | None) -> list[dict]:
+    """Walk results_dir and return all probing-task directories."""
+    if results_dir is None or not results_dir.exists():
+        return []
+    from analysis.probing_io import iter_task_dirs
+
+    entries = []
+    for task_dir in iter_task_dirs(results_dir):
+        rel = str(task_dir.relative_to(results_dir))
+        entries.append({"rel": rel})
+    return entries
+
+
+def _warm_cache(results_dir: Path | None) -> None:
+    """Pre-load all index.json and per-expert JSON files into memory."""
+    if results_dir is None or not results_dir.exists():
+        return
+    from analysis.probing_io import (
+        iter_task_dirs,
+        read_expert_meta,
+        read_task_index,
+    )
+
+    for task_dir in iter_task_dirs(results_dir):
+        rel = str(task_dir.relative_to(results_dir))
+        try:
+            idx = read_task_index(task_dir)
+            _task_cache[rel] = idx
+            experts_dir = task_dir / "experts"
+            for ej in experts_dir.glob("E*.json"):
+                try:
+                    eid = int(ej.stem[1:])
+                    _expert_cache[(rel, eid)] = read_expert_meta(task_dir, eid)
+                except (ValueError, OSError):
+                    continue
+        except (OSError, json.JSONDecodeError):
+            continue
+
+
+def _get_colorscale(name: str, n: int, skip_endpoints: bool) -> list[str]:
+    """Return n RGB colour strings sampled from a Plotly colorscale."""
+    key = (name, n, skip_endpoints)
+    if key in _colorscale_cache:
+        return _colorscale_cache[key]
+    from analysis.colors import sample_named_scale_discrete
+
+    colors = sample_named_scale_discrete(name, n, skip_endpoints=skip_endpoints)
+    _colorscale_cache[key] = colors
+    return colors
+
+
+def _tensors_to_bytes(task_dir: Path, expert_id: int) -> bytes:
+    """Load a .pth tensor dict and serialize to a flat binary buffer.
+
+    Layout: points (float32 n*3) | labels (int32 n) | continuity (float32 n)
+    The per-expert JSON's ``tensor_keys`` tells the client how to slice.
+    """
+    import torch
+
+    tensors = torch.load(
+        task_dir / "experts" / f"E{expert_id}.pth",
+        map_location="cpu",
+        weights_only=True,
+    )
+    # Always points first
+    pts = tensors["points"].contiguous()
+    # n = pts.shape[0]
+    parts: list[bytes] = [pts.numpy().astype("float32").tobytes()]
+    if "labels" in tensors and tensors["labels"] is not None:
+        parts.append(tensors["labels"].contiguous().numpy().astype("int32").tobytes())
+    if "continuity" in tensors and tensors["continuity"] is not None:
+        parts.append(tensors["continuity"].contiguous().numpy().astype("float32").tobytes())
+    return b"".join(parts)
 
 
 def _gallery_html(output_dir: Path, port: int, probe_dir: Path | None = None) -> str:
@@ -361,6 +449,18 @@ def _gallery_html(output_dir: Path, port: int, probe_dir: Path | None = None) ->
 
 # ── Request handler ────────────────────────────────────────────────────────────
 
+def _mime_for(path: Path) -> str:
+    """Return a MIME type for a viewer asset based on its extension."""
+    suffix = path.suffix.lower()
+    return {
+        ".html": "text/html; charset=utf-8",
+        ".css": "text/css; charset=utf-8",
+        ".js": "application/javascript; charset=utf-8",
+        ".png": "image/png",
+        ".svg": "image/svg+xml",
+    }.get(suffix, "application/octet-stream")
+
+
 class _Handler(BaseHTTPRequestHandler):
     server: "_SaveServer"  # type: ignore[assignment]
 
@@ -396,23 +496,92 @@ class _Handler(BaseHTTPRequestHandler):
             files = _scan_html_files(self.server.probe_dir)
             self._json(200, {"files": files})
 
-        elif path == "/view":
-            probe_dir = self.server.probe_dir
+        elif path == "/tasks":
+            results_dir = self.server.probe_dir
+            tasks = _scan_task_dirs(results_dir) if results_dir else []
+            for t in tasks:
+                rel = t["rel"]
+                if rel in _task_cache:
+                    idx = _task_cache[rel]
+                    t["task_type"] = idx.get("task_type", "")
+                    t["dataset_name"] = idx.get("dataset_name", "")
+                    t["experiment_id"] = idx.get("experiment_id", "")
+                    t["title"] = idx.get("title", "")
+            self._json(200, {"tasks": tasks})
+
+        elif path == "/task":
             rel = unquote(qs.get("p", [""])[0])
-            if not rel or probe_dir is None:
-                self._json(400, {"error": "missing p parameter or no probe-dir configured"})
+            if not rel:
+                self._json(400, {"error": "missing p parameter"})
                 return
-            target = (probe_dir / rel).resolve()
-            # Safety: only serve files under probe_dir
-            if not str(target).startswith(str(probe_dir.resolve())):
-                self._json(403, {"error": "path escapes probe-dir"})
+            if rel in _task_cache:
+                self._json(200, _task_cache[rel])
+            else:
+                self._json(404, {"error": "task not found"})
+
+        elif path == "/expert":
+            rel = unquote(qs.get("p", [""])[0])
+            eid_str = qs.get("id", [""])[0]
+            if not rel or not eid_str:
+                self._json(400, {"error": "missing p or id parameter"})
                 return
-            if not target.exists() or target.suffix != ".html":
-                self._json(404, {"error": "file not found"})
+            eid = int(eid_str)
+            key = (rel, eid)
+            if key in _expert_cache:
+                self._json(200, _expert_cache[key])
+            else:
+                self._json(404, {"error": "expert not found"})
+
+        elif path == "/expert-tensors":
+            rel = unquote(qs.get("p", [""])[0])
+            eid_str = qs.get("id", [""])[0]
+            if not rel or not eid_str:
+                self._json(400, {"error": "missing p or id parameter"})
                 return
-            body = target.read_bytes()
+            eid = int(eid_str)
+            key = (rel, eid)
+            if key not in _tensor_cache:
+                results_dir = self.server.probe_dir
+                if results_dir is None:
+                    self._json(404, {"error": "no results-dir"})
+                    return
+                task_dir = results_dir / rel
+                if not task_dir.exists():
+                    self._json(404, {"error": "task dir not found"})
+                    return
+                _tensor_cache[key] = _tensors_to_bytes(task_dir, eid)
+            data = _tensor_cache[key]
             self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Length", str(len(data)))
+            self._cors()
+            self.end_headers()
+            self.wfile.write(data)
+
+        elif path == "/colorscale":
+            name = qs.get("name", ["Plasma"])[0]
+            n = int(qs.get("n", ["7"])[0])
+            skip = qs.get("skip_endpoints", ["true"])[0].lower() == "true"
+            colors = _get_colorscale(name, n, skip)
+            self._json(200, {"colors": colors})
+
+        elif path == "/view":
+            rel = unquote(qs.get("p", [""])[0])
+            self.send_response(302)
+            self.send_header("Location", f"/viewer/index.html?task={rel}")
+            self._cors()
+            self.end_headers()
+
+        elif path.startswith("/viewer/"):
+            asset = path[len("/viewer/"):]
+            asset_path = _VIEWER_DIR / asset
+            if not asset_path.exists() or not asset_path.is_file():
+                self._json(404, {"error": "viewer asset not found"})
+                return
+            body = asset_path.read_bytes()
+            ct = _mime_for(asset_path)
+            self.send_response(200)
+            self.send_header("Content-Type", ct)
             self.send_header("Content-Length", str(len(body)))
             self._cors()
             self.end_headers()
@@ -515,11 +684,12 @@ def save_server(
 ) -> None:
     """Start the camera-ready save server.
 
-    1. Run this command, optionally passing --results-dir to enable the file browser.
-    2. Open http://127.0.0.1:{port} — the left panel lists all experts.html pages found
+    1. Run this command, optionally passing --results-dir to enable the task browser.
+    2. Open http://127.0.0.1:{port} — the left panel lists all probing tasks found
        anywhere under --results-dir.
-    3. Click a page in the nav to open it; click Save scatter / Save means to queue figures.
-    4. The floating badge on each HTML page shows the current queue count.
+    3. Click a task in the nav to open the interactive viewer; click Save scatter /
+       Save means to queue figures.
+    4. The floating badge shows the current queue count.
     5. Click Save All in the gallery to write every queued PNG to disk at once.
 
     Stop with Ctrl-C when done.
@@ -529,8 +699,9 @@ def save_server(
     typer.echo(f"Save server  →  http://127.0.0.1:{port}/")
     typer.echo(f"Output dir   →  {output_dir.resolve()}")
     if results_dir:
-        n = len(_scan_html_files(results_dir))
-        typer.echo(f"Results dir  →  {results_dir.resolve()}  ({n} experts.html found)")
+        _warm_cache(results_dir)
+        n = len(_task_cache)
+        typer.echo(f"Results dir  →  {results_dir.resolve()}  ({n} tasks cached)")
     hint = _ssh_forward_hint(port)
     if hint:
         typer.echo(hint)
