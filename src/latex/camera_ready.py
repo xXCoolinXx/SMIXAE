@@ -958,6 +958,7 @@ def generate_figure_tex(
 
     lines += [
         f"\\caption{{{caption}}}",
+        f"\\label{{fig:{output_tex.stem}}}",
         r"\end{figure*}",
     ]
 
