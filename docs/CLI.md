@@ -20,6 +20,7 @@ smixae
 ├── core                         # Evaluate a single SAE (local checkpoint or HuggingFace) on core metrics
 └── latex
     ├── save-server              # Start local HTTP figure-collection server (port 7788)
+    ├── export-static            # Export visualizations as self-contained static HTML pages
     ├── figures                  # Assemble camera-ready PNGs into LaTeX figure files
     └── tables                   # Generate all LaTeX tables (probing + newline + core eval) from results.json
 ```
@@ -84,6 +85,11 @@ smixae core \
 
 # Batch over all experiments + GemmaScope baselines
 bash experiments/core_eval.sh
+
+# Export expert visualizations as static HTML (no server required)
+smixae latex export-static \
+    --results-dir results/ \
+    --output-dir output/web/
 ```
 
 ---

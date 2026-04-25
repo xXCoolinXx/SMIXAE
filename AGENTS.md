@@ -38,6 +38,7 @@ SMIXAE/
 │   │   └── pretokenize.py           # Converts HuggingFace datasets to SAELens tokenized format
 │   ├── latex/
 │   │   ├── save_server.py           # Local HTTP server (port 7788) for interactive figure collection
+│   │   ├── static_export.py         # Static HTML export: self-contained pages for web hosting (smixae latex export-static)
 │   │   ├── camera_ready.py          # Camera-ready LaTeX figure assembly with PIL legends
 │   │   ├── tables.py                # LaTeX table generation from results.json + core_eval_results.json
 │   │   └── viewer/                  # Static SPA viewer (index.html, viewer.js, scatter.js, save_client.js, viewer.css)

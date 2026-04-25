@@ -36,6 +36,9 @@ All commands are under the `smixae latex` subcommand group.
 # 1. Start the save server
 smixae latex save-server [--output-dir PATH] [--port INT] [--results-dir PATH]
 
+# 1a. Export visualizations as self-contained static HTML (no server needed)
+smixae latex export-static --results-dir PATH --output-dir PATH
+
 # 2. Assemble camera-ready figures (writes .tex, camera_ready/, legends/ into <output-dir>/paper/)
 smixae latex figures --camera-ready-dir PATH --output-dir PATH [--results-json PATH] [--results-dir PATH] [OPTIONS]
 
@@ -185,6 +188,45 @@ Generates four table files from `results.json` into `<output-dir>/paper/` (defau
 The `$\pm$` values in the probing tables are cross-validation standard deviations from `Expert.evaluate_regression()`. The top-5μ `$\pm$` is the mean of individual expert CV stds across the top-5. See [docs/ANALYSIS.md — results.json Schema](ANALYSIS.md) for the underlying data format.
 
 Required LaTeX packages: `booktabs`, `multirow`.
+
+---
+
+---
+
+## `src/latex/static_export.py` — Static HTML Export
+
+Generates self-contained HTML pages for each probing task, suitable for hosting on a static web server (GitHub Pages, Netlify, S3, etc.) or opening directly as local files — no running server required.
+
+### How it works
+
+The command walks the same `--results-dir` tree as `save-server` and, for each task directory:
+
+1. Reads `index.json` and all per-expert JSON files.
+2. Loads each expert's `.pth` tensors, serializes them to the same binary layout as the `/expert-tensors` endpoint, and base64-encodes the result.
+3. Pre-computes all colorscales (using Python's `plotly` via `analysis.colors`) that the viewer would normally fetch from the server.
+4. Inlines everything into `window._STATIC_DATA` in the HTML.
+5. Injects a **`fetch` mock** (a small JS IIFE) before the viewer scripts load. The mock intercepts all five server API calls (`/task`, `/expert`, `/expert-tensors`, `/colorscale`, `/ping`) and returns responses built from the embedded data, so `viewer.js` and `scatter.js` run unchanged.
+6. Replaces `save_client.js` with a lightweight download-only variant — "Save scatter" / "Save means" become direct browser downloads instead of queuing to a server.
+
+Output per invocation:
+```
+<output-dir>/
+├── index.html                           # Task browser / landing page
+├── {exp}__{task}.html                   # One self-contained page per task
+└── ...
+```
+
+### Usage
+
+```bash
+smixae latex export-static \
+    --results-dir results/ \
+    --output-dir output/web/
+```
+
+### Size note
+
+Each page embeds tensor data as base64 (~33 % overhead). A typical task with 10 experts × 5 000 points produces about 1–2 MB of HTML, plus Plotly.js loaded at runtime from CDN (~3 MB). Very large tasks (many experts or many points per expert) will produce proportionally larger files.
 
 ---
 

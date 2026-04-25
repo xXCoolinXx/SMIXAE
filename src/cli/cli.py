@@ -16,6 +16,7 @@ from cli.core_eval import core as core_eval
 from cli.train import train
 from latex.camera_ready import figures as latex_figures
 from latex.save_server import save_server as latex_save_server
+from latex.static_export import export_static as latex_export_static
 from latex.tables import generate as latex_tables
 
 app = typer.Typer(name="smixae", help="SMIXAE research toolkit.")
@@ -33,6 +34,7 @@ latex_app = typer.Typer(help="LaTeX output utilities (tables and camera-ready fi
 latex_app.command(name="tables", help="Generate all LaTeX tables.")(latex_tables)
 latex_app.command(name="figures", help="Assemble camera-ready PNGs into LaTeX figure files.")(latex_figures)
 latex_app.command(name="save-server", help="Start the local save server for camera-ready figure collection.")(latex_save_server)
+latex_app.command(name="export-static", help="Export expert visualizations as self-contained static HTML pages.")(latex_export_static)
 app.add_typer(latex_app, name="latex", help="LaTeX output utilities.")
 
 
