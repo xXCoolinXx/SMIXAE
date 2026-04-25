@@ -138,6 +138,9 @@ class TaskIndex:
             things like ``"fisher"``, ``"continuity"``, ``"periodic_gain"``, or
             a hypothesis name. The viewer builds one tab strip per view.
         scatter_size: Marker size hint (1 for labeled, 5 for unlabeled).
+        connect_means: If ``True``, the viewer draws a gradient line connecting
+            adjacent class means in sorted order (used for newline tasks to show
+            the helix/spiral structure).
     """
 
     task_type: TaskType
@@ -153,6 +156,7 @@ class TaskIndex:
     hypotheses: list[HypothesisSpec]
     experts_by_view: dict[str, list[ExpertRanking]]
     scatter_size: float = 1.0
+    connect_means: bool = False
 
 
 # ── Writer ────────────────────────────────────────────────────────────────────
@@ -187,6 +191,7 @@ def _index_to_dict(idx: TaskIndex) -> dict[str, Any]:
         "d_bottleneck": idx.d_bottleneck,
         "n_experts_total": idx.n_experts_total,
         "scatter_size": idx.scatter_size,
+        "connect_means": idx.connect_means,
         "color": dataclasses.asdict(idx.color),
         "label_names": (
             {str(k): v for k, v in idx.label_names.items()} if idx.label_names else None

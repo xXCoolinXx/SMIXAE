@@ -855,6 +855,7 @@ def main(
         hypotheses=[],
         experts_by_view={RANK_BY: newline_rankings},
         scatter_size=1.0,
+        connect_means=True,
     )
     probing_io.write_probing_task(out_dir, index=task_index, experts=expert_records)
     logger.info(f"Wrote probing task for {len(expert_records)} experts → {out_dir}")
