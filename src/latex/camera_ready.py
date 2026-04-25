@@ -627,7 +627,7 @@ def _next_letter(idx: int) -> str:
 def _entry_description(entry: PNGEntry) -> str:
     hyp_disp = _HYP_DISPLAY.get(entry.hyp_name, entry.hyp_name.replace("_", " "))
     score_lbl = _SCORE_LABEL.get(entry.score_type, entry.score_type.upper())
-    rank_str = f", rank~{entry.expert_rank}" if entry.expert_rank is not None else ""
+    rank_str = f", rank {entry.expert_rank}" if entry.expert_rank is not None else ""
     return f"Expert {entry.expert_id}{rank_str}, {_esc_text(hyp_disp)} ({score_lbl}\\,=\\,{entry.score:.3f})."
 
 
