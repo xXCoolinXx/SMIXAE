@@ -11,10 +11,14 @@ const Viewer = (() => {
   let currentView = null;
   let currentExpertId = null;
 
+  const _SERVER = window.location.hostname === '127.0.0.1' && window.location.port === '7788';
+
   // ── Task loading ───────────────────────────────────────────────────────
   async function loadTask(relPath) {
     taskRelPath = relPath;
-    const r = await fetch(`/task?p=${encodeURIComponent(relPath)}`);
+    const r = await fetch(_SERVER
+      ? `/task?p=${encodeURIComponent(relPath)}`
+      : `/results/${relPath}/index.json`);
     taskIndex = await r.json();
 
     document.getElementById('task-title').textContent =
@@ -75,7 +79,9 @@ const Viewer = (() => {
     });
 
     // Fetch expert metadata
-    const metaR = await fetch(`/expert?p=${encodeURIComponent(taskRelPath)}&id=${expertId}`);
+    const metaR = await fetch(_SERVER
+      ? `/expert?p=${encodeURIComponent(taskRelPath)}&id=${expertId}`
+      : `/results/${taskRelPath}/experts/E${expertId}.json`);
     const meta = await metaR.json();
 
     // Build tab strip (single-tab for now; could extend to per-hypothesis)
@@ -99,8 +105,8 @@ const Viewer = (() => {
     parts.push(`${meta.n_points} points`);
     document.getElementById('expert-header').innerHTML = parts.join(' &nbsp;|&nbsp; ');
 
-    // Show save buttons
-    document.getElementById('save-bar').style.display = 'flex';
+    // Show save buttons (server mode only)
+    if (_SERVER) document.getElementById('save-bar').style.display = 'flex';
     document.getElementById('save-means-btn').style.display =
       meta.tensor_keys.includes('labels') ? 'inline-block' : 'none';
 
@@ -137,7 +143,9 @@ const Viewer = (() => {
     }
 
     // Fetch tensors and render
-    const tensorR = await fetch(`/expert-tensors?p=${encodeURIComponent(taskRelPath)}&id=${expertId}`);
+    const tensorR = await fetch(_SERVER
+      ? `/expert-tensors?p=${encodeURIComponent(taskRelPath)}&id=${expertId}`
+      : `/browser/results/${taskRelPath}/experts/E${expertId}.bin`);
     const tensorBuf = await tensorR.arrayBuffer();
 
     const nPts = meta.n_points;

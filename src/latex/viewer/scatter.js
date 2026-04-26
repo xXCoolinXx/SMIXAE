@@ -30,13 +30,16 @@ const Scatter = (() => {
   // ── Colorscale cache ──────────────────────────────────────────────────
   const _colorCache = {};
 
-  // Fetch N discrete 'rgb(...)' strings from the server.
+  const _SERVER = window.location.hostname === '127.0.0.1' && window.location.port === '7788';
+
+  // Fetch N discrete 'rgb(...)' strings from the server or a pre-generated static file.
   async function fetchColorscale(name, n, skipEndpoints = true) {
-    const key = `${name}_${n}_${skipEndpoints}`;
+    const key = `${name}_${n}_${skipEndpoints ? 'True' : 'False'}`;
     if (_colorCache[key]) return _colorCache[key];
-    const r = await fetch(
-      `/colorscale?name=${encodeURIComponent(name)}&n=${n}&skip_endpoints=${skipEndpoints}`
-    );
+    const url = _SERVER
+      ? `/colorscale?name=${encodeURIComponent(name)}&n=${n}&skip_endpoints=${skipEndpoints}`
+      : `/browser/colorscales/${encodeURIComponent(name)}_${n}_${skipEndpoints ? 'True' : 'False'}.json`;
+    const r = await fetch(url);
     const data = await r.json();
     _colorCache[key] = data.colors;
     return data.colors;
@@ -47,9 +50,10 @@ const Scatter = (() => {
   async function fetchColorscaleArray(name, n = 64) {
     const key = `_arr_${name}_${n}`;
     if (_colorCache[key]) return _colorCache[key];
-    const r = await fetch(
-      `/colorscale?name=${encodeURIComponent(name)}&n=${n}&skip_endpoints=false`
-    );
+    const url = _SERVER
+      ? `/colorscale?name=${encodeURIComponent(name)}&n=${n}&skip_endpoints=false`
+      : `/browser/colorscales/${encodeURIComponent(name)}_${n}_False.json`;
+    const r = await fetch(url);
     const data = await r.json();
     const arr = data.colors.map((c, i) => [i / (n - 1), c]);
     _colorCache[key] = arr;
