@@ -10,6 +10,8 @@ each with a **3-D bottleneck** that can represent arbitrary geometry — rings, 
 helices, clusters, or arbitrary manifolds. This allows the model to capture features
 whose natural representation is nonlinear.
 
+See the visualization of the experts [here](https://dainty-sawine-dc149c.netlify.app/).
+
 ---
 
 ## Architecture at a glance
