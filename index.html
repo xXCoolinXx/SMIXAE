@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SMIXAE Expert Viewer</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="stylesheet" href="src/latex/viewer/viewer.css">
+  <style>
+    :root {
+      --header-bg: #1a1a2e;
+      --header-color: #eee;
+      --sidebar-bg: #fff;
+      --border: #e0e0e0;
+      --accent: #4c6ef5;
+      --accent-light: #eef2ff;
+      --text: #333;
+      --text-muted: #999;
+      --text-subtle: #666;
+      --card-bg: #fff;
+      --card-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      --card-hover: 0 2px 8px rgba(0,0,0,0.18);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--header-bg);
+      color: var(--header-color);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    header h1 { font-size: 18px; font-weight: 600; flex: 1; }
+    header a { color: #88aaff; text-decoration: none; }
+    header a:hover { text-decoration: underline; }
+
+    #layout { display: flex; flex: 1; overflow: hidden; }
+
+    #sidebar {
+      width: 240px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      flex-shrink: 0;
+      padding: 12px 0;
+    }
+
+    #search-input {
+      width: calc(100% - 16px);
+      margin: 0 8px 10px;
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .nav-group {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 8px 12px 2px;
+    }
+
+    .nav-item {
+      display: block;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-item:hover { background: #f0f0f0; border-left-color: var(--header-bg); }
+
+    #main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+    }
+
+    #section-title {
+      font-size: 14px;
+      color: var(--text-subtle);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: box-shadow 0.15s;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card:hover {
+      box-shadow: var(--card-hover);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card-body { padding: 12px 14px; flex: 1; }
+    .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .card-exp { font-size: 11px; color: var(--text-muted); }
+    .card-type {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      margin-top: 6px;
+    }
+    .card-type.probe { background: #eef2ff; color: #4c6ef5; }
+    .card-type.newline { background: #fff3cd; color: #856404; }
+
+    #loading, #empty {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    #empty { display: none; }
+    #loading { display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SMIXAE Expert Viewer</h1>
+    <a href="https://github.com/anomalyco/SMIXAE" target="_blank">View on GitHub</a>
+  </header>
+
+  <div id="layout">
+    <nav id="sidebar">
+      <input id="search-input" type="search" placeholder="Filter…" oninput="filterTasks(this.value)">
+      <div id="nav-list"></div>
+    </nav>
+
+    <main id="main">
+      <div id="loading">Loading tasks…</div>
+      <div id="section-title" style="display:none"></div>
+      <div id="grid" style="display:none"></div>
+      <div id="empty" style="display:none">No tasks found.</div>
+    </main>
+  </div>
+
+  <script>
+    const VIEWER_BASE = 'src/latex/viewer';
+    const TASKS_URL = 'browser/tasks.json';
+    let _allTasks = [];
+
+    async function init() {
+      try {
+        const r = await fetch(TASKS_URL);
+        const data = await r.json();
+        _allTasks = data.tasks || [];
+        renderNav(_allTasks);
+        renderGrid(_allTasks);
+      } catch (err) {
+        document.getElementById('loading').textContent =
+          'Failed to load tasks.json — run `uv run python scripts/build_static.py` first, or serve from the repo root.';
+      }
+    }
+
+    function renderNav(tasks) {
+      const groups = {};
+      tasks.forEach(t => {
+        const exp = t.experiment_id || '';
+        if (!groups[exp]) groups[exp] = [];
+        groups[exp].push(t);
+      });
+
+      let html = '';
+      for (const [exp, items] of Object.entries(groups)) {
+        html += `<div class="nav-group">${exp}</div>`;
+        items.forEach(t => {
+          const label = t.dataset_name || t.rel.split('/').pop();
+          const view = isNewline(t.rel) ? 'newline' : 'probe';
+          html += `<a class="nav-item" href="${VIEWER_BASE}/index.html?task=${encodeURIComponent(t.rel)}"
+                      target="_blank" title="${t.rel}">[${view}] ${label}</a>`;
+        });
+      }
+
+      if (!html) {
+        html = '<div style="padding:8px 12px;font-size:12px;color:#999">No tasks found</div>';
+      }
+      document.getElementById('nav-list').innerHTML = html;
+    }
+
+    function renderGrid(tasks) {
+      document.getElementById('loading').style.display = 'none';
+
+      if (!tasks.length) {
+        document.getElementById('empty').style.display = 'block';
+        document.getElementById('section-title').style.display = 'none';
+        document.getElementById('grid').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('empty').style.display = 'none';
+      document.getElementById('section-title').style.display = 'block';
+      document.getElementById('grid').style.display = 'grid';
+
+      const n = tasks.length;
+      document.getElementById('section-title').textContent =
+        `${n} task${n === 1 ? '' : 's'}`;
+
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+
+      tasks.forEach(t => {
+        const label = t.dataset_name || t.rel.split('/').pop();
+        const title = t.title || label;
+        const exp = t.experiment_id || '';
+        const isNL = isNewline(t.rel);
+        const typeLabel = isNL ? 'newline' : 'probe';
+        const typeClass = isNL ? 'newline' : 'probe';
+
+        const card = document.createElement('a');
+        card.className = 'card';
+        card.href = `${VIEWER_BASE}/index.html?task=${encodeURIComponent(t.rel)}`;
+        card.target = '_blank';
+        card.title = t.rel;
+        card.innerHTML = `
+          <div class="card-body">
+            <div class="card-title">${escHtml(title)}</div>
+            <div class="card-exp">${escHtml(exp)}</div>
+            <span class="card-type ${typeClass}">${typeLabel}</span>
+          </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterTasks(q) {
+      if (!q) {
+        renderGrid(_allTasks);
+        return;
+      }
+      const lower = q.toLowerCase();
+      const filtered = _allTasks.filter(t =>
+        (t.dataset_name || '').toLowerCase().includes(lower) ||
+        (t.title || '').toLowerCase().includes(lower) ||
+        (t.experiment_id || '').toLowerCase().includes(lower) ||
+        t.rel.toLowerCase().includes(lower)
+      );
+      renderGrid(filtered);
+    }
+
+    function isNewline(rel) {
+      const parts = rel.split('/');
+      return parts.length >= 2 && parts[1].startsWith('newline');
+    }
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    init();
+  </script>
+</body>
+</html>
