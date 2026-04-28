@@ -167,7 +167,12 @@ const Scatter = (() => {
       // ── Discrete: named classes, swatch legend ────────────────────────
 
       const uniqueClasses = [...new Set(Array.from(labels))].sort((a, b) => a - b);
-      const nClasses = uniqueClasses.length;
+      // Use total label count so the filename matches the pre-generated colorscale
+      // (e.g. Cividis_16_True.json), not the expert's unique class count which may
+      // be smaller when some classes don't appear in this expert's activations.
+      const nClasses = (labelNames !== null && Object.keys(labelNames).length > 0)
+        ? Object.keys(labelNames).length
+        : uniqueClasses.length;
       const skipEp   = colorSpec.skip_endpoints !== false;
 
       // colorMap keys: either display name or string class id.
@@ -176,7 +181,10 @@ const Scatter = (() => {
         colorMap = colorSpec.color_map;
       } else {
         const rgbs = await fetchColorscale(colorSpec.scale || 'Plasma', nClasses, skipEp);
-        uniqueClasses.forEach((c, i) => { colorMap[String(c)] = rgbs[i]; });
+        // Use the class id as the palette index for cross-expert color consistency.
+        uniqueClasses.forEach(c => {
+          colorMap[String(c)] = rgbs[c < rgbs.length ? c : uniqueClasses.indexOf(c)];
+        });
       }
 
       function classColor(c) {
@@ -325,7 +333,7 @@ const Scatter = (() => {
         xaxis: _axis(),
         yaxis: _axis(),
         zaxis: _axis(),
-        aspectmode: 'data',
+        aspectmode: meansOnly ? 'cube' : 'data',
       },
       showlegend: isDiscrete && !meansOnly,
     };
