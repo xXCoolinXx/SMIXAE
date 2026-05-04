@@ -204,10 +204,14 @@ const Viewer = (() => {
           // hoverText omitted — class name/index is used as hover text for means
         }
       );
-      Plotly.newPlot('active-mean', mData, mLayout, { responsive: true });
+      // Show the container before Plotly measures it — otherwise Plotly
+      // initialises into a 0×0 box and renders the scene squished.
       document.getElementById('active-mean').style.display = 'block';
+      document.getElementById('plot-divider').style.display = 'block';
+      Plotly.newPlot('active-mean', mData, mLayout, { responsive: true });
     } else {
       document.getElementById('active-mean').style.display = 'none';
+      document.getElementById('plot-divider').style.display = 'none';
     }
   }
 
