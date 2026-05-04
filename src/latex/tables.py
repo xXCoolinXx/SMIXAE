@@ -83,8 +83,11 @@ def fmt_with_std(v: float | None, std: float | None = None, decimals: int = 3) -
 
 
 def esc(s: str) -> str:
-    """Escape LaTeX special characters in a plain string."""
-    return s.replace("&", r"\&").replace("%", r"\%").replace("_", r"\_")
+    """Escape LaTeX special characters; skips content inside ``$...$`` math spans."""
+    parts = s.split("$")
+    for i in range(0, len(parts), 2):
+        parts[i] = parts[i].replace("&", r"\&").replace("%", r"\%").replace("_", r"\_")
+    return "$".join(parts)
 
 
 def load_data(results_path: Path, dataset_config_path: Path) -> tuple[dict, list]:
@@ -142,7 +145,6 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
         r"For each hypothesis we fit a regression or classifier directly to the bottleneck activations "
         r"of the top-performing experts and report the score of the single best expert (Top-1) "
         r"and the mean over the top-5 experts (Top-5$_{\mu}$). "
-        r"$\pm$ values are cross-validation standard deviations; for Top-5$_{\mu}$, the standard deviation is averaged across the top-5 experts. "
         r"$R^2$ is the coefficient of determination (linear and ridge regression); "
         r"Acc.\ is classification accuracy (logistic and multinomial regression).}"
     )
@@ -224,10 +226,10 @@ def build_probing_table(results: dict, hyp_map: dict) -> str:
                 )
                 top_experts = hyp_data.get("top10_experts") if hyp_data else None
                 top1 = top_experts[0]["score"] if top_experts else None
-                top1_std = top_experts[0].get("score_std") if top_experts else None
+                # top1_std = top_experts[0].get("score_std") if top_experts else None
                 top5_mean = hyp_data.get("top5_mean") if hyp_data else None
-                top5_mean_std = hyp_data.get("top5_mean_std") if hyp_data else None
-                row += [fmt_with_std(top1, top1_std), fmt_with_std(top5_mean, top5_mean_std)]
+                # top5_mean_std = hyp_data.get("top5_mean_std") if hyp_data else None
+                row += [fmt(top1), fmt(top5_mean)]
 
             rows.append(" & ".join(row) + r" \\")
 
@@ -333,7 +335,7 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
             r"\caption{Complete probing scores for all top-10 experts in "
             + model_display
             + r", listed per task and hypothesis. "
-            r"Columns 1--10 are rank positions; each cell shows score $\pm$ cross-validation standard deviation. "
+            r"Columns 1--10 are rank positions; each cell shows the regression score. "
             r"The same expert may appear under multiple hypotheses if it encodes more than one concept.}"
         )
         rows.append(rf"\label{{tab:probing_appendix_{mk}}}")
@@ -395,7 +397,7 @@ def build_probing_appendix_tables(results: dict, hyp_map: dict) -> str:
                 for rank in range(n_ranks):
                     if rank < len(experts):
                         e = experts[rank]
-                        row.append(fmt_with_std(e.get("score"), e.get("score_std")))
+                        row.append(fmt(e.get("score")))
                     else:
                         row.append("--")
 
