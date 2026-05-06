@@ -122,5 +122,5 @@ hook point, and output paths.
 
 ## Contributing
 
-See [CLAUDE.md](CLAUDE.md) for the full developer guide: architecture details, coding
+See [AGENTS.md](AGENTS.md) for the full developer guide: architecture details, coding
 conventions, analysis patterns, and what to avoid.

@@ -96,17 +96,41 @@
       padding: 20px 24px;
     }
 
-    #section-title {
-      font-size: 14px;
+    #total-count {
+      font-size: 13px;
       color: var(--text-subtle);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       font-weight: 500;
     }
 
-    #grid {
+    /* Experiment group */
+    .exp-group { margin-bottom: 32px; }
+
+    .exp-group-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--header-bg);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .type-section { margin-bottom: 14px; }
+
+    .type-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+
+    /* Card grid */
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
     }
 
     .card {
@@ -127,9 +151,9 @@
       color: inherit;
     }
 
-    .card-body { padding: 12px 14px; flex: 1; }
-    .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-    .card-exp { font-size: 11px; color: var(--text-muted); }
+    .card-body { padding: 10px 12px; flex: 1; }
+    .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .card-sub { font-size: 11px; color: var(--text-muted); }
     .card-type {
       display: inline-block;
       font-size: 10px;
@@ -166,8 +190,8 @@
 
     <main id="main">
       <div id="loading">Loading tasks…</div>
-      <div id="section-title" style="display:none"></div>
-      <div id="grid" style="display:none"></div>
+      <div id="total-count" style="display:none"></div>
+      <div id="groups" style="display:none"></div>
       <div id="empty" style="display:none">No tasks found.</div>
     </main>
   </div>
@@ -183,12 +207,48 @@
         const data = await r.json();
         _allTasks = data.tasks || [];
         renderNav(_allTasks);
-        renderGrid(_allTasks);
+        renderGroups(_allTasks);
       } catch (err) {
         document.getElementById('loading').textContent =
           'Failed to load tasks.json — run `uv run python scripts/build_static.py` first, or serve from the repo root.';
       }
     }
+
+    // ── Helpers ──────────────────────────────────────────────────────────
+
+    function isNewline(rel) {
+      const parts = rel.split('/');
+      return parts.length >= 2 && parts[1].startsWith('newline');
+    }
+
+    // Extract the numeric variant from newline tasks (e.g. "80" from "newline_80").
+    function newlineVariant(rel) {
+      const parts = rel.split('/');
+      for (const p of parts) {
+        const m = p.match(/^newline_(\d+)$/);
+        if (m) return m[1];
+      }
+      return '';
+    }
+
+    function taskLabel(t) {
+      const base = t.dataset_name || t.rel.split('/').pop();
+      if (isNewline(t.rel)) {
+        const v = newlineVariant(t.rel);
+        return v ? `${base} (${v})` : base;
+      }
+      return base;
+    }
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ── Sidebar nav ──────────────────────────────────────────────────────
 
     function renderNav(tasks) {
       const groups = {};
@@ -200,12 +260,12 @@
 
       let html = '';
       for (const [exp, items] of Object.entries(groups)) {
-        html += `<div class="nav-group">${exp}</div>`;
+        html += `<div class="nav-group">${escHtml(exp)}</div>`;
         items.forEach(t => {
-          const label = t.dataset_name || t.rel.split('/').pop();
+          const label = taskLabel(t);
           const view = isNewline(t.rel) ? 'newline' : 'probe';
           html += `<a class="nav-item" href="${VIEWER_BASE}/index.html?task=${encodeURIComponent(t.rel)}"
-                      target="_blank" title="${t.rel}">[${view}] ${label}</a>`;
+                      target="_blank" title="${escHtml(t.rel)}">[${view}] ${escHtml(label)}</a>`;
         });
       }
 
@@ -215,35 +275,74 @@
       document.getElementById('nav-list').innerHTML = html;
     }
 
-    function renderGrid(tasks) {
+    // ── Main grid (grouped by experiment + type) ──────────────────────
+
+    function renderGroups(tasks) {
       document.getElementById('loading').style.display = 'none';
 
       if (!tasks.length) {
         document.getElementById('empty').style.display = 'block';
-        document.getElementById('section-title').style.display = 'none';
-        document.getElementById('grid').style.display = 'none';
+        document.getElementById('total-count').style.display = 'none';
+        document.getElementById('groups').style.display = 'none';
         return;
       }
 
       document.getElementById('empty').style.display = 'none';
-      document.getElementById('section-title').style.display = 'block';
-      document.getElementById('grid').style.display = 'grid';
+      document.getElementById('total-count').style.display = 'block';
+      document.getElementById('groups').style.display = 'block';
 
       const n = tasks.length;
-      document.getElementById('section-title').textContent =
-        `${n} task${n === 1 ? '' : 's'}`;
+      document.getElementById('total-count').textContent = `${n} task${n === 1 ? '' : 's'}`;
 
-      const grid = document.getElementById('grid');
-      grid.innerHTML = '';
+      // Group by experiment, preserve order of first appearance.
+      const expOrder = [];
+      const byExp = {};
+      tasks.forEach(t => {
+        const exp = t.experiment_id || '';
+        if (!byExp[exp]) { byExp[exp] = { probe: [], newline: [] }; expOrder.push(exp); }
+        (isNewline(t.rel) ? byExp[exp].newline : byExp[exp].probe).push(t);
+      });
+
+      const container = document.getElementById('groups');
+      container.innerHTML = '';
+
+      for (const exp of expOrder) {
+        const { probe, newline } = byExp[exp];
+        if (!probe.length && !newline.length) continue;
+
+        const groupEl = document.createElement('div');
+        groupEl.className = 'exp-group';
+
+        const title = document.createElement('div');
+        title.className = 'exp-group-title';
+        title.textContent = exp;
+        groupEl.appendChild(title);
+
+        if (probe.length) {
+          groupEl.appendChild(makeTypeSection('Probe tasks', probe, 'probe'));
+        }
+        if (newline.length) {
+          groupEl.appendChild(makeTypeSection('Newline tasks', newline, 'newline'));
+        }
+
+        container.appendChild(groupEl);
+      }
+    }
+
+    function makeTypeSection(heading, tasks, typeClass) {
+      const section = document.createElement('div');
+      section.className = 'type-section';
+
+      const label = document.createElement('div');
+      label.className = 'type-label';
+      label.textContent = heading;
+      section.appendChild(label);
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
 
       tasks.forEach(t => {
-        const label = t.dataset_name || t.rel.split('/').pop();
-        const title = t.title || label;
-        const exp = t.experiment_id || '';
-        const isNL = isNewline(t.rel);
-        const typeLabel = isNL ? 'newline' : 'probe';
-        const typeClass = isNL ? 'newline' : 'probe';
-
+        const label = taskLabel(t);
         const card = document.createElement('a');
         card.className = 'card';
         card.href = `${VIEWER_BASE}/index.html?task=${encodeURIComponent(t.rel)}`;
@@ -251,17 +350,22 @@
         card.title = t.rel;
         card.innerHTML = `
           <div class="card-body">
-            <div class="card-title">${escHtml(title)}</div>
-            <div class="card-exp">${escHtml(exp)}</div>
-            <span class="card-type ${typeClass}">${typeLabel}</span>
+            <div class="card-title">${escHtml(label)}</div>
+            <span class="card-type ${typeClass}">${typeClass}</span>
           </div>`;
         grid.appendChild(card);
       });
+
+      section.appendChild(grid);
+      return section;
     }
+
+    // ── Filter ────────────────────────────────────────────────────────────
 
     function filterTasks(q) {
       if (!q) {
-        renderGrid(_allTasks);
+        renderGroups(_allTasks);
+        renderNav(_allTasks);
         return;
       }
       const lower = q.toLowerCase();
@@ -271,20 +375,8 @@
         (t.experiment_id || '').toLowerCase().includes(lower) ||
         t.rel.toLowerCase().includes(lower)
       );
-      renderGrid(filtered);
-    }
-
-    function isNewline(rel) {
-      const parts = rel.split('/');
-      return parts.length >= 2 && parts[1].startsWith('newline');
-    }
-
-    function escHtml(s) {
-      return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+      renderGroups(filtered);
+      renderNav(filtered);
     }
 
     init();
