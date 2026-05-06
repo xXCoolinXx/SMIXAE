@@ -73,12 +73,15 @@ def core(
     ),
     device: str = typer.Option("cuda", help="Torch device."),
     dtype: str = typer.Option("bfloat16", help="Dtype for LLM activations."),
-    n_reconstruction_batches: int = typer.Option(1000, help="Batches for CE-loss metrics."),
-    n_sparsity_batches: int = typer.Option(10000, help="Batches for L0/MSE/EVR metrics."),
+    n_reconstruction_batches: int = typer.Option(200, help="Batches for CE-loss metrics."),
+    n_sparsity_batches: int = typer.Option(500, help="Batches for L0/MSE/EVR metrics."),
     batch_size: int = typer.Option(16, help="Sequences per batch."),
     context_size: int = typer.Option(128, help="Token context length."),
     dataset: str = typer.Option(_DEFAULT_DATASET, help="HuggingFace dataset."),
     seed: int = typer.Option(42, help="Random seed for dataset shuffling."),
+    min_firing_density: float = typer.Option(
+        1e-6, help="Minimum firing density (fires/token) for a feature to be considered alive."
+    ),
     verbose: bool = typer.Option(False, help="Show per-batch progress bars."),
 ) -> None:
     """Evaluate a single SAE on core metrics."""
@@ -100,6 +103,7 @@ def core(
         device=device,
         dtype=dtype,
         seed=seed,
+        min_firing_density=min_firing_density,
     )
 
     from_hf = bool(hf_release)

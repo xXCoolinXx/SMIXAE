@@ -5,17 +5,17 @@
 \caption{Core evaluation metrics comparing SMIXAE against GemmaScope SAE baselines, evaluated on OpenWebText (128-token context windows). L0 and width are unflattened numbers for SMIXAE.}
 \label{tab:saebench}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{lll r r r r r r r}
+\begin{tabular}{lll r r r r r r r r}
 \toprule
-Model & Layer & SAE & Width & Params & L0 & Expl. Var. & CE Score & MSE (norm.) & Cos. Sim. \\
+Model & Layer & SAE & Width & Params & L0 & Frac. Alive & Expl. Var. & CE Score & MSE (norm.) & Cos. Sim. \\
 \midrule
-\multirow{2}{*}{Gemma 2 2B} & \multirow{2}{*}{12} & SMIXAE & 6,144 & 151,226,624 & 230.778 & 0.752 & 0.984 & 0.188 & 0.901 \\
- &  & GemmaScope 2B 16k & 16,384 & 75,532,544 & 184.535 & 0.841 & 0.994 & 0.121 & 0.938 \\
+\multirow{2}{*}{Gemma 2 2B} & \multirow{2}{*}{12} & SMIXAE & 6,144 & 151,226,624 & 230.673 & 0.970 & 0.752 & 0.984 & 0.189 & 0.900 \\
+ &  & GemmaScope 2B 16k & 16,384 & 75,532,544 & 184.550 & 0.999 & 0.841 & 0.994 & 0.121 & 0.938 \\
 \midrule
-\multirow{4}{*}{Gemma 2 9B} & \multirow{2}{*}{11} & SMIXAE & 6,144 & 235,113,984 & 229.389 & 0.655 & 0.985 & 0.231 & 0.876 \\
- &  & GemmaScope 9B 16k & 16,384 & 117,476,864 & 130.275 & 0.774 & 0.995 & 0.150 & 0.922 \\
- & \multirow{2}{*}{20} & SMIXAE & 6,144 & 235,113,984 & 212.189 & 0.736 & 0.978 & 0.201 & 0.895 \\
- &  & GemmaScope 9B 16k & 16,384 & 117,476,864 & 139.555 & 0.819 & 0.991 & 0.137 & 0.929 \\
+\multirow{4}{*}{Gemma 2 9B} & \multirow{2}{*}{11} & SMIXAE & 6,144 & 235,113,984 & 229.361 & 0.988 & 0.655 & 0.985 & 0.231 & 0.876 \\
+ &  & GemmaScope 9B 16k & 16,384 & 117,476,864 & 130.270 & 0.999 & 0.774 & 0.995 & 0.150 & 0.922 \\
+ & \multirow{2}{*}{20} & SMIXAE & 6,144 & 235,113,984 & 211.989 & 0.967 & 0.735 & 0.978 & 0.202 & 0.894 \\
+ &  & GemmaScope 9B 16k & 16,384 & 117,476,864 & 139.525 & 0.999 & 0.819 & 0.991 & 0.138 & 0.928 \\
 \bottomrule
 \end{tabular}
 }% end resizebox
