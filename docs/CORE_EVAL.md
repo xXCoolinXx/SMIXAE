@@ -9,6 +9,7 @@ Implemented in `src/analysis/core_eval.py` and exposed as `smixae core`. Reimple
 | Metric | Definition |
 |--------|-----------|
 | `l0` | Mean active features per token (count of non-zero elements in flat feature vector) |
+| `fraction_alive` | Fraction of feature dimensions that fired at least once across the evaluation dataset |
 | `mse` | Normalised MSE: mean `‖x − x̂‖² / ‖x‖²` per token |
 | `explained_variance` | `1 − mean(‖x−x̂‖²) / var(x)` (standard mean-centred form; denominator uses global per-feature mean) |
 | `cosine_similarity` | Mean cosine similarity between reconstruction and input |
