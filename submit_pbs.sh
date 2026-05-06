@@ -16,4 +16,4 @@ fi
 SCRIPT="${@: -1}"      # last argument is the shell script
 QSUB_ARGS="${@:1:$#-1}"  # all other arguments are passed to qsub
 
-qsub $QSUB_ARGS -v "SCRIPT=$SCRIPT,PYTHON=${PYTHON:-python3}" "$(dirname "${BASH_SOURCE[0]}")/pbs_runner.pbs"
+qsub $QSUB_ARGS -v "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES,SCRIPT=$SCRIPT,PYTHON=${PYTHON:-python3}" "$(dirname "${BASH_SOURCE[0]}")/pbs_runner.pbs"
