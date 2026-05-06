@@ -4,7 +4,7 @@
     "color_scale": "mygbm",
     "regression_hypotheses": [
       {"name": "cyc_7d",         "description": "7-Day Ring",        "target_columns": ["target_sin_7d", "target_cos_7d"], "regression_type": "linear"},
-      {"name": "weekday_weekend","description": "Weekday vs Weekend", "target_columns": ["target_is_weekend"],              "regression_type": "logistic"},
+      {"name": "weekday_weekend","description": "Mo-Fr vs Sa-Su",    "target_columns": ["target_is_weekend"],              "regression_type": "logistic"},
       {"name": "ordinal",        "description": "Day Ordinal",        "target_columns": ["target_day"],                     "regression_type": "linear"}
     ]
   },
@@ -27,14 +27,14 @@
     "n_buckets": 20,
     "regression_hypotheses": [
       {"name": "linear_f",  "description": "Linear Fahrenheit",           "target_columns": ["target_temp_f"],     "regression_type": "linear"},
-      {"name": "log_f",     "description": "$\\log$-Compressed Fahrenheit", "target_columns": ["target_log_temp_f"], "regression_type": "linear"}
+      {"name": "log_f",     "description": "$\\log(\\text{Fahrenheit})$",    "target_columns": ["target_log_temp_f"], "regression_type": "linear"}
     ]
   },
   {
     "dataframe_path": "time_units.csv",
     "color_scale": "Viridis",
     "regression_hypotheses": [
-      {"name": "log_duration", "description": "$\\log_{10}$ Duration", "target_columns": ["target_log_seconds"], "regression_type": "linear"}
+      {"name": "log_duration", "description": "$\\log_{10}(\\text{Duration})$", "target_columns": ["target_log_seconds"], "regression_type": "linear"}
     ]
   },
   {
@@ -104,7 +104,7 @@
     "regression_hypotheses": [
       {"name": "hue_wheel",    "description": "Hue Ring",           "target_columns": ["target_hue_sin", "target_hue_cos"],  "regression_type": "linear"},
       {"name": "rgb",          "description": "Normalized RGB",     "target_columns": ["target_r", "target_g", "target_b"],  "regression_type": "linear"},
-      {"name": "warm_nat_cool","description": "Warm / Natural / Cool", "target_columns": ["target_color_cat"],               "regression_type": "multinomial"}
+      {"name": "warm_nat_cool","description": "Warm/Natural/Cool",     "target_columns": ["target_color_cat"],               "regression_type": "multinomial"}
     ]
   },
   {
