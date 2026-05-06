@@ -57,12 +57,13 @@ class CoreEvalConfig:
 
     dataset: str = "Skylion007/openwebtext"
     context_size: int = 128
-    n_reconstruction_batches: int = 1000
-    n_sparsity_batches: int = 10000
+    n_reconstruction_batches: int = 200
+    n_sparsity_batches: int = 500
     batch_size: int = 16
     device: str = "cuda"
     dtype: str = "bfloat16"
     seed: int = 42
+    min_firing_density: float = 1e-6
 
     def llm_dtype(self) -> torch.dtype:
         """Return the torch dtype corresponding to ``self.dtype``."""
@@ -245,6 +246,7 @@ def _compute_sparsity_variance_metrics(
     llm_dtype: torch.dtype,
     verbose: bool = False,
     bos_id: int | None = None,
+    min_firing_density: float = 1e-6,
 ) -> dict[str, float]:
     r"""Compute sparsity and reconstruction quality metrics.
 
@@ -257,6 +259,8 @@ def _compute_sparsity_variance_metrics(
         device: Compute device string.
         llm_dtype: Dtype to cast activations to before encoding.
         verbose: Show progress bar.
+        min_firing_density: Minimum fraction of tokens a feature must fire on
+            to be considered alive (default 1e-6).
         bos_id: Token ID to exclude from all metrics (avoids BOS-spike bias).
 
     Returns:
@@ -269,7 +273,7 @@ def _compute_sparsity_variance_metrics(
     l2_in_list: list[torch.Tensor] = []
     l2_out_list: list[torch.Tensor] = []
     l2_ratio_list: list[torch.Tensor] = []
-    ever_fired: torch.Tensor | None = None
+    fired_count: torch.Tensor | None = None
 
     # FVE accumulators: running sums for token-weighted, mean-centred explained variance.
     # Uses variance decomposition: var(x) = E[||x||²] - ||E[x]||²
@@ -301,8 +305,8 @@ def _compute_sparsity_variance_metrics(
 
         l0_list.append((flat_feat != 0).float().sum(-1))
 
-        fired_this_batch = (flat_feat != 0).any(dim=0).cpu()
-        ever_fired = fired_this_batch if ever_fired is None else (ever_fired | fired_this_batch)
+        fired_this_batch = (flat_feat != 0).sum(dim=0).cpu()
+        fired_count = fired_this_batch if fired_count is None else fired_count + fired_this_batch
 
         resid = flat_in - flat_out
         mse_list.append(resid.pow(2).sum(-1) / (flat_in.pow(2).sum(-1) + 1e-8))
@@ -331,7 +335,7 @@ def _compute_sparsity_variance_metrics(
 
     return {
         "l0": torch.cat(l0_list).mean().item(),
-        "fraction_alive": ever_fired.float().mean().item() if ever_fired is not None else 0.0,
+        "fraction_alive": (fired_count / n_tokens_total > min_firing_density).float().mean().item() if fired_count is not None else 0.0,
         "mse": torch.cat(mse_list).mean().item(),
         "explained_variance": explained_var,
         "cosine_similarity": torch.cat(cossim_list).mean().item(),
@@ -499,7 +503,7 @@ def run_core_eval(
 
     logger.info("Computing sparsity/variance metrics …")
     metrics = _compute_sparsity_variance_metrics(
-        encode_fn, decode_fn, model, sparsity_batches, hook_name, cfg.device, llm_dtype, verbose=verbose, bos_id=bos_id
+        encode_fn, decode_fn, model, sparsity_batches, hook_name, cfg.device, llm_dtype, verbose=verbose, bos_id=bos_id, min_firing_density=cfg.min_firing_density
     )
 
     logger.info("Computing CE-loss metrics …")
