@@ -260,7 +260,7 @@ def _compute_sparsity_variance_metrics(
         bos_id: Token ID to exclude from all metrics (avoids BOS-spike bias).
 
     Returns:
-        Dict with keys ``l0``, ``mse``, ``explained_variance``,
+        Dict with keys ``l0``, ``fraction_alive``, ``mse``, ``explained_variance``,
         ``cosine_similarity``, ``l2_ratio``, ``l2_norm_in``, ``l2_norm_out``.
     """
     l0_list: list[torch.Tensor] = []
@@ -269,6 +269,7 @@ def _compute_sparsity_variance_metrics(
     l2_in_list: list[torch.Tensor] = []
     l2_out_list: list[torch.Tensor] = []
     l2_ratio_list: list[torch.Tensor] = []
+    ever_fired: torch.Tensor | None = None
 
     # FVE accumulators: running sums for token-weighted, mean-centred explained variance.
     # Uses variance decomposition: var(x) = E[||x||²] - ||E[x]||²
@@ -300,6 +301,9 @@ def _compute_sparsity_variance_metrics(
 
         l0_list.append((flat_feat != 0).float().sum(-1))
 
+        fired_this_batch = (flat_feat != 0).any(dim=0).cpu()
+        ever_fired = fired_this_batch if ever_fired is None else (ever_fired | fired_this_batch)
+
         resid = flat_in - flat_out
         mse_list.append(resid.pow(2).sum(-1) / (flat_in.pow(2).sum(-1) + 1e-8))
 
@@ -327,6 +331,7 @@ def _compute_sparsity_variance_metrics(
 
     return {
         "l0": torch.cat(l0_list).mean().item(),
+        "fraction_alive": ever_fired.float().mean().item() if ever_fired is not None else 0.0,
         "mse": torch.cat(mse_list).mean().item(),
         "explained_variance": explained_var,
         "cosine_similarity": torch.cat(cossim_list).mean().item(),
