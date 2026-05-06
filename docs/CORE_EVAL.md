@@ -9,7 +9,7 @@ Implemented in `src/analysis/core_eval.py` and exposed as `smixae core`. Reimple
 | Metric | Definition |
 |--------|-----------|
 | `l0` | Mean active features per token (count of non-zero elements in flat feature vector) |
-| `fraction_alive` | Fraction of feature dimensions that fired at least once across the evaluation dataset |
+| `fraction_alive` | Fraction of feature dimensions whose firing density (fraction of tokens where activation > 0) exceeds `min_firing_density` (default 1e-6) |
 | `mse` | Normalised MSE: mean `‖x − x̂‖² / ‖x‖²` per token |
 | `explained_variance` | `1 − mean(‖x−x̂‖²) / var(x)` (standard mean-centred form; denominator uses global per-feature mean) |
 | `cosine_similarity` | Mean cosine similarity between reconstruction and input |
@@ -60,7 +60,7 @@ Passed as `--hf-release` / `--hf-sae-id` to `smixae core`. See `experiments/core
 
 ## `src/analysis/core_eval.py`
 
-- **`CoreEvalConfig`**: Dataclass — `dataset`, `context_size`, `n_reconstruction_batches`, `n_sparsity_batches`, `batch_size`, `device`, `dtype`.
+- **`CoreEvalConfig`**: Dataclass — `dataset`, `context_size`, `n_reconstruction_batches` (default 200), `n_sparsity_batches` (default 500), `batch_size`, `device`, `dtype`, `min_firing_density` (default 1e-6).
 - **`_make_sae_fns(sae)`**: Returns `(encode, decode, d_sae)` closures; SMIXAE detected via `hasattr(sae.cfg, "n_experts")` and flattened automatically.
 - **`_make_act_store(...)`**: Tokenises a streaming HuggingFace dataset on the fly (BOS prepended, short docs filtered), wraps it as a pretokenized ``IterableDataset``, and creates an SAELens ``ActivationsStore``. Call ``get_batch_tokens(n)`` to stream ``(n, context_size)`` batches. No TransformerLens adapter code needed.
 - **`_compute_sparsity_variance_metrics(...)`**: L0, MSE, explained variance, cosine similarity, L2 ratio/norms. Metric math runs in float32 for precision over `d_model` dims.
