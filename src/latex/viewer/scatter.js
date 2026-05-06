@@ -333,7 +333,7 @@ const Scatter = (() => {
         xaxis: _axis(),
         yaxis: _axis(),
         zaxis: _axis(),
-        aspectmode: meansOnly ? 'cube' : 'data',
+        aspectmode: 'data',
       },
       showlegend: isDiscrete && !meansOnly,
     };
