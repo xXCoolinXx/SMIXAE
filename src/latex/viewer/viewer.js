@@ -204,10 +204,13 @@ const Viewer = (() => {
           // hoverText omitted — class name/index is used as hover text for means
         }
       );
-      // Show the container before Plotly measures it — otherwise Plotly
-      // initialises into a 0×0 box and renders the scene squished.
+      // Show the container and yield to the browser's layout pass before
+      // Plotly measures it — setting display:block and calling newPlot in
+      // the same synchronous tick still gives Plotly a 0×0 box because the
+      // browser batches reflows until the call stack unwinds.
       document.getElementById('active-mean').style.display = 'block';
       document.getElementById('plot-divider').style.display = 'block';
+      await new Promise(r => requestAnimationFrame(r));
       Plotly.newPlot('active-mean', mData, mLayout, { responsive: true });
     } else {
       document.getElementById('active-mean').style.display = 'none';
