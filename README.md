@@ -10,7 +10,16 @@ each with a **3-D bottleneck** that can represent arbitrary geometry — rings, 
 helices, clusters, or arbitrary manifolds. This allows the model to capture features
 whose natural representation is nonlinear.
 
-See the visualization of the experts [here](https://dainty-sawine-dc149c.netlify.app/).
+---
+
+## Pretrained models & visualization
+
+| Resource | Link |
+|----------|------|
+| Pretrained checkpoints (HuggingFace) | [xXCoolinXx/SMIXAE](https://huggingface.co/xXCoolinXx/SMIXAE) |
+| Interactive expert visualization | [dainty-sawine-dc149c.netlify.app](https://dainty-sawine-dc149c.netlify.app/) |
+
+The visualization site is a static SPA — no server required. Browse experts, rotate 3-D bottleneck scatter plots, and filter by label.
 
 ---
 
@@ -51,7 +60,7 @@ smixae train \
     --checkpoint-path results/my_run/checkpoints
 
 # Or run the full experiment (train → probe → newline analysis):
-bash experiments/gemma_2_9b_l11.sh
+bash experiments/gemma_2_9b_l11_newline.sh
 
 # Generate probing datasets
 smixae generate-probing-data generate
@@ -70,6 +79,12 @@ smixae newline main \
     --model-name google/gemma-2-9b \
     --hook-name model.layers.11 \
     --output-path results/my_run/newline
+
+# Evaluate a trained checkpoint on core SAE metrics (L0, MSE, CE score)
+smixae core \
+    --sae-path results/my_run/model \
+    --model-name google/gemma-2-9b \
+    --hook-name model.layers.11
 ```
 
 ---
@@ -79,17 +94,24 @@ smixae newline main \
 ```
 smixae
 ├── train                        # Train a SMIXAE
+├── core                         # Core SAE eval metrics (L0, MSE, CE score)
 ├── generate-probing-data
 │   └── generate                 # Generate all probing datasets → datasets/probing/
 ├── generate-steering-data
 │   └── generate                 # Generate steering prompt datasets → datasets/steering/
+├── pretokenize
+│   └── pretokenize              # Tokenize a HuggingFace dataset for fast training
 ├── probe
 │   ├── single                   # Analyze one labeled dataset against a checkpoint
 │   └── all-datasets             # Batch over a JSON config of datasets
 ├── newline
 │   └── main                     # Newline-position manifold analysis
-└── steer
-    └── main                     # Steering experiments (coordinate substitution)
+├── steer
+│   └── main                     # Steering experiments (coordinate substitution)
+└── latex
+    ├── tables                   # Generate LaTeX tables from results JSON
+    ├── figures                  # Assemble camera-ready PNGs into LaTeX figure files
+    └── save-server              # Start local HTTP server (port 7788) for figure collection
 ```
 
 Run `smixae --help` or `smixae <subcommand> --help` for all flags.
@@ -100,12 +122,13 @@ Run `smixae --help` or `smixae <subcommand> --help` for all flags.
 
 Analysis outputs land in `results/{experiment_name}/`:
 
-| Directory | Contents |
-|-----------|----------|
-| `model/` | Final inference-ready SMIXAE checkpoint |
-| `checkpoints/` | Intermediate training checkpoints |
-| `probe/` | `top_experts.html` + per-expert `dim_analysis_expert*.html` |
-| `newline/` | Newline-position regression results |
+| Path | Contents |
+|------|----------|
+| `results/core_eval_results.json` | Core eval metrics across all experiments (written by `smixae core`) |
+| `{experiment_name}/model/` | Final inference-ready SMIXAE checkpoint |
+| `{experiment_name}/checkpoints/` | Intermediate training checkpoints |
+| `{experiment_name}/probe/` | `top_experts.html` + per-expert `dim_analysis_expert*.html` |
+| `{experiment_name}/newline/` | Newline-position regression results |
 
 The HTML files contain interactive Plotly 3-D scatter plots of each expert's bottleneck
 activations, colored by label. Open them in a browser — no server required.
@@ -115,7 +138,17 @@ activations, colored by label. Open them in a browser — no server required.
 ## Reproducing experiments
 
 Each script in `experiments/` is self-contained: set the variables at the top and run it.
-To add a new experiment, copy `experiments/gemma_2_9b_l11.sh` and adjust the model name,
+
+| Script | Purpose |
+|--------|---------|
+| `run.sh` | Generic runner — pass `--model`, `--hook`, `--experiment-name`, `--steps` |
+| `core_eval.sh` | Core SAE evaluation for all experiments + GemmaScope baselines |
+| `gemma_2_2b_l12.sh` | Gemma 2-2B layer 12 (thin wrapper over `run.sh`) |
+| `gemma_2_9b_l11_newline.sh` | Gemma 2-9B layer 11 — probe + newline analysis |
+| `gemma_2_9b_l20_general.sh` | Gemma 2-9B layer 20 (thin wrapper over `run.sh`) |
+| `synthetic_toy.sh` | Synthetic manifold benchmark — sweeps `k_experts`, evaluates R² recovery |
+
+To add a new experiment, copy the closest existing script and adjust the model name,
 hook point, and output paths.
 
 ---
