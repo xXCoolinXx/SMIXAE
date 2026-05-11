@@ -156,3 +156,20 @@ hook point, and output paths.
 
 See [AGENTS.md](AGENTS.md) for the full developer guide: architecture details, coding
 conventions, analysis patterns, and what to avoid.
+
+--- 
+
+## Known Issues
+
+In the spirit of improving this architecture, I've compiled a list of several important issues 
+- While this architecture does represent multidimensional features more succinctly, there are still a few issues with the featurization design
+  - The bottleneck dimension is fixed at $3$ dimensions. This is not ideal, for there are some features which are higher dimensional (newline counting manifold is 6D) and some which are lower dimensional (standard 1D directions). In practice, this leads to experts describing multiple low-rank manifolds, or higher dimensional manifolds being shattered across multiple experts. Neither of these is ideal
+  - It seems that there is still some degree of feature splitting going on for those higher dimensional manifolds, though I do not demonstrate this rigorously in the paper. I think this can be sufficiently mitigated by fixing the above issue and exploring more expressive (higher depth) encoders, but I also think incorporating some minimality penalty (see for example MDL-SAEs or the recent VPD paper) would fully mitigate this issue. Traditional SAEs are suffering from feature splitting both from manifolds and from getting unlucky with multiple directions happening to model the exact same thing. SMIXAE (and its future versions) reduce the first issue, but still likely suffer from the second.
+- The rescaling by decoder norm is a weird hack that helps prevent the encoder norm from growing progressively during training. This should be fixed in a future variant
+- BatchTopK is very unsatisfying to use, and some hyper-scaler ought to figure out the optimal hyperparameters for a JumpReLU version of this architecture
+- Scaling properties of this architecture have not yet been considered
+  - I get the sense that earlier claims that there are potentially millions of features per layer is quite wrong, and I'd suspect that the real number is closer to $O(d_{\text{model}})$ or at least polynomial in $d_{\text{model}}$
+- Making good toy models. I tried the most obvious toy models (see the paper Do SAEs Capture Concept Manifolds?), and I could not get them to work in SMIXAE.
+  - I omitted this failure from the paper because I did not try to test these super rigorously, and because toy models should never be considered greater evidence than the results from the real thing you are studying (contrary to what most people in this field seem to think)
+  - I did get better results when I added random affine shifts to manifolds, so that they were no longer origin-centered when they were summed together, but I was still unable to match SMIXAE's performance on language model activations. There is probably something additional going on (and maybe SMIXAE is benefitting from scale and just sucks on toy examples?)
+ 
