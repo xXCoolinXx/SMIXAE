@@ -16,7 +16,7 @@ whose natural representation is nonlinear.
 
 | Resource | Link |
 |----------|------|
-| Pretrained checkpoints (HuggingFace) | [Anonymous HuggingFace](https://anonymous-hf.up.railway.app/a/izi3d89jvizr) |
+| Pretrained checkpoints (HuggingFace) | [Link](https://huggingface.co/xXCoolinXx/SMIXAE) |
 | Interactive expert visualization | [dainty-sawine-dc149c.netlify.app](https://dainty-sawine-dc149c.netlify.app/) |
 
 The visualization site is a static SPA — no server required. Browse experts, rotate 3-D bottleneck scatter plots, and filter by label.
