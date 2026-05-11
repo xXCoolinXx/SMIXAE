@@ -146,7 +146,6 @@ Each script in `experiments/` is self-contained: set the variables at the top an
 | `gemma_2_2b_l12.sh` | Gemma 2-2B layer 12 (thin wrapper over `run.sh`) |
 | `gemma_2_9b_l11_newline.sh` | Gemma 2-9B layer 11 — probe + newline analysis |
 | `gemma_2_9b_l20_general.sh` | Gemma 2-9B layer 20 (thin wrapper over `run.sh`) |
-| `synthetic_toy.sh` | Synthetic manifold benchmark — sweeps `k_experts`, evaluates R² recovery |
 
 To add a new experiment, copy the closest existing script and adjust the model name,
 hook point, and output paths.
