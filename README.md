@@ -170,6 +170,6 @@ In the spirit of improving this architecture, I've compiled a list of several im
 - Scaling properties of this architecture have not yet been considered
   - I get the sense that earlier claims that there are potentially millions of features per layer is quite wrong, and I'd suspect that the real number is closer to $O(d_{\text{model}})$ or at least polynomial in $d_{\text{model}}$
 - Making good toy models. I tried the most obvious toy models (see the paper Do SAEs Capture Concept Manifolds?), and I could not get them to work in SMIXAE.
-  - I omitted this failure from the paper because I did not try to test these super rigorously, and because toy models should never be considered greater evidence than the results from the real thing you are studying (contrary to what most people in this field seem to think)
+  - I omitted this failure from the paper because I did not try to test these super rigorously, and because toy models should never be considered greater evidence than the results from the real thing you are studying
   - I did get better results when I added random affine shifts to manifolds, so that they were no longer origin-centered when they were summed together, but I was still unable to match SMIXAE's performance on language model activations. There is probably something additional going on (and maybe SMIXAE is benefitting from scale and just sucks on toy examples?)
  
