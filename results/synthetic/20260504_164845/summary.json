@@ -1,0 +1,65 @@
+{
+  "n_experts": 42,
+  "d_in": 128,
+  "l0": 4,
+  "training_samples": 50000000,
+  "seed": 0,
+  "best_k_experts": 2,
+  "best_mean_r2_n1": 0.061535,
+  "configs": [
+    {
+      "k_experts": 2,
+      "mean_r2_n1": 0.061535,
+      "mean_r2_n2": 0.070701,
+      "mean_r2_n3": 0.057781,
+      "mse": 3.167427,
+      "effective_l0": 2.0,
+      "dead_experts": 0
+    },
+    {
+      "k_experts": 4,
+      "mean_r2_n1": -0.032375,
+      "mean_r2_n2": -0.10601,
+      "mean_r2_n3": -0.193583,
+      "mse": 0.846092,
+      "effective_l0": 4.0,
+      "dead_experts": 0
+    },
+    {
+      "k_experts": 6,
+      "mean_r2_n1": 0.018243,
+      "mean_r2_n2": -0.071127,
+      "mean_r2_n3": -0.168345,
+      "mse": 0.261614,
+      "effective_l0": 6.0,
+      "dead_experts": 0
+    },
+    {
+      "k_experts": 8,
+      "mean_r2_n1": 0.00015,
+      "mean_r2_n2": -0.105516,
+      "mean_r2_n3": -0.237085,
+      "mse": 0.089019,
+      "effective_l0": 8.0,
+      "dead_experts": 0
+    },
+    {
+      "k_experts": 12,
+      "mean_r2_n1": -0.02323,
+      "mean_r2_n2": -0.163486,
+      "mean_r2_n3": -0.307588,
+      "mse": 0.053341,
+      "effective_l0": 12.0,
+      "dead_experts": 0
+    },
+    {
+      "k_experts": 16,
+      "mean_r2_n1": -0.014414,
+      "mean_r2_n2": -0.111118,
+      "mean_r2_n3": -0.234014,
+      "mse": 0.032379,
+      "effective_l0": 16.0,
+      "dead_experts": 0
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "n_experts": 42,
+  "d_in": 128,
+  "l0": 4,
+  "training_samples": 100000,
+  "seed": 0,
+  "best_k_experts": 8,
+  "best_mean_r2_n1": 0.420872,
+  "configs": [
+    {
+      "k_experts": 4,
+      "mean_r2_n1": 0.395268,
+      "mean_r2_n2": 0.517105,
+      "mean_r2_n3": 0.531504,
+      "mse": 1.179783,
+      "effective_l0": 4.0,
+      "dead_experts": 3
+    },
+    {
+      "k_experts": 8,
+      "mean_r2_n1": 0.420872,
+      "mean_r2_n2": 0.535861,
+      "mean_r2_n3": 0.560529,
+      "mse": 0.63771,
+      "effective_l0": 8.0,
+      "dead_experts": 3
+    }
+  ]
+}
