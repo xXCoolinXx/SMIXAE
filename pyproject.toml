@@ -13,6 +13,7 @@ dependencies = [
     "numpy>=2.4.3",
     "pdfplumber>=0.11.9",
     "pillow>=12.1.1",
+    "pymanopt>=2.2.1",
     "sae-lens>=6.39.0",
     "scikit-learn>=1.8.0",
     "spacy>=3.8.13",

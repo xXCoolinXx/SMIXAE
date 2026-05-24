@@ -91,6 +91,7 @@ SMIXAE/
 | [LATEX.md](docs/LATEX.md) | Browser→server→LaTeX pipeline, figure naming convention, table generation |
 | [CORE_EVAL.md](docs/CORE_EVAL.md) | Core eval metrics (L0, MSE, CE score), SMIXAE adapter, GemmaScope baselines, results JSON structure |
 | [CLI.md](docs/CLI.md) | Full CLI command tree and usage examples |
+| [TOYMODEL.md](docs/TOYMODEL.md) | Synthetic toy-model benchmark: manifold zoo, Grassmannian optimisation, CLI workflow, output layout |
 | [REFERENCE.md](docs/REFERENCE.md) | Per-file code reference — classes, functions, and module descriptions |
 
 ---
@@ -147,3 +148,4 @@ The whole point of SMIXAE is that features can be nonlinear manifolds. Don't app
 ## Known TODOs
 
 - [ ] Explore `d_bottleneck > 3` with a minimum-dimensionality penalty
+- [ ] Replace L2-norm-based BatchTopK routing with a learned prediction head — current norm-based gating conflates activation magnitude with manifold identity

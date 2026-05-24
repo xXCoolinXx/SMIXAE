@@ -14,6 +14,7 @@ from analysis.pretokenize import app as pretokenize
 from analysis.steer import app as steer
 from cli.core_eval import core as core_eval
 from cli.dance import dance as dance_fn
+from cli.toy import app as toy_app
 from cli.train import train
 from latex.camera_ready import figures as latex_figures
 from latex.save_server import save_server as latex_save_server
@@ -30,6 +31,7 @@ app.add_typer(generate_probing_data, name="generate-probing-data", help="Generat
 app.add_typer(generate_steering_data, name="generate-steering-data", help="Generate steering prompt datasets.")
 app.add_typer(pretokenize, name="pretokenize", help="Pretokenize a dataset for fast SAELens training.")
 app.command(name="dance", help="Watch a cute little guy do a little dance! 💃")(dance_fn)
+app.add_typer(toy_app, name="toy", help="Synthetic manifold toy-model benchmark.")
 
 latex_app = typer.Typer(help="LaTeX output utilities (tables and camera-ready figures).")
 latex_app.command(name="tables", help="Generate all LaTeX tables.")(latex_tables)

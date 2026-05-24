@@ -1,0 +1,11 @@
+{
+  "seed": 0,
+  "d_in": 128,
+  "l0": 4,
+  "sigma_bias": 3.0,
+  "eval_samples": 200000,
+  "n_instances": 48,
+  "n_atoms": 120,
+  "grassmannian_steps": 500,
+  "skip_grassmannian": false
+}
