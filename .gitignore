@@ -23,3 +23,5 @@ results_old/*/checkpoints
 .wandb_key
 
 .vscode/
+
+*eval.pt

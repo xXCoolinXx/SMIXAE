@@ -254,12 +254,13 @@ def plot_bottlenecks(
 
     specs = [[{"type": "scatter3d"} for _ in range(cols)] for _ in range(rows)]
 
+    px_per_col = 380
     fig = make_subplots(
         rows=rows, cols=cols,
         specs=specs,
         subplot_titles=subplot_titles,
-        horizontal_spacing=0.03,
-        vertical_spacing=0.08,
+        horizontal_spacing=0.06,
+        vertical_spacing=0.18,
     )
 
     for subplot_idx, type_name in enumerate(_MANIFOLD_ORDER):
@@ -305,10 +306,11 @@ def plot_bottlenecks(
 
     fig.update_layout(
         title="SMIXAE best-model bottleneck reconstruction (top-1 expert per manifold type)",
-        height=350 * rows,
-        width=1200,
+        height=480 * rows,
+        width=px_per_col * cols,
         paper_bgcolor="white",
     )
+    fig.update_annotations(font_size=12)
     return fig
 
 
@@ -356,21 +358,21 @@ def plot_all_experts_with_originals(
 
     specs = [[{"type": "scatter3d"} for _ in range(cols)] for _ in range(rows)]
     subplot_titles = [
-        f"{_TYPE_LABELS[inst.type_name]} v{inst.variant_idx + 1}"
-        f" | E{best_experts[i]} | k={k_experts}"
+        f"{_TYPE_LABELS[inst.type_name]} v{inst.variant_idx + 1} | E{best_experts[i]}"
         + (f" | R²={float(r2[i].item()):.2f}" if r2 is not None else "")
-        + (f" | fire={float(cofiring[i].item()):.0%}" if cofiring is not None else "")
+        + (f" | cf={float(cofiring[i].item()):.0%}" if cofiring is not None else "")
         for i, inst in enumerate(zoo.instances)
     ]
     # Pad to fill the grid
     subplot_titles += [""] * (rows * cols - n_inst)
 
+    px_per_col = 360
     fig = make_subplots(
         rows=rows, cols=cols,
         specs=specs,
         subplot_titles=subplot_titles,
-        horizontal_spacing=0.02,
-        vertical_spacing=0.05,
+        horizontal_spacing=0.04,
+        vertical_spacing=0.07,
     )
 
     for inst_idx, inst in enumerate(zoo.instances):
@@ -426,8 +428,9 @@ def plot_all_experts_with_originals(
 
     fig.update_layout(
         title=f"All manifold instances — original (blue) vs learned (red) | k_experts={k_experts}",
-        height=320 * rows,
-        width=1400,
+        height=380 * rows,
+        width=px_per_col * cols,
         paper_bgcolor="white",
     )
+    fig.update_annotations(font_size=11)
     return fig
