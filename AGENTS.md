@@ -32,7 +32,6 @@ SMIXAE/
 │   │   ├── metrics.py               # compute_restricted_r2 (co-firing + linear OLS R²), compute_metrics
 │   │   └── plot.py                  # plot_metrics_vs_k_experts, plot_bottlenecks, plot_all_experts_with_originals
 │   ├── analysis/
-│   │   ├── synthetic.py             # Backward-compatibility shim — re-exports from toy.*
 │   │   ├── utils.py                 # Shared infrastructure: load_llm, load_sae, collect_hook_activations, Expert, ExpertFilterConfig, DatasetConfig
 │   │   ├── generate_probing_data.py # Synthetic probing dataset generation (outputs to datasets/probing/)
 │   │   ├── generate_steering_data.py # Steering prompt dataset generation (outputs to datasets/steering/)

@@ -16,7 +16,6 @@ rather than inferred from downstream tasks.
 | `src/toy/metrics.py` | `compute_restricted_r2` (co-firing + linear OLS R²), `compute_metrics` |
 | `src/toy/plot.py` | `plot_metrics_vs_k_experts`, `plot_bottlenecks`, `plot_all_experts_with_originals` |
 | `src/cli/toy.py` | CLI: `generate`, `train`, `eval`, `plot`, `pipeline` |
-| `src/analysis/synthetic.py` | Backward-compat shim — re-exports everything from `toy.*` |
 
 ---
 
