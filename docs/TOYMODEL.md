@@ -11,8 +11,12 @@ rather than inferred from downstream tasks.
 
 | File | Purpose |
 |------|---------|
-| `src/analysis/synthetic.py` | Zoo construction, sampling, metrics, plotting |
-| `src/cli/toy.py` | CLI: `generate`, `train`, `plot`, `pipeline` |
+| `src/toy/manifolds.py` | Type registries, `ManifoldInstance`, all `_sample_*` functions |
+| `src/toy/zoo.py` | `ManifoldZoo`, `EvalData`, `ManifoldActivationGenerator`, `build_manifold_zoo`, `generate_eval_set`, `optimize_subspaces` |
+| `src/toy/metrics.py` | `compute_restricted_r2` (co-firing + linear OLS R²), `compute_metrics` |
+| `src/toy/plot.py` | `plot_metrics_vs_k_experts`, `plot_bottlenecks`, `plot_all_experts_with_originals` |
+| `src/cli/toy.py` | CLI: `generate`, `train`, `eval`, `plot`, `pipeline` |
+| `src/analysis/synthetic.py` | Backward-compat shim — re-exports everything from `toy.*` |
 
 ---
 
@@ -87,10 +91,8 @@ faithfully capture the torus geometry.
 uv run smixae toy generate --seed 0 --d-in 128 --l0 4 --sigma-bias 3.0
 ```
 
-Saves to `toy_data/seed0_d128_l4_b3/`.
-
 Builds the zoo (including Grassmannian optimisation, ~minutes on CPU) and generates
-200,000 eval samples.  Saves to `toy_data/seed0_d128_l4/`.
+200,000 eval samples.  Saves to `toy_data/seed0_d128_l4_b3/`.
 
 Add `--skip-grassmannian` for a fast random-QR fallback during debugging.
 
@@ -101,7 +103,7 @@ uv run smixae toy train --seed 0 --k-experts-list 2,4,6,8,12,16
 ```
 
 Loads the saved dataset, sweeps `k_experts`, and writes results to
-`toy_data/seed0_d128_l4/results/`.
+`toy_data/seed0_d128_l4_b3/results/`.
 
 ### Plot
 
@@ -110,7 +112,18 @@ uv run smixae toy plot --seed 0
 ```
 
 Loads the saved dataset and training results; regenerates all HTML plots to
-`toy_data/seed0_d128_l4/plots/` without retraining.
+`toy_data/seed0_d128_l4_b3/plots/` without retraining.
+
+### Eval (re-run metrics on saved checkpoints)
+
+```bash
+uv run smixae toy eval --seed 0
+```
+
+Scans `results/k*/model/` checkpoints and re-runs `compute_restricted_r2` +
+`compute_metrics` without retraining.  Overwrites `results/results.csv` and
+`results/summary.json`.  Use this when the metric definition changes and you want
+updated numbers without paying for another full training sweep.
 
 ### Pipeline (all in one)
 
@@ -119,8 +132,8 @@ uv run smixae toy pipeline --seed 0
 ```
 
 Runs generate → train → plot in sequence.  Generation is skipped if the dataset
-directory already exists for the given seed/d_in/l0 (use `--force-generate` to
-override).
+directory already exists for the given seed/d_in/l0/sigma_bias (use `--force-generate`
+to override).
 
 ---
 
@@ -133,7 +146,7 @@ toy_data/
     ├── zoo.pt                 Serialised ManifoldZoo (V_i matrices, b_global)
     ├── eval.pt                Serialised EvalData (x, feature_acts, color_param)
     ├── results/               Populated by `toy train`
-    │   ├── results.csv        Per-instance R²(n=1,2,3) for each k_experts
+    │   ├── results.csv        Per-instance r2_linear + cofiring_rate for each k_experts
     │   ├── summary.json       Aggregate metrics and best k_experts
     │   └── k{k}/model/        Inference-ready SMIXAE checkpoint
     └── plots/                 Populated by `toy plot`
@@ -180,14 +193,8 @@ that never fire on the eval set — computed by `compute_metrics`.
 ## Python API
 
 ```python
-from analysis.synthetic import (
-    build_manifold_zoo,
-    generate_eval_set,
-    compute_restricted_r2,
-    compute_metrics,
-    ManifoldZoo,
-    EvalData,
-)
+from toy.zoo import ManifoldZoo, EvalData, build_manifold_zoo, generate_eval_set
+from toy.metrics import compute_restricted_r2, compute_metrics
 
 # Build the zoo (slow first time due to Grassmannian optimisation)
 zoo = build_manifold_zoo(d_in=128, seed=0, sigma_bias=3.0)
@@ -206,6 +213,7 @@ eval_data.save("eval.pt")
 eval_data2 = EvalData.load("eval.pt")
 
 # Evaluate a trained model
-r2, best_experts = compute_restricted_r2(model, zoo, eval_data, device="cuda")
+# Returns: r2 (n_instances,), cofiring (n_instances,), best_experts (n_instances,)
+r2, cofiring, best_experts = compute_restricted_r2(model, zoo, eval_data, device="cuda")
 metrics = compute_metrics(model, zoo, eval_data, device="cuda")
 ```

@@ -39,19 +39,10 @@ from sae_lens.saes.sae import SAEMetadata
 from sae_lens.synthetic import train_toy_sae
 
 import smixae  # noqa: F401 — registers "smixae" architecture with SAELens
-from analysis.synthetic import (
-    EvalData,
-    ManifoldActivationGenerator,
-    ManifoldZoo,
-    build_manifold_zoo,
-    compute_metrics,
-    compute_restricted_r2,
-    generate_eval_set,
-    plot_all_experts_with_originals,
-    plot_bottlenecks,
-    plot_metrics_vs_k_experts,
-)
 from smixae.smixae import SMIXAETraining, SMIXAETrainingConfig
+from toy.metrics import compute_metrics, compute_restricted_r2
+from toy.plot import plot_all_experts_with_originals, plot_bottlenecks, plot_metrics_vs_k_experts
+from toy.zoo import EvalData, ManifoldActivationGenerator, ManifoldZoo, build_manifold_zoo, generate_eval_set
 
 app = typer.Typer(help="Synthetic manifold toy-model benchmark.")
 
@@ -360,6 +351,153 @@ def train(
     logger.info(f"Summary JSON → {out / 'summary.json'}")
     logger.info(f"\nDone.  Best k_experts={best_k}  mean R²(n=1)={best_r2:.4f}")
     logger.info(f"Artifacts in {out.resolve()}")
+
+
+# ── smixae toy eval ───────────────────────────────────────────────────────────
+
+
+@app.command(name="eval")
+def eval_cmd(
+    seed: Annotated[int, typer.Option(help="Dataset seed (used to locate the dataset).")] = 0,
+    d_in: Annotated[int, typer.Option(help="Ambient dimension.")] = 128,
+    l0: Annotated[int, typer.Option(help="Active manifolds per sample.")] = 4,
+    sigma_bias: Annotated[float, typer.Option(help="Global bias norm (used for dataset path).")] = 3.0,
+    toy_data_dir: Annotated[str, typer.Option(help="Root directory for datasets.")] = _DEFAULT_TOY_DATA,
+    dataset_dir: Annotated[str, typer.Option(help="Explicit dataset path (overrides seed/d_in/l0).")] = "",
+    n_experts: Annotated[int, typer.Option(help="Expert count (default 48 = ground-truth instance count).")] = 48,
+    device: Annotated[str, typer.Option(help="Device (cuda / cpu).")] = "cuda" if torch.cuda.is_available() else "cpu",
+) -> None:
+    """Re-evaluate saved model checkpoints; overwrite results.csv and summary.json without retraining."""
+    import json as _json
+
+    ds = Path(dataset_dir) if dataset_dir else _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias)
+    results_dir = ds / "results"
+    if not (ds / "zoo.pt").exists():
+        logger.error(f"Zoo not found at {ds / 'zoo.pt'}  (run `smixae toy generate` first)")
+        raise typer.Exit(1)
+
+    # ── Load dataset ───────────────────────────────────────────────────────────
+    logger.info("Loading zoo…")
+    zoo = ManifoldZoo.load(ds / "zoo.pt", device=device)
+    logger.info(f"Zoo: {len(zoo.instances)} instances, {zoo.n_atoms} atoms")
+
+    logger.info("Loading eval set…")
+    eval_data = EvalData.load(ds / "eval.pt", device="cpu")
+    logger.info(f"Eval set: {eval_data.x.shape[0]:,} samples")
+
+    # Read n_experts from summary.json if available
+    summary_path = results_dir / "summary.json"
+    if summary_path.exists():
+        n_experts = _json.loads(summary_path.read_text()).get("n_experts", n_experts)
+
+    # ── Scan for saved checkpoints ─────────────────────────────────────────────
+    model_dirs = sorted(
+        results_dir.glob("k*/model"),
+        key=lambda p: int(p.parent.name[1:]),
+    )
+    if not model_dirs:
+        logger.error(f"No saved checkpoints found under {results_dir}  (run `smixae toy train` first)")
+        raise typer.Exit(1)
+
+    logger.info(f"Found {len(model_dirs)} checkpoint(s): {[str(p.parent.name) for p in model_dirs]}")
+
+    # ── Re-evaluate each checkpoint ────────────────────────────────────────────
+    all_results: list[dict] = []
+    best_r2 = -math.inf
+    best_k = int(model_dirs[0].parent.name[1:])
+
+    for model_dir in model_dirs:
+        k_val = int(model_dir.parent.name[1:])
+        logger.info(f"\n{'=' * 60}\nEvaluating k_experts={k_val}\n{'=' * 60}")
+
+        model = SMIXAETraining.load_from_pretrained(str(model_dir)).to(device)
+        model.eval()
+
+        n_experts_actual = model.cfg.n_experts
+
+        logger.info("Computing metrics…")
+        r2, cofiring, b_experts = compute_restricted_r2(model, zoo, eval_data, device=device)
+        metrics = compute_metrics(model, zoo, eval_data, device=device)
+
+        mean_r2       = float(r2.mean().item())
+        mean_cofiring = float(cofiring.mean().item())
+        logger.info(
+            f"k={k_val}  mean R²={mean_r2:.4f}  co-fire={mean_cofiring:.3f}  "
+            f"MSE={metrics['mse']:.5f}  dead={metrics['dead_experts']}"
+        )
+
+        result: dict = {
+            "k_experts":       k_val,
+            "n_experts":       n_experts_actual,
+            "r2":              r2,
+            "cofiring":        cofiring,
+            "best_experts":    b_experts,
+            "instances":       zoo.instances,
+            "l0_ground_truth": l0,
+            **metrics,
+        }
+        all_results.append(result)
+
+        if mean_r2 > best_r2:
+            best_r2 = mean_r2
+            best_k = k_val
+
+    # ── Write fresh results.csv ────────────────────────────────────────────────
+    csv_path = results_dir / "results.csv"
+    fieldnames = [
+        "k_experts", "n_experts",
+        "manifold_type", "variant_idx", "k_i", "d_i",
+        "r2_linear", "cofiring_rate", "best_expert",
+        "mse", "effective_l0", "dead_experts",
+    ]
+    with csv_path.open("w", newline="") as fh:
+        writer = csv.DictWriter(fh, fieldnames=fieldnames)
+        writer.writeheader()
+        for result in all_results:
+            k_exp = result["k_experts"]
+            r2_t  = result["r2"]
+            cof_t = result["cofiring"]
+            for inst_idx, inst in enumerate(zoo.instances):
+                writer.writerow({
+                    "k_experts":     k_exp,
+                    "n_experts":     result["n_experts"],
+                    "manifold_type": inst.type_name,
+                    "variant_idx":   inst.variant_idx,
+                    "k_i":           inst.k_i,
+                    "d_i":           inst.d_i,
+                    "r2_linear":     round(float(r2_t[inst_idx].item()), 6),
+                    "cofiring_rate": round(float(cof_t[inst_idx].item()), 6),
+                    "best_expert":   result["best_experts"][inst_idx],
+                    "mse":           round(result["mse"], 6),
+                    "effective_l0":  round(result["effective_l0"], 4),
+                    "dead_experts":  result["dead_experts"],
+                })
+    logger.info(f"CSV → {csv_path}")
+
+    # ── Write fresh summary.json ───────────────────────────────────────────────
+    summary = {
+        "n_experts":           all_results[0]["n_experts"] if all_results else n_experts,
+        "d_in":                zoo.d_in,
+        "l0":                  l0,
+        "seed":                seed,
+        "best_k_experts":      best_k,
+        "best_mean_r2_linear": round(best_r2, 6),
+        "configs": [
+            {
+                "k_experts":       r["k_experts"],
+                "mean_r2_linear":  round(float(r["r2"].mean().item()), 6),
+                "mean_cofiring":   round(float(r["cofiring"].mean().item()), 6),
+                "mse":             round(r["mse"], 6),
+                "effective_l0":    round(r["effective_l0"], 4),
+                "dead_experts":    r["dead_experts"],
+            }
+            for r in all_results
+        ],
+    }
+    summary_path.write_text(_json.dumps(summary, indent=2))
+    logger.info(f"Summary JSON → {summary_path}")
+    logger.info(f"\nDone.  Best k_experts={best_k}  mean R²={best_r2:.4f}")
+    logger.info(f"Artifacts in {results_dir.resolve()}")
 
 
 # ── smixae toy plot ────────────────────────────────────────────────────────────
