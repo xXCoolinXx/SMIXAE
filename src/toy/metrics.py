@@ -131,6 +131,51 @@ def compute_restricted_r2(
 
 
 @torch.no_grad()
+def compute_cofiring_matrix(
+    model: "SMIXAETraining",
+    zoo: ManifoldZoo,
+    eval_data: EvalData,
+    device: str = "cpu",
+) -> torch.Tensor:
+    """Return the full (n_instances, n_experts) co-firing rate matrix.
+
+    Entry [i, e] = P(expert e fires | manifold instance i is active).
+    ``compute_restricted_r2`` returns only the max per row; this function
+    exposes the full distribution so callers can inspect whether the best
+    expert is clearly dominant or multiple experts are tied.
+
+    Args:
+        model: Trained SMIXAETraining.
+        zoo: ManifoldZoo used to generate eval_data.
+        eval_data: EvalData on CPU.
+        device: Model device.
+
+    Returns:
+        cofiring_matrix: float tensor of shape (n_instances, n_experts).
+    """
+    model.eval()
+    n_inst = len(zoo.instances)
+    n_exp  = model.cfg.n_experts
+    h_bott = _encode_all(model, eval_data.x, device)  # (N, n_exp, d_bott) on CPU
+
+    matrix = torch.zeros(n_inst, n_exp)
+
+    for inst_idx, inst in enumerate(zoo.instances):
+        off = inst.atom_offset
+        ki  = inst.k_i
+
+        active_mask = eval_data.feature_acts[:, off: off + ki].abs().sum(1) > 0
+        active_rows = active_mask.nonzero(as_tuple=True)[0]
+        if active_rows.numel() < 4:
+            continue
+
+        fired_active = h_bott[active_rows].norm(dim=-1) > 0   # (n_active, n_exp)
+        matrix[inst_idx] = fired_active.float().mean(0)
+
+    return matrix
+
+
+@torch.no_grad()
 def compute_metrics(
     model: "SMIXAETraining",
     zoo: ManifoldZoo,

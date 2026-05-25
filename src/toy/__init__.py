@@ -13,7 +13,7 @@ from toy.manifolds import (
     N_VARIANTS,
     ManifoldInstance,
 )
-from toy.metrics import compute_metrics, compute_restricted_r2
+from toy.metrics import compute_cofiring_matrix, compute_metrics, compute_restricted_r2
 from toy.plot import (
     plot_all_experts_with_originals,
     plot_bottlenecks,
@@ -47,6 +47,7 @@ __all__ = [
     # metrics
     "compute_restricted_r2",
     "compute_metrics",
+    "compute_cofiring_matrix",
     # plot
     "plot_metrics_vs_k_experts",
     "plot_bottlenecks",
