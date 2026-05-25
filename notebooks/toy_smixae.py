@@ -104,7 +104,7 @@ def _(Path, mo, torch):
     seed        = 0
     d_in        = 128
     l0          = 4           # active manifolds per sample
-    sigma_bias  = 3.0
+    sigma_bias  = 5.0
 
     # ── Model architecture ──────────────────────────────────
     n_experts    = 48         # should match n_instances in zoo (48)
@@ -303,12 +303,12 @@ def _(
         """X → W_enc + b_enc → LeakyReLU → (n_experts, d_expert) → W_bottleneck → bottleneck.
 
         Do not fear the einsums, they are just matmuls but for the 3-tensors.
-    
+
         Returns (h_charts, pre_act_charts, pre_act_bottleneck).
         """
         sae_in = sae.process_sae_in(x)
 
-    
+
         pre_act_charts = eo.einsum(sae_in, sae.W_enc, "batch_size d_in, d_in n_experts d_expert -> batch_size n_experts d_expert") + sae.b_enc
         h_charts = sae.activation_fn(pre_act_charts)
 
@@ -349,7 +349,7 @@ def _(
         @override
         def initialize_weights(self) -> None:
             register_smixae_v2_weights(self)
-        
+
             self.register_buffer("threshold", torch.tensor(0.0, dtype=torch.double, device=self.device, requires_grad=False))
             self.register_buffer("n_passes_since_fired", torch.zeros(self.cfg.n_experts, dtype=torch.long))
 
@@ -365,7 +365,7 @@ def _(
 
         def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
             out = _smixae_decode(self, feature_acts)
-        
+
             out = self.hook_sae_recons(out)
             out = self.run_time_activation_norm_fn_out(out)
             return self.reshape_fn_out(out, self.d_head)
@@ -436,7 +436,7 @@ def _(
             # register_standard_linear_weights(self)
             # register_smixae_v1_bottleneck_weights(self)
             register_smixae_v2_weights(self)
-        
+
             self.register_buffer("threshold", torch.tensor(0.0, dtype=torch.double, device=self.device))
             self.register_buffer("n_passes_since_fired", torch.zeros(self.cfg.n_experts, dtype=torch.long))
 
@@ -467,7 +467,7 @@ def _(
             self.hook_sae_acts_pre(pre_act_charts)
             self.hook_sae_acts_post(h_charts)
             self.hook_sae_acts_bottleneck(h_bottleneck)
-        
+
             return h_bottleneck, pre_act_bottleneck, h_charts, pre_act_charts
 
         def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
@@ -476,7 +476,7 @@ def _(
             # Hooks
             out = self.hook_sae_recons(out)
             out = self.run_time_activation_norm_fn_out(out)
-        
+
             return self.reshape_fn_out(out, self.d_head)
 
         @override
@@ -485,7 +485,7 @@ def _(
             # pre_act_charts, h_charts, pre_act_bottleneck = _smixae_rebased_encode(self, step_input.sae_in)
             h_bottleneck, pre_act_bottleneck, h_charts, pre_act_charts = self.encode_with_hidden_pre(step_input.sae_in)
             h_bottleneck_norms = h_bottleneck.norm(dim=-1)
-        
+
             # ???
             # batch_norm_mask = self.batchtopk(pre_act_bottleneck.norm(dim=-1)) > 0
             # h_bottleneck = pre_act_bottleneck * batch_norm_mask.unsqueeze(-1)
@@ -513,7 +513,7 @@ def _(
                 self.n_passes_since_fired > self.cfg.dead_after_n_passes,
                 pre_act_bottleneck,
             )
-        
+
             total_loss = mse_loss + dead_aux_loss
             losses = {"mse_loss": mse_loss, "dead_expert_aux_loss": dead_aux_loss}
 
@@ -531,7 +531,7 @@ def _(
             # SAELens trainer expects (batch, d_sae) shape for its book-keeping.
             return TrainStepOutput(
                 sae_in=step_input.sae_in, sae_out=sae_out,
-                feature_acts=h_charts.flatten(), hidden_pre=pre_act_charts.flatten(),
+                feature_acts=h_charts.flatten(start_dim=1), hidden_pre=pre_act_charts.flatten(start_dim=1),
                 loss=total_loss, losses=losses, metrics=metrics,
             )
 
@@ -543,7 +543,7 @@ def _(
             expert_norms = pre_act_bottleneck.norm(dim=-1)
             dead_norms = expert_norms[:, dead_expert_mask]
             shortfall = torch.relu(self.threshold.detach().float() - dead_norms)
-        
+
             return self.cfg.aux_loss_coefficient * (shortfall).sum(dim=-1).mean()
 
         @torch.no_grad()
@@ -565,7 +565,7 @@ def _(
 
             # Fold norm rescaling into the decoder
             self.W_dec.data /= self.effective_decoder_norm.view(-1, 1, 1)
-        
+
             # if self.cfg.rescale_acts_by_decoder_norm:
             #     sf_sqrt = scaling_factor**0.5
             #     self.W_dec.data *= sf_sqrt
