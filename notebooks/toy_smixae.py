@@ -50,7 +50,7 @@ def _():
         register_standard_linear_weights,
     )
     from toy.metrics import compute_cofiring_matrix, compute_metrics, compute_restricted_r2
-    from toy.plot import plot_all_experts_with_originals, plot_bottlenecks
+    from toy.plot import plot_all_experts_with_originals
     from toy.zoo import (
         EvalData,
         ManifoldActivationGenerator,
@@ -58,6 +58,10 @@ def _():
         build_manifold_zoo,
         generate_eval_set,
     )
+
+    import einops as eo
+
+    from torch import nn
 
     mo.md("## Imports loaded")
     return (
@@ -81,14 +85,14 @@ def _():
         compute_metrics,
         compute_restricted_r2,
         dataclass,
+        eo,
         generate_eval_set,
         go,
         make_subplots,
         mo,
+        nn,
         override,
         plot_all_experts_with_originals,
-        register_smixae_v1_bottleneck_weights,
-        register_standard_linear_weights,
         torch,
         train_toy_sae,
     )
@@ -110,7 +114,7 @@ def _(Path, mo, torch):
 
     # ── Training ────────────────────────────────────────────
     k_experts         = 4     # active experts per sample (BatchTopK budget)
-    training_samples  = 5_000_000
+    training_samples  = 50_000_000
     batch_size        = 2048
     lr                = 3e-3
     lr_warm_up_steps  = 2_000
@@ -217,12 +221,12 @@ def _(
     d_expert,
     dataclass,
     device,
+    eo,
     k_experts,
     mo,
     n_experts,
+    nn,
     override,
-    register_smixae_v1_bottleneck_weights,
-    register_standard_linear_weights,
     seed,
     torch,
     zoo,
@@ -234,19 +238,93 @@ def _(
 
     # ── Shared encode ─────────────────────────────────────────────────────────────
 
+    def register_smixae_v2_weights(sae : BaseSMIXAE | BaseSMIXAETraining):
+        """
+        Update weight configuration for SMIXAEv2. 
+
+        Key principles:
+        - Remove unnneccessary additional linear layer
+        - Encoders and decoder are 3-tensors - no flattening!
+        - Bias is now a 2-tensor
+        """
+        sae.W_enc = nn.Parameter(
+            torch.zeros(
+                sae.cfg.d_in,
+                sae.cfg.n_experts,
+                sae.cfg.d_expert,
+                dtype=sae.dtype,
+                device=sae.device,
+            )
+        )
+
+        sae.W_bottleneck = nn.Parameter(
+            torch.empty(
+                sae.cfg.n_experts,
+                sae.cfg.d_expert,
+                sae.cfg.d_bottleneck,
+                dtype=sae.dtype,
+                device=sae.device,
+            )
+        )
+
+        sae.W_dec = nn.Parameter(
+            torch.zeros(
+                sae.cfg.n_experts,
+                sae.cfg.d_bottleneck,
+                sae.cfg.d_in,
+                dtype=sae.dtype,
+                device=sae.device,
+            )
+        )
+
+        sae.b_enc = nn.Parameter(
+            torch.zeros(
+                sae.cfg.n_experts,
+                sae.cfg.d_expert,
+                dtype=sae.dtype,
+                device=sae.device,
+            )
+        )
+
+        sae.b_dec = nn.Parameter(
+            torch.zeros(
+                sae.cfg.d_in,
+                dtype=sae.dtype,
+                device=sae.device,
+            )
+        )
+
+        nn.init.kaiming_uniform_(sae.W_enc)
+        nn.init.kaiming_uniform_(sae.W_bottleneck)
+        nn.init.kaiming_uniform_(sae.W_dec)
+
+
     def _smixae_rebased_encode(sae, x: torch.Tensor):  # noqa: ANN001
         """X → W_enc + b_enc → LeakyReLU → (n_experts, d_expert) → W_bottleneck → bottleneck.
 
-        Returns (h_latent, hidden_pre_latent, hidden_pre_bottleneck).
+        Do not fear the einsums, they are just matmuls but for the 3-tensors.
+    
+        Returns (h_charts, pre_act_charts, pre_act_bottleneck).
         """
         sae_in = sae.process_sae_in(x)
-        hidden_pre_latent = sae_in @ sae.W_enc + sae.b_enc
-        h_latent = sae.activation_fn(hidden_pre_latent)
-        h_latent_unflattened = h_latent.unflatten(-1, (sae.cfg.n_experts, sae.cfg.d_expert))
-        hidden_pre_bottleneck = torch.einsum("bne,ned->bnd", h_latent_unflattened, sae.W_bottleneck)
-        if sae.cfg.rescale_acts_by_decoder_norm:
-            hidden_pre_bottleneck = hidden_pre_bottleneck * sae.effective_decoder_norm.unsqueeze(-1)
-        return h_latent, hidden_pre_latent, hidden_pre_bottleneck
+
+    
+        pre_act_charts = eo.einsum(sae_in, sae.W_enc, "batch_size d_in, d_in n_experts d_expert -> batch_size n_experts d_expert") + sae.b_enc
+        h_charts = sae.activation_fn(pre_act_charts)
+
+        pre_act_bottleneck = eo.einsum(h_charts, sae.W_bottleneck, "batch_size n_experts d_expert, n_experts d_expert d_bottleneck -> batch_size n_experts d_bottleneck")
+
+        return pre_act_charts, h_charts, pre_act_bottleneck
+
+    def _smixae_decode(sae : SMIXAERebased | SMIXAERebasedTraining, z : torch.Tensor) -> torch.Tensor:
+        """
+        Decode feature acts
+        """
+        # Divide by frob norm per expert, provides stability
+        W_dec_normed = sae.W_dec / sae.effective_decoder_norm.view(-1, 1, 1)
+
+        # Apply Decoder
+        return eo.einsum(W_dec_normed, z, "n_experts d_bottleneck d_in, batch_size n_experts d_bottleneck -> batch_size d_in") + sae.b_dec
 
     # ── Inference config + class ──────────────────────────────────────────────────
 
@@ -270,24 +348,24 @@ def _(
 
         @override
         def initialize_weights(self) -> None:
-            register_standard_linear_weights(self)
-            register_smixae_v1_bottleneck_weights(self)
+            register_smixae_v2_weights(self)
+        
             self.register_buffer("threshold", torch.tensor(0.0, dtype=torch.double, device=self.device, requires_grad=False))
             self.register_buffer("n_passes_since_fired", torch.zeros(self.cfg.n_experts, dtype=torch.long))
 
         def encode(self, x: torch.Tensor) -> torch.Tensor:
-            _, _, hidden_pre_bottleneck = _smixae_rebased_encode(self, x)
-            mask = hidden_pre_bottleneck.norm(dim=-1) > self.threshold  # type: ignore[operator]
-            return hidden_pre_bottleneck * mask.unsqueeze(-1)
+            _, _, pre_act_bottleneck = _smixae_rebased_encode(self, x)
+            mask = pre_act_bottleneck.norm(dim=-1) > self.threshold  # type: ignore[operator]
+            return pre_act_bottleneck * mask.unsqueeze(-1)
 
-        def encode_with_latents(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-            h_latent, _, hidden_pre_bottleneck = _smixae_rebased_encode(self, x)
-            mask = hidden_pre_bottleneck.norm(dim=-1) > self.threshold  # type: ignore[operator]
-            return hidden_pre_bottleneck * mask.unsqueeze(-1), h_latent
+        def encode_with_charts(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+            h_charts, _, pre_act_bottleneck = _smixae_rebased_encode(self, x)
+            mask = pre_act_bottleneck.norm(dim=-1) > self.threshold  # type: ignore[operator]
+            return pre_act_bottleneck * mask.unsqueeze(-1), h_charts
 
         def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
-            out = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec).flatten(-2, -1)
-            out = out @ self.W_dec + self.b_dec
+            out = _smixae_decode(self, feature_acts)
+        
             out = self.hook_sae_recons(out)
             out = self.run_time_activation_norm_fn_out(out)
             return self.reshape_fn_out(out, self.d_head)
@@ -355,8 +433,10 @@ def _(
 
         @override
         def initialize_weights(self) -> None:
-            register_standard_linear_weights(self)
-            register_smixae_v1_bottleneck_weights(self)
+            # register_standard_linear_weights(self)
+            # register_smixae_v1_bottleneck_weights(self)
+            register_smixae_v2_weights(self)
+        
             self.register_buffer("threshold", torch.tensor(0.0, dtype=torch.double, device=self.device))
             self.register_buffer("n_passes_since_fired", torch.zeros(self.cfg.n_experts, dtype=torch.long))
 
@@ -369,84 +449,102 @@ def _(
 
         @property
         def effective_decoder_norm(self) -> torch.Tensor:
-            W_dec_r = self.W_dec.view(self.cfg.n_experts, self.cfg.d_expert, -1)
-            return torch.linalg.matrix_norm(self.W_latent_dec @ W_dec_r, ord="fro", dim=(-2, -1))
+            # W_dec_r = self.W_dec.view(self.cfg.n_experts, self.cfg.d_expert, -1)
+            # return torch.linalg.matrix_norm(self.W_latent_dec @ W_dec_r, ord="fro", dim=(-2, -1))
 
-        def encode_with_hidden_pre(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-            h_latent, hidden_pre_latent, hidden_pre_bottleneck = _smixae_rebased_encode(self, x)
-            batch_norm_mask = self.batchtopk(hidden_pre_bottleneck.norm(dim=-1)) > 0
-            h_bottleneck = hidden_pre_bottleneck * batch_norm_mask.unsqueeze(-1)
+            # Frobenius norm per expert, treating them as if they are separate matrices
+            return eo.reduce(model.W_dec ** 2, "n_experts d_bottleneck d_in -> n_experts", 'sum') ** 0.5
+
+        def encode_with_hidden_pre(self, x: torch.Tensor) -> tuple[torch.Tensor, ...]:
+            pre_act_charts, h_charts, pre_act_bottleneck = _smixae_rebased_encode(self, x)
+
+            # Apply BatchTopK
+            batch_norm_mask = self.batchtopk(pre_act_bottleneck.norm(dim=-1)) > 0
+            h_bottleneck = pre_act_bottleneck * batch_norm_mask.unsqueeze(-1)
+
+            # Hooks and stashes
             self.h_bottleneck = h_bottleneck  # stored for compute_restricted_r2 / plot helpers
-            self.hook_sae_acts_pre(hidden_pre_latent)
-            self.hook_sae_acts_post(h_latent)
+            self.hook_sae_acts_pre(pre_act_charts)
+            self.hook_sae_acts_post(h_charts)
             self.hook_sae_acts_bottleneck(h_bottleneck)
-            return h_bottleneck, hidden_pre_bottleneck
+        
+            return h_bottleneck, pre_act_bottleneck, h_charts, pre_act_charts
 
         def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
-            out = torch.einsum("bnd,nde->bne", feature_acts, self.W_latent_dec).flatten(-2, -1)
-            out = out @ self.W_dec + self.b_dec
+            out = _smixae_decode(self, feature_acts)
+
+            # Hooks
             out = self.hook_sae_recons(out)
             out = self.run_time_activation_norm_fn_out(out)
+        
             return self.reshape_fn_out(out, self.d_head)
 
         @override
         def training_forward_pass(self, step_input: TrainStepInput) -> TrainStepOutput:
-            h_latent, hidden_pre_latent, hidden_pre_bottleneck = _smixae_rebased_encode(self, step_input.sae_in)
-            batch_norm_mask = self.batchtopk(hidden_pre_bottleneck.norm(dim=-1)) > 0
-            h_bottleneck = hidden_pre_bottleneck * batch_norm_mask.unsqueeze(-1)
-            self.h_bottleneck = h_bottleneck
+            # Encode
+            # pre_act_charts, h_charts, pre_act_bottleneck = _smixae_rebased_encode(self, step_input.sae_in)
+            h_bottleneck, pre_act_bottleneck, h_charts, pre_act_charts = self.encode_with_hidden_pre(step_input.sae_in)
+            h_bottleneck_norms = h_bottleneck.norm(dim=-1)
+        
+            # ???
+            # batch_norm_mask = self.batchtopk(pre_act_bottleneck.norm(dim=-1)) > 0
+            # h_bottleneck = pre_act_bottleneck * batch_norm_mask.unsqueeze(-1)
+            # self.h_bottleneck = h_bottleneck
+            # self.hook_sae_acts_pre(pre_act_charts)
+            # self.hook_sae_acts_post(h_charts)
+            # self.hook_sae_acts_bottleneck(h_bottleneck)
 
-            self.hook_sae_acts_pre(hidden_pre_latent)
-            self.hook_sae_acts_post(h_latent)
-            self.hook_sae_acts_bottleneck(h_bottleneck)
-
+            # Decode and update threshold
             sae_out = self.decode(h_bottleneck)
-            self.update_threshold(h_bottleneck.norm(dim=-1))
+            self.update_threshold(h_bottleneck_norms)
 
+            # Update the dead expert tracker
             with torch.no_grad():
-                fired_in_batch = (h_bottleneck.norm(dim=-1) > 0).any(dim=0)
+                fired_in_batch = (h_bottleneck_norms > 0).any(dim=0)
                 self.n_passes_since_fired = torch.where(
                     fired_in_batch,
                     torch.zeros_like(self.n_passes_since_fired),
                     self.n_passes_since_fired + 1,
                 )
 
+            # Calculate MSE and dead expert aux loss
             mse_loss = self.mse_loss_fn(sae_out, step_input.sae_in).sum(dim=-1).mean()
             dead_aux_loss = self.calculate_pre_act_aux_loss(
                 self.n_passes_since_fired > self.cfg.dead_after_n_passes,
-                hidden_pre_bottleneck,
+                pre_act_bottleneck,
             )
+        
             total_loss = mse_loss + dead_aux_loss
             losses = {"mse_loss": mse_loss, "dead_expert_aux_loss": dead_aux_loss}
 
-            norms = h_bottleneck.norm(dim=-1)
+            # WandB metrics
             metrics: dict = {
-                "experts_above_1e-3_L2":   (norms > 1e-3).float().sum(dim=-1).mean(),
-                "experts_above_1e-1_L2":   (norms > 1e-1).float().sum(dim=-1).mean(),
-                "expert_norm_mean":        norms[norms > 0].mean(),
+                "experts_above_1e-3_L2":   (h_bottleneck_norms > 1e-3).float().sum(dim=-1).mean(),
+                "experts_above_1e-1_L2":   (h_bottleneck_norms > 1e-1).float().sum(dim=-1).mean(),
+                "expert_norm_mean":        h_bottleneck_norms[h_bottleneck_norms > 0].mean(),
                 "dead_experts":            (self.n_passes_since_fired > self.cfg.dead_after_n_passes).sum().item(),
                 "act_threshold":           self.threshold,
-                "experts_above_threshold": (hidden_pre_bottleneck.norm(dim=-1) > self.threshold).float().sum(dim=-1).mean(),
-                "nonzero_latent_l0":       (h_latent > 0).float().sum(dim=-1).mean(),
+                "experts_above_threshold": (pre_act_bottleneck.norm(dim=-1) > self.threshold).float().sum(dim=-1).mean(),
+                "nonzero_latent_l0":       (h_charts > 0).float().sum(dim=-1).mean(),
             }
 
             # SAELens trainer expects (batch, d_sae) shape for its book-keeping.
             return TrainStepOutput(
                 sae_in=step_input.sae_in, sae_out=sae_out,
-                feature_acts=h_latent, hidden_pre=hidden_pre_latent,
+                feature_acts=h_charts.flatten(), hidden_pre=pre_act_charts.flatten(),
                 loss=total_loss, losses=losses, metrics=metrics,
             )
 
         def calculate_pre_act_aux_loss(
-            self, dead_expert_mask: torch.Tensor, hidden_pre_bottleneck: torch.Tensor
+            self, dead_expert_mask: torch.Tensor, pre_act_bottleneck: torch.Tensor
         ) -> torch.Tensor:
             if dead_expert_mask is None or not dead_expert_mask.any():
                 return self.threshold.new_tensor(0.0)
-            expert_norms = hidden_pre_bottleneck.norm(dim=-1)
+            expert_norms = pre_act_bottleneck.norm(dim=-1)
             dead_norms = expert_norms[:, dead_expert_mask]
             shortfall = torch.relu(self.threshold.detach().float() - dead_norms)
-            dead_decoder_norms = self.effective_decoder_norm[dead_expert_mask].detach()
-            return self.cfg.aux_loss_coefficient * (shortfall * dead_decoder_norms).sum(dim=-1).mean()
+        
+            return self.cfg.aux_loss_coefficient * (shortfall).sum(dim=-1).mean()
 
         @torch.no_grad()
         def update_threshold(self, norms_topk: torch.Tensor) -> None:
@@ -464,16 +562,31 @@ def _(
             self.W_dec.data /= scaling_factor
             self.b_dec.data /= scaling_factor
             self.cfg.normalize_activations = "none"
-            if self.cfg.rescale_acts_by_decoder_norm:
-                sf_sqrt = scaling_factor**0.5
-                self.W_dec.data *= sf_sqrt
-                self.threshold = self.threshold / sf_sqrt  # type: ignore[assignment]
-            else:
-                self.threshold = self.threshold / scaling_factor  # type: ignore[assignment]
+
+            # Fold norm rescaling into the decoder
+            self.W_dec.data /= self.effective_decoder_norm.view(-1, 1, 1)
+        
+            # if self.cfg.rescale_acts_by_decoder_norm:
+            #     sf_sqrt = scaling_factor**0.5
+            #     self.W_dec.data *= sf_sqrt
+            #     self.threshold = self.threshold / sf_sqrt  # type: ignore[assignment]
+            # else:
+            #     self.threshold = self.threshold / scaling_factor  # type: ignore[assignment]
 
         @override
-        def calculate_aux_loss(step_input: TrainStepInput, feature_acts: torch.Tensor, hidden_pre: torch.Tensor, sae_out: torch.Tensor) -> torch.Tensor | dict[str, torch.Tensor]:
-            return torch.tensor(0.0)
+        def calculate_aux_loss(
+            self,
+            step_input: TrainStepInput,
+            feature_acts: torch.Tensor,
+            hidden_pre: torch.Tensor,
+            sae_out: torch.Tensor,
+        ) -> dict[str, torch.Tensor]:
+            return {
+                "dead_expert_aux_loss": self.calculate_pre_act_aux_loss(
+                    self.n_passes_since_fired > self.cfg.dead_after_n_passes,
+                    hidden_pre,
+                )
+            }
 
     # ── Instantiate (mirrors _build_smixae in cli/toy.py) ─────────────────────────
 
@@ -497,6 +610,20 @@ def _(
     _n_params = sum(p.numel() for p in model.parameters())
     mo.md(f"**Model**: SMIXAERebasedTraining (local copy) — {_n_params:,} parameters")
     return (model,)
+
+
+@app.cell
+def _(eo, model):
+    print(model.W_dec.shape)
+
+    model.W_dec.norm(dim=1).shape
+
+    a = eo.reduce(model.W_dec ** 2, "n_experts d_bottleneck d_in -> n_experts", 'sum') ** 0.5
+    a.shape
+
+    # print(eo.repeat(model.effective_decoder_norm, "n_experts -> n_experts i j"), i=1, j=1)
+    model.W_dec / model.effective_decoder_norm.view(-1, 1, 1)
+    return
 
 
 @app.cell
