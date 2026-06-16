@@ -294,6 +294,15 @@ def _(
             )
         )
 
+        sae.b_select = nn.Parameter(
+            torch.zeros(
+                sae.cfg.n_experts,
+                sae.cfg.d_bottleneck,
+                dtype=sae.dtype,
+                device=sae.device,
+            )
+        )
+
         nn.init.kaiming_uniform_(sae.W_enc)
         nn.init.kaiming_uniform_(sae.W_bottleneck)
         nn.init.kaiming_uniform_(sae.W_dec)
@@ -356,12 +365,12 @@ def _(
         def encode(self, x: torch.Tensor) -> torch.Tensor:
             _, _, pre_act_bottleneck = _smixae_rebased_encode(self, x)
             mask = pre_act_bottleneck.norm(dim=-1) > self.threshold  # type: ignore[operator]
-            return pre_act_bottleneck * mask.unsqueeze(-1)
+            return (pre_act_bottleneck - self.b_select) * mask.unsqueeze(-1)
 
         def encode_with_charts(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
             h_charts, _, pre_act_bottleneck = _smixae_rebased_encode(self, x)
             mask = pre_act_bottleneck.norm(dim=-1) > self.threshold  # type: ignore[operator]
-            return pre_act_bottleneck * mask.unsqueeze(-1), h_charts
+            return (pre_act_bottleneck - self.b_select) * mask.unsqueeze(-1), h_charts
 
         def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
             out = _smixae_decode(self, feature_acts)
@@ -460,7 +469,7 @@ def _(
 
             # Apply BatchTopK
             batch_norm_mask = self.batchtopk(pre_act_bottleneck.norm(dim=-1)) > 0
-            h_bottleneck = pre_act_bottleneck * batch_norm_mask.unsqueeze(-1)
+            h_bottleneck = (pre_act_bottleneck - self.b_select) * batch_norm_mask.unsqueeze(-1)
 
             # Hooks and stashes
             self.h_bottleneck = h_bottleneck  # stored for compute_restricted_r2 / plot helpers
