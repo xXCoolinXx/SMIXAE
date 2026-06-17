@@ -21,6 +21,29 @@ if TYPE_CHECKING:
 # ── Metrics ────────────────────────────────────────────────────────────────────
 
 
+def _encode_bottleneck(model: "SMIXAETraining", x: torch.Tensor) -> torch.Tensor:
+    """Return the masked bottleneck activations for ``x``.
+
+    Sources the bottleneck without assuming the model stashes it on
+    ``self.h_bottleneck``: if the model exposes that attribute (e.g. the
+    production ``SMIXAETraining``) we read it after ``encode_with_hidden_pre`` to
+    preserve the original behaviour; otherwise we fall back to ``encode()``,
+    which every SMIXAE implementation defines to return the masked bottleneck
+    that ``decode()`` consumes.
+
+    Args:
+        model: Trained SMIXAE-style model (already on device, in eval mode).
+        x: (B, d_in) input chunk on the model's device.
+
+    Returns:
+        h_bottleneck: (B, n_experts, d_bottleneck) on the model's device.
+    """
+    if hasattr(model, "h_bottleneck"):
+        model.encode_with_hidden_pre(x)
+        return model.h_bottleneck
+    return model.encode(x)
+
+
 @torch.no_grad()
 def _encode_all(
     model: "SMIXAETraining",
@@ -45,8 +68,8 @@ def _encode_all(
     out   = torch.zeros(N, n_exp, d_b)
     for start in range(0, N, chunk_size):
         end = min(start + chunk_size, N)
-        model.encode_with_hidden_pre(x[start:end].to(device))
-        out[start:end] = model.h_bottleneck.detach().cpu()
+        h_bottleneck = _encode_bottleneck(model, x[start:end].to(device))
+        out[start:end] = h_bottleneck.detach().cpu()
     return out
 
 
@@ -204,11 +227,11 @@ def compute_metrics(
     for start in range(0, N, chunk_size):
         end     = min(start + chunk_size, N)
         x_chunk = eval_data.x[start:end].to(device)
-        model.encode_with_hidden_pre(x_chunk)
-        sae_out = model.decode(model.h_bottleneck)
+        h_bottleneck = _encode_bottleneck(model, x_chunk)
+        sae_out = model.decode(h_bottleneck)
 
         mse_sum += (sae_out - x_chunk).pow(2).sum(dim=-1).sum().item()
-        norms    = model.h_bottleneck.norm(dim=-1)          # (B, n_experts)
+        norms    = h_bottleneck.norm(dim=-1)                # (B, n_experts)
         l0_sum  += (norms > 0).float().sum(dim=-1).sum().item()
         ever_fired |= (norms > 0).any(0).cpu()
 

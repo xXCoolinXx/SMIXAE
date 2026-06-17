@@ -1,9 +1,16 @@
-"""Base classes for SMIXAE-style architectures.
+"""Base class for SMIXAE-style architectures.
 
-Provides :class:`BaseSMIXAE` (inference) and :class:`BaseSMIXAETraining` (training),
-which remove weight-matrix assumptions from the SAELens base classes while preserving
+Provides a single :class:`BaseSMIXAE` that serves **both training and inference**.
+It removes the weight-matrix assumptions from the SAELens base classes while preserving
 full SAELens compatibility (hooks, normalisation, hook_z reshaping, save/load,
 architecture registration).
+
+Because SAELens' :class:`~sae_lens.saes.sae.TrainingSAE` is itself a
+:class:`~sae_lens.saes.sae.SAE`, a single subclass of ``TrainingSAE`` exposes the full
+inference API (``encode``/``decode``/``forward``/``process_sae_in``/``save_model``/
+``load_from_disk``) **and** the training API (``training_forward_pass``/
+``encode_with_hidden_pre``/``get_coefficients``/``calculate_aux_loss``). One class, no
+train/inference split.
 
 Pre-built weight configuration helpers are exposed at module level so that
 downstream ``initialize_weights`` implementations can compose them freely:
@@ -18,11 +25,10 @@ from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
 import torch
-from sae_lens.saes.sae import SAE, SAEConfig, TrainingSAE, TrainingSAEConfig
+from sae_lens.saes.sae import TrainingSAE, TrainingSAEConfig
 from torch import nn
 
-T_BASE_CFG = TypeVar("T_BASE_CFG", bound=SAEConfig)
-T_BASE_TRAINING_CFG = TypeVar("T_BASE_TRAINING_CFG", bound=TrainingSAEConfig)
+T_BASE_CFG = TypeVar("T_BASE_CFG", bound=TrainingSAEConfig)
 
 
 # ---------------------------------------------------------------------------
@@ -41,7 +47,7 @@ def register_standard_linear_weights(sae: Any) -> None:
     standard linear encoder/decoder projection.
 
     Args:
-        sae: A :class:`BaseSMIXAE` or :class:`BaseSMIXAETraining` instance.
+        sae: A :class:`BaseSMIXAE` instance.
             Must expose ``cfg.d_in``, ``cfg.d_sae``, ``dtype``, and ``device``.
     """
     sae.b_dec = nn.Parameter(
@@ -73,7 +79,7 @@ def register_smixae_v1_bottleneck_weights(sae: Any) -> None:
       shape ``(n_experts, d_bottleneck, d_expert)``, Kaiming init.
 
     Args:
-        sae: A :class:`BaseSMIXAE` or :class:`BaseSMIXAETraining` instance.
+        sae: A :class:`BaseSMIXAE` instance.
             Must expose ``cfg.n_experts``, ``cfg.d_expert``, ``cfg.d_bottleneck``,
             ``dtype``, and ``device``.
     """
@@ -107,14 +113,17 @@ def register_smixae_v1_bottleneck_weights(sae: Any) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Base classes
+# Base class
 # ---------------------------------------------------------------------------
 
 
-class BaseSMIXAE(SAE[T_BASE_CFG], Generic[T_BASE_CFG], ABC):
-    """Abstract inference base class for SMIXAE-style architectures.
+class BaseSMIXAE(TrainingSAE[T_BASE_CFG], Generic[T_BASE_CFG], ABC):
+    """Abstract base class for SMIXAE-style architectures (training **and** inference).
 
-    Removes the weight-matrix assumptions baked into SAELens' :class:`~sae_lens.saes.sae.SAE`:
+    A single class that subclasses SAELens' :class:`~sae_lens.saes.sae.TrainingSAE`, so one
+    instance can be trained (``train_toy_sae`` / ``SAETrainer`` duck-type it) and used for
+    inference/eval — no separate inference class. It removes the weight-matrix assumptions
+    baked into SAELens' :class:`~sae_lens.saes.sae.SAE`:
 
     - ``initialize_weights()`` is **abstract** — no default W_enc/W_dec/b_dec are
       created.  Subclasses register exactly the parameters they need.
@@ -124,7 +133,11 @@ class BaseSMIXAE(SAE[T_BASE_CFG], Generic[T_BASE_CFG], ABC):
       Override to rescale architecture-specific weights.
 
     All SAELens infrastructure (hooks, normalisation, hook_z reshaping, save/load,
-    architecture registration) is inherited unchanged from :class:`~sae_lens.saes.sae.SAE`.
+    architecture registration, ``mse_loss_fn``) is inherited unchanged from
+    :class:`~sae_lens.saes.sae.TrainingSAE`.
+
+    Subclasses must use a :class:`~sae_lens.saes.sae.TrainingSAEConfig` (the single config
+    carries both structural and training fields; inference simply ignores the training ones).
 
     Use :func:`register_standard_linear_weights` and
     :func:`register_smixae_v1_bottleneck_weights` inside ``initialize_weights()``
@@ -133,7 +146,7 @@ class BaseSMIXAE(SAE[T_BASE_CFG], Generic[T_BASE_CFG], ABC):
     Example::
 
         @dataclass
-        class MyConfig(SAEConfig):
+        class MyConfig(TrainingSAEConfig):
             n_experts: int = 64
             d_expert: int = 8
             d_bottleneck: int = 3
@@ -151,11 +164,14 @@ class BaseSMIXAE(SAE[T_BASE_CFG], Generic[T_BASE_CFG], ABC):
                     torch.tensor(0.0, dtype=torch.double, device=self.device),
                 )
 
-            def encode(self, x: torch.Tensor) -> torch.Tensor:
-                ...
+            # Training contract (TrainingSAE):
+            def encode_with_hidden_pre(self, x): ...
+            def get_coefficients(self): ...
+            def calculate_aux_loss(self, *a, **k): ...
 
-            def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
-                ...
+            # Inference contract (SAE):
+            def encode(self, x): ...
+            def decode(self, feature_acts): ...
     """
 
     def __init__(self, cfg: T_BASE_CFG, use_error_term: bool = False) -> None:
@@ -184,7 +200,7 @@ class BaseSMIXAE(SAE[T_BASE_CFG], Generic[T_BASE_CFG], ABC):
             sae_in: Raw input tensor.
 
         Returns:
-            Pre-processed tensor ready for ``encode()``.
+            Pre-processed tensor ready for ``encode()`` / ``encode_with_hidden_pre()``.
         """
         sae_in = sae_in.to(self.dtype)
         sae_in = self.reshape_fn_in(sae_in)
@@ -226,63 +242,3 @@ class BaseSMIXAE(SAE[T_BASE_CFG], Generic[T_BASE_CFG], ABC):
         Returns:
             Reconstructed input, shape ``(batch, d_in)``.
         """
-
-
-class BaseSMIXAETraining(TrainingSAE[T_BASE_TRAINING_CFG], Generic[T_BASE_TRAINING_CFG], ABC):
-    """Abstract training base class for SMIXAE-style architectures.
-
-    Mirrors :class:`BaseSMIXAE` for the training side: removes weight-matrix
-    assumptions from ``TrainingSAE`` while keeping the full training-loop
-    infrastructure (``training_forward_pass``, MSE loss, hooks, save/load).
-
-    Use :func:`register_standard_linear_weights` and
-    :func:`register_smixae_v1_bottleneck_weights` inside ``initialize_weights()``
-    to set up standard weight groups.
-
-    Note:
-        The inherited ``log_histograms()`` from ``TrainingSAE`` accesses
-        ``self.W_dec``.  If your architecture does not register a ``W_dec``
-        parameter, override ``log_histograms()`` to avoid ``AttributeError``
-        during logging.
-    """
-
-    def __init__(self, cfg: T_BASE_TRAINING_CFG) -> None:
-        cfg.apply_b_dec_to_input = False
-        super().__init__(cfg)
-
-    @abstractmethod
-    def initialize_weights(self) -> None:
-        """Register all learnable parameters and buffers.
-
-        Do **not** call ``super().initialize_weights()`` — that invokes
-        ``TrainingSAE.initialize_weights()`` which unconditionally creates
-        W_enc, W_dec, and b_dec.  Use the pre-built helpers instead.
-        """
-
-    def process_sae_in(self, sae_in: torch.Tensor) -> torch.Tensor:
-        """Pre-process input, skipping the b_dec subtraction when b_dec is absent.
-
-        Args:
-            sae_in: Raw input tensor.
-
-        Returns:
-            Pre-processed tensor ready for ``encode_with_hidden_pre()``.
-        """
-        sae_in = sae_in.to(self.dtype)
-        sae_in = self.reshape_fn_in(sae_in)
-        sae_in = self.hook_sae_input(sae_in)
-        sae_in = self.run_time_activation_norm_fn_in(sae_in)
-        if self.cfg.apply_b_dec_to_input and hasattr(self, "b_dec"):
-            sae_in = sae_in - self.b_dec
-        return sae_in
-
-    @torch.no_grad()
-    def fold_activation_norm_scaling_factor(self, scaling_factor: float) -> None:
-        """No-op fold — only resets the normalisation mode to ``"none"``.
-
-        Override to rescale architecture-specific weight matrices after training.
-
-        Args:
-            scaling_factor: The activation norm scaling factor from the trainer.
-        """
-        self.cfg.normalize_activations = "none"

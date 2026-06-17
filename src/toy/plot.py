@@ -18,6 +18,7 @@ import torch
 from plotly.subplots import make_subplots
 
 from toy.manifolds import _MANIFOLD_ORDER
+from toy.metrics import _encode_bottleneck
 from toy.zoo import EvalData, ManifoldZoo
 
 if TYPE_CHECKING:
@@ -48,6 +49,7 @@ _TYPE_LABELS = {
 }
 
 
+@torch.no_grad()
 def _encode_all_plot(
     model: "SMIXAETraining",
     x: torch.Tensor,
@@ -71,8 +73,8 @@ def _encode_all_plot(
     out   = torch.zeros(N, n_exp, d_b)
     for start in range(0, N, chunk_size):
         end = min(start + chunk_size, N)
-        model.encode_with_hidden_pre(x[start:end].to(device))
-        out[start:end] = model.h_bottleneck.detach().cpu()
+        h_bottleneck = _encode_bottleneck(model, x[start:end].to(device))
+        out[start:end] = h_bottleneck.detach().cpu()
     return out
 
 

@@ -1,7 +1,7 @@
-"""Tests for BaseSMIXAE / BaseSMIXAETraining and the SMIXAERebased implementation.
+"""Tests for the single BaseSMIXAE and the SMIXAERebased implementation.
 
 Coverage:
-1. Instantiation of SMIXAERebased and SMIXAERebasedTraining.
+1. Instantiation of SMIXAERebased (one class for training and inference).
 2. Forward-pass output shapes.
 3. Training step (training_forward_pass) correctness.
 4. Parameter name parity with the original SMIXAE.
@@ -17,7 +17,7 @@ from dataclasses import dataclass
 import pytest
 import torch
 from sae_lens import register_sae_class
-from sae_lens.saes.sae import SAE, SAEConfig, TrainStepInput
+from sae_lens.saes.sae import SAE, TrainingSAEConfig, TrainStepInput
 
 import smixae  # noqa: F401 — triggers SAELens registration
 from smixae.base_smixae import (
@@ -28,8 +28,6 @@ from smixae.smixae import SMIXAE, SMIXAEConfig, SMIXAETraining, SMIXAETrainingCo
 from smixae.smixae_rebased import (
     SMIXAERebased,
     SMIXAERebasedConfig,
-    SMIXAERebasedTraining,
-    SMIXAERebasedTrainingConfig,
     _smixae_rebased_encode,
 )
 
@@ -56,8 +54,8 @@ def _make_inference_cfg() -> SMIXAERebasedConfig:
     )
 
 
-def _make_training_cfg() -> SMIXAERebasedTrainingConfig:
-    return SMIXAERebasedTrainingConfig(
+def _make_training_cfg() -> SMIXAERebasedConfig:
+    return SMIXAERebasedConfig(
         n_experts=N_EXPERTS,
         d_expert=D_EXPERT,
         d_bottleneck=D_BOTTLENECK,
@@ -73,9 +71,9 @@ def _make_rebased(seed: int = 0) -> SMIXAERebased:
     return SMIXAERebased(_make_inference_cfg())
 
 
-def _make_rebased_training(seed: int = 0) -> SMIXAERebasedTraining:
+def _make_rebased_training(seed: int = 0) -> SMIXAERebased:
     torch.manual_seed(seed)
-    return SMIXAERebasedTraining(_make_training_cfg())
+    return SMIXAERebased(_make_training_cfg())
 
 
 def _make_original(seed: int = 0) -> SMIXAE:
@@ -126,7 +124,7 @@ class TestInstantiation:
 
     def test_training_instantiation(self):
         model = _make_rebased_training()
-        assert isinstance(model, SMIXAERebasedTraining)
+        assert isinstance(model, SMIXAERebased)
 
     def test_inference_has_expected_buffers(self):
         model = _make_rebased()
@@ -139,7 +137,7 @@ class TestInstantiation:
 
     def test_d_sae_auto_computed_in_training(self):
         cfg = _make_training_cfg()
-        model = SMIXAERebasedTraining(cfg)
+        model = SMIXAERebased(cfg)
         assert model.cfg.d_sae == N_EXPERTS * D_EXPERT
 
 
@@ -303,7 +301,6 @@ class TestSAELensRegistration:
 
     def test_architecture_name(self):
         assert SMIXAERebasedConfig.architecture() == "smixae_rebased"
-        assert SMIXAERebasedTrainingConfig.architecture() == "smixae_rebased"
 
     def test_get_sae_class_for_architecture(self):
         cls = SAE.get_sae_class_for_architecture("smixae_rebased")
@@ -335,6 +332,7 @@ class TestSaveLoadRoundtrip:
     def test_save_load_output_matches(self):
         torch.manual_seed(42)
         model = _make_rebased()
+        model.eval()  # inference: threshold gating
         model.threshold = torch.tensor(0.0, dtype=torch.double)  # fire all experts
         x = _random_input(seed=7)
         out_before = model(x)
@@ -343,6 +341,7 @@ class TestSaveLoadRoundtrip:
             model.save_model(tmp)
             loaded = SAE.load_from_disk(tmp, device="cpu")
 
+        loaded.eval()
         out_after = loaded(x)
         torch.testing.assert_close(out_before, out_after, rtol=1e-5, atol=1e-6)
 
@@ -371,6 +370,9 @@ class TestNumericalEquivalence:
         rebased = _make_rebased(seed=0)  # different seed — weights will be overwritten
         self._clone_weights(original, rebased)
 
+        # Inference mode → threshold gating, matching the original SMIXAE.
+        original.eval()
+        rebased.eval()
         # Set same threshold.
         original.threshold = torch.tensor(0.0, dtype=torch.double)
         rebased.threshold = torch.tensor(0.0, dtype=torch.double)
@@ -385,6 +387,8 @@ class TestNumericalEquivalence:
         rebased = _make_rebased(seed=0)
         self._clone_weights(original, rebased)
 
+        original.eval()
+        rebased.eval()
         original.threshold = torch.tensor(0.0, dtype=torch.double)
         rebased.threshold = torch.tensor(0.0, dtype=torch.double)
 
@@ -418,7 +422,7 @@ class TestBaseClassBehaviour:
         """A minimal concrete subclass with no b_dec survives process_sae_in."""
 
         @dataclass
-        class _MinimalConfig(SAEConfig):
+        class _MinimalConfig(TrainingSAEConfig):
             @classmethod
             def architecture(cls) -> str:
                 return "_minimal_test_arch"
@@ -433,6 +437,17 @@ class TestBaseClassBehaviour:
 
             def decode(self, feature_acts: torch.Tensor) -> torch.Tensor:
                 return feature_acts @ self.W_dec
+
+            # Minimal training contract so the class is concrete (unused here).
+            def encode_with_hidden_pre(self, x: torch.Tensor):
+                h = self.encode(x)
+                return h, h
+
+            def get_coefficients(self):
+                return {}
+
+            def calculate_aux_loss(self, step_input, feature_acts, hidden_pre, sae_out):
+                return {}
 
         register_sae_class("_minimal_test_arch", _MinimalModel, _MinimalConfig)
 
@@ -461,8 +476,7 @@ class TestBaseClassBehaviour:
         model = _make_rebased()
         assert isinstance(model, BaseSMIXAE)
 
-    def test_rebased_training_inherits_from_base_training(self):
-        from smixae.base_smixae import BaseSMIXAETraining
-
+    def test_rebased_training_inherits_from_base(self):
+        """The single class trains and infers — a training-configured model is a BaseSMIXAE."""
         model = _make_rebased_training()
-        assert isinstance(model, BaseSMIXAETraining)
+        assert isinstance(model, BaseSMIXAE)
