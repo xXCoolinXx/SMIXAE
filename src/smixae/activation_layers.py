@@ -4,6 +4,8 @@ from typing import Any
 import einops as eo
 from torch import nn
 from sae_lens.saes.batchtopk_sae import BatchTopK
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 def rectangle_bandwidth(x : torch.Tensor, bandwidth : float) -> torch.Tensor:
     rectangle = (-bandwidth/2 < x) & (x < bandwidth / 2)
