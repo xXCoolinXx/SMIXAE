@@ -1,11 +1,10 @@
-import torch
-import numpy as np
-from typing import Any
-import einops as eo
-from torch import nn
-from sae_lens.saes.batchtopk_sae import BatchTopK
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import ClassVar
+
+import torch
+from torch import nn
+
 
 @dataclass
 class SparsityLayerConfig(ABC):
@@ -15,7 +14,10 @@ class SparsityLayerConfig(ABC):
     sparsity_loss_coefficient : float
 
 class SparsityLayer(nn.Module, ABC):
-    def __init__(self, config : SparsityLayerConfig): 
+    config_type : ClassVar[type[SparsityLayerConfig]] = type[SparsityLayerConfig]  # Config type that helps the SparsityLayer.from_config() method determine the derived class to call
+    _registry : ClassVar[dict[type[SparsityLayerConfig], type['SparsityLayer']]] = {} # Registry for all derived classes. Nicer management than SAELens :)
+
+    def __init__(self, config : SparsityLayerConfig):
         super().__init__()
 
         self.cfg = config
@@ -24,8 +26,28 @@ class SparsityLayer(nn.Module, ABC):
             "n_passes_since_fired",
             torch.zeros(self.cfg.n_neurons, dtype=torch.long)
         )
-    
-    # Loss Functions 
+
+    # Registry tooling for sublayers
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        if 'config_type' in cls.__dict__:
+            key = cls.config_type
+            if key in SparsityLayer._registry:
+                raise ValueError(
+                    f"{key.__name__} already registered to "
+                    f"{SparsityLayer._registry[key].__name__}"
+                )
+            SparsityLayer._registry[key] = cls
+
+    @classmethod
+    def from_config(cls, config: SparsityLayerConfig) -> "SparsityLayer":
+        impl = cls._registry.get(type(config))
+        if impl is None:
+            raise ValueError(f"No SparsityLayer registered for {type(config).__name__}")
+        return impl(config)
+
+    # Loss Functions
     @abstractmethod
     def dead_neuron_loss(self, pre_act_x : torch.Tensor) -> torch.Tensor:
         """Use self.dead_mask to get the dead neurons"""
@@ -33,7 +55,7 @@ class SparsityLayer(nn.Module, ABC):
 
     def sparsity_loss(self, post_act_x : torch.Tensor) -> torch.Tensor:
         return post_act_x.new_tensor(0.0) # Default to 0 because e.g. TopK-like methods do not have additional sparsity loss
-    
+
     # Forward Functions
     @abstractmethod
     def training_forward(self, x : torch.Tensor) -> torch.Tensor:
@@ -42,7 +64,7 @@ class SparsityLayer(nn.Module, ABC):
     @abstractmethod
     def eval_forward(self, x : torch.Tensor) -> torch.Tensor:
         pass
-    
+
     def forward(self, x : torch.Tensor) -> torch.Tensor:
         if self.training:
             out = self.training_forward(x)
@@ -62,25 +84,22 @@ class SparsityLayer(nn.Module, ABC):
 
     # Dead Neuron Tracking
     def not_fired_critera(self, post_act_x : torch.Tensor):
-        """
-        Criteria for not firing - depends on whether you want to use norm and shape of the feature itself
+        """Criteria for not firing - depends on whether you want to use norm and shape of the feature itself
         
         For standard SAEs you should override this to just be whether the feature value is > 0
 
         SMIXAE has to aggregate over the last dimension first
         """
-        return post_act_x.norm(dim=-1) > 0 
+        return post_act_x.norm(dim=-1) > 0
 
     @torch.no_grad()
     def _calculate_dead_experts(self, post_act_x : torch.Tensor):
-        """
-        Private function used to update the dead neuron tracker
+        """Private function used to update the dead neuron tracker
 
         We take a non-negative `scaler_criteria` variable to be compatible with future methods that may not use norm.
 
         However, we expect that typical inputs for scalar_criteria will simply be the feature norm
         """
-
         fired_in_batch = self.not_fired_critera(post_act_x).any(dim=0)
 
         self.n_passes_since_fired = torch.where(
@@ -88,7 +107,7 @@ class SparsityLayer(nn.Module, ABC):
                 torch.zeros_like(self.n_passes_since_fired), # True condition (Resets)
                 self.n_passes_since_fired + 1, # False condition (increases # passes since fired)
             )
-        
+
     @property
     def dead_mask(self):
         return self.n_passes_since_fired > self.cfg.dead_after_n_passes

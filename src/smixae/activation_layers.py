@@ -1,34 +1,31 @@
-import torch
-import numpy as np
 from typing import Any
+
 import einops as eo
-from torch import nn
+import torch
 from sae_lens.saes.batchtopk_sae import BatchTopK
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from torch import nn
+
 
 def rectangle_bandwidth(x : torch.Tensor, bandwidth : float) -> torch.Tensor:
     rectangle = (-bandwidth/2 < x) & (x < bandwidth / 2)
-    
+
     return rectangle / bandwidth
 
 def grump_relu_forward(x : torch.Tensor, threshold : torch.Tensor):
-    """
-    GrumpReLU forward implementation. 
+    """GrumpReLU forward implementation.
     
     Defined as a separate function since it will be used both in the forward pass of the Autograd function as well as in the GrumpReLU layer.
     """
-
     norms = x.norm(dim=-1)
     mask = norms > threshold
-    
-    return x * mask.unsqueeze(-1) 
+
+    return x * mask.unsqueeze(-1)
 
 class GrumpReLU(torch.autograd.Function):
     @staticmethod
     def forward(
-        x : torch.Tensor, 
-        threshold : torch.Tensor, 
+        x : torch.Tensor,
+        threshold : torch.Tensor,
         bandwidth : float
         ) -> torch.Tensor:
 
@@ -37,8 +34,8 @@ class GrumpReLU(torch.autograd.Function):
 
     @staticmethod
     def setup_context(
-        ctx : Any, 
-        inputs: tuple[torch.Tensor, torch.Tensor, float], 
+        ctx : Any,
+        inputs: tuple[torch.Tensor, torch.Tensor, float],
         output: torch.Tensor
         ) -> None:
         x, threshold, bandwidth = inputs
@@ -49,7 +46,7 @@ class GrumpReLU(torch.autograd.Function):
 
     @staticmethod
     def backward(
-        ctx : Any, 
+        ctx : Any,
         grad_outputs : torch.Tensor
         ) -> tuple[torch.Tensor, torch.Tensor, None]:
 
@@ -70,20 +67,19 @@ class GrumpReLU(torch.autograd.Function):
 
         # Threshold is the same for every sample in the batch (BROADCAST OVER THE BATCH) so requires a sum
         threshold_grad = eo.reduce(
-             - x * 
-             (threshold * rectangle_bandwidth(norms - threshold, ctx.bandwidth) / norms).unsqueeze(-1) 
+             - x *
+             (threshold * rectangle_bandwidth(norms - threshold, ctx.bandwidth) / norms).unsqueeze(-1)
              * grad_outputs,
              '... n_experts d_expert -> n_experts',
              reduction='sum'
         )
 
         return (x_grad, threshold_grad, None)
-    
+
 # BatchTopKNorm Layer
 
 class BatchTopKNorm(nn.Module):
-    """
-    Computes the following function during training:
+    r"""Computes the following function during training:
 
     $$ x * \mathbb{I}(BatchTopK(|x|_p) > 0)$$
 
@@ -113,7 +109,7 @@ class BatchTopKNorm(nn.Module):
             mask = norms > self.threshold
 
         return x * mask.unsqueeze(-1)
-    
+
     @torch.no_grad()
     def update_threshold(self, norms: torch.Tensor) -> None:
         positive_mask = norms > 0
@@ -122,14 +118,14 @@ class BatchTopKNorm(nn.Module):
             if positive_mask.any():
                 min_positive = norms[positive_mask].min().to(self.threshold.dtype)
                 self.threshold = (1 - lr) * self.threshold + lr * min_positive  # type: ignore[assignment]
-    
+
     def _apply(self, fn, *args, **kwargs):
         # Special apply function to avoid .to changing the data type of the threshold
         keep = self.threshold.dtype
         super()._apply(fn, *args, **kwargs)   # moves device + dtype as usual
         self.threshold = self.threshold.to(keep)  # restore dtype, keep new device
         return self
-    
+
 def calculate_dead_expert_aux_loss(
         self, pre_act_bottleneck: torch.Tensor, dead_expert_mask: torch.Tensor
     ) -> torch.Tensor:

@@ -27,6 +27,9 @@ register_sae_training_class("affine_smixae", AffineSMIXAETraining, AffineSMIXAET
 register_sae_class("smixae_rebased", SMIXAERebased, SMIXAERebasedConfig)
 register_sae_training_class("smixae_rebased", SMIXAERebased, SMIXAERebasedConfig)
 
+from smixae.batchtopknorm import BatchTopKNormLayer, BatchTopKNormLayerConfig
+from smixae.sparsity_layer import SparsityLayer, SparsityLayerConfig
+
 __all__ = [
     "SMIXAE",
     "SMIXAEConfig",

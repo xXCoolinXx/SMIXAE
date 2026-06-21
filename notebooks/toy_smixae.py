@@ -29,6 +29,7 @@ def _():
     from collections.abc import Callable
     from dataclasses import dataclass
 
+    import einops as eo
     from sae_lens.saes.batchtopk_sae import BatchTopK
     from sae_lens.saes.sae import (
         SAEConfig,
@@ -39,6 +40,7 @@ def _():
         TrainStepOutput,
     )
     from sae_lens.synthetic import train_toy_sae
+    from torch import nn
     from transformer_lens.hook_points import HookPoint
     from typing_extensions import override
 
@@ -46,8 +48,6 @@ def _():
     from smixae.base_smixae import (
         BaseSMIXAE,
         BaseSMIXAETraining,
-        register_smixae_v1_bottleneck_weights,
-        register_standard_linear_weights,
     )
     from toy.metrics import compute_cofiring_matrix, compute_metrics, compute_restricted_r2
     from toy.plot import plot_all_experts_with_originals
@@ -58,10 +58,6 @@ def _():
         build_manifold_zoo,
         generate_eval_set,
     )
-
-    import einops as eo
-
-    from torch import nn
 
     mo.md("## Imports loaded")
     return (
@@ -239,8 +235,7 @@ def _(
     # ── Shared encode ─────────────────────────────────────────────────────────────
 
     def register_smixae_v2_weights(sae : BaseSMIXAE | BaseSMIXAETraining):
-        """
-        Update weight configuration for SMIXAEv2. 
+        """Update weight configuration for SMIXAEv2.
 
         Key principles:
         - Remove unnneccessary additional linear layer
@@ -326,8 +321,7 @@ def _(
         return pre_act_charts, h_charts, pre_act_bottleneck
 
     def _smixae_decode(sae : SMIXAERebased | SMIXAERebasedTraining, z : torch.Tensor) -> torch.Tensor:
-        """
-        Decode feature acts
+        """Decode feature acts
         """
         # Divide by frob norm per expert, provides stability
         W_dec_normed = sae.W_dec / sae.effective_decoder_norm.view(-1, 1, 1)

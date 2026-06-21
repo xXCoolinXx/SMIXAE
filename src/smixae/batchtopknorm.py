@@ -1,12 +1,14 @@
 from dataclasses import dataclass
+from typing import ClassVar, override
 
-from smixae.sparsity_layer import SparsityLayerConfig, SparsityLayer
-from sae_lens.saes.batchtopk_sae import BatchTopK
 import torch
-from typing import override
+from sae_lens.saes.batchtopk_sae import BatchTopK
+
+from smixae.sparsity_layer import SparsityLayer, SparsityLayerConfig
+
 
 @dataclass
-class BatchTopKNormConfig(SparsityLayerConfig):
+class BatchTopKNormLayerConfig(SparsityLayerConfig):
     n_neurons : int = 2048
     dead_after_n_passes : int = 1000
     dead_neuron_loss_coefficient : float = 1/32
@@ -16,9 +18,8 @@ class BatchTopKNormConfig(SparsityLayerConfig):
     threshold_learning_rate : float = 0.01
     threshold_dtype : torch.dtype = torch.double
 
-class BatchTopKNorm(SparsityLayer):
-    r"""
-    Computes the following function during training:
+class BatchTopKNormLayer(SparsityLayer):
+    r"""Computes the following function during training:
 
     $$ x * \mathbb{I}(BatchTopK(|x|_p) > 0)$$
 
@@ -30,7 +31,9 @@ class BatchTopKNorm(SparsityLayer):
 
     Also updates inference threshold based on threshold_learning_rate. 
     """
-    def __init__(self, config : BatchTopKNormConfig):
+    config_type : ClassVar[type[SparsityLayerConfig]] = BatchTopKNormLayerConfig
+
+    def __init__(self, config : BatchTopKNormLayerConfig):
         super().__init__(config)
 
         self.register_buffer(
@@ -42,27 +45,27 @@ class BatchTopKNorm(SparsityLayer):
     @override
     def training_forward(self, x):
         norms = x.norm(dim=-1)
-        
+
         norm_acts = self.batchtopk(norms)
         mask = norm_acts > 0
         self.update_threshold(norm_acts)
 
         return x * mask.unsqueeze(-1)
-    
+
     @override
     def eval_forward(self, x):
         norms = x.norm(dim=-1)
         mask = norms > self.threshold
 
         return x * mask.unsqueeze(-1)
-    
+
     def _apply(self, fn, *args, **kwargs):
         # Special apply function to avoid .to changing the data type of the threshold
         keep = self.threshold.dtype
         super()._apply(fn, *args, **kwargs)   # moves device + dtype as usual
         self.threshold = self.threshold.to(keep)  # restore dtype, keep new device
         return self
-    
+
     @torch.no_grad()
     def update_threshold(self, mask: torch.Tensor) -> None:
         positive_mask = mask > 0
@@ -92,7 +95,7 @@ class BatchTopKNorm(SparsityLayer):
         """
         dead_mask = self.dead_mask
 
-        if dead_mask is None or not dead_mask.any():
+        if not dead_mask.any():
             return self.threshold.new_tensor(0.0)
 
         expert_norms = pre_act_x.norm(dim=-1)

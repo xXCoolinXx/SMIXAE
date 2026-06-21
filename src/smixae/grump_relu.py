@@ -1,35 +1,34 @@
-import torch
-import numpy as np
-from typing import Any
-import einops as eo
-from torch import nn
-from sae_lens.saes.batchtopk_sae import BatchTopK
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from smixae.sparsity_layer import SparsityLayerConfig, SparsityLayer
+from typing import Any, ClassVar, override
+
+import einops as eo
+import smixae.einops_norms as eon
+import torch
+from torch import nn
+
+from smixae.sparsity_layer import SparsityLayer, SparsityLayerConfig
+
 
 def rectangle_bandwidth(x : torch.Tensor, bandwidth : float) -> torch.Tensor:
     rectangle = (-bandwidth/2 < x) & (x < bandwidth / 2)
-    
+
     return rectangle / bandwidth
 
 def grump_relu_forward(x : torch.Tensor, threshold : torch.Tensor):
-    """
-    GrumpReLU forward implementation. 
+    """GrumpReLU forward implementation.
     
     Defined as a separate function since it will be used both in the forward pass of the Autograd function as well as in the GrumpReLU layer.
     """
-
     norms = x.norm(dim=-1)
     mask = norms > threshold
-    
-    return x * mask.unsqueeze(-1) 
+
+    return x * mask.unsqueeze(-1)
 
 class GrumpReLU(torch.autograd.Function):
     @staticmethod
     def forward(
-        x : torch.Tensor, 
-        threshold : torch.Tensor, 
+        x : torch.Tensor,
+        threshold : torch.Tensor,
         bandwidth : float
         ) -> torch.Tensor:
 
@@ -38,8 +37,8 @@ class GrumpReLU(torch.autograd.Function):
 
     @staticmethod
     def setup_context(
-        ctx : Any, 
-        inputs: tuple[torch.Tensor, torch.Tensor, float], 
+        ctx : Any,
+        inputs: tuple[torch.Tensor, torch.Tensor, float],
         output: torch.Tensor
         ) -> None:
         x, threshold, bandwidth = inputs
@@ -50,7 +49,7 @@ class GrumpReLU(torch.autograd.Function):
 
     @staticmethod
     def backward(
-        ctx : Any, 
+        ctx : Any,
         grad_outputs : torch.Tensor
         ) -> tuple[torch.Tensor, torch.Tensor, None]:
 
@@ -61,7 +60,7 @@ class GrumpReLU(torch.autograd.Function):
         # threshold: n_experts
         # Want: grad sizes to be ..., n_experts, d_expert and ..., n_experts
 
-        norms = x.norm(dim=-1) # ..., n_experts
+        norms = eon.l2(x, '... n_experts d_bottleneck -> n_experts')
         mask = (norms > threshold).to(x)
 
         # All dimensions of the output have derivative 1 wrt the x
@@ -71,32 +70,85 @@ class GrumpReLU(torch.autograd.Function):
 
         # Threshold is the same for every sample in the batch (BROADCAST OVER THE BATCH) so requires a sum
         threshold_grad = eo.reduce(
-             - x * 
-             (threshold * rectangle_bandwidth(norms - threshold, ctx.bandwidth) / norms).unsqueeze(-1) 
+             - x *
+             (threshold * rectangle_bandwidth(norms - threshold, ctx.bandwidth) / norms).unsqueeze(-1)
              * grad_outputs,
              '... n_experts d_expert -> n_experts',
              reduction='sum'
         )
 
         return (x_grad, threshold_grad, None)
-    
 
-@dataclass 
+@dataclass
 class GrumpReLULayerConfig(SparsityLayerConfig):
-    pass
+    n_neurons : int = 2048
+    dead_after_n_passes : int = 200
+    dead_neuron_loss_coefficient : float = 3e-6
+    sparsity_loss_coefficient : float = 1.0
+
+    bandwidth : float = 2.0
+    init_threshold : float = 0.01
+    hardness_coefficient : float = 4.0 # Hardness coefficient used for the soft tanh/sigmoid penalty
 
 class GrumpReLULayer(SparsityLayer):
-    def __init__(self, bandwidth : float, threshold_size : torch.Tensor, init_threshold : float):
-        super().__init__()
-        
-        self.threshold = nn.Parameter(
-            init_threshold * torch.ones(threshold_size),
-        )
-        self.bandwidth = bandwidth
+    config_type : ClassVar[type[SparsityLayerConfig]] = GrumpReLULayerConfig
 
-    def forward(self, x : torch.Tensor) -> torch.Tensor:
+    def __init__(self, config : GrumpReLULayerConfig):
+        super().__init__(config)
+
+        self.threshold = nn.Parameter(
+            self.cfg.init_threshold * torch.ones(self.cfg.n_neurons),
+        )
+
+    @override
+    def sparsity_loss(self, post_act_x):
+        """
+            Anthropic JumpReLU loss version
+            They use tanh to approximate the L0 function
+            I am pretty skeptical of this and I think there are better L0 optimization methods that can be pulled from the L0 optimization literature
+            For example, the L0 output depends on the expected feature norm, which is not ideal
+            It should depend on the bottleneck
+        """
+
+        return eo.reduce(
+            eo.reduce(
+                torch.tanh(self.cfg.hardness_coefficient * eon.l2(post_act_x, '... n_experts d_bottleneck -> ... n_experts')),
+                '... n_experts -> ...',
+                reduction='sum'
+            ),
+            '... -> ',
+            reduction = 'mean'
+        )
+
+    @override
+    def dead_neuron_loss(self, pre_act_x):
+        # Essentially just a hinge loss that provides upward pressure on dead expert norms to get them to cross their threshold
+
+        dead_mask = self.dead_mask
+
+        if not dead_mask.any():
+            return self.threshold.new_tensor(0.0)
+
+        shortfall = torch.relu(self.threshold - eon.l2(pre_act_x, '... n_experts d_bottleneck -> ... n_experts'))
+
+        return eo.reduce(
+            eo.reduce(
+                shortfall * dead_mask,
+                '... n_experts -> ...',
+                reduction = 'sum'
+            ),
+            '... -> ', 
+            reduction='mean'
+        )
+
+    @override
+    def training_forward(self, x):
         # Clamp value of threshold in place
         with torch.no_grad():
             self.threshold.clamp_(min=0.0)
 
-        return GrumpReLU.apply(x, self.threshold, self.bandwidth)
+        return GrumpReLU.apply(x, self.threshold, self.cfg.bandwidth)
+
+    @override
+    def eval_forward(self, x):
+        return grump_relu_forward(x, self.threshold)
