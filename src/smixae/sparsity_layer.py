@@ -32,7 +32,7 @@ class SparsityLayer(nn.Module, ABC):
         pass
 
     def sparsity_loss(self, post_act_x : torch.Tensor) -> torch.Tensor:
-        return torch.tensor(0.0) # Default to 0 because e.g. TopK-like methods do not have additional sparsity loss
+        return post_act_x.new_tensor(0.0) # Default to 0 because e.g. TopK-like methods do not have additional sparsity loss
     
     # Forward Functions
     @abstractmethod
