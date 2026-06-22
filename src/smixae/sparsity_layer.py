@@ -10,8 +10,6 @@ from torch import nn
 class SparsityLayerConfig(ABC):
     n_neurons : int
     dead_after_n_passes : int
-    dead_neuron_loss_coefficient : float
-    sparsity_loss_coefficient : float
 
 class SparsityLayer(nn.Module, ABC):
     config_type : ClassVar[type[SparsityLayerConfig]] = type[SparsityLayerConfig]  # Config type that helps the SparsityLayer.from_config() method determine the derived class to call
@@ -74,8 +72,8 @@ class SparsityLayer(nn.Module, ABC):
 
             # Also calculate the loss functions
             self.loss_dict = {
-                'dead_neuron_loss' : self.cfg.dead_neuron_loss_coefficient * self.dead_neuron_loss(x),
-                'sparsity_loss' : self.cfg.sparsity_loss_coefficient * self.sparsity_loss(out)
+                'dead_neuron_loss' : self.dead_neuron_loss(x),
+                'sparsity_loss' : self.sparsity_loss(out)
             }
         else:
             out = self.eval_forward(x)

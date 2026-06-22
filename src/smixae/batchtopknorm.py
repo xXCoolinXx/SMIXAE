@@ -11,8 +11,6 @@ from smixae.sparsity_layer import SparsityLayer, SparsityLayerConfig
 class BatchTopKNormLayerConfig(SparsityLayerConfig):
     n_neurons : int = 2048
     dead_after_n_passes : int = 1000
-    dead_neuron_loss_coefficient : float = 1/32
-    sparsity_loss_coefficient : float = 0.0 # This is not used
 
     k : int = 64
     threshold_learning_rate : float = 0.01

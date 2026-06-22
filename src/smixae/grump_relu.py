@@ -83,8 +83,6 @@ class GrumpReLU(torch.autograd.Function):
 class GrumpReLULayerConfig(SparsityLayerConfig):
     n_neurons : int = 2048
     dead_after_n_passes : int = 200
-    dead_neuron_loss_coefficient : float = 3e-6
-    sparsity_loss_coefficient : float = 1.0
 
     bandwidth : float = 2.0
     init_threshold : float = 0.01
