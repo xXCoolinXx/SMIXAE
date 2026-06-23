@@ -136,6 +136,41 @@ to override).
 
 ---
 
+## Notebook Hyperparameter Search (Optuna)
+
+`notebooks/toy_smixae.ipynb` exposes an **optional** Optuna search over the
+GrumpReLU sparsity path. It is opt-in via a single switch in the top config cell:
+
+```python
+RUN_HYPEROPT      = False   # flip to True to search before the final run
+HYPEROPT_N_TRIALS = 20
+```
+
+A shared `hparams` dict is the single source of truth for the tunable values, and
+the final model is always built from it via `build_model(hparams)`. When the
+search is **off**, `hparams` keeps its baseline defaults; when **on**, the best
+trial's parameters overwrite `hparams` before the final training + reporting
+cells run — so both paths train and report identically apart from where the
+values come from.
+
+Each trial trains a fresh model on the full budget and is scored by the **mean
+co-firing-matched R²** (`compute_restricted_r2(...).r2.mean()` — see Evaluation
+Metrics below), which Optuna maximises. Tuned parameters and ranges:
+
+| Param | Range | Goes to |
+|-------|-------|---------|
+| `bandwidth` | `[0.5, 5.0]` | `GrumpReLULayerConfig` |
+| `init_threshold` | `[1e-3, 1e-1]` (log) | `GrumpReLULayerConfig` |
+| `hardness_coefficient` | `[1.0, 16.0]` (log) | `GrumpReLULayerConfig` |
+| `sparsity_coefficient` | `[0.1, 10.0]` (log) | `SMIXAEV2Config` |
+| `sparsity_warm_up_steps` | `[0, training_samples // batch_size]` | `SMIXAEV2Config` |
+
+Requires the `optuna` dependency (declared in `pyproject.toml`; run `uv sync`).
+The import is lazy, so the notebook still loads without it when `RUN_HYPEROPT` is
+`False`.
+
+---
+
 ## Output Layout
 
 ```

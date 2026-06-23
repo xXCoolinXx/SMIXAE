@@ -98,7 +98,7 @@ SMIXAE/
 | [LATEX.md](docs/LATEX.md) | Browser→server→LaTeX pipeline, figure naming convention, table generation |
 | [CORE_EVAL.md](docs/CORE_EVAL.md) | Core eval metrics (L0, MSE, CE score), SMIXAE adapter, GemmaScope baselines, results JSON structure |
 | [CLI.md](docs/CLI.md) | Full CLI command tree and usage examples |
-| [TOYMODEL.md](docs/TOYMODEL.md) | Synthetic toy-model benchmark: manifold zoo, Grassmannian optimisation, CLI workflow, output layout |
+| [TOYMODEL.md](docs/TOYMODEL.md) | Synthetic toy-model benchmark: manifold zoo, Grassmannian optimisation, CLI workflow, optional Optuna notebook search, output layout |
 | [REFERENCE.md](docs/REFERENCE.md) | Per-file code reference — classes, functions, and module descriptions |
 
 ---
