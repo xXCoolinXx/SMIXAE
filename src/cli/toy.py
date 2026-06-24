@@ -51,8 +51,18 @@ app = typer.Typer(help="Synthetic manifold toy-model benchmark.")
 _DEFAULT_TOY_DATA = "toy_data"
 
 
-def _dataset_dir(base: str, seed: int, d_in: int, l0: int, sigma_bias: float = 3.0) -> Path:
-    return Path(base) / f"seed{seed}_d{d_in}_l{l0}_b{sigma_bias:g}"
+def _dataset_dir(
+    base: str,
+    seed: int,
+    d_in: int,
+    l0: int,
+    sigma_bias: float = 3.0,
+    frac_dense: float = 0.0,
+    norm_floor: float = 0.1,
+) -> Path:
+    return Path(base) / (
+        f"seed{seed}_d{d_in}_l{l0}_b{sigma_bias:g}_fd{frac_dense:g}_nf{norm_floor:g}"
+    )
 
 
 def _build_smixae(
@@ -101,8 +111,11 @@ def _build_smixae(
 def generate(
     seed: Annotated[int, typer.Option(help="Random seed.")] = 0,
     d_in: Annotated[int, typer.Option(help="Ambient dimension.")] = 128,
-    l0: Annotated[int, typer.Option(help="Active manifolds per sample.")] = 4,
+    l0: Annotated[int, typer.Option(help="Active sparse manifolds per sample.")] = 4,
     sigma_bias: Annotated[float, typer.Option(help="Global bias norm (0 = no bias).")] = 3.0,
+    frac_dense: Annotated[float, typer.Option(help="Fraction of instances that are dense (always-active, origin-passing).")] = 0.0,
+    norm_floor: Annotated[float, typer.Option(help="Median min active norm for sparse instances.")] = 0.1,
+    norm_floor_spread: Annotated[float, typer.Option(help="Lognormal spread of the per-instance norm floor.")] = 0.5,
     eval_samples: Annotated[int, typer.Option(help="Eval set size.")] = 200_000,
     grassmannian_steps: Annotated[int, typer.Option(help="Grassmannian optimisation steps.")] = 500,
     skip_grassmannian: Annotated[bool, typer.Option(help="Skip Grassmannian opt; use random QR (debugging).")] = False,
@@ -117,7 +130,7 @@ def generate(
     for reproducibility.  Use --skip-grassmannian for a fast random-QR fallback
     during debugging.
     """
-    out = _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias)
+    out = _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias, frac_dense, norm_floor)
 
     if out.exists() and not force:
         logger.info(f"Dataset already exists at {out} — skipping (use --force to overwrite).")
@@ -133,11 +146,16 @@ def generate(
         seed=seed,
         device=device,
         sigma_bias=sigma_bias,
+        frac_dense=frac_dense,
+        norm_floor=norm_floor,
+        norm_floor_spread=norm_floor_spread,
         skip_grassmannian=skip_grassmannian,
         grassmannian_steps=grassmannian_steps,
     )
+    n_dense = sum(inst.is_dense for inst in zoo.instances)
     logger.info(
-        f"Zoo: {len(zoo.instances)} instances, {zoo.n_atoms} atoms, "
+        f"Zoo: {len(zoo.instances)} instances ({n_dense} dense / "
+        f"{len(zoo.instances) - n_dense} sparse), {zoo.n_atoms} atoms, "
         f"d_in={d_in}, sigma_bias={sigma_bias}, b_global_norm={zoo.b_global.norm():.3f}"
     )
 
@@ -160,6 +178,10 @@ def generate(
         "d_in": d_in,
         "l0": l0,
         "sigma_bias": sigma_bias,
+        "frac_dense": frac_dense,
+        "norm_floor": norm_floor,
+        "norm_floor_spread": norm_floor_spread,
+        "n_dense": int(sum(inst.is_dense for inst in zoo.instances)),
         "eval_samples": eval_samples,
         "n_instances": len(zoo.instances),
         "n_atoms": zoo.n_atoms,
@@ -177,8 +199,10 @@ def generate(
 def train(
     seed: Annotated[int, typer.Option(help="Dataset seed (used to locate the dataset).")] = 0,
     d_in: Annotated[int, typer.Option(help="Ambient dimension.")] = 128,
-    l0: Annotated[int, typer.Option(help="Active manifolds per sample.")] = 4,
+    l0: Annotated[int, typer.Option(help="Active sparse manifolds per sample.")] = 4,
     sigma_bias: Annotated[float, typer.Option(help="Global bias norm (used for dataset path).")] = 3.0,
+    frac_dense: Annotated[float, typer.Option(help="Dense fraction (used for dataset path).")] = 0.0,
+    norm_floor: Annotated[float, typer.Option(help="Norm floor (used for dataset path).")] = 0.1,
     toy_data_dir: Annotated[str, typer.Option(help="Root directory for datasets.")] = _DEFAULT_TOY_DATA,
     dataset_dir: Annotated[str, typer.Option(help="Explicit dataset path (overrides seed/d_in/l0).")] = "",
     n_experts: Annotated[int, typer.Option(help="Expert count (default 48 = ground-truth instance count).")] = 48,
@@ -198,7 +222,7 @@ def train(
     per k_experts value, and writes results.csv + summary.json + model checkpoints
     to a results/ subdirectory inside the dataset directory.
     """
-    ds = Path(dataset_dir) if dataset_dir else _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias)
+    ds = Path(dataset_dir) if dataset_dir else _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias, frac_dense, norm_floor)
     if not ds.exists():
         logger.error(f"Dataset not found: {ds}  (run `smixae toy generate` first)")
         raise typer.Exit(1)
@@ -360,8 +384,10 @@ def train(
 def eval_cmd(
     seed: Annotated[int, typer.Option(help="Dataset seed (used to locate the dataset).")] = 0,
     d_in: Annotated[int, typer.Option(help="Ambient dimension.")] = 128,
-    l0: Annotated[int, typer.Option(help="Active manifolds per sample.")] = 4,
+    l0: Annotated[int, typer.Option(help="Active sparse manifolds per sample.")] = 4,
     sigma_bias: Annotated[float, typer.Option(help="Global bias norm (used for dataset path).")] = 3.0,
+    frac_dense: Annotated[float, typer.Option(help="Dense fraction (used for dataset path).")] = 0.0,
+    norm_floor: Annotated[float, typer.Option(help="Norm floor (used for dataset path).")] = 0.1,
     toy_data_dir: Annotated[str, typer.Option(help="Root directory for datasets.")] = _DEFAULT_TOY_DATA,
     dataset_dir: Annotated[str, typer.Option(help="Explicit dataset path (overrides seed/d_in/l0).")] = "",
     n_experts: Annotated[int, typer.Option(help="Expert count (default 48 = ground-truth instance count).")] = 48,
@@ -370,7 +396,7 @@ def eval_cmd(
     """Re-evaluate saved model checkpoints; overwrite results.csv and summary.json without retraining."""
     import json as _json
 
-    ds = Path(dataset_dir) if dataset_dir else _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias)
+    ds = Path(dataset_dir) if dataset_dir else _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias, frac_dense, norm_floor)
     results_dir = ds / "results"
     if not (ds / "zoo.pt").exists():
         logger.error(f"Zoo not found at {ds / 'zoo.pt'}  (run `smixae toy generate` first)")
@@ -506,8 +532,10 @@ def eval_cmd(
 def plot(
     seed: Annotated[int, typer.Option(help="Dataset seed.")] = 0,
     d_in: Annotated[int, typer.Option(help="Ambient dimension.")] = 128,
-    l0: Annotated[int, typer.Option(help="Active manifolds per sample.")] = 4,
+    l0: Annotated[int, typer.Option(help="Active sparse manifolds per sample.")] = 4,
     sigma_bias: Annotated[float, typer.Option(help="Global bias norm (used for dataset path).")] = 3.0,
+    frac_dense: Annotated[float, typer.Option(help="Dense fraction (used for dataset path).")] = 0.0,
+    norm_floor: Annotated[float, typer.Option(help="Norm floor (used for dataset path).")] = 0.1,
     toy_data_dir: Annotated[str, typer.Option(help="Root directory for datasets.")] = _DEFAULT_TOY_DATA,
     dataset_dir: Annotated[str, typer.Option(help="Explicit dataset path (overrides seed/d_in/l0).")] = "",
     device: Annotated[str, typer.Option(help="Device (cuda / cpu).")] = "cuda" if torch.cuda.is_available() else "cpu",
@@ -517,7 +545,7 @@ def plot(
     Reads zoo.pt, eval.pt, and results/summary.json from the dataset directory.
     Writes plots/ inside the dataset directory without retraining.
     """
-    ds = Path(dataset_dir) if dataset_dir else _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias)
+    ds = Path(dataset_dir) if dataset_dir else _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias, frac_dense, norm_floor)
     results_dir = ds / "results"
     if not (ds / "zoo.pt").exists():
         logger.error(f"Zoo not found at {ds / 'zoo.pt'}  (run `smixae toy generate` first)")
@@ -626,8 +654,11 @@ def plot(
 def pipeline(
     seed: Annotated[int, typer.Option(help="Random seed.")] = 0,
     d_in: Annotated[int, typer.Option(help="Ambient dimension.")] = 128,
-    l0: Annotated[int, typer.Option(help="Active manifolds per sample.")] = 4,
+    l0: Annotated[int, typer.Option(help="Active sparse manifolds per sample.")] = 4,
     sigma_bias: Annotated[float, typer.Option(help="Global bias norm.")] = 3.0,
+    frac_dense: Annotated[float, typer.Option(help="Fraction of instances that are dense.")] = 0.0,
+    norm_floor: Annotated[float, typer.Option(help="Median min active norm for sparse instances.")] = 0.1,
+    norm_floor_spread: Annotated[float, typer.Option(help="Lognormal spread of the per-instance norm floor.")] = 0.5,
     eval_samples: Annotated[int, typer.Option(help="Eval set size.")] = 200_000,
     grassmannian_steps: Annotated[int, typer.Option(help="Grassmannian optimisation steps.")] = 500,
     skip_grassmannian: Annotated[bool, typer.Option(help="Skip Grassmannian opt.")] = False,
@@ -649,7 +680,7 @@ def pipeline(
     Generation is skipped if the dataset directory already exists for the given
     seed/d_in/l0, unless --force-generate is set.
     """
-    ds = _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias)
+    ds = _dataset_dir(toy_data_dir, seed, d_in, l0, sigma_bias, frac_dense, norm_floor)
 
     # ── Generate (skip if already exists) ─────────────────────────────────────
     if ds.exists() and not force_generate:
@@ -661,6 +692,9 @@ def pipeline(
             d_in=d_in,
             l0=l0,
             sigma_bias=sigma_bias,
+            frac_dense=frac_dense,
+            norm_floor=norm_floor,
+            norm_floor_spread=norm_floor_spread,
             eval_samples=eval_samples,
             grassmannian_steps=grassmannian_steps,
             skip_grassmannian=skip_grassmannian,
@@ -676,6 +710,8 @@ def pipeline(
         d_in=d_in,
         l0=l0,
         sigma_bias=sigma_bias,
+        frac_dense=frac_dense,
+        norm_floor=norm_floor,
         toy_data_dir=toy_data_dir,
         dataset_dir="",
         n_experts=n_experts,
@@ -697,6 +733,8 @@ def pipeline(
         d_in=d_in,
         l0=l0,
         sigma_bias=sigma_bias,
+        frac_dense=frac_dense,
+        norm_floor=norm_floor,
         toy_data_dir=toy_data_dir,
         dataset_dir="",
         device=device,

@@ -116,7 +116,12 @@ def compute_restricted_r2(
         off = inst.atom_offset
         ki  = inst.k_i
 
-        active_mask = eval_data.feature_acts[:, off: off + ki].abs().sum(1) > 0
+        # Dense instances are active on every sample (present even at norm 0), so
+        # the nonzero-coordinate test would undercount them; treat all rows active.
+        if inst.is_dense:
+            active_mask = torch.ones(eval_data.feature_acts.shape[0], dtype=torch.bool)
+        else:
+            active_mask = eval_data.feature_acts[:, off: off + ki].abs().sum(1) > 0
         active_rows = active_mask.nonzero(as_tuple=True)[0]
         if active_rows.numel() < 10:
             best_experts.append(0)
@@ -187,7 +192,10 @@ def compute_cofiring_matrix(
         off = inst.atom_offset
         ki  = inst.k_i
 
-        active_mask = eval_data.feature_acts[:, off: off + ki].abs().sum(1) > 0
+        if inst.is_dense:
+            active_mask = torch.ones(eval_data.feature_acts.shape[0], dtype=torch.bool)
+        else:
+            active_mask = eval_data.feature_acts[:, off: off + ki].abs().sum(1) > 0
         active_rows = active_mask.nonzero(as_tuple=True)[0]
         if active_rows.numel() < 4:
             continue

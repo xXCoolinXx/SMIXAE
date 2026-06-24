@@ -11,6 +11,7 @@ Contains:
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -82,7 +83,7 @@ class ManifoldZoo:
                 color, z_raw = sampler(*params, n, device)
             else:
                 color, z_raw = sampler(params, n, device)
-        z_norm = (z_raw - inst.mu.to(device)) / inst.sigma
+        z_norm = (z_raw - inst.mu.to(device)) / inst.sigma + inst.shift.to(device)
         return color, z_norm
 
     def save(self, path: Path) -> None:
@@ -107,6 +108,9 @@ class ManifoldZoo:
                     "mu":          inst.mu,
                     "sigma":       inst.sigma,
                     "atom_offset": inst.atom_offset,
+                    "shift":       inst.shift,
+                    "is_dense":    inst.is_dense,
+                    "norm_floor":  inst.norm_floor,
                 }
                 for inst in self.instances
             ],
@@ -135,6 +139,9 @@ class ManifoldZoo:
                 mu=d["mu"].cpu(),
                 sigma=d["sigma"],
                 atom_offset=d["atom_offset"],
+                shift=d["shift"].cpu(),
+                is_dense=d["is_dense"],
+                norm_floor=d["norm_floor"],
             )
             for d in state["instances"]
         ]
@@ -308,12 +315,63 @@ def optimize_subspaces(
     return [p.data.T.detach().clone() for p in frames]
 
 
+def _solve_shift(
+    z: torch.Tensor,
+    u: torch.Tensor,
+    norm_floor: float,
+    n_bisect: int = 40,
+) -> torch.Tensor:
+    r"""Solve for the subspace shift that places a manifold's closest point at ``norm_floor``.
+
+    Given a centred, RMS-normalised calibration cloud ``z`` (n, k) and a unit
+    direction ``u`` (k,), find the magnitude ``c`` of a shift ``c·u`` such that the
+    shifted cloud's minimum distance to the origin equals ``norm_floor``:
+
+        g(c) = min_n ‖z_n + c·u‖ .
+
+    ``g`` is non-decreasing on ``[R_max, ∞)`` where ``R_max = max‖z_n‖`` (every
+    point's distance is non-decreasing once ``c ≥ R_max``), and
+    ``g(R_max + norm_floor) ≥ norm_floor``. We bisect on ``[R_max, R_max + norm_floor]``;
+    if even ``g(R_max) > norm_floor`` (the manifold cannot approach the origin that
+    closely along ``u`` without surrounding it), we clamp ``c = R_max``. Either way
+    the *entire* manifold is guaranteed off-origin (min-norm ≥ ~norm_floor),
+    regardless of ``u`` — this is the fix for blind random offsets that could leave
+    part of the manifold straddling 0.
+
+    Args:
+        z: (n, k) centred, RMS-normalised calibration cloud.
+        u: (k,) unit shift direction.
+        norm_floor: Target minimum distance from origin tᵢ.
+        n_bisect: Bisection iterations.
+
+    Returns:
+        shift: (k,) translation ``c·u``.
+    """
+    def g(c: float) -> float:
+        return float((z + c * u).norm(dim=1).min().item())
+
+    r_max = float(z.norm(dim=1).max().item())
+    lo, hi = r_max, r_max + norm_floor
+    if g(lo) > norm_floor:
+        return r_max * u
+    for _ in range(n_bisect):
+        mid = 0.5 * (lo + hi)
+        if g(mid) < norm_floor:
+            lo = mid
+        else:
+            hi = mid
+    return (0.5 * (lo + hi)) * u
+
+
 def build_manifold_zoo(
     d_in: int = 128,
     seed: int = 0,
     device: str = "cpu",
     n_calibration: int = 50_000,
     sigma_bias: float = 3.0,
+    frac_dense: float = 0.0,
+    norm_floor: float = 0.1,
+    norm_floor_spread: float = 0.5,
     skip_grassmannian: bool = False,
     grassmannian_steps: int = 500,
 ) -> ManifoldZoo:
@@ -329,12 +387,25 @@ def build_manifold_zoo(
     activation, simulating the DC offset of real LLM residual streams.  Set
     ``sigma_bias=0`` to disable.
 
+    Dense/sparse split: a seeded random subset of ``round(frac_dense * 48)``
+    instances is marked **dense** — these pass through the origin (no shift) and
+    are active on every sample (see ManifoldActivationGenerator). The remaining
+    **sparse** instances are translated inside their own subspace so their minimum
+    active norm equals a per-instance floor tᵢ drawn lognormally
+    (``tᵢ = norm_floor * exp(norm_floor_spread * N(0,1))``: right-skewed, > 0,
+    median ``norm_floor``). The shift is computed from each manifold's measured
+    extent (see :func:`_solve_shift`) so the whole manifold clears the origin.
+
     Args:
         d_in: Ambient dimension.
         seed: Random seed for calibration, Grassmannian optimisation, and bias.
         device: Device for calibration and final tensor placement.
         n_calibration: Points drawn per instance for mean/RMS calibration.
         sigma_bias: Norm of the global bias vector (0 = no bias).
+        frac_dense: Fraction of the 48 instances to mark dense (always-active,
+            origin-passing, no shift). The rest are sparse and shifted off-origin.
+        norm_floor: Median target minimum active norm tᵢ for sparse instances.
+        norm_floor_spread: Lognormal spread (σ) of the per-instance floor tᵢ.
         skip_grassmannian: If True, use independent random QR embeddings instead
             of Grassmannian optimisation (fast, low coherence control).
         grassmannian_steps: Optimisation steps passed to optimize_subspaces.
@@ -380,10 +451,43 @@ def build_manifold_zoo(
                 mu=mu.cpu(),
                 sigma=sigma,
                 atom_offset=atom_offset,
+                shift=torch.zeros(k_i),
             ))
             atom_offset += k_i
 
     n_manifold_atoms = atom_offset  # 120
+
+    # ── Pass 1b: dense/sparse split + off-origin shifts ──────────────────────
+    # Dense instances pass through the origin and are always active; sparse
+    # instances are translated inside their subspace so their minimum active
+    # norm equals a per-instance lognormal floor tᵢ.
+    n_inst = len(instances)
+    split_rng = torch.Generator(device="cpu").manual_seed(seed + 2)
+    n_dense = round(frac_dense * n_inst)
+    dense_idx = set(
+        torch.randperm(n_inst, generator=split_rng)[:n_dense].tolist()
+    )
+    for inst_idx, inst in enumerate(instances):
+        if inst_idx in dense_idx:
+            inst.is_dense = True
+            continue  # dense: shift stays zero, norm_floor stays 0
+        params = _VARIANT_PARAMS[inst.type_name][inst.variant_idx]
+        sampler = _SAMPLERS[inst.type_name]
+        with torch.no_grad():
+            if isinstance(params, tuple):
+                _, z_cal = sampler(*params, n_calibration, device)
+            else:
+                _, z_cal = sampler(params, n_calibration, device)
+        z_norm = ((z_cal - inst.mu.to(device)) / inst.sigma).cpu()
+
+        t_i = float(
+            norm_floor
+            * math.exp(norm_floor_spread * torch.randn(1, generator=split_rng).item())
+        )
+        u = torch.randn(inst.k_i, generator=split_rng)
+        u = u / u.norm().clamp(min=1e-8)
+        inst.shift = _solve_shift(z_norm, u, t_i)
+        inst.norm_floor = t_i
 
     # ── Pass 2: optimise subspace directions ─────────────────────────────────
     if skip_grassmannian:
@@ -436,8 +540,12 @@ class ManifoldActivationGenerator(ActivationGenerator):
 
     The standard ActivationGenerator applies relu() to all outputs, which would
     zero negative manifold coordinates (e.g. cos θ < 0 on a circle).  This
-    subclass overrides sample() to perform exact-L0 manifold instance selection
-    and returns the full signed normalised coordinates for each active atom.
+    subclass overrides sample() to perform manifold instance selection and
+    returns the full signed normalised coordinates for each active atom.
+
+    Dense instances (``inst.is_dense``) are active on every sample; sparse
+    instances fill the L0 budget (exactly ``l0`` sparse actives per sample).
+    Total active manifolds per sample is therefore ``n_dense + l0``.
 
     The output of sample() is compatible with FeatureDictionary.forward():
         x = feature_dict(generator.sample(B))
@@ -445,7 +553,7 @@ class ManifoldActivationGenerator(ActivationGenerator):
 
     Args:
         zoo: ManifoldZoo produced by build_manifold_zoo.
-        l0: Exact number of active manifold instances per sample.
+        l0: Number of active *sparse* manifold instances per sample.
         device: Device for tensor operations.
     """
 
@@ -459,7 +567,8 @@ class ManifoldActivationGenerator(ActivationGenerator):
 
         Args:
             zoo: ManifoldZoo produced by build_manifold_zoo.
-            l0: Exact number of active manifold instances per sample.
+            l0: Number of active *sparse* manifold instances per sample (dense
+                instances are always active on top of this budget).
             device: Device for tensor operations.
         """
         # Initialise parent with dummy firing probs; sample() is fully overridden.
@@ -473,14 +582,49 @@ class ManifoldActivationGenerator(ActivationGenerator):
         self._device = device
         self._n_instances = len(zoo.instances)
 
+        # Dense instances are active on every sample; sparse instances fill the
+        # L0 budget. ``l0`` therefore counts *sparse* actives per sample.
+        dense = [i for i, inst in enumerate(zoo.instances) if inst.is_dense]
+        sparse = [i for i, inst in enumerate(zoo.instances) if not inst.is_dense]
+        if l0 > len(sparse):
+            raise ValueError(
+                f"l0={l0} exceeds the number of sparse instances ({len(sparse)}); "
+                f"reduce l0 or frac_dense."
+            )
+        self._dense_idx  = torch.tensor(dense, dtype=torch.long, device=device)
+        self._sparse_idx = torch.tensor(sparse, dtype=torch.long, device=device)
+
+    def _instance_mask(self, batch_size: int) -> torch.Tensor:
+        """Build the (B, n_inst) binary activation mask.
+
+        Dense instances are active in every row; exactly ``l0`` sparse instances
+        are selected per row via top-l0 of random priorities over the sparse pool.
+
+        Args:
+            batch_size: Number of samples (rows).
+
+        Returns:
+            instance_mask: (batch_size, n_instances) binary tensor.
+        """
+        B = batch_size
+        device = self._device
+        instance_mask = torch.zeros(B, self._n_instances, device=device)
+        if self._dense_idx.numel() > 0:
+            instance_mask[:, self._dense_idx] = 1.0
+        if self.l0 > 0:
+            priorities = torch.rand(B, self._sparse_idx.numel(), device=device)
+            _, top = priorities.topk(self.l0, dim=1)            # (B, l0) into sparse pool
+            chosen = self._sparse_idx[top]                       # (B, l0) global indices
+            instance_mask.scatter_(1, chosen, 1.0)
+        return instance_mask
+
     @torch.no_grad()
     def sample(self, batch_size: int) -> torch.Tensor:
         """Return signed manifold coordinates, shape (batch_size, n_atoms).
 
-        For each sample, exactly l0 manifold instances are chosen uniformly at
-        random (without replacement).  The normalised coordinates z̃_i of each
-        active manifold are written into the corresponding atom slots; inactive
-        slots remain zero.
+        Dense instances are active on every row; exactly l0 sparse instances are
+        chosen per row.  The normalised coordinates z̃_i of each active manifold
+        are written into the corresponding atom slots; inactive slots remain zero.
 
         Args:
             batch_size: Number of samples to generate.
@@ -489,15 +633,10 @@ class ManifoldActivationGenerator(ActivationGenerator):
             feature_acts: (batch_size, n_atoms) — signed, not relu'd.
         """
         B = batch_size
-        n_inst = self._n_instances
         device = self._device
         feature_acts = torch.zeros(B, self.zoo.n_atoms, device=device)
 
-        # Exact-L0 manifold selection: top-l0 of random priorities per row
-        priorities = torch.rand(B, n_inst, device=device)
-        _, topk_idx = priorities.topk(self.l0, dim=1)          # (B, l0)
-        instance_mask = torch.zeros(B, n_inst, device=device)
-        instance_mask.scatter_(1, topk_idx, 1.0)               # (B, n_inst) binary
+        instance_mask = self._instance_mask(B)
 
         for inst_idx, inst in enumerate(self.zoo.instances):
             active_rows = instance_mask[:, inst_idx].nonzero(as_tuple=True)[0]
@@ -528,10 +667,7 @@ class ManifoldActivationGenerator(ActivationGenerator):
         feature_acts = torch.zeros(B, self.zoo.n_atoms, device=device)
         color_param  = torch.zeros(B, n_inst, device=device)
 
-        priorities = torch.rand(B, n_inst, device=device)
-        _, topk_idx = priorities.topk(self.l0, dim=1)
-        instance_mask = torch.zeros(B, n_inst, device=device)
-        instance_mask.scatter_(1, topk_idx, 1.0)
+        instance_mask = self._instance_mask(B)
 
         for inst_idx, inst in enumerate(self.zoo.instances):
             active_rows = instance_mask[:, inst_idx].nonzero(as_tuple=True)[0]

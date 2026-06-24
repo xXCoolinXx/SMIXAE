@@ -24,13 +24,42 @@ rather than inferred from downstream tasks.
 Observations follow a sparse mixture of low-dimensional manifolds embedded in a
 high-dimensional ambient space:
 
-$$x = \sum_{i \in S} \tilde{\gamma}_i(\theta_i) V_i + b_{\text{global}} + \varepsilon$$
+$$x = \sum_{i \in S} \bigl(\tilde{\gamma}_i(\theta_i) + \delta_i\bigr) V_i + b_{\text{global}} + \varepsilon$$
 
-- **S** — active set, drawn uniformly without replacement: `|S| = L₀ = 4`
+- **S** — active set: all **dense** instances (always active) plus `L₀` **sparse**
+  instances drawn uniformly without replacement (`L₀ = 4` by default). So
+  `|S| = n_dense + L₀`.
 - **γ̃ᵢ(θᵢ)** — normalised manifold coordinates (zero mean, unit RMS norm)
+- **δᵢ ∈ ℝ^{kᵢ}** — per-instance off-origin shift in the manifold's own subspace
+  (zero for dense; chosen for sparse so the manifold's minimum active norm equals
+  its floor tᵢ — see *Dense vs sparse* below)
 - **Vᵢ ∈ ℝ^{kᵢ × d}** — orthonormal ambient embedding for instance i (Grassmannian-optimised)
 - **b_global** — fixed random unit direction scaled to `sigma_bias` (global DC offset)
 - **ε ~ N(0, σ²ε I)** — small noise (`σ_ε = 10⁻⁵`)
+
+### Dense vs sparse features (off-origin shifts)
+
+SMIXAE routes experts by the **L2 norm** of the bottleneck (BatchTopK), so an active
+feature whose contribution has ~0 norm is indistinguishable from an inactive one.
+Manifolds that pass through the origin of their subspace (disk, segment, swiss roll,
+or any shell once centred) therefore fight the router. The **Feature Norm Hypothesis**
+makes this explicit:
+
+- **Sparse** feature — norm ≈ 0 when inactive; norm ≥ tᵢ > 0 when active.
+- **Dense** feature — active on *every* input; norm ∈ [0, ∞) (present even at 0).
+
+A seeded random subset of `round(frac_dense · 48)` instances is marked **dense**:
+they are active on every sample (added on top of the L₀ sparse budget) and are *not*
+shifted, so they may pass through the origin. The remaining **sparse** instances are
+translated inside their own subspace by δᵢ so their minimum active norm equals a
+per-instance floor `tᵢ = norm_floor · exp(norm_floor_spread · N(0,1))` (lognormal:
+right-skewed, strictly > 0, median `norm_floor`).
+
+The shift is computed from each manifold's measured extent (bisection on the shift
+magnitude until the cloud's closest point to the origin equals tᵢ), guaranteeing the
+*entire* manifold clears the origin — unlike a blind random offset, which can leave
+part of the manifold straddling 0. Because the affine OLS read-out in
+`compute_restricted_r2` absorbs the constant δᵢ, sparse R² is unaffected by the shift.
 
 ### Why a global bias?
 
@@ -40,7 +69,11 @@ It is stored as the `FeatureDictionary.bias` so it is automatically included in 
 call to `zoo.feature_dict(feature_acts)` — no changes needed in the training loop.
 
 The previous implementation used per-instance bias atoms (one per manifold, activated only
-when that manifold was active), which incorrectly modelled the offset as feature-dependent.
+when that manifold was active), which incorrectly modelled the *DC offset* as
+feature-dependent. This is distinct from the per-instance subspace shift δᵢ above: δᵢ is a
+geometric translation *inside the manifold's own subspace* that gives a sparse feature a
+non-zero minimum norm, whereas `b_global` is a single fixed ambient direction inert to
+norm routing.
 
 ### Why Grassmannian optimisation?
 
@@ -73,8 +106,9 @@ subspaces with demonstrably lower pairwise coherence than random QR.
 | Segment | 1 | 1 | (t) | length ∈ {0.5, 0.75, 1.0, 1.5, 2.0, 3.0} |
 
 **Normalisation.** Each instance is calibrated on 50,000 points: mean μᵢ and RMS norm σᵢ
-are computed in local coordinates, then `γ̃ᵢ(θ) = (γᵢ(θ) − μᵢ) / σᵢ`.
-This gives every instance unit RMS norm regardless of type or variant.
+are computed in local coordinates, then `γ̃ᵢ(θ) = (γᵢ(θ) − μᵢ) / σᵢ + δᵢ`.
+This gives every instance unit RMS norm regardless of type or variant; the off-origin
+shift δᵢ (sparse only) is then added on top (see *Dense vs sparse* above).
 
 **Note on Torus.** The paper's Table 4 uses a 4-D Clifford embedding (kᵢ=4).  This
 benchmark uses the standard 3-D embedding (kᵢ=3) so SMIXAE's 3-D bottleneck can
@@ -87,11 +121,17 @@ faithfully capture the torus geometry.
 ### Generate
 
 ```bash
-uv run smixae toy generate --seed 0 --d-in 128 --l0 4 --sigma-bias 3.0
+uv run smixae toy generate --seed 0 --d-in 128 --l0 4 --sigma-bias 3.0 \
+    --frac-dense 0.25 --norm-floor 0.1 --norm-floor-spread 0.5
 ```
 
 Builds the zoo (including Grassmannian optimisation, ~minutes on CPU) and generates
-200,000 eval samples.  Saves to `toy_data/seed0_d128_l4_b3/`.
+200,000 eval samples.  Saves to `toy_data/seed0_d128_l4_b3_fd0.25_nf0.1/`.
+
+- `--frac-dense` — fraction of the 48 instances marked dense (always-active, origin-passing).
+- `--norm-floor` / `--norm-floor-spread` — median and lognormal spread of the per-instance
+  off-origin floor tᵢ for sparse instances.
+- `--l0` — number of active *sparse* manifolds per sample (dense are always active on top).
 
 Add `--skip-grassmannian` for a fast random-QR fallback during debugging.
 
@@ -131,8 +171,8 @@ uv run smixae toy pipeline --seed 0
 ```
 
 Runs generate → train → plot in sequence.  Generation is skipped if the dataset
-directory already exists for the given seed/d_in/l0/sigma_bias (use `--force-generate`
-to override).
+directory already exists for the given seed/d_in/l0/sigma_bias/frac_dense/norm_floor
+(use `--force-generate` to override).
 
 ---
 
@@ -175,8 +215,8 @@ The import is lazy, so the notebook still loads without it when `RUN_HYPEROPT` i
 
 ```
 toy_data/
-└── seed{seed}_d{d_in}_l{l0}_b{sigma_bias}/
-    ├── manifest.json          Scalar hyperparameters
+└── seed{seed}_d{d_in}_l{l0}_b{sigma_bias}_fd{frac_dense}_nf{norm_floor}/
+    ├── manifest.json          Scalar hyperparameters (incl. frac_dense, norm_floor, n_dense)
     ├── zoo.pt                 Serialised ManifoldZoo (V_i matrices, b_global)
     ├── eval.pt                Serialised EvalData (x, feature_acts, color_param)
     ├── results/               Populated by `toy train`
@@ -231,7 +271,10 @@ from toy.zoo import ManifoldZoo, EvalData, build_manifold_zoo, generate_eval_set
 from toy.metrics import compute_restricted_r2, compute_metrics
 
 # Build the zoo (slow first time due to Grassmannian optimisation)
-zoo = build_manifold_zoo(d_in=128, seed=0, sigma_bias=3.0)
+# frac_dense marks some instances dense (always-active, origin-passing); the rest
+# are sparse and shifted off-origin to a per-instance lognormal floor.
+zoo = build_manifold_zoo(d_in=128, seed=0, sigma_bias=3.0,
+                         frac_dense=0.25, norm_floor=0.1, norm_floor_spread=0.5)
 
 # Access the global bias
 print(zoo.b_global.norm())  # ≈ 3.0

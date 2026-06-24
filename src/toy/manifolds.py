@@ -264,6 +264,15 @@ class ManifoldInstance:
         mu: (k_i,) calibration mean, on CPU.
         sigma: RMS norm after centering.
         atom_offset: Start index in the joint FeatureDictionary.
+        shift: (k_i,) translation in subspace (intrinsic) coords applied after
+            centre/scale normalisation. Pushes a *sparse* manifold off the origin
+            so its minimum active norm equals ``norm_floor``; zero for dense
+            instances.
+        is_dense: If True the instance is *dense* — active on every sample and
+            origin-passing (no shift). If False it is *sparse* — sampled within
+            the L0 budget and shifted off-origin.
+        norm_floor: Target minimum active norm tᵢ for sparse instances (0.0 for
+            dense). Recorded for provenance.
     """
 
     type_name: str
@@ -274,3 +283,6 @@ class ManifoldInstance:
     mu: torch.Tensor   # (k_i,) calibration mean, on CPU
     sigma: float       # RMS norm after centering
     atom_offset: int   # start index in the joint FeatureDictionary
+    shift: torch.Tensor = None  # type: ignore[assignment]  # (k_i,) subspace translation, on CPU
+    is_dense: bool = False      # always-active + origin-passing when True
+    norm_floor: float = 0.0     # target min active norm tᵢ (0 for dense)
