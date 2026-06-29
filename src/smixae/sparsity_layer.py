@@ -51,7 +51,7 @@ class SparsityLayer(nn.Module, ABC):
         """Use self.dead_mask to get the dead neurons"""
         pass
 
-    def sparsity_loss(self, post_act_x : torch.Tensor) -> torch.Tensor:
+    def sparsity_loss(self, pre_act_x : torch.Tensor, post_act_x : torch.Tensor) -> torch.Tensor:
         return post_act_x.new_tensor(0.0) # Default to 0 because e.g. TopK-like methods do not have additional sparsity loss
 
     # Forward Functions
@@ -73,7 +73,7 @@ class SparsityLayer(nn.Module, ABC):
             # Also calculate the loss functions
             self.loss_dict = {
                 'dead_neuron_loss' : self.dead_neuron_loss(x),
-                'sparsity_loss' : self.sparsity_loss(out)
+                'sparsity_loss' : self.sparsity_loss(x, out)
             }
         else:
             out = self.eval_forward(x)

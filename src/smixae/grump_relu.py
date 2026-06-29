@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from typing import Any, ClassVar, override
 
 import einops as eo
-import smixae.einops_norms as eon
 import torch
 from torch import nn
 
+import smixae.einops_norms as eon
 from smixae.sparsity_layer import SparsityLayer, SparsityLayerConfig
 
 
@@ -99,15 +99,13 @@ class GrumpReLULayer(SparsityLayer):
         )
 
     @override
-    def sparsity_loss(self, post_act_x):
+    def sparsity_loss(self, pre_act_x : torch.Tensor, post_act_x : torch.Tensor):
+        """Anthropic JumpReLU loss version
+        They use tanh to approximate the L0 function
+        I am pretty skeptical of this and I think there are better L0 optimization methods that can be pulled from the L0 optimization literature
+        For example, the L0 output depends on the expected feature norm, which is not ideal
+        It should depend on the bottleneck
         """
-            Anthropic JumpReLU loss version
-            They use tanh to approximate the L0 function
-            I am pretty skeptical of this and I think there are better L0 optimization methods that can be pulled from the L0 optimization literature
-            For example, the L0 output depends on the expected feature norm, which is not ideal
-            It should depend on the bottleneck
-        """
-
         return eo.reduce(
             eo.reduce(
                 torch.tanh(self.cfg.hardness_coefficient * eon.l2(post_act_x, '... n_experts d_bottleneck -> ... n_experts')),
@@ -135,7 +133,7 @@ class GrumpReLULayer(SparsityLayer):
                 '... n_experts -> ...',
                 reduction = 'sum'
             ),
-            '... -> ', 
+            '... -> ',
             reduction='mean'
         )
 

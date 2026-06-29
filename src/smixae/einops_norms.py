@@ -11,7 +11,7 @@ The axes that *disappear* between the left and right side of the pattern are
 the ones reduced over. When several axes are reduced at once, the norm is taken
 over all of them jointly (as if those axes were flattened together).
 
-Example
+Example:
 -------
 >>> import torch
 >>> from einops_norms import l1, l2, linf, lp
@@ -66,7 +66,7 @@ def lp(tensor: torch.Tensor, pattern: str, p: Number, **axes_lengths) -> torch.T
     **axes_lengths:
         Optional explicit axis sizes, forwarded to ``einops.reduce``.
 
-    Returns
+    Returns:
     -------
     torch.Tensor
         Tensor with the reduced axes removed.
